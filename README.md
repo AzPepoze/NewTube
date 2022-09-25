@@ -1,1 +1,80 @@
-# Newtube (Customize youtube)
+# Newtube (Customize youtube) changelog!
+
+## Version 1.95 (Current)
+
+- Optimized video background
+- New Subtitles add background change color
+
+## Version 1.89
+
+- Add icon on setting
+- New Subtitles
+- Add Enhancement tab
+
+## Version 1.44
+
+- NEWTUBE Discord
+- Fix auto leave server
+- (Sorry for being stupid T_T)
+- Pls come back
+
+## Version 1.43
+
+- NEWTUBE Discord
+- Fixed bug
+
+## Version 1.42
+
+- Remove Left menu background
+- Add new preset (Purple Low-end PC , I'm Using :D)
+- Fixed bug
+
+## Version 1.40
+
+- Background Video can turn off in setting!
+
+## Version 1.35
+
+- Fixed bug
+
+## Version 1.3
+
+- Add New animation "Click on video thumbnails"
+
+## Version 1.2
+
+- Auto hide time when hover (Can Disable in setting)
+
+## Version 1.1
+
+- Add Center tittle setting
+
+## Version 1.05
+
+- Fixed lag bug
+
+## Version 0.99
+
+- Delete preset
+- Save preset
+- Center video controls panel
+
+## Version 0.90
+
+- API or Local image upload
+
+## Version 0.85
+
+- New settings menu (With a NICE Donate!!!)
+
+## Version 0.83
+
+- Select Preset
+- Custom CSS
+- Import to NtubeCode
+- Export to NtubeCode , CSS
+- Release to every user
+
+## Version 0.80
+
+- Private testing
