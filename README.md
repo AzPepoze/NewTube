@@ -1,6 +1,11 @@
 # Newtube (Customize youtube) changelog!
 
-## Version 1.95 (Current)
+## Version 2.00 (Current)
+
+- Fixed bugs
+- Beta features!
+
+## Version 1.95
 
 - Optimized video background
 - New Subtitles add background change color
