@@ -1,6 +1,16 @@
 # Newtube (Customize youtube) changelog!
 
-## Version 2.00 (Current)
+
+## Version 2.35 (Current)
+
+- Fixed bugs!!
+- Additional CSS
+- Export Preset as file.
+- New select Preset menu
+- New Animation (Search)
+- Improve background video performance.
+
+## Version 2.00
 
 - Fixed bugs
 - Beta features!
