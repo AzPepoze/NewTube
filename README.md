@@ -5,7 +5,7 @@
 
 - Fixed bugs!!
 - Additional CSS
-- Export Preset as file.
+- Export/Import Preset as file.
 - New select Preset menu
 - New Animation (Search)
 - Improve background video performance.
