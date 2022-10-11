@@ -9,6 +9,7 @@
 - New select Preset menu
 - New Animation (Search)
 - Improve background video performance.
+- Auto reload website on install at first time (Use user history for reload websites)
 
 ## Version 2.00
 
