@@ -77,7 +77,7 @@
 
 ## Version 0.90
 
-- API or Local image upload
+- API and Local image upload
 
 ## Version 0.85
 
