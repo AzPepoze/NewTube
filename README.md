@@ -1,7 +1,7 @@
 # Newtube (Customize youtube) changelog!
 
 
-## Version 2.35 (Current)
+## Version 2.50 (Current)
 
 - Fixed bugs!!
 - Changable Website Icon
