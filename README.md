@@ -4,6 +4,13 @@
 ## Version 2.35 (Current)
 
 - Fixed bugs!!
+- Changable Website Icon
+- (Video) Move to right row
+- Thumbnail loaded animation
+
+## Version 2.35
+
+- Fixed bugs!!
 - Additional CSS
 - Export/Import Preset as file.
 - New select Preset menu
