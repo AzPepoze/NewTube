@@ -7,6 +7,7 @@
 - Changable Website Icon
 - (Video) Move to right row
 - Thumbnail loaded animation
+- Auto reload website on install at first time (์Not read history)
 
 ## Version 2.35
 
