@@ -1,6 +1,6 @@
 /* Yeaaaaaah :3 AzPepoze https://www.youtube.com/channel/UCJ2C0UTfxQo6iGTfudPfoRQ */
 
-Ver = "2.75"
+Ver = "2.80"
 
 ForcePre = [
     "(Low PC) Purple",
