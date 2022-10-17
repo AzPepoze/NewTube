@@ -1,7 +1,16 @@
 # Newtube (Customize youtube) changelog!
 
+## Version 2.80 (Current)
 
-## Version 2.50 (Current)
+- I won't continue this extention for a while (I got nothing from this extention. I should make some money LOL)
+- Fixed bugs!!
+
+## Version 2.75
+
+- Fixed bugs!!
+- Optimize Save & Load preset
+
+## Version 2.50
 
 - Fixed bugs!!
 - Changable Website Icon
