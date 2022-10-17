@@ -1,0 +1,33 @@
+{
+    "manifest_version": 3,
+    "name": "Youtube Style Customizer (Newtube)",
+    "version": "2.75",
+    "description": "Customize your Youtube website with a lot customizable.",
+	"icons":{
+		"128":"icon/128.png",
+		"64":"icon/64.png",
+		"32":"icon/32.png",
+		"16":"icon/16.png"
+	},
+    "web_accessible_resources": [
+        {
+            "resources": [ "icon/64.png",
+                            "asset/Del.svg",
+                            "asset/Upload_file.png"
+                         ],
+            "matches": [ "*://www.youtube.com/*" ]
+        }
+    ],
+    "content_scripts": [
+      {
+		"all_frames": true,
+        "matches": ["*://www.youtube.com/*"],
+        "js": ["Page.js"],
+		"run_at": "document_start"
+      }
+    ],
+    "background": {
+        "service_worker": "Background.js"
+    },
+    "host_permissions": ["*://www.youtube.com/*"]
+}
