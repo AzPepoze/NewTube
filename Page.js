@@ -1,6 +1,6 @@
 /* Yeaaaaaah :3 AzPepoze https://www.youtube.com/channel/UCJ2C0UTfxQo6iGTfudPfoRQ */
 
-Ver = "2.80"
+Ver = "2.81"
 
 ForcePre = [
     "(Low PC) Purple",
@@ -4134,10 +4134,10 @@ function SetBGTran(Status) {
         YTAPP = document.getElementsByTagName('ytd-app')[0]
     }
     if (Status == true) {
-        YTAPP.style = `background: transparent;
+        YTAPP.style = `background: transparent !important;
         width: 100%;`
     } else {
-        YTAPP.style = `background:var(--bg-color);
+        YTAPP.style = `background:var(--bg-color) !important;
         width: 100%;`
     }
 }
