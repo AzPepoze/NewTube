@@ -401,7 +401,11 @@ function SetValueSelect() {
     {
         backdrop-filter: blur(var(--blur-amount)) !important;
     }`)
-    SetValueSelect2("BlurWhat", "none", ``)
+    SetValueSelect2("BlurWhat", "none", `
+    ytd-multi-page-menu-renderer[sheets-refresh]{
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+    }`)
 
 
 
@@ -1287,7 +1291,7 @@ function update() {
                     --yt-live-chat-header-background-color: var(--yt-spec-brand-background-primary);
                 }
 
-                html[dark], [dark] {
+                html,[dark]{
                     --ytd-chip-cloud-background: rgba(0,0,0,.3) !important;
                     --yt-spec-brand-background-primary: var(--top-bar-and-search-background) !important;
                     --yt-spec-brand-background-solid: var(--bg-color) !important;
@@ -1305,9 +1309,12 @@ function update() {
                     --yt-spec-button-chip-background-hover: var(--search-background-hover) !important;
                     --yt-spec-text-primary-inverse: var(--top-bar-and-search-background) !important;
                     --yt-spec-static-brand-white: `+ 'TIMETEXT'.GetSaveRgba() + ` !important;
+                    --yt-spec-base-background: var(--top-bar-and-search-background) !important;
+                    --yt-spec-raised-background: var(--top-bar-and-search-background) !important;
+                    --yt-spec-menu-background: var(--top-bar-and-search-background) !important;
                 }
 
-                ytd-app[darker-dark-theme] {
+                ytd-app{
                     background: var(--bg-color) !important;
                     --app-drawer-content-container-background-color: var(--bg-color) !important;
                 }
