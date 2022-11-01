@@ -1,6 +1,10 @@
 # Newtube (Customize youtube) changelog!
 
-## Version 2.80 (Current)
+## Version 2.81 (Current)
+
+- Fixed bug
+
+## Version 2.80
 
 - I won't continue this extention for a while (I got nothing from this extention. I should make some money LOL)
 - Fixed bugs!!
