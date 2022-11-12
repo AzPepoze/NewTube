@@ -1,6 +1,15 @@
 # Newtube (Customize youtube) changelog!
 
-## Version 2.81 (Current)
+## Version 2.85 (Current)
+
+- Fixed bugs
+
+## Version 2.82
+
+- Fixed bugs
+- More changable color
+
+## Version 2.81
 
 - Fixed bug
 

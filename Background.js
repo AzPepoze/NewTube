@@ -10,3 +10,10 @@ chrome.tabs.query({}, function (tabs) {
         }
     });
 });
+
+chrome.commands.onCommand.addListener(async (command) => {
+    console.log(`Command "${command}" triggered`);
+    let queryOptions = { active: true, lastFocusedWindow: true };
+    let [tab] = await chrome.tabs.query(queryOptions)
+    chrome.tabs.sendMessage(tab.id, command);
+});
