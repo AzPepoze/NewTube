@@ -3,6 +3,7 @@
 ## Version 2.85 (Current)
 
 - Fixed bugs
+- Shortcuts Key
 
 ## Version 2.82
 
