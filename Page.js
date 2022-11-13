@@ -1,6 +1,6 @@
 /* Yeaaaaaah :3 AzPepoze https://www.youtube.com/channel/UCJ2C0UTfxQo6iGTfudPfoRQ */
 
-Ver = "2.85"
+Ver = "2.86"
 
 window.onerror =
     function (msg, source, lineNo, columnNo, error) {
