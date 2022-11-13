@@ -1,6 +1,11 @@
 # Newtube (Customize youtube) changelog!
 
-## Version 2.85 (Current)
+## Version 2.86 (Current)
+
+- Fixed bugs
+- Error Detecter Button
+
+## Version 2.85
 
 - Fixed bugs
 - Shortcuts Key
