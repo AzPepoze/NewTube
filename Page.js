@@ -2845,7 +2845,7 @@ String.prototype.LoadNTubeCode = function () {
 function GenNTubeCode() {
     arrdata = {}
     for (z in localStorage) {
-        if (z.substring(0, 3) == "nt-" && z != "nt-NUMPRESET" && z != 'nt-SHOWPRESET' && z != 'nt-EnableButtonT' && z != 'nt-RealtimeT') {
+        if (z.substring(0, 3) == "nt-" && z != "nt-NUMPRESET" && z != 'nt-SHOWPRESET' && z != 'nt-EnableButtonT' && z != 'nt-RealtimeT' && z != 'nt-ErrorCollectT') {
             arrdata[z.substring(3, z.length)] = localStorage[z]
         }
     }
