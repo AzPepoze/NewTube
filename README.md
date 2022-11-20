@@ -2,7 +2,7 @@
 
 ## Version 3.1.2 (Current)
 
-- Fixed bugs!
+- Disable auto reload when update
 
 ## Version 3.01 
 
