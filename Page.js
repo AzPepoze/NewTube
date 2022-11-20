@@ -1,6 +1,6 @@
 /* Yeaaaaaah :3 AzPepoze https://www.youtube.com/channel/UCJ2C0UTfxQo6iGTfudPfoRQ */
 
-Ver = "3.01"
+Ver = chrome.runtime.getManifest().version
 
 window.onerror =
     function (msg, source, lineNo, columnNo, error) {
@@ -3226,6 +3226,8 @@ function CreateMENU() {
     THISPar = "⚙️ Extention's settings"
 
     Frame = createMainframe()
+
+    createframe(`<label class="DES">Version : `+ chrome.runtime.getManifest().version +`</label>`)
 
     var Preset = document.createElement('button')
     Preset.innerHTML = "Select Preset"
