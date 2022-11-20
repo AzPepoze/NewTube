@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Youtube Style Customizer (Newtube)",
-    "version": "2.90",
+    "version": "3.00",
     "description": "Customize your Youtube website with a lot customizable.",
 	"icons":{
 		"128":"icon/128.png",
@@ -41,6 +41,12 @@
               "default": "Alt+X"
             },
             "description": "Toggle Setting"
+        },
+        "Test": {
+            "suggested_key": {
+              "default": "Alt+A"
+            },
+            "description": "TEST"
         }
     },
     "host_permissions": ["*://www.youtube.com/*"]
