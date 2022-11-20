@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Youtube Style Customizer (Newtube)",
-    "version": "3.0.2",
+    "version": "3.1.2",
     "description": "Customize your Youtube website with a lot customizable.",
 	"icons":{
 		"128":"icon/128.png",
