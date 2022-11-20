@@ -1,6 +1,6 @@
 /* Yeaaaaaah :3 AzPepoze https://www.youtube.com/channel/UCJ2C0UTfxQo6iGTfudPfoRQ */
 
-Ver = "3.00"
+Ver = "3.01"
 
 window.onerror =
     function (msg, source, lineNo, columnNo, error) {
@@ -1309,7 +1309,8 @@ function update() {
 
                     --sub-ShaWidth: `+ localStorage["nt-subShaWidth"] + `px;
                     --sub-ShaBlur: `+ localStorage["nt-subShaBlur"] + `px;
-                    --sub-Color: `+ localStorage["nt-subColor"] + `;
+
+                    --sub-Width: `+ localStorage["nt-subWidth"] + `;
                     --sub-Space: `+ localStorage["nt-subSpace"] + `px;
                     --sub-bg: ` + 'CapBG'.GetSaveRgba() + `;
                     --sub-sha-color: `+ 'subShaColor'.GetSaveRgba() + `;
