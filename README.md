@@ -1,6 +1,10 @@
 # Newtube (Customize youtube) changelog!
 
-## Version 3.1.2 (Current)
+## Version 3.1.3 (Current)
+
+- Fixed bugs!
+
+## Version 3.1.2
 
 - Disable auto reload when update
 
