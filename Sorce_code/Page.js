@@ -79,10 +79,58 @@ function SetNormalPre() {
     SetidxTo("PRESET(Low-end PC) Cyan", JSON.stringify(["SubtitleC", "#8adcff", "RepeatT", "false", "LeftBar", "true", "EndBGO", "50", "CenterUDT", "true", "ThemeSndO", "50", "MediaBlurT", "false", "ThumbClickC", "#ff0000", "TextC", "#ffffff", "HBTO", "100", "SubtitleO", "100", "IMGS", "100", "ThemeFortC", "#94fff3", "CenterMediaT", "true", "ThemeC", "#70cfff", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "NVDOC", "1", "TimeLoadedC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeAniT", "true", "TimeEdge", "10", "TimeOutT", "true", "HBTC", "#ffffff", "PlayerOutT", "true", "VDOSYT", "true", "ThemeThrO", "20", "Border", "1", "OutShaC", "#cd70ff", "ThumbHoverT", "Slide", "Edge", "10", "Zoom", "1.075", "NdTextC", "#c4c4c4", "ScrollT", "false", "CapOutT", "false", "CapBGO", "80", "BlurWhatT", "none", "ThemehoverC", "#5cd6ff", "TIMETEXTC", "#ffffff", "CenterMedia", "true", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "0", "TimeBGC", "#000000", "SubOutT", "false", "NVDOT", "2", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "NVDOB", "50", "NdTextO", "100", "ThemeFortO", "50", "ThemeThrC", "#61fcff", "PlaylisthoverC", "#66d9ff", "TimeLoadedO", "50", "CenterUDFT", "true", "CenterTimeT", "true", "IMGY", "15", "BlurAm", "5", "PlayerEdge", "20", "ThemeSndC", "#000000", "BGO", "70", "VDOBGT", "false", "EnaCUSCSST", "false", "BlurSubT", "false", "CUSTOM", "", "OutShaO", "0", "VDOTEXTO", "100", "MediaBGO", "50", "NVDOBGT", "0.4", "ThemeO", "100", "TimeBGO", "50", "VBGT", "true", "TextO", "100", "LoadVDOT", "false", "BGC", "#000000", "TimeH", "18", "LeftBarT", "true", "Time-LineBGO", "20", "Time-LineBGC", "#ffffff", "TopOutT", "true", "SyncLogoT", "true", "PlaylisthoverO", "50", "ScWidth", "0", "ThumbHoverColorC", "#009dff", "BGIMG", ""]))
 }
 
-if (document.documentElement.getAttribute("dark") == null) {
-    document.documentElement.setAttribute("dark", "")
+function waitForElmByID(selector) {
+    return new Promise(resolve => {
+        if (document.getElementById(selector)) {
+            return resolve(document.getElementById(selector));
+        }
+
+        const observer = new MutationObserver(mutations => {
+            if (document.getElementById(selector)) {
+                resolve(document.getElementById(selector));
+                observer.disconnect();
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
 }
 
+function waitForElm(selector) {
+    return new Promise(resolve => {
+        if (document.querySelector(selector)) {
+            return resolve(document.querySelector(selector));
+        }
+
+        const observer = new MutationObserver(mutations => {
+            if (document.querySelector(selector)) {
+                resolve(document.querySelector(selector));
+                observer.disconnect();
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+}
+
+if (document.documentElement.getAttribute("dark") == null) {
+    document.addEventListener("DOMContentLoaded",async function () {
+        await waitForElmByID("avatar-btn")
+        document.getElementById("avatar-btn").click()
+        await waitForElm("ytd-toggle-theme-compact-link-renderer")
+        document.getElementsByTagName("ytd-toggle-theme-compact-link-renderer")[0].click()
+        await waitForElmByID("submenu")
+        await waitForElm("ytd-compact-link-renderer")
+        document.getElementById("submenu").getElementsByTagName("ytd-compact-link-renderer")[2].click()
+    })
+} else
+{
 function UpdateIcon() {
     DOwithindexed(function () {
         get = store.get('IconURL')
@@ -4696,10 +4744,6 @@ chrome.runtime.onMessage.addListener(function (recived) {
     if (recived == 'Setting') {
         clickSetting()
     }
-
-    if (recived == "Test") {
-        document.getElementsByClassName('html5-main-video')[0].requestPictureInPicture()
-    }
 })
 
 var hidden = false
@@ -4728,3 +4772,5 @@ window.addEventListener('blur', function () {
     console.log("Bruh")
     hidden = true
 })
+
+}

@@ -22,5 +22,6 @@ chrome.commands.onCommand.addListener(async (command) => {
     console.log(`Command "${command}" triggered`);
     let queryOptions = { active: true, lastFocusedWindow: true };
     let [tab] = await chrome.tabs.query(queryOptions)
+    console.log(command)
     chrome.tabs.sendMessage(tab.id, command);
 });

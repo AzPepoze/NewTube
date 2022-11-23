@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Youtube Style Customizer (Newtube)",
-    "version": "3.1.2",
+    "version": "3.1.3",
     "description": "Customize your Youtube website with a lot customizable.",
 	"icons":{
 		"128":"icon/128.png",
@@ -32,21 +32,15 @@
     "commands": {
         "Enable": {
             "suggested_key": {
-              "default": "Alt+Z"
+              "default": "Alt+Shift+Z"
             },
             "description": "Toggle Enable"
         },
         "Setting": {
             "suggested_key": {
-              "default": "Alt+X"
+                "default": "Alt+Shift+X"
             },
             "description": "Toggle Setting"
-        },
-        "Test": {
-            "suggested_key": {
-              "default": "Alt+A"
-            },
-            "description": "TEST"
         }
     },
     "host_permissions": ["*://www.youtube.com/*"]
