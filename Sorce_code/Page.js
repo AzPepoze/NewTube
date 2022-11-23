@@ -533,7 +533,7 @@ function SetValueSelect() {
         backdrop-filter: blur(var(--blur-amount)) !important;
     }`)
     SetValueSelect2("BlurWhat", "none", `
-    ytd-multi-page-menu-renderer[sheets-refresh]{
+    * {
         -webkit-backdrop-filter: none !important;
         backdrop-filter: none !important;
     }`)
