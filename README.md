@@ -1,4 +1,4 @@
-https://chrome.google.com/webstore/detail/youtube-style-customizer/dnjjchajjdnfbjhjclmilicgheglcopj?hl=en&authuser=0
+<a href="https://chrome.google.com/webstore/detail/youtube-style-customizer/dnjjchajjdnfbjhjclmilicgheglcopj" style="border-bottom:solid white 2px;">Get this extention!</a>
 
 # Newtube (Customize youtube) changelog!
 
