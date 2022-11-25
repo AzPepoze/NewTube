@@ -79,6 +79,40 @@ function SetNormalPre() {
     SetidxTo("PRESET(Low-end PC) Cyan", JSON.stringify(["SubtitleC", "#8adcff", "RepeatT", "false", "LeftBar", "true", "EndBGO", "50", "CenterUDT", "true", "ThemeSndO", "50", "MediaBlurT", "false", "ThumbClickC", "#ff0000", "TextC", "#ffffff", "HBTO", "100", "SubtitleO", "100", "IMGS", "100", "ThemeFortC", "#94fff3", "CenterMediaT", "true", "ThemeC", "#70cfff", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "NVDOC", "1", "TimeLoadedC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeAniT", "true", "TimeEdge", "10", "TimeOutT", "true", "HBTC", "#ffffff", "PlayerOutT", "true", "VDOSYT", "true", "ThemeThrO", "20", "Border", "1", "OutShaC", "#cd70ff", "ThumbHoverT", "Slide", "Edge", "10", "Zoom", "1.075", "NdTextC", "#c4c4c4", "ScrollT", "false", "CapOutT", "false", "CapBGO", "80", "BlurWhatT", "none", "ThemehoverC", "#5cd6ff", "TIMETEXTC", "#ffffff", "CenterMedia", "true", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "0", "TimeBGC", "#000000", "SubOutT", "false", "NVDOT", "2", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "NVDOB", "50", "NdTextO", "100", "ThemeFortO", "50", "ThemeThrC", "#61fcff", "PlaylisthoverC", "#66d9ff", "TimeLoadedO", "50", "CenterUDFT", "true", "CenterTimeT", "true", "IMGY", "15", "BlurAm", "5", "PlayerEdge", "20", "ThemeSndC", "#000000", "BGO", "70", "VDOBGT", "false", "EnaCUSCSST", "false", "BlurSubT", "false", "CUSTOM", "", "OutShaO", "0", "VDOTEXTO", "100", "MediaBGO", "50", "NVDOBGT", "0.4", "ThemeO", "100", "TimeBGO", "50", "VBGT", "true", "TextO", "100", "LoadVDOT", "false", "BGC", "#000000", "TimeH", "18", "LeftBarT", "true", "Time-LineBGO", "20", "Time-LineBGC", "#ffffff", "TopOutT", "true", "SyncLogoT", "true", "PlaylisthoverO", "50", "ScWidth", "0", "ThumbHoverColorC", "#009dff", "BGIMG", ""]))
 }
 
+var Set = document.createElement("button"),
+    Collect_Style,
+    MODE,
+    request,
+    LIST,
+    CHOOSE,
+    IWantTOset,
+    ReturnCode,
+    ChangeslogMain,
+    CanSave = true,
+    USEING = `(Current)`,
+    ADDScrollEVENT = false,
+    VDOBG = false,
+    TranHead = false,
+    EPar,
+    LoopCheck,
+    ADDCSS
+
+NTstyle = document.createElement("style");
+
+NTstyle.id = "NEWTUBESTYLE";
+
+function styleloop() {
+    if (document.head == null) {
+        setTimeout(() => {
+            styleloop()
+        }, 10);
+    } else {
+        document.head.appendChild(NTstyle)
+    }
+}
+
+styleloop()
+
 function waitForElmByID(selector) {
     return new Promise(resolve => {
         if (document.getElementById(selector)) {
@@ -127,24 +161,6 @@ function inIframe() {
     }
 }
 
-if (inIframe() == true) {
-    update()
-} else {
-    if (document.documentElement.getAttribute("dark") == null) {
-        document.addEventListener("DOMContentLoaded", async function () {
-            await waitForElmByID("avatar-btn")
-            document.getElementById("avatar-btn").click()
-            await waitForElm("ytd-toggle-theme-compact-link-renderer")
-            document.getElementsByTagName("ytd-toggle-theme-compact-link-renderer")[0].click()
-            await waitForElmByID("submenu")
-            await waitForElm("ytd-compact-link-renderer")
-            document.getElementById("submenu").getElementsByTagName("ytd-compact-link-renderer")[2].click()
-        })
-    } else {
-        update()
-    }
-}
-
 
 function UpdateIcon() {
     DOwithindexed(function () {
@@ -177,28 +193,6 @@ function CheckPar(ThisE) {
         EPar = false
     }
 }
-
-var Set = document.createElement("button"),
-    Collect_Style,
-    MODE,
-    request,
-    LIST,
-    CHOOSE,
-    IWantTOset,
-    ReturnCode,
-    ChangeslogMain,
-    CanSave = true,
-    USEING = `(Current)`,
-    ADDScrollEVENT = false,
-    VDOBG = false,
-    TranHead = false,
-    EPar,
-    LoopCheck,
-    ADDCSS
-
-style = document.createElement("style");
-
-style.id = "NEWTUBESTYLE";
 
 Set.innerHTML = "<span>◉</span>";
 Set.id = "NEWTUBESET";
@@ -296,8 +290,6 @@ function SetValueCheck() {
         margin: -2px !important;
         text-align:center !important;
     }`, ``)
-
-    SetValueCheck2("transition", 'transition', ``)
 
     SetValueCheck2("BlurSub", `
     .caption-window.ytp-caption-window-bottom
@@ -406,7 +398,7 @@ function SetValueCheck() {
 
     SetValueCheck2("ThumbAnim", `
     #dismissible:has(.yt-core-image){
-        transition: all 1s ease !important;
+        transition: all 1s ease;
         margin-top: 100px !important;
         opacity:0 !important;
     }
@@ -755,6 +747,8 @@ function SetNull() {
     SetTo("subShaBlur", `2`)
 
     SetTo("MediaSpace", `70`)
+
+    SetTo("CanvasQua", `40`)
 
     //Check------------------------
 
@@ -1265,10 +1259,10 @@ function update() {
     }
 
     if (localStorage["nt-EnableButtonT"] == 'false') {
-        style.textContent = NORMAL;
+        NTstyle.textContent = NORMAL;
     }
     else if (localStorage["nt-EnaCUSCSST"] == 'true') {
-        style.textContent = NORMAL + localStorage["nt-CUSTOM"] + ADDCSS + AfterNEWTUBE
+        NTstyle.textContent = NORMAL + localStorage["nt-CUSTOM"] + ADDCSS + AfterNEWTUBE
     } else {
 
         if (localStorage["nt-ScrollT"] == 'true' && localStorage["nt-EnableButtonT"] == 'true') {
@@ -1315,8 +1309,8 @@ function update() {
                     top:0;
                     position:fixed;
                     z-index: -10000;
-                    `+ Flip + `;`
-                        + GetCodeC("transition") + `: opacity 2s;
+                    `+ Flip + `;
+                    transition : opacity 2s;
                 }`
 
                 }
@@ -1546,7 +1540,7 @@ function update() {
                 
                 #hover-overlays
                 {
-                    transition: opacity .4s  !important;
+                    transition: opacity .4s;
                     opacity: 0 !important;
                 }
 
@@ -1591,7 +1585,7 @@ function update() {
                 ytd-video-renderer,
                 ytd-playlist-renderer
                 {
-                    transition: all .2s !important;
+                    transition: all .2s;
                 }
                 
                 tp-yt-paper-button.ytd-subscribe-button-renderer[subscribed]{
@@ -1647,7 +1641,7 @@ function update() {
                 .ytp-menuitem:not([aria-disabled=true]):hover,
                 ytd-mini-guide-entry-renderer:hover {
                     background: var(--search-background-hover) !important;
-                    transition: all .2s cubic-bezier(0.1,0.7,1,1) !important;
+                    transition: all .2s cubic-bezier(0.1,0.7,1,1);
                 }
                 
                 .gsfs,
@@ -1899,7 +1893,7 @@ function update() {
                 ytd-playlist-panel-video-renderer,
                 ytd-menu-renderer
                 {
-                    transition: all .2s  !important;
+                    transition: all .2s;
                 }
                 
                 .ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-top, .ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-bottom
@@ -1921,20 +1915,20 @@ function update() {
                 .ytp-button,
                 .ytp-cards-button-icon
                 {
-                    transition: all .2s  !important;
+                    transition: all .2s;
                 }
 
                 .ytp-tooltip-text-wrapper{
-                    transition: margin-block .5s  !important;
+                    transition: margin-block .5s;
                 }
 
                 #show-more-button
                 {
-                    transition: background .2s  !important;
+                    transition: background .2s;
                 }
 
                 ytd-app{
-                    transition: background 2s  !important;
+                    transition: background 2s;
                 }
                 
                 .ytp-tooltip:not([aria-hidden=true])
@@ -2131,6 +2125,20 @@ function update() {
                 ytd-thumbnail-overlay-time-status-renderer{
                     display: flex !important;
                 }
+
+                html:has(div.unstarted-mode video.video-stream.html5-main-video) #secondary,
+                html:has(div.unstarted-mode video.video-stream.html5-main-video) #below,
+                html:has(div.unstarted-mode video.video-stream.html5-main-video) .ytp-gradient-bottom,
+                html:has(div.unstarted-mode video.video-stream.html5-main-video) .ytp-chrome-bottom
+                {
+                    transition: all 0.5s !important;
+                    opacity:0 !important;
+                }
+
+                #secondary,
+                #below{
+                    transition: all 3s;
+                }
                 
                 `+ BGBLURCODE + `
                 
@@ -2171,9 +2179,62 @@ function update() {
                 `+ ADDCSS + `
 
                 `
-                style.textContent = NORMAL + Collect_Style + AfterNEWTUBE
+                NTstyle.textContent = NORMAL + Collect_Style + AfterNEWTUBE
             };
         })
+    }
+}
+
+function WaitAvatar() {
+    return new Promise(resolve => {
+        if (document.getElementById("avatar-btn")) {
+            return resolve(document.getElementById("avatar-btn"));
+        }
+
+        if (document.querySelector("ytd-topbar-menu-button-renderer")) {
+            return resolve(document.querySelector("ytd-topbar-menu-button-renderer"));
+        }
+
+        const observer = new MutationObserver(mutations => {
+            if (document.getElementById("avatar-btn")) {
+                resolve(document.getElementById("avatar-btn"));
+                observer.disconnect();
+            }
+            if (document.querySelector("ytd-topbar-menu-button-renderer")) {
+                resolve(document.querySelector("ytd-topbar-menu-button-renderer"));
+                observer.disconnect();
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+}
+
+if (inIframe() == true) {
+    update()
+} else {
+    if (document.documentElement.getAttribute("dark") == null) {
+        document.addEventListener("DOMContentLoaded", async function () {
+            await WaitAvatar()
+
+            try {
+                document.getElementById("avatar-btn").click()
+            } catch (e) {
+                document.getElementsByTagName("ytd-topbar-menu-button-renderer")[0].click()
+            }
+
+            await waitForElm("ytd-toggle-theme-compact-link-renderer")
+            document.getElementsByTagName("ytd-toggle-theme-compact-link-renderer")[0].click()
+            await waitForElmByID("submenu")
+            await waitForElm("ytd-compact-link-renderer")
+            document.getElementById("submenu").getElementsByTagName("ytd-compact-link-renderer")[2].click()
+        })
+    } else {
+        update()
+        SettoEnd()
     }
 }
 
@@ -3256,7 +3317,7 @@ function CreateMENU() {
 
     //----------------------------------------------------------------------------------------------
 
-    THISPar = "💵 Donate :3"
+    THISPar = "💵 " + chrome.i18n.getMessage("Donate")
 
     DonateFrame = createframe(`<p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://i.ibb.co/269h23M/2020021209494988264-logo-truemoneywallet-300x300.jpg" class="DONATEIMG"><lable class="DES">Wallet ID : AzDonate</lable></p>
     <p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://i.ibb.co/4sCYzXK/index.jpg" class="DONATEIMG"><a id="HOVERLINK" href="https://www.paypal.com/signin?returnUri=https%3A%2F%2Fwww.paypal.com%2Fmyaccount%2Ftransfer%2Fhomepage%2Fexternal%2Fprofile%3FflowContextData%3DTmV7sH9Ip5x6ax_bhu-4ib7mr3qtJYLUST5ILgPTUCV-aPS5wiTHYReTyrjZUrzo6RnqrG_IGcMdzZxRSNMClpiXW_YUozCtGT_myuY-Iz482jS6LkbxXl-gkNRo--RFIFS5jtg954mBPuxa3P8N6dBFNsBMVJEOLK1-ZP-PxAwS6mdpbwpVFeEEuJwof9Nl2PE-NgFySGvPQWI_rjkTbugXS-O6HuRR3SRqTTe1SuhE25IMdYvBvUBK2y4zpVk2KbEVhQg63WzznD1emOkCq2orEG1bCTi0M4Txky3iSId11K7Xg8e_qpf4rjOaXEPDsIlw1IbKw3WAJRLdIHx0MJFLL0yfGjE7GzR42C0GeYLnods79sPkPJCqo2GjLZzLJ07epiRk2bv33AnwcLEwp4_eVm8TMwNFK-5JX_RZOd8AiOzq3_Q9hY_A19S&onboardData=%7B%22country.x%22%3A%22US%22%2C%22locale.x%22%3A%22en_US%22%2C%22intent%22%3A%22paypalme%22%2C%22redirect_url%22%3A%22https%253A%252F%252Fwww.paypal.com%252Fmyaccount%252Ftransfer%252Fhomepage%252Fexternal%252Fprofile%253FflowContextData%253DTmV7sH9Ip5x6ax_bhu-4ib7mr3qtJYLUST5ILgPTUCV-aPS5wiTHYReTyrjZUrzo6RnqrG_IGcMdzZxRSNMClpiXW_YUozCtGT_myuY-Iz482jS6LkbxXl-gkNRo--RFIFS5jtg954mBPuxa3P8N6dBFNsBMVJEOLK1-ZP-PxAwS6mdpbwpVFeEEuJwof9Nl2PE-NgFySGvPQWI_rjkTbugXS-O6HuRR3SRqTTe1SuhE25IMdYvBvUBK2y4zpVk2KbEVhQg63WzznD1emOkCq2orEG1bCTi0M4Txky3iSId11K7Xg8e_qpf4rjOaXEPDsIlw1IbKw3WAJRLdIHx0MJFLL0yfGjE7GzR42C0GeYLnods79sPkPJCqo2GjLZzLJ07epiRk2bv33AnwcLEwp4_eVm8TMwNFK-5JX_RZOd8AiOzq3_Q9hY_A19S%22%2C%22sendMoneyText%22%3A%22You%2520are%2520sending%2520Jakkrit%2520Kaewtong%22%7D" target="_blank" class="DES" >jakkrit_portraitist@hotmail.com</a></p>
@@ -3290,7 +3351,7 @@ function CreateMENU() {
 
     Frame = createMainframe()
 
-    createframe(`<label class="DES">Version : ` + chrome.runtime.getManifest().version + `</label>`)
+    createframe(`<label class="DES">Version : ` + Ver + `</label>`)
 
     var Preset = document.createElement('button')
     Preset.innerHTML = "Select Preset"
@@ -3345,6 +3406,7 @@ function CreateMENU() {
 
     createCheck("VDOBG", "Background Video<br>(NOT RECOMMEND FOR LOW END PC!)");
 
+    createTextBox("CanvasQua", "% (Background VDO) Quality")
     createTextBox("NVDOB", `(Background VDO) Blur amount`)
     createTextBox("NVDOC", `(Background VDO) Contrast`)
     createTextBox("NVDOBGT", `(Background VDO) Brightness`)
@@ -4392,21 +4454,7 @@ function SettoEnd() {
     }, 1000);
 }
 
-SettoEnd()
-
 SetNull()
-
-function styleloop() {
-    if (document.head == null) {
-        setTimeout(() => {
-            styleloop()
-        }, 10);
-    } else {
-        document.head.appendChild(style)
-    }
-}
-
-styleloop()
 
 
 //---------------------------------------------------------------------------
@@ -4428,11 +4476,24 @@ var UPSEQ = 33,
     YTAPP,
     BGFRAME
 
+var CanvasQua,
+    CanvasNewQua,
+    VDOBOUND
+
+function ChangeCanvasQua() {
+    cw = Math.floor(Math.floor(VDOBOUND.width) * CanvasNewQua)
+    ch = Math.floor(Math.floor(VDOBOUND.height) * CanvasNewQua)
+
+    CanvasQua = CanvasNewQua
+    canvas.width = cw
+    canvas.height = ch
+}
+
 function SetCanvas() {
     if (canvas) {
-        getbound = FindVideo().getBoundingClientRect()
+        VDOBOUND = FindVideo().getBoundingClientRect()
 
-        VcenY = getbound.top + getbound.height / 2
+        VcenY = VDOBOUND.top + VDOBOUND.height / 2
         canvasbound = canvas.getBoundingClientRect()
 
         var Distance = (VcenY) - (canvasbound.top + canvasbound.height / 2)
@@ -4441,12 +4502,18 @@ function SetCanvas() {
             Distance = Distance * -1
         }
 
+        CanvasNewQua = localStorage["nt-CanvasQua"] / 100
+
+        if (CanvasQua != CanvasNewQua) {
+            ChangeCanvasQua()
+        }
+
         if (Distance > 1) {
             requestAnimationFrame(function () {
-                getbound = FindVideo().getBoundingClientRect()
+                VDOBOUND = FindVideo().getBoundingClientRect()
                 canvasbound = canvas.getBoundingClientRect()
-                VcenX = getbound.left + getbound.width / 2
-                VcenY = getbound.top + getbound.height / 2
+                VcenX = VDOBOUND.left + VDOBOUND.width / 2
+                VcenY = VDOBOUND.top + VDOBOUND.height / 2
 
                 console.log("SetCanvas")
 
@@ -4457,21 +4524,22 @@ function SetCanvas() {
                 VdoWith = v.style.width
                 VdoHeight = v.style.height
 
-                if (canvas.width != VdoWith.substring(0, VdoWith.length - 2)) {
+                if (canvas.style.width != VdoWith) {
                     console.log("SetCanvas")
                     var tempCanvas = document.createElement('canvas')
                     tempCanvas.width = context.canvas.width
                     tempCanvas.height = context.canvas.height
                     tempCanvas.getContext("2d").drawImage(context.canvas, 0, 0)
 
-                    cw = Number(VdoWith.substring(0, VdoWith.length - 2))
-                    ch = Number(VdoHeight.substring(0, VdoHeight.length - 2))
+                    canvas.style.width = VdoWith
+                    canvas.style.height = VdoHeight
 
-                    canvas.width = cw
-                    canvas.height = ch
+                    ChangeCanvasQua()
 
                     context.drawImage(tempCanvas, 0, 0)
                     tempCanvas.remove()
+
+
 
                     if (EnaCanvas2 == true) {
                         canvas2.width = cw
@@ -4479,8 +4547,8 @@ function SetCanvas() {
                     }
                 }
 
-                canvas.style.setProperty('margin-top', getbound.top + window.pageYOffset + 'px')
-                canvas.style.setProperty('margin-left', getbound.left + window.pageXOffset + 'px')
+                canvas.style.setProperty('margin-top', VDOBOUND.top + window.pageYOffset + 'px')
+                canvas.style.setProperty('margin-left', VDOBOUND.left + window.pageXOffset + 'px')
             })
         }
     } else {
@@ -4490,10 +4558,40 @@ function SetCanvas() {
     }
 }
 
+var WaitFrame = 2
+var thisframe
+
+function CalFrame() {
+    var oldtime = v.currentTime
+    v.requestVideoFrameCallback(function () {
+        v.requestVideoFrameCallback(function () {
+            v.requestVideoFrameCallback(function () {
+                v.requestVideoFrameCallback(function () {
+                    console.log(Math.ceil(1 / ((v.currentTime - oldtime) / 4)))
+                    drawpic()
+                })
+            })
+        })
+    })
+}
+
+function WaitForFrame() {
+    v.requestVideoFrameCallback(function () {
+        if (thisframe == WaitFrame) {
+            CalFrame()
+        } else {
+            thisframe++
+            WaitForFrame()
+        }
+    })
+}
+
 function DetectPlay() {
     console.log("PLAY")
     SetCanvas()
+    thisframe = 0
     FindVideo().requestVideoFrameCallback(drawpic)
+    // WaitForFrame()
 }
 
 function SetBGTran(Status) {
@@ -4507,7 +4605,7 @@ function SetBGTran(Status) {
         YTAPP.style = `background:var(--bg-color) !important;
         width: 100%;`
     }
-} CreateCanvas
+}
 
 function CheckVDO() {
     if (FindVideo().parentNode) {
@@ -4567,6 +4665,41 @@ EnaCanvas2 = false
 
 let drawing = false
 
+function drawOnePic() {
+    if (document.visibilityState == 'visible') {
+        Scale = 1
+        context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
+        // Scale = 0.9
+        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+        // Scale = 0.8
+        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+        // Scale = 0.7
+        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+        // Scale = 0.6
+        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+        // Scale = 0.55
+        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+
+
+        if (BlackMode == true) {
+            context2.drawImage(v, 0, 0, cw, ch);
+            frame = context2.getImageData(0, 0, cw, ch)
+            l = frame.data.length / 4
+            for (let i = 0; i < l; i++) {
+                frame.data[i * 4 + 3] = (frame.data[i * 4 + 0] * 10 +
+                    frame.data[i * 4 + 1] * 10 +
+                    frame.data[i * 4 + 2] * 10) / 10
+            }
+            context2.putImageData(frame, 0, 0)
+        }
+    }
+}
+
+let fps = 30,
+    calPerFrameTime = 1000 / fps
+
+
+
 function drawpic() {
     if (drawing == false) {
         drawing = true
@@ -4578,33 +4711,7 @@ function drawpic() {
                 drawing = false
                 console.log("CancelDraw")
             } else {
-                if (document.visibilityState == 'visible') {
-                    Scale = 1
-                    context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
-                    // Scale = 0.9
-                    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-                    // Scale = 0.8
-                    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-                    // Scale = 0.7
-                    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-                    // Scale = 0.6
-                    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-                    // Scale = 0.55
-                    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-
-
-                    if (BlackMode == true) {
-                        context2.drawImage(v, 0, 0, cw, ch);
-                        frame = context2.getImageData(0, 0, cw, ch)
-                        l = frame.data.length / 4
-                        for (let i = 0; i < l; i++) {
-                            frame.data[i * 4 + 3] = (frame.data[i * 4 + 0] * 10 +
-                                frame.data[i * 4 + 1] * 10 +
-                                frame.data[i * 4 + 2] * 10) / 10
-                        }
-                        context2.putImageData(frame, 0, 0)
-                    }
-                }
+                drawOnePic()
 
                 v.requestVideoFrameCallback(DrawApic)
             }
@@ -4651,7 +4758,7 @@ function CreateCanvas() {
         canvas.style.opacity = 1
     }, 0);
 
-    context = canvas.getContext('2d')
+    context = canvas.getContext('2d', { alpha: false })
 
     if (EnaCanvas2 == true) {
         canvas2 = document.createElement('canvas');
@@ -4684,7 +4791,11 @@ function RemoveCanvas() {
     Cloning = false
 
     if (CanvasSpawned == true) {
-        NotOverFlow.remove()
+        if (localStorage["nt-VDOBGT"] == 'true' && localStorage["nt-EnableButtonT"] == 'true' ) {
+            canvas.style.opacity = 0
+        } else {
+            NotOverFlow.remove()
+        }
         if (canvas2) {
             canvas2.remove()
         }

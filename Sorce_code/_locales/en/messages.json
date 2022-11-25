@@ -1,0 +1,32 @@
+{
+    "Donate": {
+        "message": "Donate"
+    },
+    "Join_my_discord": {
+        "message": "Join my discord"
+    },
+    "Extention_s_settings": {
+        "message": "Extention's settings"
+    },
+    "Enhancement": {
+        "message": "Enhancement"
+    },
+    "Import__Export_Style": {
+        "message": "Import / Export Style"
+    },
+    "Custom": {
+        "message": "Custom"
+    },
+    "Additional": {
+        "message": "Additional"
+    },
+    "Round_Edges": {
+        "message": "Round Edges"
+    },
+    "Color__Theme": {
+        "message": "Color/Theme"
+    },
+    "Borders__Shadows": {
+        "message": "Borders / Shadows"
+    }
+}

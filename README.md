@@ -1,6 +1,18 @@
+https://chrome.google.com/webstore/detail/youtube-style-customizer/dnjjchajjdnfbjhjclmilicgheglcopj?hl=en&authuser=0
+
 # Newtube (Customize youtube) changelog!
 
-## Version 3.1.3 (Current)
+## Version 3.2.0 (Current)
+
+- Fixed bugs!
+- Add can change quality of background video
+- New animation
+
+## Version 3.1.4
+
+- Fixed bugs!
+
+## Version 3.1.3
 
 - Fixed bugs!
 
