@@ -13,42 +13,8 @@ window.onerror =
     };
 
 function SetWhenUpdate() {
-
+    
 }
-
-var TargetLng = "th"
-
-function translate(Text) {
-    var Frame = document.createElement('iframe')
-    document.body.append(Frame)
-    Frame.src = "https://www.bing.com/translator/?from=en&to=" + TargetLng
-
-    Frame.style = `width:50%;
-    height:500px;
-    position:fixed;
-    z-index:10000;`
-
-    Frame.onload = function () {
-        console.log("Test")
-        function Thisfunc() {
-            var This = Frame.contentWindow.document.getElementById("tta_input_ta")
-            console.log(This)
-            if (This) {
-                This.value = Text
-                This.click()
-            } else {
-                setTimeout(() => {
-                    Thisfunc()
-                }, 1000);
-            }
-        }
-        Thisfunc()
-    }
-}
-
-setTimeout(() => {
-    // translate("Hello")
-}, 1000);
 
 ForcePre = [
     "(Low PC) Purple",
@@ -112,6 +78,698 @@ function styleloop() {
 }
 
 styleloop()
+
+var DeValue,
+CheckLeaver,
+CheckList
+
+function CreateCach() {
+
+    let DeBu = `width: -webkit-fill-available;
+    padding: 10px;
+    background: rgb(94 94 94 / 76%);
+    color: white;
+    border-radius: 10px;
+    transition: all 0.2s ease 0s;
+    margin-inline: 10px;
+    margin-block: 10px;
+    border: transparent;
+    border-bottom: 1px solid #ffffff6b;
+    box-shadow: 0px 0px 3px;`
+
+    if (localStorage["nt-RealtimeT"] == 'true') {
+        MODE = 'input'
+    } else {
+        MODE = 'change'
+    }
+
+    let BG = document.createElement("div")
+    BG.id = "NEWTUBEBG";
+    BG.className = "NEWTUBE"
+    BG.style = "width: 750px; height: 0px; position: fixed; top:56px; right: 0px; transition: all 0.5s; z-index: 2020; display: flex; flex-direction: row;";
+    document.body.appendChild(BG)
+
+    let LIST = document.createElement("div")
+    LIST.id = "NEWTUBELIST"
+    LIST.className = "NEWTUBE"
+    LIST.style = "width: 210px; height: 100%; display: flex; flex-direction: column;";
+    BG.appendChild(LIST)
+
+    let SetBg = document.createElement("body")
+    SetBg.id = "NEWTUBE";
+    SetBg.className = "NEWTUBE"
+    SetBg.style = "width: 550px; height: 100%;";
+    BG.appendChild(SetBg)
+
+    var Reset = document.createElement('button')
+    Reset.innerHTML = "Reset Extention (fix bugs)"
+    Reset.className = "Reset"
+    Reset.style = DeBu
+    Reset.onclick = function () {
+        localStorage.clear()
+        DOwithindexed(function () {
+            store.clear()
+            SetNull()
+            update()
+            RESETTUBE()
+        })
+        location.reload()
+    }
+    SetBg.appendChild(Reset)
+
+    //----------------------------------------------------------------------------------------------
+
+    THISPar = "💵 " + chrome.i18n.getMessage("Donate")
+
+    DonateFrame = createframe(`<p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://i.ibb.co/269h23M/2020021209494988264-logo-truemoneywallet-300x300.jpg" class="DONATEIMG"><lable class="DES">Wallet ID : AzDonate</lable></p>
+    <p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://i.ibb.co/4sCYzXK/index.jpg" class="DONATEIMG"><a id="HOVERLINK" href="https://www.paypal.com/signin?returnUri=https%3A%2F%2Fwww.paypal.com%2Fmyaccount%2Ftransfer%2Fhomepage%2Fexternal%2Fprofile%3FflowContextData%3DTmV7sH9Ip5x6ax_bhu-4ib7mr3qtJYLUST5ILgPTUCV-aPS5wiTHYReTyrjZUrzo6RnqrG_IGcMdzZxRSNMClpiXW_YUozCtGT_myuY-Iz482jS6LkbxXl-gkNRo--RFIFS5jtg954mBPuxa3P8N6dBFNsBMVJEOLK1-ZP-PxAwS6mdpbwpVFeEEuJwof9Nl2PE-NgFySGvPQWI_rjkTbugXS-O6HuRR3SRqTTe1SuhE25IMdYvBvUBK2y4zpVk2KbEVhQg63WzznD1emOkCq2orEG1bCTi0M4Txky3iSId11K7Xg8e_qpf4rjOaXEPDsIlw1IbKw3WAJRLdIHx0MJFLL0yfGjE7GzR42C0GeYLnods79sPkPJCqo2GjLZzLJ07epiRk2bv33AnwcLEwp4_eVm8TMwNFK-5JX_RZOd8AiOzq3_Q9hY_A19S&onboardData=%7B%22country.x%22%3A%22US%22%2C%22locale.x%22%3A%22en_US%22%2C%22intent%22%3A%22paypalme%22%2C%22redirect_url%22%3A%22https%253A%252F%252Fwww.paypal.com%252Fmyaccount%252Ftransfer%252Fhomepage%252Fexternal%252Fprofile%253FflowContextData%253DTmV7sH9Ip5x6ax_bhu-4ib7mr3qtJYLUST5ILgPTUCV-aPS5wiTHYReTyrjZUrzo6RnqrG_IGcMdzZxRSNMClpiXW_YUozCtGT_myuY-Iz482jS6LkbxXl-gkNRo--RFIFS5jtg954mBPuxa3P8N6dBFNsBMVJEOLK1-ZP-PxAwS6mdpbwpVFeEEuJwof9Nl2PE-NgFySGvPQWI_rjkTbugXS-O6HuRR3SRqTTe1SuhE25IMdYvBvUBK2y4zpVk2KbEVhQg63WzznD1emOkCq2orEG1bCTi0M4Txky3iSId11K7Xg8e_qpf4rjOaXEPDsIlw1IbKw3WAJRLdIHx0MJFLL0yfGjE7GzR42C0GeYLnods79sPkPJCqo2GjLZzLJ07epiRk2bv33AnwcLEwp4_eVm8TMwNFK-5JX_RZOd8AiOzq3_Q9hY_A19S%22%2C%22sendMoneyText%22%3A%22You%2520are%2520sending%2520Jakkrit%2520Kaewtong%22%7D" target="_blank" class="DES" >jakkrit_portraitist@hotmail.com</a></p>
+    <p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://theme.zdassets.com/theme_assets/948919/d80b722da9edc37805def78a512b90c5772434a6.png" class="DONATEIMG"><a id="HOVERLINK" href="https://streamlabs.com/gfirstg/tip" target="_blank" class="DES" >streamlabs (PayPal / VISA / mastercard / AMEX / DISCOVER)</a></p>`);
+
+    document.getElementById(THISPar).getElementsByTagName("label")[0].style = `
+    -webkit-text-stroke: black 1px;
+    text-shadow: 0px 0px 3px white;;
+    width: -webkit-fill-available;
+    font-size: 18px;
+    padding: 10px;
+    margin-inline: -10px;
+    border-radius: 10px;
+    color: black;
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    animation: glowing 20s linear infinite;
+    background-size: 400%;`
+
+    DonateFrame.style = `display: flex;
+    flex-direction: column;`
+
+    //----------------------------------------------------------------------------------------------
+
+    THISPar = "🎉 Join my discord 🎉"
+
+    createframe(`<p style="display: flex; align-items: center;"><img src="https://brandlogos.net/wp-content/uploads/2021/11/discord-logo.png" class="DONATEIMG"><a id="HOVERLINK" href="https://discord.gg/BgxvVqap4G" target="_blank" class="DES" >NEWTUBE</a></p>`)
+
+    //----------------------------------------------------------------------------------------------
+
+    THISPar = "⚙️ Extention's settings"
+
+    Frame = createMainframe()
+
+    createframe(`<label class="DES">Version : ` + Ver + `</label>`)
+
+    var Preset = document.createElement('button')
+    Preset.innerHTML = "Select Preset"
+    Preset.className = "Reset"
+    Preset.style = DeBu + `width: 100% !important;
+    margin-inline: 0px !important;
+    margin-block-start: 20px !important;`
+    Preset.onclick = function () {
+        PRESET()
+    }
+    Frame.appendChild(Preset)
+
+    createCheck("EnableButton", "Enable");
+
+    createCheck("Realtime", "Realtime Changing (lag when changing!)");
+
+    createCheck("ErrorCollect", "Error Detector");
+
+    var Chlog = document.createElement('button')
+    Chlog.innerHTML = "Changes log"
+    Chlog.className = "Reset"
+    Chlog.style = DeBu
+    Chlog.onclick = function () {
+        window.open(
+            'https://github.com/AzPepoze/Newtube',
+            '_blank'
+        )
+    }
+
+    SetBg.appendChild(Chlog)
+
+    var Rebug = document.createElement('button')
+    Rebug.innerHTML = "❗Report bugs/Issue❗"
+    Rebug.className = "Reset"
+    Rebug.style = DeBu + `background: rgb(135 51 51 / 76%);`
+    Rebug.onclick = function () {
+        window.open(
+            'https://discord.gg/seDYEmvPbP',
+            '_blank'
+        )
+    }
+
+    SetBg.appendChild(Rebug)
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "🎇 Enhancement"
+
+    createCheck("Scroll", "Auto transparent top bar");
+
+    createframe(`<label class="DES">Background Video</label>`)
+
+    createCheck("VDOBG", "Background Video<br>(NOT RECOMMEND FOR LOW END PC!)");
+
+    createTextBox("CanvasQua", "% (Background VDO) Quality", true)
+    createTextBox("NVDOB", `(Background VDO) Blur amount`)
+    createTextBox("NVDOC", `(Background VDO) Contrast`)
+    createTextBox("NVDOBGT", `(Background VDO) Brightness`)
+    createTextBox("NVDOT", `(Background VDO) Size`)
+
+    createframe(`<label class="DES">New Subtitles/Captions</label>`)
+
+    createCheck("NewSub", `New Subtitles/Captions`)
+
+    createColor("Subtitle", "Subtitles/Captions color")
+    createColor("CapBG", "Subtitles/Captions background color")
+
+    createTextBox("subWidth", `(Text) Width`)
+    createTextBox("subSpace", `(Text) Space by letters`)
+
+    createColor("subShaColor", `(Shadow) Color`)
+    createTextBox("subShaBlur", `(Shadow) Blur amount`)
+
+    createframe(`<label class="DES">Video controls panel</label>`,)
+
+    createCheck("ControlUnderVDO", `Move to under of video`)
+    createTextBox("MediaSpace", `Under video distance`)
+    createCheck("CenterMedia", "Move to center")
+    createCheck("BottomG", "remove background gradient")
+    createTextBox("MediaH", "Background height")
+
+    createframe(`<label class="DES">Pictue In Pictue (For stable pls use Opera browser)</label>`)
+
+    createCheck("AutoPIP", "Auto Pictue In Pictue mode (Pls click anywhere In page after you back to page) (Security problem) (I do my best T_T)")
+    createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode")
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "📜 Import / Export Style"
+
+    imexstyle = `width: 100%;
+    padding: 10px;
+    margin-block: 5px;
+    right: 0px;
+    top: 560px;
+    background: rgb(56 56 56);
+    color: white;
+    border-radius: 10px;
+    transition: all 0.5s ease 0s;
+    border: transparent;`
+
+    LocatePar = createMainframe()
+
+
+    createframe(`<textarea id="Export" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste NTubeCode here."></textarea>`)
+
+    var ExportTEXT = document.getElementById("Export")
+
+
+    var Import = document.createElement('button')
+    Import.innerHTML = "Import NTubeCode"
+    Import.className = "Reset"
+    Import.style = imexstyle
+
+    LocatePar.appendChild(Import)
+
+    var Export = document.createElement('button')
+    Export.innerHTML = "Export NTubeCode"
+    Export.className = "Reset"
+    Export.style = imexstyle
+
+    LocatePar.appendChild(Export)
+
+    var Export2 = document.createElement('button')
+    Export2.innerHTML = "Export Style as CSS"
+    Export2.className = "Reset"
+    Export2.style = imexstyle
+
+    LocatePar.appendChild(Export2)
+
+
+    Import.onclick = function () {
+        let save = ExportTEXT.value
+        ExportTEXT.value = "Please wait...(If it's take too long it might eror!)"
+        save.LoadNTubeCode()
+        ExportTEXT.value = "Successful."
+    }
+
+    Export.onclick = function () {
+        ExportTEXT.value = "Please wait..."
+        DOwithindexed(function () {
+            let get = store.get("BGIMG")
+            get.onsuccess = function (e) {
+                let arr = GenNTubeCode()
+                if (e.target.result == null) {
+                    arr["BGIMG"] = ""
+                } else {
+                    arr["BGIMG"] = e.target.result
+                }
+                gentext = JSON.stringify(arr).replace(/",/g, '",\n')
+                gentext = gentext.substring(0, 1) + '\n' + gentext.substring(1)
+                gentextL = gentext.length
+                gentext = gentext.substring(0, gentextL - 1) + '\n' + gentext.substring(gentextL - 1)
+                ExportTEXT.value = gentext
+            }
+        })
+    }
+
+    Export2.onclick = function () {
+        ExportTEXT.value = "Please wait..."
+        ExportTEXT.value = Collect_Style
+    }
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "📝 Custom CSS"
+
+    createCheck("EnaCUSCSS", "Enable Custom CSS")
+
+    createframe(`<textarea id="Custom_CSS" placeholder="Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
+
+    CusText = document.getElementById("Custom_CSS")
+
+    CusText.value = localStorage["nt-CUSTOM"]
+
+    CusText.addEventListener('change', function () {
+        localStorage["nt-CUSTOM"] = CusText.value
+        update()
+    })
+
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "⏫ Additional CSS"
+
+    createCheck("EnaADDCSS", "Enable Additional CSS")
+
+    createframe(`<textarea id="Additional_CSS" placeholder="Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
+
+    ADDTEXT = document.getElementById("Additional_CSS")
+
+    ADDTEXT.value = localStorage["nt-ADDCUSTOM"]
+
+    ADDTEXT.addEventListener('change', function () {
+        localStorage["nt-ADDCUSTOM"] = ADDTEXT.value
+        update()
+    })
+
+
+    //EDGE-------------------------------------------------------------------------------
+
+    THISPar = "⏹️ Round Edges"
+
+    createTextBox("Edge", "Round edges amount")
+
+    createTextBox("TimeEdge", "(UI in Thumbnail) Round edges amount")
+
+    createTextBox("PlayerEdge", "Round video player edges amount")
+
+    //theme-------------------------------------------------------------------------------
+
+    THISPar = "🏳️‍🌈 Color/Theme"
+
+    createColor("Theme", "1 Theme color")
+
+    createCheck("IconFill", `Logo theme sync`,true)
+
+    createColor("ThemeThr", "2 theme color")
+
+    createColor("ThemeFort", "3 theme color")
+
+    createColor("ThemeSnd", "Topbar & Search list color")
+
+    createColor("LeftBar", "Sidebar color")
+
+    createColor("Time-LineBG", "Time-line background color")
+
+    createColor("TimeLoaded", "Time-line loaded color")
+
+    createColor("Text", "Main text color")
+
+    createColor("NdText", "Second text color")
+
+    createColor("VDOTEXT", "Video controls panel text color")
+
+    createColor("TIMETEXT", "Thumbnails time text color")
+
+    createColor("MediaBG", "Video controls panel background color")
+
+    createColor("TimeBG", "Video preview time background color")
+
+    createColor("EndBG", "End of video chanel hover background color")
+
+
+    //Outline-------------------------------------------------------------------------------
+
+    THISPar = "🔳 Borders / Shadows"
+
+    createselect("OutOrSha",
+        `<option value="Out">Borders</option>
+	<option value="Sha">Shadows</option>
+	<option value="None">None</option>`,
+        "Borders or Shadows")
+
+    createTextBox("Border", "Borders/Shadows width")
+
+    createTextBox("PlayerBorder", "(Video controls panel) Borders/Shadows width")
+
+    createColor("OutSha", "Borders/Shadows color")
+
+    createCheck("TopOut", "Enable top_bar Borders/Shadows");
+
+    createCheck("TimeOut", "(Clip cover) enable time Borders/Shadows");
+
+    createCheck("PlayerOut", "(Video controls panel) enable Borders/Shadows");
+
+    createCheck("CapOut", "(Subtitles/Captions) enable Borders/Shadows");
+
+    createCheck("SubOut", "(Subscribe button) enable Borders/Shadows");
+
+    //Text-------------------------------------------------------------------------------
+
+    THISPar = "Text"
+
+    //BG-------------------------------------------------------------------------------
+
+    THISPar = "🎴 Background"
+
+    createColor("BG", " Change background/tint color")
+
+    createTextBox("BlurBGAM", "Background blur amount (0 = None)")
+
+    createCheck("API", "Use upload api (imgbb.com)");
+
+    var ChooseBG = createframe(`<lable class="DES">Background Image (Recommend to use URL)</lable>
+    <p><input id="ChooseBG" type="file" accept="image/*" > </p>
+    <p><label class="DES" style="display: flex; text-align: center; margin-block: 15px; flex-direction: column;">If your computer is slow. You should enable</br>"Use upload api" button for saving your computer. ♥♥♥</br>(If not please disable it for save saving internet. ♥♥♥)</label> </p>
+    <p><label class="DES" style="display: flex; text-align: center; margin-bottom: 30px;">(Thanks you imgbb.com for free api image upload! ♥)</label> </p>
+    <p><label class="DES">Enter url :</label><input id="IMGFORBG" class="TextBox" type="text" style="display: flex;"></p>
+    <p><lable class="DES" style="display: flex; text-align: center;" id="STATUS"></label></p>`)
+
+    ChooseBG.style = `display: flex; flex-direction: column;`
+
+    var IMGURL = document.getElementById("IMGFORBG")
+    IMGURL.style = `width:200px;  margin-bottom: 10px;`
+
+    IMGURL.addEventListener('change', function () {
+        ShowTexForIMG("Please wait...")
+        DOwithindexed(function () {
+            store.put(IMGURL.value, "BGIMG")
+            update()
+            applyIMG()
+            ShowTexForIMG("Successful.</br>(If an image didn't show up.Then the url can't access.)")
+            IMGURL.value = ``
+        })
+    })
+
+    var Par = document.createElement('p')
+    Par.style = "margin-block: 10px; width:100%;"
+    var ThisIMG = document.createElement('img')
+    ThisIMG.id = "BGIMG"
+    ThisIMG.style = `width:100%;`
+
+    ChooseBG.appendChild(Par)
+    Par.appendChild(ThisIMG)
+
+    var input = document.getElementById('ChooseBG');
+    input.style = "margin-block: 10px; padding:10px; color:white; border-radius:10px; background:rgb(37, 37, 37);"
+    input.setAttribute('Newtube', '')
+    input.onchange = function (evt) {
+        ShowTexForIMG("Please wait...")
+        var file = evt.target.files[0]
+        if (localStorage["nt-APIT"] == "true") {
+            if (request) {
+                request.abort();
+            }
+
+            ShowTexForIMG("Uploading...")
+
+            d = new Date();
+            body = new FormData();
+            body.append("image", evt.target.files[0]);
+            body.append("name", d.getTime());
+
+            request = new XMLHttpRequest();
+            request.open('POST', 'https://api.imgbb.com/1/upload?key=7a66c339da2a9aefedd8ad5e6c62e89f');
+
+            request.upload.addEventListener('progress', function (e) {
+                percent_completed = (e.loaded / e.total) * 100;
+                ShowTexForIMG("Uploading...(" + percent_completed.toFixed(2) + "%)");
+            });
+
+            request.addEventListener('load', function (e) {
+                serverSent = null
+                try {
+                    serverSent = JSON.parse(request.response)
+                } catch (error) {
+                    serverSent = JSON.parse(request.response.split("\n")[request.response.split("\n").length - 1])
+                }
+
+                if (serverSent["success"] == true) {
+                    console.log(serverSent)
+                    DOwithindexed(function () {
+                        store.put(serverSent["data"]["url"], "BGIMG")
+                        applyIMG()
+                        update()
+                        ShowTexForIMG("Successful.</br>(If an image not show yet please wait.)")
+                    })
+                } else {
+                    ShowTexForIMG("Eror!</br>Make sure your image not over 32MB then try again")
+                }
+                request = null
+                input.value = null
+            });
+            request.send(body);
+        } else {
+            const reader = new FileReader();
+            reader.addEventListener('loadend', () => {
+                DOwithindexed(function () {
+                    store.put(reader.result, "BGIMG")
+                    applyIMG()
+                    update()
+                    ShowTexForIMG("Successful.</br>(If an image not show yet please wait.)")
+                })
+            });
+            try {
+                reader.readAsDataURL(file);
+            } catch (e) {
+
+            }
+        }
+    }
+
+    let imgid = document.createElement('a')
+    imgid.className = "DES"
+    imgid.style = `white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;`
+    imgid.id = "Imgid"
+    imgid.target = "_blank"
+
+    ChooseBG.appendChild(imgid)
+
+
+    var RemoveBu = document.createElement('button')
+    RemoveBu.innerHTML = "Remove"
+    RemoveBu.className = "Reset"
+    RemoveBu.style = `margin-block-start: 10px;
+    color: #ffffff;
+    border-radius: 10px;
+    transition: all 0.2s;
+    background: #242424;
+    border: transparent;
+    padding: 5px;
+    padding-inline: 10px;`
+    RemoveBu.onclick = function () {
+        if (request) {
+            request.abort();
+        }
+        DOwithindexed(function () {
+            store.put("", "BGIMG")
+            applyIMG()
+            update()
+        })
+    }
+    ChooseBG.appendChild(RemoveBu)
+
+    CreateXY("X")
+    CreateXY("Y")
+    CreateXY("S")
+
+    createCheck("Flip", "Enable flip image")
+
+    createCheck("Repeat", "Enable repeat image")
+
+
+    //blur-------------------------------------------------------------------------------
+
+    THISPar = "🪟 Blur"
+
+    createTextBox("BlurAm", "Blur amount")
+
+    createselect("BlurWhat",
+        `<option value="all">All (Lag!)</option>
+	<option value="main">Main-things</option>
+	<option value="none">None</option>`,
+        "Things to blur")
+
+    createCheck("BlurSub", "(Caption/Subtitle) blur background")
+
+    createCheck("MediaBlur", "(Video controls panel) blur background")
+
+    //Animate-------------------------------------------------------------------------------
+
+    THISPar = "🚶 Animations"
+
+    createselect("ThumbHover",
+        `<option value="Slide">Slide</option>
+	<option value="Zoom">Zoom</option>
+    <option value="Slide&Zoom">Slide&Zoom</option>
+	<option value="none">None</option>`,
+        "Thumbnail hover style")
+
+    createTextBox("Zoom", 'Zoom amount (If you choose "Zoom")')
+
+    createCheck("TimeAni", "Enable hide video time when hover")
+
+    createCheck("Ptran", "Enable Page transition")
+
+    createCheck("ThumbAnim", "Enable thumbnail loaded animation")
+
+    //Hover-------------------------------------------------------------------------------
+
+    THISPar = "🖱️ Hover/Click color"
+
+    createTextBox("HoverBorder", "(Clip cover) hover Borders width")
+
+    createColor("ThumbHoverColor", "(Clip cover) Borders/Shadows on hover color")
+
+    createColor("ThumbClick", "(Clip cover) Borders/Shadows on click color")
+
+    createColor("Themehover", "Most hover background color")
+
+    createColor("Playlisthover", "(Playlist) hover background color")
+
+    createColor("HBT", "(Video controls panel) button hover color")
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "⚛️ Other settings"
+
+
+
+    var IconFrame = createframe(`<lable class="DES">Icon Image (Recommend to use URL)</lable>
+    <p><input id="IconFrame" type="file" accept="image/*" > </p>
+    <p class="DES">Enter url :  </label><input id="IconURL" class="TextBox" type="text" style="display: flex;"></p>
+    <p><lable class="DES" style="display: flex; text-align: center;" id="IconSTATUS"></label></p>`)
+
+    IconFrame.style = `display: flex; flex-direction: column;`
+
+    var IconURL = document.getElementById("IconURL")
+    IconURL.style = `width:200px;  margin-bottom: 10px;`
+
+    IconURL.addEventListener('change', function () {
+        ShowTexForICON("Please wait...")
+        DOwithindexed(function () {
+            store.put(IconURL.value, "IconURL")
+            UpdateIcon()
+            applyIcon()
+            ShowTexForICON("Successful.</br>(If an image didn't show up.Then the url can't access.)")
+            IconURL.value = ``
+        })
+    })
+
+    var Par = document.createElement('p')
+    Par.style = "margin-block: 10px; width:100%;"
+    var IconArea = document.createElement('canvas')
+    IconArea.id = "IconUrlSHOW"
+    IconArea.style = `background-repeat: no-repeat; background-position: center; background-size: contain; width:100%;`
+
+    IconFrame.appendChild(Par)
+    Par.appendChild(IconArea)
+
+    var Iconinput = document.getElementById('IconFrame');
+    Iconinput.setAttribute('Newtube', '')
+    Iconinput.style = "margin-block: 10px; padding:10px; color:white; border-radius:10px; background:rgb(37, 37, 37);"
+    Iconinput.onchange = function (evt) {
+        var file = evt.target.files[0]
+        const reader = new FileReader();
+        reader.addEventListener('loadend', () => {
+            ShowTexForICON("Please wait...")
+            DOwithindexed(function () {
+                store.put(reader.result, "IconURL")
+                applyIcon()
+                UpdateIcon()
+                ShowTexForICON("Successful.</br>(If an image not show yet,Your image might too large!)")
+            })
+        });
+        try {
+            reader.readAsDataURL(file);
+        } catch (e) {
+
+        }
+    }
+
+    Iconid = document.createElement('a')
+    Iconid.className = "DES"
+    Iconid.style = `white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;`
+    Iconid.id = "Iconid"
+    Iconid.target = "_blank"
+
+    IconFrame.appendChild(Iconid)
+
+
+    var ResetBu = document.createElement('button')
+    ResetBu.innerHTML = "Reset"
+    ResetBu.className = "Reset"
+    ResetBu.style = `margin-block-start: 10px;
+    color: #ffffff;
+    border-radius: 10px;
+    transition: all 0.2s;
+    background: #242424;
+    border: transparent;
+    padding: 5px;
+    padding-inline: 10px;`
+    ResetBu.onclick = function () {
+        DOwithindexed(function () {
+            store.put('https://www.youtube.com/s/desktop/6588612c/img/favicon.ico', "IconURL")
+            applyIcon()
+            UpdateIcon()
+        })
+    }
+    IconFrame.appendChild(ResetBu)
+
+    applyIcon()
+
+    createCheck("SwapRow", "(Video) Move to right row")
+
+    createCheck("CenterUD", "(Under Video) Move tittle to the center")
+
+    createCheck("CenterUDF", "(Fullscreen) Move tittle to the center")
+
+    createCheck("CenterTime", "(Clip cover) Move the time position to the center")
+
+    createTextBox("TimeH", "(Clip cover) time height")
+
+    createTextBox("ScWidth", "(Scrollbar) width")
+
+    createCheck("VBG", "(Video) remove background solid color (Theater mode)")
+
+    applyIMG()
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "🌠 Beta features!"
+
+    createframe(`<label class="DES">Maybe need to reload website</label>`)
+
+    createCheck("Visual", "Audio Visualizer")
+
+    createCheck("NewVDOanima", "New video animation (Volume up/down,Pause,Play)")
+}
 
 function waitForElmByID(selector) {
     return new Promise(resolve => {
@@ -258,6 +916,8 @@ function SetValueCheck2(Match, IFTRUE, IFFLASE) {
 }
 
 function SetValueCheck() {
+
+    SetValueCheck2("IconFill", ``,`:not([d="M27.9727 3.12324C27.6435 1.89323 26.6768 0.926623 25.4468 0.597366C23.2197 2.24288e-07 14.285 0 14.285 0C14.285 0 5.35042 2.24288e-07 3.12323 0.597366C1.89323 0.926623 0.926623 1.89323 0.597366 3.12324C2.24288e-07 5.35042 0 10 0 10C0 10 2.24288e-07 14.6496 0.597366 16.8768C0.926623 18.1068 1.89323 19.0734 3.12323 19.4026C5.35042 20 14.285 20 14.285 20C14.285 20 23.2197 20 25.4468 19.4026C26.6768 19.0734 27.6435 18.1068 27.9727 16.8768C28.5701 14.6496 28.5701 10 28.5701 10C28.5701 10 28.5677 5.35042 27.9727 3.12324Z"])`)
 
     SetValueCheck2("PlayerOut", `.ytp-gradient-bottom,`, ``)
 
@@ -426,6 +1086,11 @@ div.html5-video-player:not(.ytp-fullscreen) .ytp-chrome-bottom{
       padding-top: 50px !important;
 }
 
+div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .ytp-gradient-bottom,
+div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .ytp-chrome-bottom{
+      
+}
+
 div.html5-video-player:not(.ytp-fullscreen) .ytp-gradient-bottom,
 div.html5-video-player:not(.ytp-fullscreen) .ytp-chrome-bottom{
       overflow: hidden !important;
@@ -439,23 +1104,27 @@ div.html5-video-player:not(.ytp-fullscreen) .ytp-chrome-bottom{
       margin-left: 50% !important;
 }
 
-#player,
+#player:has(div.html5-video-player:not(.ytp-embed)),
 #player-theater-container:has(#player-container){
       margin-bottom:var(--Media-Space);
 }
 
-div[aria-live="polite"]{
+div.html5-video-player:not(.ytp-embed) div[aria-live="polite"]{
       top: unset !important;
       bottom: 100px;
 }
 
-div.html5-video-player:not(.ytp-fullscreen) .ytp-caption-window-container,
-div.html5-video-player:not(.ytp-fullscreen) .ytp-player-content,
-div.html5-video-player:not(.ytp-fullscreen) .ytp-cued-thumbnail-overlay{
+div.html5-video-player.ytp-embed{
+    overflow:hidden !important;
+}
+
+div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-caption-window-container,
+div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-player-content,
+div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-cued-thumbnail-overlay{
       height:calc(100% - var(--Media-Space)) !important;
 }
 
-div.html5-video-player:not(.ytp-fullscreen) .ytp-caption-window-bottom{
+div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode) .ytp-caption-window-bottom{
       margin-bottom: 0px !important;
 }
 
@@ -794,6 +1463,8 @@ function SetNull() {
     SetTo("AutoPIPT", true)
     SetTo("AutoEXPIPT", true)
 
+    SetTo("IconFillT", true)
+
     //Select------------------------
 
     SetTo("BlurWhatT", "none")
@@ -1009,7 +1680,6 @@ let NORMAL = `
 		margin-inline:10px;
 		color: white;
 		font-size: 15px;
-        width: -webkit-fill-available;
 	}
 
 	.Reset:hover
@@ -1078,7 +1748,7 @@ let NORMAL = `
 	}
 		
 	.CheckBox:checked{
-		background: #b32f2f;
+		background: #7f5db7;
 	}
 		
 	.CheckBox:after{
@@ -1250,7 +1920,7 @@ function update() {
     if (localStorage["nt-VDOBGT"] != 'true' || localStorage["nt-EnableButtonT"] != 'true') {
         if (VDOBG == true) {
             VDOBG = false
-            DisableBGBlur()
+            DisableBGBlur(true)
         }
     }
 
@@ -1630,7 +2300,8 @@ function update() {
                 #video-preview-container,
                 ytd-simple-menu-header-renderer,
                 .yt-spec-button-shape-next--mono.yt-spec-button-shape-next--tonal,
-                #description
+                #description,
+                #player
                 {
                     background: transparent !important;
                 }
@@ -1782,7 +2453,7 @@ function update() {
                     overflow: visible;
                 }
                 
-                .ytp-menuitem-icon path:not([fill="none"]),.ytd-thumbnail-overlay-hover-text-renderer path,.ytd-thumbnail-overlay-bottom-panel-renderer,#search-icon.ytd-searchbox ,svg path[fill="#FF0000"], svg [fill="#FF0000"], svg [fill="red"], svg [fill="#F00"] , button:not(.yt-share-target-renderer) path:not([fill="none"]), [role="button"] path, [role="option"]:not(.yt-third-party-share-target-section-renderer) path
+                .ytp-menuitem-icon path:not([fill="none"]),.ytd-thumbnail-overlay-hover-text-renderer path,.ytd-thumbnail-overlay-bottom-panel-renderer,#search-icon.ytd-searchbox ,svg path[fill="#FF0000"]${GetCodeC("IconFill")} , svg [fill="#FF0000"]${GetCodeC("IconFill")}, svg [fill="red"], svg [fill="#F00"] , button:not(.yt-share-target-renderer) path:not([fill="none"]), [role="button"] path, [role="option"]:not(.yt-third-party-share-target-section-renderer) path
                 {
                     fill: var(--theme) !important;
                 }
@@ -2083,7 +2754,7 @@ function update() {
                 }
               
                 div.ended-mode video,
-                div.unstarted-mode video.video-stream.html5-main-video{
+                div.unstarted-mode:not(.ytp-small-mode) video.video-stream.html5-main-video{
                     transform:scale(0.5);
                     opacity:0 !important;
                     background: black;
@@ -2126,18 +2797,42 @@ function update() {
                     display: flex !important;
                 }
 
-                html:has(div.html5-video-player.unstarted-mode) #secondary,
-                html:has(div.html5-video-player.unstarted-mode) #below,
-                html:has(div.html5-video-player.unstarted-mode) .ytp-gradient-bottom,
-                html:has(div.html5-video-player.unstarted-mode) .ytp-chrome-bottom
+                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary,
+                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #below,
+                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) div.ytp-gradient-bottom,
+                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) div.ytp-chrome-bottom
                 {
                     transition: all 0.5s !important;
                     opacity:0 !important;
                 }
 
+                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #below {
+                    transform: translate(0,100px);
+                }
+
                 #secondary,
                 #below{
                     transition: all 1.5s;
+                }
+
+                .ytp-spinner-circle{
+                    border-color: var(--theme) var(--theme) transparent !important;
+                }
+
+                div.gstl_50.sbdd_a{
+                    display: block !important;
+                    overflow:hidden;
+                    transition: all 0.4s ease;
+                }
+                
+                html:has(ytd-searchbox:not([has-focus])) div.gstl_50.sbdd_a{
+                        transform: translate(50px,0) !important;
+                        pointer-events: none;
+                        opacity:0;
+                }
+                
+                html:has(ytd-searchbox[has-focus]) div.gstl_50.sbdd_a{
+                        
                 }
                 
                 `+ BGBLURCODE + `
@@ -2179,7 +2874,23 @@ function update() {
                 `+ ADDCSS + `
 
                 `
-                NTstyle.textContent = NORMAL + Collect_Style + AfterNEWTUBE
+
+                var thisStyle = NORMAL + Collect_Style + AfterNEWTUBE
+
+                if (localStorage["nt-SwapRowT"] == "true") {
+                    thisStyle = thisStyle + `
+                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary{
+                        transform: translate(-100px,0);
+                    }`
+                } else {
+                    thisStyle = thisStyle + `
+                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary{
+                        transform: translate(100px,0);
+                    }`
+                }
+                
+
+                NTstyle.textContent = thisStyle
             };
         })
     }
@@ -2358,7 +3069,7 @@ function createList(Name, num) {
 
                 if (VDOBG == true) {
                     VDOBG = false
-                    DisableBGBlur()
+                    DisableBGBlur(true)
                 }
 
                 DOwithindexed(function () {
@@ -3370,7 +4081,7 @@ function CreateMENU() {
 
     //-------------------------------------------------------------------------------
 
-    THISPar = "🪄 Enhancement"
+    THISPar = "🎇 Enhancement"
 
     createCheck("Scroll", "Auto transparent top bar");
 
@@ -3535,9 +4246,11 @@ function CreateMENU() {
 
     //theme-------------------------------------------------------------------------------
 
-    THISPar = "🏳️‍🌈 Color/Theme"
+    THISPar = "🌈 Color/Theme"
 
     createColor("Theme", "1 Theme color")
+
+    createCheck("IconFill", `Logo theme sync`,true)
 
     createColor("ThemeThr", "2 theme color")
 
@@ -4195,7 +4908,7 @@ function SettoEnd() {
                 DOwithindexed(function () {
                     store.put(Ver, "Oldver")
 
-                    store.put(chrome.runtime.getURL('icon/64.png'), "IconURL")
+                    store.put("https://i.ibb.co/NmLxJBM/64.png", "IconURL")
                     UpdateIcon()
                     SetidxTo("BGIMG", "https://i.ibb.co/FYPBxC5/1647030608836.jpg")
                     SetNormalPre()
@@ -4639,6 +5352,7 @@ let drawing = false
 
 function drawOnePic() {
     if (document.visibilityState == 'visible') {
+        console.log("Draw")
         Scale = 1
         context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
         // Scale = 0.9
@@ -4710,22 +5424,24 @@ function CreateCanvas() {
     console.log("CreateCanvas")
 
     Cloning = true
-    canvas = document.createElement('canvas');
-    NotOverFlow = document.createElement('div')
-    YTAPP.append(NotOverFlow)
-    NotOverFlow.append(canvas)
-    NotOverFlow.style = `width: 100%;
-            height: 100%;
-            top: 0px;
-            position: absolute;
-            object-position: center;
-            overflow: hidden;
-            z-index: -1;
-            }`
-    canvas.id = "NewtubeBlurBG"
 
-    canvas.style.opacity = 0
+    if (!NotOverFlow) {
+        canvas = document.createElement('canvas');
+        NotOverFlow = document.createElement('div')
+        YTAPP.append(NotOverFlow)
+        NotOverFlow.append(canvas)
+        NotOverFlow.style = `width: 100%;
+                height: 100%;
+                top: 0px;
+                position: absolute;
+                object-position: center;
+                overflow: hidden;
+                z-index: -1;
+                }`
+        canvas.id = "NewtubeBlurBG"
 
+        canvas.style.opacity = 0
+    }
     setTimeout(() => {
         canvas.style.opacity = 1
     }, 0);
@@ -4758,15 +5474,16 @@ function CreateCanvas() {
     }
 }
 
-function RemoveCanvas() {
+function RemoveCanvas(Force) {
     console.log("Remove")
     Cloning = false
 
     if (CanvasSpawned == true) {
-        if (localStorage["nt-VDOBGT"] == 'true' && localStorage["nt-EnableButtonT"] == 'true' ) {
+        if (localStorage["nt-VDOBGT"] == 'true' && localStorage["nt-EnableButtonT"] == 'true' && !Force) {
             canvas.style.opacity = 0
         } else {
             NotOverFlow.remove()
+            NotOverFlow = null
         }
         if (canvas2) {
             canvas2.remove()
@@ -4797,16 +5514,14 @@ function EnableBGBlur() {
     console.log("EnaVDOBG")
     Cloning = false
 
-    if (document.getElementById("NewtubeBlurBG") == null) {
-        CheckVDOSTATUS()
-    }
+    CheckVDOSTATUS()
 
     window.addEventListener('yt-page-data-updated', CheckVDOSTATUS)
 }
 
-function DisableBGBlur() {
+function DisableBGBlur(Force) {
     console.log("DisaVDOBG")
-    RemoveCanvas()
+    RemoveCanvas(Force)
 
     window.removeEventListener('yt-page-data-updated', CheckVDOSTATUS)
     VDOChangeEvent.disconnect()
