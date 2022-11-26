@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Youtube Style Customizer (Newtube)",
+    "name": "Newtube (Youtube Style Customizer)",
     "version": "3.2.0",
     "description": "Customize your Youtube website with a lot customizable.",
     "default_locale": "en",

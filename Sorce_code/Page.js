@@ -1893,7 +1893,7 @@ function update() {
                 ytd-playlist-panel-video-renderer,
                 ytd-menu-renderer
                 {
-                    transition: all .2s;
+                    transition: all .2s !important;
                 }
                 
                 .ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-top, .ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-bottom
@@ -2126,10 +2126,10 @@ function update() {
                     display: flex !important;
                 }
 
-                html:has(div.unstarted-mode video.video-stream.html5-main-video) #secondary,
-                html:has(div.unstarted-mode video.video-stream.html5-main-video) #below,
-                html:has(div.unstarted-mode video.video-stream.html5-main-video) .ytp-gradient-bottom,
-                html:has(div.unstarted-mode video.video-stream.html5-main-video) .ytp-chrome-bottom
+                html:has(div.html5-video-player.unstarted-mode) #secondary,
+                html:has(div.html5-video-player.unstarted-mode) #below,
+                html:has(div.html5-video-player.unstarted-mode) .ytp-gradient-bottom,
+                html:has(div.html5-video-player.unstarted-mode) .ytp-chrome-bottom
                 {
                     transition: all 0.5s !important;
                     opacity:0 !important;
@@ -2137,7 +2137,7 @@ function update() {
 
                 #secondary,
                 #below{
-                    transition: all 3s;
+                    transition: all 1.5s;
                 }
                 
                 `+ BGBLURCODE + `
@@ -3183,34 +3183,6 @@ function GenNTubeCode() {
     return arrdata
 }
 
-function ChTitan(inht, Size) {
-    let ThisText = document.createElement('label')
-    if (Size == null) {
-        Size = 20
-    }
-    ThisText.style = `color:white;
-    margin-inline-start:20px;
-    margin-block:20px;
-    font-size: `+ Size + `px;`
-    ThisText.className = "BIGNTUBET"
-    ThisText.innerHTML = inht
-    ChangeslogMain.appendChild(ThisText)
-}
-
-function ChTiny(inht, Size) {
-    let ThisText = document.createElement('label')
-    if (Size == null) {
-        Size = 15
-    }
-    ThisText.style = `color:white;
-    margin-inline-start:40px;
-    margin-block:5px;
-    font-size: `+ Size + `px;`
-    ThisText.className = "NTUBET"
-    ThisText.innerHTML = inht
-    ChangeslogMain.appendChild(ThisText)
-}
-
 let v
 
 function setV() {
@@ -3406,7 +3378,7 @@ function CreateMENU() {
 
     createCheck("VDOBG", "Background Video<br>(NOT RECOMMEND FOR LOW END PC!)");
 
-    createTextBox("CanvasQua", "% (Background VDO) Quality")
+    createTextBox("CanvasQua", "% (Background VDO) Quality", true)
     createTextBox("NVDOB", `(Background VDO) Blur amount`)
     createTextBox("NVDOC", `(Background VDO) Contrast`)
     createTextBox("NVDOBGT", `(Background VDO) Brightness`)
@@ -3422,21 +3394,21 @@ function CreateMENU() {
     createTextBox("subWidth", `(Text) Width`)
     createTextBox("subSpace", `(Text) Space by letters`)
 
-    createColor("subShaColor", `(Shadow) Color`, true)
+    createColor("subShaColor", `(Shadow) Color`)
     createTextBox("subShaBlur", `(Shadow) Blur amount`)
 
     createframe(`<label class="DES">Video controls panel</label>`,)
 
-    createCheck("ControlUnderVDO", `Move to under of video`, true)
-    createTextBox("MediaSpace", `Under video distance`, true)
+    createCheck("ControlUnderVDO", `Move to under of video`)
+    createTextBox("MediaSpace", `Under video distance`)
     createCheck("CenterMedia", "Move to center")
     createCheck("BottomG", "remove background gradient")
     createTextBox("MediaH", "Background height")
 
     createframe(`<label class="DES">Pictue In Pictue (For stable pls use Opera browser)</label>`)
 
-    createCheck("AutoPIP", "Auto Pictue In Pictue mode (Pls click anywhere In page after you back to page) (Security problem) (I do my best T_T)", true)
-    createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode", true)
+    createCheck("AutoPIP", "Auto Pictue In Pictue mode (Pls click anywhere In page after you back to page) (Security problem) (I do my best T_T)")
+    createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode")
 
     //-------------------------------------------------------------------------------
 
