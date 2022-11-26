@@ -462,7 +462,7 @@ function CreateCach() {
     <p><input id="ChooseBG" type="file" accept="image/*" > </p>
     <p><label class="DES" style="display: flex; text-align: center; margin-block: 15px; flex-direction: column;">If your computer is slow. You should enable</br>"Use upload api" button for saving your computer. ♥♥♥</br>(If not please disable it for save saving internet. ♥♥♥)</label> </p>
     <p><label class="DES" style="display: flex; text-align: center; margin-bottom: 30px;">(Thanks you imgbb.com for free api image upload! ♥)</label> </p>
-    <p><label class="DES">Enter url :</label><input id="IMGFORBG" class="TextBox" type="text" style="display: flex;"></p>
+    <p><label class="DES">Enter URL :</label><input id="IMGFORBG" class="TextBox" type="text" style="display: flex;"></p>
     <p><lable class="DES" style="display: flex; text-align: center;" id="STATUS"></label></p>`)
 
     ChooseBG.style = `display: flex; flex-direction: column;`
@@ -476,7 +476,7 @@ function CreateCach() {
             store.put(IMGURL.value, "BGIMG")
             update()
             applyIMG()
-            ShowTexForIMG("Successful.</br>(If an image didn't show up.Then the url can't access.)")
+            ShowTexForIMG("Successful.</br>(If an image didn't show up.Then the URL can't access.)")
             IMGURL.value = ``
         })
     })
@@ -660,7 +660,7 @@ function CreateCach() {
 
     var IconFrame = createframe(`<lable class="DES">Icon Image (Recommend to use URL)</lable>
     <p><input id="IconFrame" type="file" accept="image/*" > </p>
-    <p class="DES">Enter url :  </label><input id="IconURL" class="TextBox" type="text" style="display: flex;"></p>
+    <p class="DES">Enter URL :  </label><input id="IconURL" class="TextBox" type="text" style="display: flex;"></p>
     <p><lable class="DES" style="display: flex; text-align: center;" id="IconSTATUS"></label></p>`)
 
     IconFrame.style = `display: flex; flex-direction: column;`
@@ -674,7 +674,7 @@ function CreateCach() {
             store.put(IconURL.value, "IconURL")
             UpdateIcon()
             applyIcon()
-            ShowTexForICON("Successful.</br>(If an image didn't show up.Then the url can't access.)")
+            ShowTexForICON("Successful.</br>(If an image didn't show up.Then the URL can't access.)")
             IconURL.value = ``
         })
     })
@@ -4118,7 +4118,7 @@ function CreateMENU() {
 
     createframe(`<label class="DES">Pictue In Pictue (For stable pls use Opera browser)</label>`)
 
-    createCheck("AutoPIP", "Auto Pictue In Pictue mode (Pls click anywhere In page after you back to page) (Security problem) (I do my best T_T)")
+    createCheck("AutoPIP", "Auto Pictue In Pictue mode<br>(Pls click anywhere In page after you back to page)<br>(Security problem) (I do my best T_T)")
     createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode")
 
     //-------------------------------------------------------------------------------
@@ -4323,7 +4323,7 @@ function CreateMENU() {
     <p><input id="ChooseBG" type="file" accept="image/*" > </p>
     <p><label class="DES" style="display: flex; text-align: center; margin-block: 15px; flex-direction: column;">If your computer is slow. You should enable</br>"Use upload api" button for saving your computer. ♥♥♥</br>(If not please disable it for save saving internet. ♥♥♥)</label> </p>
     <p><label class="DES" style="display: flex; text-align: center; margin-bottom: 30px;">(Thanks you imgbb.com for free api image upload! ♥)</label> </p>
-    <p><label class="DES">Enter url :</label><input id="IMGFORBG" class="TextBox" type="text" style="display: flex;"></p>
+    <p><label class="DES">Enter URL :</label><input id="IMGFORBG" class="TextBox" type="text" style="display: flex;"></p>
     <p><lable class="DES" style="display: flex; text-align: center;" id="STATUS"></label></p>`)
 
     ChooseBG.style = `display: flex; flex-direction: column;`
@@ -4337,7 +4337,7 @@ function CreateMENU() {
             store.put(IMGURL.value, "BGIMG")
             update()
             applyIMG()
-            ShowTexForIMG("Successful.</br>(If an image didn't show up.Then the url can't access.)")
+            ShowTexForIMG("Successful.</br>(If an image didn't show up.Then the URL can't access.)")
             IMGURL.value = ``
         })
     })
@@ -4521,7 +4521,7 @@ function CreateMENU() {
 
     var IconFrame = createframe(`<lable class="DES">Icon Image (Recommend to use URL)</lable>
     <p><input id="IconFrame" type="file" accept="image/*" > </p>
-    <p class="DES">Enter url :  </label><input id="IconURL" class="TextBox" type="text" style="display: flex;"></p>
+    <p class="DES">Enter URL :  </label><input id="IconURL" class="TextBox" type="text" style="display: flex;"></p>
     <p><lable class="DES" style="display: flex; text-align: center;" id="IconSTATUS"></label></p>`)
 
     IconFrame.style = `display: flex; flex-direction: column;`
@@ -4535,7 +4535,7 @@ function CreateMENU() {
             store.put(IconURL.value, "IconURL")
             UpdateIcon()
             applyIcon()
-            ShowTexForICON("Successful.</br>(If an image didn't show up.Then the url can't access.)")
+            ShowTexForICON("Successful.</br>(If an image didn't show up.Then the URL can't access.)")
             IconURL.value = ``
         })
     })

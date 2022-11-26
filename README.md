@@ -2,7 +2,22 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.2.0 (Current)
+## Version 3.2.5 (Current)
+
+- Fixed bugs!
+- Add animation
+- change some UI color
+
+## Version 3.2.2
+
+- Fixed bugs!
+- Restore logo theme sync
+
+## Version 3.2.1
+
+- Fixed bugs!
+
+## Version 3.2.0
 
 - Fixed bugs!
 - Add can change quality of background video
