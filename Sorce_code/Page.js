@@ -1020,7 +1020,7 @@ function SetValueCheck() {
         transition: background .2s;
     }`, ``)
 
-    SetValueCheck2("Ptran", `ytd-page-manager:has(div.html5-video-player:not(.ytp-fullscreen)){
+    SetValueCheck2("Ptran", `ytd-page-manager:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode)){
         transition: all 0.5s;
     }`, ``)
 
@@ -1074,7 +1074,7 @@ function SetValueCheck() {
       height:100%;
 }
 
-video {
+div.html5-video-player:not(.ytp-fullscreen) video {
     position: unset !important;
 }
 
@@ -1128,7 +1128,7 @@ div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode) .ytp-caption-wi
       margin-bottom: 0px !important;
 }
 
-#player-theater-container video{
+#player-theater-container div.html5-video-player:not(.ytp-fullscreen) video{
       height:100% !important;
       width:auto !important;
 }
@@ -2221,6 +2221,10 @@ function update() {
                     filter: blur(` + localStorage["nt-NVDOB"] + `px) contrast(` + localStorage["nt-NVDOC"] + `) brightness(` + localStorage["nt-NVDOBGT"] + `);
                     transform: scale(` + localStorage["nt-NVDOT"] + `);
                 }
+
+                html:has(div.html5-video-player.ytp-fullscreen) #NewtubeBlurBG {
+                    display: none;
+                }
                 
                 #thumbnail:hover > #hover-overlays
                 {
@@ -2750,7 +2754,7 @@ function update() {
                         border-radius: var(--theme-radius-big) var(--theme-radius-big) 0px 0px !important;
                 }
                 
-                video{
+                div.html5-video-player:not(.ytp-fullscreen) video{
                     transition: all 1s ,background 0.1s;
                     top: 0px !important
                 }
@@ -2767,7 +2771,7 @@ function update() {
                     border-radius:10px !important;
                 }
               
-                div.html5-video-player{
+                div.html5-video-player:not(.ytp-fullscreen){
                     background:transparent !important;
                 }
               
