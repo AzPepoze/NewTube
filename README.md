@@ -2,7 +2,11 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.2.7 (Current)
+## Version 3.2.8 (Current)
+
+- Fixed bugs!
+
+## Version 3.2.7
 
 - Fixed bugs!
 

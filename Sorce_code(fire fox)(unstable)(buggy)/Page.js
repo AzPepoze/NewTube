@@ -2,11 +2,6 @@
 
 Ver = chrome.runtime.getManifest().version
 
-var PreloadImg = new Image
-PreloadImg.onload = function () {
-    SetGlobalBGImage(PreloadImg.src)
-}
-
 window.onerror =
     function (msg, source, lineNo, columnNo, error) {
         if (localStorage["nt-ErrorCollectT"] == true) {
@@ -18,7 +13,7 @@ window.onerror =
     };
 
 function SetWhenUpdate() {
-
+    
 }
 
 ForcePre = [
@@ -46,7 +41,7 @@ function SetNormalPre() {
     SetidxTo("PRESET(SUPER LOW PC) (CSS) Potato machine (less blur)", JSON.stringify(["VDOBGT", "false", "EnaCUSCSST", 'true', "CUSTOM", ":root {\n    --blur-amount: 10px;\n    --theme: red;\n    --playlist-bg: rgba(255, 0, 0, 0.1);\n    --text-color: #FFF;\n    --nd-text-color: #7D7D7D;\n    --border-width: 1px;\n    --player-bg-border-width: 1px;\n    --border-color: rgba(0, 0, 0, 0);\n    --border-hover-color: red;\n    --border-click-color: #0FF;\n    --bg-color: #000;\n    --in-player-bg-color: rgba(0, 0, 0, 0.5);\n    --top-bar-and-search-background: rgba(0, 0, 0, 0.507);\n    --things-end-on-video: rgba(66, 66, 66, 0.507);\n    --hover-time-background: rgba(0, 0, 0, 0.425);\n    --search-background-hover: rgba(255, 0, 0, 0.5);\n    --theme-radius: 10px;\n    --theme-time-radius: 10px;\n    --theme-radius-big: 20px;\n    --border-minus: calc(var(--border-width) * -1);\n    --bg-border-minus: calc(var(--player-bg-border-width) * -1)\n}\n\nhtml:not(.style-scope),\n:not(.style-scope),\nhtml:not(.style-scope) {\n    --yt-spec-brand-background-primary: var(--top-bar-and-search-background) !important;\n    --yt-spec-brand-background-solid: var(--bg-color) !important;\n    --yt-spec-general-background-a: var(--bg-color) !important;\n    --yt-spec-call-to-action: var(--theme) !important;\n    --yt-spec-badge-chip-background: var(--playlist-bg) !important;\n    --yt-spec-text-primary: var(--text-color) !important;\n    --yt-spec-text-secondary: var(--nd-text-color) !important;\n    --yt-spec-brand-button-background: var(--theme) !important;\n    --yt-spec-static-brand-red: var(--theme) !important;\n    --yt-spec-brand-icon-inactive: var(--theme) !important\n}\n\n#tooltip.tp-yt-paper-tooltip {\n    background-color: var(--bg-color) !important\n}\n\nbody::-webkit-scrollbar,\n.playlist-items.ytd-playlist-panel-renderer::-webkit-scrollbar,\n#guide-inner-content.ytd-app:hover::-webkit-scrollbar {\n    width: 11px !important\n}\n\n.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title {\n    display: block !important;\n    background-color: var(--hover-time-background) !important\n}\n\nytd-live-chat-frame {\n    transition: all .2s cubic-bezier(0, 1, 1, 1) !important\n}\n\n.sbdd_b,\n#container.style-scope.ytd-masthead,\nytd-multi-page-menu-renderer,\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n#chips-wrapper.ytd-feed-filter-chip-bar-renderer,\n.iv-drawer,\n#card.ytd-miniplayer,\nytd-miniplayer,\n.ytp-bezel,\n.ytp-caption-segment,\n.ytp-bezel-text {\n    backdrop-filter: blur(var(--blur-amount)) !important\n}\n\n.ytp-ce-expanding-overlay-background,\n.ytp-ce-playlist-count {\n    background: var(--things-end-on-video) !important\n}\n\n.sbdd_b,\n#scrim,\ntp-yt-iron-overlay-backdrop {\n    background: var(--top-bar-and-search-background) !important\n}\n\nytd-thumbnail-overlay-hover-text-renderer {\n    background-color: var(--top-bar-and-search-background) !important\n}\n\n.sbfl_b,\n.sbsb_a,\n#container.style-scope.ytd-masthead {\n    background: transparent !important\n}\n\n.sbsb_d,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:hover,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:focus,\n.ytp-menuitem:not([aria-disabled=true]):hover {\n    background: var(--search-background-hover) !important;\n    transition: all .2s cubic-bezier(0.1, 0.7, 1, 1) !important\n}\n\n.gsfs,\n.ytp-ce-channel-metadata,\n.ytp-cards-teaser .ytp-cards-teaser-text,\n.ytp-panel-menu,\n.ytp-ce-website-title,\n.ytp-ce-merchandise-title {\n    color: var(--text-color) !important\n}\n\n#player,\nytd-multi-page-menu-renderer {\n    border-radius: var(--theme-radius-big) !important\n}\n\na.thumbnail>.ytcd-basic-item-large-image,\nytcp-thumbnail-with-title,\nytd-playlist-thumbnail,\nytd-thumbnail,\n#thumbnail,\n.thumbnail-container.ytd-notification-renderer,\n.sbdd_b,\n.ytp-ce-video,\n.ytp-ce-playlist,\n[aria-live=\"polite\"],\n.ytp-tooltip-bg,\n.ytp-tooltip-text.ytp-tooltip-text-no-title,\n.branding-img.iv-click-target,\n.branding-context-container-inner,\nytd-thumbnail-overlay-bottom-panel-renderer,\n.ytp-progress-list,\n.ytp-play-progress.ytp-swatch-background-color,\n.ytp-load-progress,\n.ytp-hover-progress.ytp-hover-progress-light,\n.ytp-gradient-bottom,\n.style-scope.ytd-subscribe-button-renderer,\n#container.ytd-playlist-panel-renderer,\n.header.ytd-playlist-panel-renderer,\nytd-button-renderer.style-suggestive[is-paper-button] tp-yt-paper-button.ytd-button-renderer,\nytd-live-chat-frame,\n.ytp-ce-playlist-count,\n.ytp-ce-expanding-overlay-background,\n.ytp-popup.ytp-settings-menu,\n.ytp-sb-subscribe,\n.ytp-sb-unsubscribe,\n.iv-drawer,\n.iv-card,\n.iv-card a.iv-click-target,\n.ytp-cards-teaser-box,\n.miniplayer.ytd-miniplayer,\n.ytp-popup,\n.badge.ytd-badge-supported-renderer,\n.ytp-ce-website .ytp-ce-expanding-image,\n.ytp-ce-merchandise .ytp-ce-expanding-image,\n.ytp-flyout-cta .ytp-flyout-cta-body,\n#ytp-ad-image,\n.ytp-ad-preview-container,\n.ytp-ad-message-container,\n#guide-content,\n.sbsb_d,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer,\n#masthead,\n#search-icon-legacy,\n.ytp-ad-skip-button.ytp-button,\n.ytp-flyout-cta .ytp-flyout-cta-icon,\n#banner>img,\n#icon>img,\n#action,\n.ytp-cards-teaser,\n.ytp-ce-video-duration,\n.ytp-show-tiles .ytp-videowall-still,\n.ytp-videowall-still-info-content,\n.ytp-videowall-still-listlabel-mix.ytp-videowall-still-listlabel,\n.style-scope.ytd-popup-container,\n.style-scope.ytd-miniplayer,\n#action-companion-ad-info-button.ytd-action-companion-ad-renderer,\n.ytp-flyout-cta .ytp-flyout-cta-action-button,\n.ytp-autonav-endscreen-upnext-thumbnail,\n.ytp-autonav-endscreen-upnext-button,\nytd-playlist-panel-video-renderer,\ntp-yt-paper-item.ytd-menu-service-item-renderer,\nytd-menu-service-item-renderer[use-icons],\n.ytp-ad-overlay-image,\n.ytp-ad-button-icon,\n.ytp-ad-overlay-close-button,\n.ytp-ad-text-overlay,\n.ytp-ad-button-icon,\n.ytp-ad-button-icon,\n.html5-video-player .caption-visual-line .ytp-caption-segment:last-child,\n#media-container.ytd-display-ad-renderer,\nytd-display-ad-renderer[layout=display-ad-layout-top-landscape-image] #media-badge.ytd-display-ad-renderer,\n#chips-wrapper.ytd-feed-filter-chip-bar-renderer,\nytd-mini-guide-entry-renderer {\n    border-radius: var(--theme-radius) !important\n}\n\na.thumbnail>.ytcd-basic-item-large-image,\nytcp-thumbnail-with-title,\nytd-playlist-thumbnail,\nytd-thumbnail,\n#thumbnail,\n.thumbnail-container.ytd-notification-renderer,\n#avatar,\n#author-thumbnail.ytd-comment-simplebox-renderer,\n.style-scope.ytd-comment-renderer.no-transition,\n#player,\n.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title,\n#container.ytd-playlist-panel-renderer,\nytd-live-chat-frame,\nytd-thumbnail-overlay-side-panel-renderer,\nytd-thumbnail-overlay-bottom-panel-renderer,\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n.iv-drawer,\n.ytp-cards-teaser-box,\n.miniplayer.ytd-miniplayer,\n.ytp-flyout-cta .ytp-flyout-cta-body,\n#ytp-ad-image,\n.ytp-ad-preview-container,\n.ytp-ad-message-container,\n#guide-content,\n.ytp-ad-skip-button.ytp-button,\n#banner>img,\n#icon>img,\n#action,\n.ytp-show-tiles .ytp-videowall-still,\nyt-confirm-dialog-renderer[dialog][dialog][dialog],\n.ytp-ce-element.ytp-ce-element-show,\n#contentWrapper.tp-yt-iron-dropdown>* {\n    border-collapse: separate !important;\n    overflow: hidden !important;\n    box-shadow: var(--border-minus) 0 var(--border-color), 0 var(--border-width) var(--border-color), var(--border-width) 0 var(--border-color), 0 var(--border-minus) var(--border-color) !important\n}\n\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n.ytp-tooltip-bg {\n    box-shadow: var(--player-bg-border-width) 0 var(--border-color), 0 var(--bg-border-minus) var(--border-color), var(--bg-border-minus) 0 var(--border-color), 0 var(--player-bg-border-width) var(--border-color) !important\n}\n\n#text.ytd-channel-name,\nyt-button-renderer.yt-formatted-string.yt-button-renderer,\npaper-ripple,\na.yt-simple-endpoint.yt-formatted-string,\n.style-scope.ytd-menu-renderer.force-icon-button.style-default-active,\n.badge-style-type-live-now.ytd-badge-supported-renderer,\n.badge-style-type-starting-soon.ytd-badge-supported-renderer {\n    border-color: var(--theme) !important;\n    color: var(--theme) !important\n}\n\npaper-ripple,\n.ytp-swatch-color,\na.ytp-ce-link,\nyt-icon.ytd-compact-link-renderer,\nyt-icon.ytd-toggle-theme-compact-link-renderer {\n    border-radius: var(--theme-radius) !important;\n    color: var(--theme) !important\n}\n\n.ytp-swatch-background-color,\n.ytp-settings-button.ytp-hd-quality-badge:after,\n.ytp-chrome-controls .ytp-button[aria-pressed]:after,\n.ytp-sb-subscribe,\na.ytp-sb-subscribe {\n    background-color: var(--theme) !important\n}\n\nytd-thumbnail-overlay-time-status-renderer,\nytd-thumbnail-overlay-side-panel-renderer,\nytd-thumbnail-overlay-toggle-button-renderer,\n.iv-branding-active .branding-context-container-inner,\n.ytp-ce-video-duration {\n    border-radius: var(--theme-time-radius) !important;\n    background-color: var(--hover-time-background) !important\n}\n\na.yt-simple-endpoint.yt-formatted-string::selection,\nspan::selection,\nyt-formatted-string::selection,\n.ytp-menuitem[aria-checked=true] .ytp-menuitem-toggle-checkbox,\n.ytp-volume-slider-handle,\n.ytp-volume-slider-handle:before {\n    background: var(--theme) !important\n}\n\n#container.ytd-searchbox,\n.yt-ui-ellipsis,\n.ytp-tooltip.ytp-preview:not(.ytp-text-detail),\n#contentContainer,\n.ytp-videowall-still-info-duration {\n    background-color: transparent !important;\n    border-color: transparent !important\n}\n\nytd-playlist-thumbnail,\nytd-thumbnail,\nytd-compact-playlist-renderer,\nytd-compact-video-renderer,\nytd-compact-radio-renderer,\nytd-compact-playlist-renderer>div>div>div>a,\nytd-compact-video-renderer>div>div>div>a,\nytd-compact-radio-renderer>div>div>div>a,\nytd-thumbnail.ytd-rich-grid-media,\nytd-thumbnail.ytd-rich-grid-media>a,\n#button.ytd-menu-renderer.yt-icon.ytd-menu-renderer {\n    transition: all .2s cubic-bezier(0.1, 0.5, 1, 1) !important\n}\n\nytd-thumbnail-overlay-toggle-button-renderer {\n    background-color: transparent\n}\n\nytd-compact-playlist-renderer:hover>div>ytd-playlist-thumbnail,\nytd-compact-video-renderer:hover>div>ytd-thumbnail,\nytd-compact-radio-renderer:hover>div>ytd-thumbnail {\n    box-shadow: var(--border-minus) 0 var(--border-hover-color), 0 var(--border-width) var(--border-hover-color), var(--border-width) 0 var(--border-hover-color), 0 var(--border-minus) var(--border-hover-color) !important\n}\n\nytd-thumbnail.ytd-rich-grid-media:hover {\n    margin-block-start: -15px !important;\n    margin-block-end: 15px !important;\n    box-shadow: var(--border-minus) 0 var(--border-hover-color), 0 var(--border-width) var(--border-hover-color), var(--border-width) 0 var(--border-hover-color), 0 var(--border-minus) var(--border-hover-color) !important\n}\n\nytd-thumbnail.ytd-rich-grid-media:active {\n    box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important\n}\n\nytd-compact-playlist-renderer:hover,\nytd-compact-video-renderer:hover,\nytd-compact-radio-renderer:hover {\n    margin-inline-start: -15px !important\n}\n\nytd-compact-playlist-renderer:hover>div>div>div>a,\nytd-compact-video-renderer:hover>div>div>div>a,\nytd-compact-radio-renderer:hover>div>div>div>a {\n    margin-inline-end: 15px !important\n}\n\nytd-compact-playlist-renderer:active>div>ytd-playlist-thumbnail,\nytd-compact-video-renderer:active>div>ytd-thumbnail,\nytd-compact-radio-renderer:active>div>ytd-thumbnail {\n    box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important\n}\n\n.ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]):hover>svg>path,\nytd-topbar-logo-renderer>a>div>yt-icon>svg>g>g>path {\n    fill: var(--theme) !important\n}\n\n.ytp-chrome-top,\n.ytp-chrome-bottom,\n.ytp-gradient-bottom,\n.ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true])>svg>path {\n    transition: all .2s cubic-bezier(0, 1, 1, 1) !important\n}\n\n.ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-top,\n.ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-bottom {\n    display: block !important\n}\n\n.ytp-gradient-bottom {\n    height: 30px !important;\n    background-image: none !important\n}\n\n.ytp-popup.ytp-settings-menu,\n.ytp-gradient-bottom,\n.iv-drawer,\n.ytp-cards-teaser-box,\n.ytp-popup,\n.ytp-bezel {\n    background-color: var(--in-player-bg-color) !important\n}\n\n.ytp-gradient-top[aria-hidden=true],\n.ytp-gradient-bottom[aria-hidden=true],\n.ytp-autohide .ytp-gradient-top,\n.ytp-autohide .ytp-gradient-bottom,\n.ytp-autohide .ytp-playlist-menu-button,\n.ytp-autohide .ytp-back-button,\n.ytp-autohide .ytp-title-channel,\n.ytp-autohide .ytp-title,\n.ytp-autohide .ytp-chrome-top .ytp-watch-later-button,\n.ytp-autohide .ytp-chrome-top .ytp-share-button,\n.ytp-autohide .ytp-chrome-top .ytp-copylink-button,\n.ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button,\n.ytp-autohide .ytp-overflow-button,\n.ytp-autohide .ytp-chrome-bottom,\n.ytp-chrome-top[aria-hidden=true],\n.ytp-chrome-bottom[aria-hidden=true] {\n    margin-block-start: 50px !important;\n    margin-block-end: -50px !important;\n    transition: all .1s cubic-bezier(0.1, 0.5, 1, 0) !important\n}"]))
     SetidxTo("PRESETPink-Black", JSON.stringify(["SubtitleC", "#ff94f6", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ffffff", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff94f6", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "1", "OutShaC", "#ff94f6", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#c4c4c4", "CapOutT", "false", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#ff94f6", "ThumbHoverColorC", "#ff94f6", "ThemeFortC", "#ff94f6", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "10", "SubOutT", "false", "BlurWhatT", "all", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff94f6", "PlaylisthoverC", "#ff94f6", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#000000", "BGO", "70", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "50", "OutShaO", "50", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""]))
     SetidxTo("PRESET(Low PC) Purple", JSON.stringify(["SubtitleC", "#da8aff", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "CenterUDT", "true", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ff0000", "TextC", "#ffffff", "HBTO", "100", "SubtitleO", "100", "IMGS", "100", "ThemeFortC", "#c494ff", "CenterMediaT", "true", "ThemeC", "#bf70ff", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "NVDOC", "1", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeAniT", "true", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "PlayerOutT", "true", "VDOSYT", "true", "ThemeThrO", "20", "Border", "1", "OutShaC", "#cd70ff", "ThumbHoverT", "Slide", "Edge", "10", "Zoom", "1.075", "NdTextC", "#c4c4c4", "ScrollT", "false", "CapOutT", "false", "CapBGO", "80", "BlurWhatT", "main", "ThemehoverC", "#dc5cff", "TIMETEXTC", "#ffffff", "CenterMedia", "true", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "0", "TimeBGC", "#000000", "SubOutT", "false", "NVDOT", "2", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "NVDOB", "50", "NdTextO", "100", "ThemeFortO", "100", "ThemeThrC", "#b061ff", "PlaylisthoverC", "#d666ff", "TimeLoadedO", "50", "CenterUDFT", "true", "CenterTimeT", "true", "IMGY", "15", "BlurAm", "5", "PlayerEdge", "20", "ThemeSndC", "#000000", "BGO", "70", "VDOBGT", "false", "EnaCUSCSST", "false", "BlurSubT", "true", "CUSTOM", "", "OutShaO", "0", "VDOTEXTO", "100", "MediaBGO", "50", "NVDOBGT", "0.4", "ThemeO", "100", "TimeBGO", "50", "VBGT", "true", "TextO", "100", "LoadVDOT", "false", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Time-LineBGC", "#ffffff", "TopOutT", "true", "SyncLogoT", "true", "PlaylisthoverO", "50", "ScWidth", "0", "ThumbHoverColorC", "#ff00dd", "BGIMG", ""]))
-    SetidxTo("PRESETI'm Using :D", JSON.stringify({ "FlipT": "false", "TimeBGC": "#000000", "IMGSBOX": "100", "AutoEXPIPT": "true", "ThemeFortC": "#b67aff", "VisualT": "false", "TimeH": "18", "SubtitleO": "100", "TimeAniT": "true", "STUPIDME": "true", "SubtitleC": "#ffffff", "IMGS": "100", "SyncLogoT": "true", "ADDCUSTOM": "", "TextC": "#ffffff", "BGO": "70", "ThumbHoverColorC": "#ff00dd", "MediaBlurT": "false", "ThumbHoverColorO": "100", "Time-LineBGO": "20", "NVDOC": "1", "EndBGC": "#000000", "Border": "1", "CenterUDFT": "true", "MediaBGO": "31", "ScWidth": "0", "BlurBGAM": "0", "ThemehoverC": "#dc5cff", "VDOTEXTO": "100", "NdTextO": "100", "IconFillT": "true", "ScrollT": "true", "ThemeSndO": "88", "AutoPIPT": "true", "LoadVDOT": "false", "ThemeThrC": "#b061ff", "PlaylisthoverO": "50", "TimeBGO": "50", "NVDOT": "2", "SubOutT": "false", "SwapRowT": "true", "TimeLoadedO": "50", "CenterMedia": "true", "OutShaO": "0", "ThemehoverO": "50", "HBTO": "100", "CenterUDT": "true", "IMGXBOX": "50", "PlaylisthoverC": "#d666ff", "TimeOutT": "true", "ThumbClickC": "#ff0000", "EnaCUSCSST": "false", "PlayerOutT": "true", "IMGY": "0", "ThumbClickO": "100", "transitionT": "true", "TIMETEXTO": "100", "ConUnderVDOT": "false", "BlurWhatT": "none", "PlayerBorder": "1", "ThumbAnimT": "true", "OutShaC": "#cd70ff", "ThemeC": "#c680ff", "subShaColorC": "#000000", "CenterTimeT": "true", "LeftBarT": "true", "LeftBar": "true", "NewSubT": "true", "EndBGO": "50", "BGC": "#000000", "CanvasQua": "40", "HoverBorder": "1", "IMGX": "50", "Test": "Test", "CapBGC": "#000000", "TimeLoadedC": "#ffffff", "Enable": "false", "ControlUnderVDOT": "true", "NVDOB": "50", "TIMETEXTC": "#ffffff", "ThemeO": "100", "CapOutT": "false", "CUSTOM": "", "subSpace": "1", "LeftBarC": "#000000", "CenterMediaT": "true", "ThumbHoverT": "Slide", "RepeatT": "false", "subWidth": "700", "OutOrShaT": "Out", "ThemeSndC": "#000000", "LeftBarO": "0", "BottomGT": "true", "MediaH": "30", "TextO": "100", "subShaWidth": "0", "ThemeThrO": "20", "APIT": "false", "subShaColorO": "100", "TopOutT": "true", "VBGT": "true", "Edge": "10", "subShaBlur": "0", "VDOTEXTC": "#ffffff", "PlayerEdge": "20", "CapBGO": "0", "BlurAm": "5", "PtranT": "true", "VDOBGT": "true", "Zoom": "1.075", "TimeEdge": "10", "VDOSYT": "true", "MediaBGC": "#000000", "MediaSpace": "70", "NewSub": "true", "NewVDOanimaT": "true", "EnaADDCSST": "true", "NdTextC": "#c4c4c4", "HBTC": "#ffffff", "NVDOBGT": "0.4", "BlurSubT": "false", "ThemeFortO": "56", "Time-LineBGC": "#ffffff", "BGIMG": "https://i.ibb.co/m02hLkh/1658222393728.jpg" }))
+    SetidxTo("PRESETI'm Using :D", JSON.stringify({"FlipT":"false","TimeBGC":"#000000","IMGSBOX":"100","AutoEXPIPT":"true","ThemeFortC":"#b67aff","VisualT":"false","TimeH":"18","SubtitleO":"100","TimeAniT":"true","STUPIDME":"true","SubtitleC":"#ffffff","IMGS":"100","SyncLogoT":"true","ADDCUSTOM":"","TextC":"#ffffff","BGO":"70","ThumbHoverColorC":"#ff00dd","MediaBlurT":"false","ThumbHoverColorO":"100","Time-LineBGO":"20","NVDOC":"1","EndBGC":"#000000","Border":"1","CenterUDFT":"true","MediaBGO":"31","ScWidth":"0","BlurBGAM":"0","ThemehoverC":"#dc5cff","VDOTEXTO":"100","NdTextO":"100","IconFillT":"true","ScrollT":"true","ThemeSndO":"88","AutoPIPT":"true","LoadVDOT":"false","ThemeThrC":"#b061ff","PlaylisthoverO":"50","TimeBGO":"50","NVDOT":"2","SubOutT":"false","SwapRowT":"true","TimeLoadedO":"50","CenterMedia":"true","OutShaO":"0","ThemehoverO":"50","HBTO":"100","CenterUDT":"true","IMGXBOX":"50","PlaylisthoverC":"#d666ff","TimeOutT":"true","ThumbClickC":"#ff0000","EnaCUSCSST":"false","PlayerOutT":"true","IMGY":"0","ThumbClickO":"100","transitionT":"true","TIMETEXTO":"100","ConUnderVDOT":"false","BlurWhatT":"none","PlayerBorder":"1","ThumbAnimT":"true","OutShaC":"#cd70ff","ThemeC":"#c680ff","subShaColorC":"#000000","CenterTimeT":"true","LeftBarT":"true","LeftBar":"true","NewSubT":"true","EndBGO":"50","BGC":"#000000","CanvasQua":"40","HoverBorder":"1","IMGX":"50","Test":"Test","CapBGC":"#000000","TimeLoadedC":"#ffffff","Enable":"false","ControlUnderVDOT":"true","NVDOB":"50","TIMETEXTC":"#ffffff","ThemeO":"100","CapOutT":"false","CUSTOM":"","subSpace":"1","LeftBarC":"#000000","CenterMediaT":"true","ThumbHoverT":"Slide","RepeatT":"false","subWidth":"700","OutOrShaT":"Out","ThemeSndC":"#000000","LeftBarO":"0","BottomGT":"true","MediaH":"30","TextO":"100","subShaWidth":"0","ThemeThrO":"20","APIT":"false","subShaColorO":"100","TopOutT":"true","VBGT":"true","Edge":"10","subShaBlur":"0","VDOTEXTC":"#ffffff","PlayerEdge":"20","CapBGO":"0","BlurAm":"5","PtranT":"true","VDOBGT":"true","Zoom":"1.075","TimeEdge":"10","VDOSYT":"true","MediaBGC":"#000000","MediaSpace":"70","NewSub":"true","NewVDOanimaT":"true","EnaADDCSST":"true","NdTextC":"#c4c4c4","HBTC":"#ffffff","NVDOBGT":"0.4","BlurSubT":"false","ThemeFortO":"56","Time-LineBGC":"#ffffff","BGIMG":"https://i.ibb.co/m02hLkh/1658222393728.jpg"}))
     SetidxTo("PRESET(Low-end PC) Cyan", JSON.stringify(["SubtitleC", "#8adcff", "RepeatT", "false", "LeftBar", "true", "EndBGO", "50", "CenterUDT", "true", "ThemeSndO", "50", "MediaBlurT", "false", "ThumbClickC", "#ff0000", "TextC", "#ffffff", "HBTO", "100", "SubtitleO", "100", "IMGS", "100", "ThemeFortC", "#94fff3", "CenterMediaT", "true", "ThemeC", "#70cfff", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "NVDOC", "1", "TimeLoadedC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeAniT", "true", "TimeEdge", "10", "TimeOutT", "true", "HBTC", "#ffffff", "PlayerOutT", "true", "VDOSYT", "true", "ThemeThrO", "20", "Border", "1", "OutShaC", "#cd70ff", "ThumbHoverT", "Slide", "Edge", "10", "Zoom", "1.075", "NdTextC", "#c4c4c4", "ScrollT", "false", "CapOutT", "false", "CapBGO", "80", "BlurWhatT", "none", "ThemehoverC", "#5cd6ff", "TIMETEXTC", "#ffffff", "CenterMedia", "true", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "0", "TimeBGC", "#000000", "SubOutT", "false", "NVDOT", "2", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "NVDOB", "50", "NdTextO", "100", "ThemeFortO", "50", "ThemeThrC", "#61fcff", "PlaylisthoverC", "#66d9ff", "TimeLoadedO", "50", "CenterUDFT", "true", "CenterTimeT", "true", "IMGY", "15", "BlurAm", "5", "PlayerEdge", "20", "ThemeSndC", "#000000", "BGO", "70", "VDOBGT", "false", "EnaCUSCSST", "false", "BlurSubT", "false", "CUSTOM", "", "OutShaO", "0", "VDOTEXTO", "100", "MediaBGO", "50", "NVDOBGT", "0.4", "ThemeO", "100", "TimeBGO", "50", "VBGT", "true", "TextO", "100", "LoadVDOT", "false", "BGC", "#000000", "TimeH", "18", "LeftBarT", "true", "Time-LineBGO", "20", "Time-LineBGC", "#ffffff", "TopOutT", "true", "SyncLogoT", "true", "PlaylisthoverO", "50", "ScWidth", "0", "ThumbHoverColorC", "#009dff", "BGIMG", ""]))
 }
 
@@ -85,8 +80,8 @@ function styleloop() {
 styleloop()
 
 var DeValue,
-    CheckLeaver,
-    CheckList
+CheckLeaver,
+CheckList
 
 function CreateCach() {
 
@@ -394,7 +389,7 @@ function CreateCach() {
 
     createColor("Theme", "1 Theme color")
 
-    createCheck("IconFill", `Logo theme sync`, true)
+    createCheck("IconFill", `Logo theme sync`,true)
 
     createColor("ThemeThr", "2 theme color")
 
@@ -922,7 +917,7 @@ function SetValueCheck2(Match, IFTRUE, IFFLASE) {
 
 function SetValueCheck() {
 
-    SetValueCheck2("IconFill", ``, `:not([d="M27.9727 3.12324C27.6435 1.89323 26.6768 0.926623 25.4468 0.597366C23.2197 2.24288e-07 14.285 0 14.285 0C14.285 0 5.35042 2.24288e-07 3.12323 0.597366C1.89323 0.926623 0.926623 1.89323 0.597366 3.12324C2.24288e-07 5.35042 0 10 0 10C0 10 2.24288e-07 14.6496 0.597366 16.8768C0.926623 18.1068 1.89323 19.0734 3.12323 19.4026C5.35042 20 14.285 20 14.285 20C14.285 20 23.2197 20 25.4468 19.4026C26.6768 19.0734 27.6435 18.1068 27.9727 16.8768C28.5701 14.6496 28.5701 10 28.5701 10C28.5701 10 28.5677 5.35042 27.9727 3.12324Z"])`)
+    SetValueCheck2("IconFill", ``,`:not([d="M27.9727 3.12324C27.6435 1.89323 26.6768 0.926623 25.4468 0.597366C23.2197 2.24288e-07 14.285 0 14.285 0C14.285 0 5.35042 2.24288e-07 3.12323 0.597366C1.89323 0.926623 0.926623 1.89323 0.597366 3.12324C2.24288e-07 5.35042 0 10 0 10C0 10 2.24288e-07 14.6496 0.597366 16.8768C0.926623 18.1068 1.89323 19.0734 3.12323 19.4026C5.35042 20 14.285 20 14.285 20C14.285 20 23.2197 20 25.4468 19.4026C26.6768 19.0734 27.6435 18.1068 27.9727 16.8768C28.5701 14.6496 28.5701 10 28.5701 10C28.5701 10 28.5677 5.35042 27.9727 3.12324Z"])`)
 
     SetValueCheck2("PlayerOut", `.ytp-gradient-bottom,`, ``)
 
@@ -1917,12 +1912,6 @@ function ScrollEv() {
     }
 }
 
-function SetGlobalBGImage(ImgValue) {
-    if (document.getElementById("BGIMG")) {
-        RenderPreImg(ImgValue)
-    }
-}
-
 function update() {
     console.log("UPDATE");
     Collect_Style = ``
@@ -1980,26 +1969,20 @@ function update() {
 
                 if (e.target.result != null && e.target.result != "") {
                     BGIMGCODE = `#BGFRAME
-                    {
-                        width:100%;
-                        height:100%;
-                        background-image : url("` + e.target.result + `");
-                        `+ GetCodeC("Repeat") + `
-                        background-position: `+ localStorage["nt-IMGX"] + `% ` + localStorage["nt-IMGY"] + `% !important;
-                        background-size: `+ localStorage["nt-IMGS"] + `% !important;
-                        top:0;
-                        position:fixed;
-                        z-index: -10000;
-                        `+ Flip + `;
-                        transition : opacity 2s;
-                    }`
+                {
+                    width:100%;
+                    height:100%;
+                    background-image : url("` + e.target.result + `");
+                    `+ GetCodeC("Repeat") + `
+                    background-position: `+ localStorage["nt-IMGX"] + `% ` + localStorage["nt-IMGY"] + `% !important;
+                    background-size: `+ localStorage["nt-IMGS"] + `% !important;
+                    top:0;
+                    position:fixed;
+                    z-index: -10000;
+                    `+ Flip + `;
+                    transition : opacity 2s;
+                }`
 
-                }
-
-                PreloadImg.src = e.target.result
-
-                if (e.target.result == "") {
-                    SetGlobalBGImage(e.target.result)
                 }
 
                 setTimeout(() => {
@@ -2915,7 +2898,7 @@ function update() {
                         transform: translate(100px,0);
                     }`
                 }
-
+                
 
                 NTstyle.textContent = thisStyle
             };
@@ -3803,30 +3786,15 @@ String.prototype.GetSaveRgba = function () {
     return `rgba(` + aRgb + `,` + (localStorage["nt-" + this + "O"] / 100) + `)`
 }
 
-function RenderPreImg(GettedImg) {
-    console.log(GettedImg)
-
-    var Preimg = document.getElementById("BGIMG")
-
-    if (GettedImg == "") {
-        Preimg.style.opacity = 0
-    } else {
-        Preimg.style.opacity = 1
-        Preimg.style.aspectRatio = `${PreloadImg.width}/${PreloadImg.height}`
-
-        requestAnimationFrame(function () {
-            var imgcw = Preimg.clientWidth
-            var imgch = Preimg.clientHeight
-
-            Preimg.width = imgcw
-            Preimg.height = imgch
-
-            Preimg.getContext('2d').drawImage(PreloadImg, 0, 0, imgcw, imgch)
-
-            document.getElementById("Imgid").href = GettedImg
-            document.getElementById("Imgid").innerHTML = "Image link"
-        })
-    }
+function applyIMG() {
+    DOwithindexed(function () {
+        let get = store.get("BGIMG")
+        get.onsuccess = function (e) {
+            document.getElementById("BGIMG").src = e.target.result
+            document.getElementById("Imgid").href = e.target.result
+            document.getElementById("Imgid").innerHTML = e.target.result
+        };
+    })
 }
 
 function applyIcon() {
@@ -4292,7 +4260,7 @@ function CreateMENU() {
 
     createColor("Theme", "1 Theme color")
 
-    createCheck("IconFill", `Logo theme sync`, true)
+    createCheck("IconFill", `Logo theme sync`,true)
 
     createColor("ThemeThr", "2 theme color")
 
@@ -4378,6 +4346,7 @@ function CreateMENU() {
         DOwithindexed(function () {
             store.put(IMGURL.value, "BGIMG")
             update()
+            applyIMG()
             ShowTexForIMG("Successful.</br>(If an image didn't show up.Then the URL can't access.)")
             IMGURL.value = ``
         })
@@ -4385,7 +4354,7 @@ function CreateMENU() {
 
     var Par = document.createElement('p')
     Par.style = "margin-block: 10px; width:100%;"
-    var ThisIMG = document.createElement('canvas')
+    var ThisIMG = document.createElement('img')
     ThisIMG.id = "BGIMG"
     ThisIMG.style = `width:100%;`
 
@@ -4430,6 +4399,7 @@ function CreateMENU() {
                     console.log(serverSent)
                     DOwithindexed(function () {
                         store.put(serverSent["data"]["url"], "BGIMG")
+                        applyIMG()
                         update()
                         ShowTexForIMG("Successful.</br>(If an image not show yet please wait.)")
                     })
@@ -4445,6 +4415,7 @@ function CreateMENU() {
             reader.addEventListener('loadend', () => {
                 DOwithindexed(function () {
                     store.put(reader.result, "BGIMG")
+                    applyIMG()
                     update()
                     ShowTexForIMG("Successful.</br>(If an image not show yet please wait.)")
                 })
@@ -4486,6 +4457,7 @@ function CreateMENU() {
         }
         DOwithindexed(function () {
             store.put("", "BGIMG")
+            applyIMG()
             update()
         })
     }
@@ -4657,12 +4629,7 @@ function CreateMENU() {
 
     createCheck("VBG", "(Video) remove background solid color (Theater mode)")
 
-    DOwithindexed(function () {
-        let get = store.get("BGIMG")
-        get.onsuccess = function (e) {
-            RenderPreImg(e.target.result)
-        }
-    })
+    applyIMG()
 
     //-------------------------------------------------------------------------------
 
@@ -4997,7 +4964,7 @@ function SettoEnd() {
             var YTAPP
 
             if (document.getElementById('BGFRAME') == null) {
-                BGFRAME = document.createElement('div')
+                BGFRAME = document.createElement('body')
                 BGFRAME.id = "BGFRAME"
                 YTAPP = document.getElementsByTagName('ytd-app')[0]
                 YTAPP.appendChild(BGFRAME)
@@ -5237,36 +5204,47 @@ function SetCanvas() {
         }
 
         if (Distance > 1) {
-            console.log("SetCanvasPo")
+            requestAnimationFrame(function () {
+                VDOBOUND = FindVideo().getBoundingClientRect()
+                canvasbound = canvas.getBoundingClientRect()
+                VcenX = VDOBOUND.left + VDOBOUND.width / 2
+                VcenY = VDOBOUND.top + VDOBOUND.height / 2
 
-            canvas.style.setProperty('margin-top', VDOBOUND.top + window.pageYOffset + 'px')
-            canvas.style.setProperty('margin-left', VDOBOUND.left + window.pageXOffset + 'px')
-        }
+                console.log("SetCanvas")
 
-        VdoWith = VDOBOUND.width + "px"
+                if (EnaCanvas2 == true) {
+                    canvas2.style.left = v.style.left
+                }
 
-        if (canvas.style.width != VdoWith) {
-            console.log("SetCanvasSize")
-            VdoHeight = VDOBOUND.height + "px"
-            var tempCanvas = document.createElement('canvas')
-            tempCanvas.width = context.canvas.width
-            tempCanvas.height = context.canvas.height
-            tempCanvas.getContext("2d").drawImage(context.canvas, 0, 0)
+                VdoWith = v.style.width
+                VdoHeight = v.style.height
 
-            canvas.style.width = VdoWith
-            canvas.style.height = VdoHeight
+                if (canvas.style.width != VdoWith) {
+                    console.log("SetCanvas")
+                    var tempCanvas = document.createElement('canvas')
+                    tempCanvas.width = context.canvas.width
+                    tempCanvas.height = context.canvas.height
+                    tempCanvas.getContext("2d").drawImage(context.canvas, 0, 0)
 
-            ChangeCanvasQua()
+                    canvas.style.width = VdoWith
+                    canvas.style.height = VdoHeight
 
-            context.drawImage(tempCanvas, 0, 0)
-            tempCanvas.remove()
+                    ChangeCanvasQua()
+
+                    context.drawImage(tempCanvas, 0, 0)
+                    tempCanvas.remove()
 
 
 
-            if (EnaCanvas2 == true) {
-                canvas2.width = cw
-                canvas2.height = ch
-            }
+                    if (EnaCanvas2 == true) {
+                        canvas2.width = cw
+                        canvas2.height = ch
+                    }
+                }
+
+                canvas.style.setProperty('margin-top', VDOBOUND.top + window.pageYOffset + 'px')
+                canvas.style.setProperty('margin-left', VDOBOUND.left + window.pageXOffset + 'px')
+            })
         }
     } else {
         setTimeout(() => {
@@ -5384,7 +5362,7 @@ let drawing = false
 
 function drawOnePic() {
     if (document.visibilityState == 'visible') {
-        SetCanvas()
+        console.log("Draw")
         Scale = 1
         context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
         // Scale = 0.9
@@ -5424,6 +5402,7 @@ function drawpic() {
 
         function DrawApic() {
             FindVideo()
+            SetCanvas()
             if (v.paused || v.ended || Cloning == false) {
                 drawing = false
                 console.log("CancelDraw")
