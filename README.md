@@ -2,7 +2,11 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.2.8 (Current)
+## Version 3.2.9 (Current)
+
+- New Check button style
+
+## Version 3.2.8
 
 - Fixed bugs!
 
