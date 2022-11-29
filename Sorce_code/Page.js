@@ -1033,15 +1033,11 @@ function SetValueCheck() {
     .ytp-caption-segment {
         background: transparent !important;
 
-        filter: drop-shadow(0px 0px 1px var(--sub-sha-color)) drop-shadow(0px 0px var(--sub-ShaBlur) var(--sub-sha-color)) drop-shadow(0px 0px 2px var(--sub-sha-color));
+        filter: drop-shadow(0px 0px 1px var(--sub-sha-color)) drop-shadow(0px 0px var(--sub-ShaBlur) var(--sub-sha-color)) drop-shadow(0px 0px 1px var(--sub-sha-color));
 
         font-weight: var(--sub-Width);
 
         letter-spacing: var(--sub-Space);
-    }
-
-    .html5-video-player .caption-visual-line .ytp-caption-segment:last-child
-    {
         color: var(--sub-color) !important;
     }
     
@@ -1757,18 +1753,19 @@ let NORMAL = `
 	}
 		
 	.CheckBox:after{
-		position: absolute;
-		content: "";
-		width: 1.5em;
-		height: 1.5em;
-		border-radius: 50%;
-		background: #fff !important;
-		-webkit-box-shadow: 0 0 .25em rgba(0,0,0,.3);
-				box-shadow: 0 0 .25em rgba(0,0,0,.3);
-		-webkit-transform: scale(.7);
-				transform: scale(.7);
-		left: 0;
+        position: absolute;
+        display: flex;
+        content: "❖";
+        font-weight: 1000;
+        width: 1.5em;
+        height: 1.5em;
+        border-radius: 50%;
+        background: #fff !important;
+        box-shadow: 0 0 0.25em rgb(0 0 0 / 30%);
+        transform: scale(.7);
+        left: 0;
         transition: all .2s;
+        justify-content: center;
 	}
 
     .NDel,.NUp
@@ -1778,6 +1775,8 @@ let NORMAL = `
 		
 	.CheckBox:checked:after{
 		left: calc(100% - 1.5em);
+        transform: rotate(180deg);
+        filter: drop-shadow(0px 0px 10px black);
 	}
 
 	#header
@@ -2056,6 +2055,7 @@ function update() {
 
                     --sub-Width: `+ localStorage["nt-subWidth"] + `;
                     --sub-Space: `+ localStorage["nt-subSpace"] + `px;
+                    --sub-color: ` + 'Subtitle'.GetSaveRgba() + `;
                     --sub-bg: ` + 'CapBG'.GetSaveRgba() + `;
                     --sub-sha-color: `+ 'subShaColor'.GetSaveRgba() + `;
 
