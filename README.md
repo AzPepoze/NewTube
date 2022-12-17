@@ -2,7 +2,12 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.2.10 (Current)
+## Version 3.3.0 (Current)
+
+- Add Remove black bar :3
+- Fix bug!
+
+## Version 3.2.10
 
 - Add separate subscribe color button
 

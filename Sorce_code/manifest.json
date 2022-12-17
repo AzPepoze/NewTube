@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Newtube (Youtube Style Customizer)",
-    "version": "3.2.10",
+    "version": "3.3.0",
     "description": "Customize your Youtube website with a lot customizable.",
     "default_locale": "en",
 	"icons":{
@@ -13,8 +13,7 @@
     "web_accessible_resources": [
         {
             "resources": [ "icon/64.png",
-                            "asset/Del.svg",
-                            "asset/Upload_file.png"
+                            "asset/*"
                          ],
             "matches": [ "*://www.youtube.com/*" ]
         }

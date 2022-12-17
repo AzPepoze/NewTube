@@ -30,6 +30,7 @@ ForcePre = [
     "Dark Theme",
     "Black Theme",
     "Pink-Black",
+    "Glass",
     "My Waifu ♥",
     "I'm Using :D"]
 
@@ -48,6 +49,7 @@ function SetNormalPre() {
     SetidxTo("PRESET(Low PC) Purple", JSON.stringify(["SubtitleC", "#da8aff", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "CenterUDT", "true", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ff0000", "TextC", "#ffffff", "HBTO", "100", "SubtitleO", "100", "IMGS", "100", "ThemeFortC", "#c494ff", "CenterMediaT", "true", "ThemeC", "#bf70ff", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "NVDOC", "1", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeAniT", "true", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "PlayerOutT", "true", "VDOSYT", "true", "ThemeThrO", "20", "Border", "1", "OutShaC", "#cd70ff", "ThumbHoverT", "Slide", "Edge", "10", "Zoom", "1.075", "NdTextC", "#c4c4c4", "ScrollT", "false", "CapOutT", "false", "CapBGO", "80", "BlurWhatT", "main", "ThemehoverC", "#dc5cff", "TIMETEXTC", "#ffffff", "CenterMedia", "true", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "0", "TimeBGC", "#000000", "SubOutT", "false", "NVDOT", "2", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "NVDOB", "50", "NdTextO", "100", "ThemeFortO", "100", "ThemeThrC", "#b061ff", "PlaylisthoverC", "#d666ff", "TimeLoadedO", "50", "CenterUDFT", "true", "CenterTimeT", "true", "IMGY", "15", "BlurAm", "5", "PlayerEdge", "20", "ThemeSndC", "#000000", "BGO", "70", "VDOBGT", "false", "EnaCUSCSST", "false", "BlurSubT", "true", "CUSTOM", "", "OutShaO", "0", "VDOTEXTO", "100", "MediaBGO", "50", "NVDOBGT", "0.4", "ThemeO", "100", "TimeBGO", "50", "VBGT", "true", "TextO", "100", "LoadVDOT", "false", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Time-LineBGC", "#ffffff", "TopOutT", "true", "SyncLogoT", "true", "PlaylisthoverO", "50", "ScWidth", "0", "ThumbHoverColorC", "#ff00dd", "BGIMG", ""]))
     SetidxTo("PRESETI'm Using :D", JSON.stringify({ "FlipT": "false", "TimeBGC": "#000000", "IMGSBOX": "100", "AutoEXPIPT": "true", "ThemeFortC": "#b67aff", "VisualT": "false", "TimeH": "18", "SubtitleO": "100", "TimeAniT": "true", "STUPIDME": "true", "SubtitleC": "#ffffff", "IMGS": "100", "SyncLogoT": "true", "ADDCUSTOM": "", "TextC": "#ffffff", "BGO": "70", "ThumbHoverColorC": "#ff00dd", "MediaBlurT": "false", "ThumbHoverColorO": "100", "Time-LineBGO": "20", "NVDOC": "1", "EndBGC": "#000000", "Border": "1", "CenterUDFT": "true", "MediaBGO": "31", "ScWidth": "0", "BlurBGAM": "0", "ThemehoverC": "#dc5cff", "VDOTEXTO": "100", "NdTextO": "100", "IconFillT": "true", "ScrollT": "true", "ThemeSndO": "88", "AutoPIPT": "true", "LoadVDOT": "false", "ThemeThrC": "#b061ff", "PlaylisthoverO": "50", "TimeBGO": "50", "NVDOT": "2", "SubOutT": "false", "SwapRowT": "true", "TimeLoadedO": "50", "CenterMedia": "true", "OutShaO": "0", "ThemehoverO": "50", "HBTO": "100", "CenterUDT": "true", "IMGXBOX": "50", "PlaylisthoverC": "#d666ff", "TimeOutT": "true", "ThumbClickC": "#ff0000", "EnaCUSCSST": "false", "PlayerOutT": "true", "IMGY": "0", "ThumbClickO": "100", "transitionT": "true", "TIMETEXTO": "100", "ConUnderVDOT": "false", "BlurWhatT": "none", "PlayerBorder": "1", "ThumbAnimT": "true", "OutShaC": "#cd70ff", "ThemeC": "#c680ff", "subShaColorC": "#000000", "CenterTimeT": "true", "LeftBarT": "true", "LeftBar": "true", "NewSubT": "true", "EndBGO": "50", "BGC": "#000000", "CanvasQua": "40", "HoverBorder": "1", "IMGX": "50", "Test": "Test", "CapBGC": "#000000", "TimeLoadedC": "#ffffff", "Enable": "false", "ControlUnderVDOT": "true", "NVDOB": "50", "TIMETEXTC": "#ffffff", "ThemeO": "100", "CapOutT": "false", "CUSTOM": "", "subSpace": "1", "LeftBarC": "#000000", "CenterMediaT": "true", "ThumbHoverT": "Slide", "RepeatT": "false", "subWidth": "700", "OutOrShaT": "Out", "ThemeSndC": "#000000", "LeftBarO": "0", "BottomGT": "true", "MediaH": "30", "TextO": "100", "subShaWidth": "0", "ThemeThrO": "20", "APIT": "false", "subShaColorO": "100", "TopOutT": "true", "VBGT": "true", "Edge": "10", "subShaBlur": "0", "VDOTEXTC": "#ffffff", "PlayerEdge": "20", "CapBGO": "0", "BlurAm": "5", "PtranT": "true", "VDOBGT": "true", "Zoom": "1.075", "TimeEdge": "10", "VDOSYT": "true", "MediaBGC": "#000000", "MediaSpace": "70", "NewSub": "true", "NewVDOanimaT": "true", "EnaADDCSST": "true", "NdTextC": "#c4c4c4", "HBTC": "#ffffff", "NVDOBGT": "0.4", "BlurSubT": "false", "ThemeFortO": "56", "Time-LineBGC": "#ffffff", "BGIMG": "https://i.ibb.co/m02hLkh/1658222393728.jpg" }))
     SetidxTo("PRESET(Low-end PC) Cyan", JSON.stringify(["SubtitleC", "#8adcff", "RepeatT", "false", "LeftBar", "true", "EndBGO", "50", "CenterUDT", "true", "ThemeSndO", "50", "MediaBlurT", "false", "ThumbClickC", "#ff0000", "TextC", "#ffffff", "HBTO", "100", "SubtitleO", "100", "IMGS", "100", "ThemeFortC", "#94fff3", "CenterMediaT", "true", "ThemeC", "#70cfff", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "NVDOC", "1", "TimeLoadedC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeAniT", "true", "TimeEdge", "10", "TimeOutT", "true", "HBTC", "#ffffff", "PlayerOutT", "true", "VDOSYT", "true", "ThemeThrO", "20", "Border", "1", "OutShaC", "#cd70ff", "ThumbHoverT", "Slide", "Edge", "10", "Zoom", "1.075", "NdTextC", "#c4c4c4", "ScrollT", "false", "CapOutT", "false", "CapBGO", "80", "BlurWhatT", "none", "ThemehoverC", "#5cd6ff", "TIMETEXTC", "#ffffff", "CenterMedia", "true", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "0", "TimeBGC", "#000000", "SubOutT", "false", "NVDOT", "2", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "NVDOB", "50", "NdTextO", "100", "ThemeFortO", "50", "ThemeThrC", "#61fcff", "PlaylisthoverC", "#66d9ff", "TimeLoadedO", "50", "CenterUDFT", "true", "CenterTimeT", "true", "IMGY", "15", "BlurAm", "5", "PlayerEdge", "20", "ThemeSndC", "#000000", "BGO", "70", "VDOBGT", "false", "EnaCUSCSST", "false", "BlurSubT", "false", "CUSTOM", "", "OutShaO", "0", "VDOTEXTO", "100", "MediaBGO", "50", "NVDOBGT", "0.4", "ThemeO", "100", "TimeBGO", "50", "VBGT", "true", "TextO", "100", "LoadVDOT", "false", "BGC", "#000000", "TimeH", "18", "LeftBarT", "true", "Time-LineBGO", "20", "Time-LineBGC", "#ffffff", "TopOutT", "true", "SyncLogoT", "true", "PlaylisthoverO", "50", "ScWidth", "0", "ThumbHoverColorC", "#009dff", "BGIMG", ""]))
+    SetidxTo("PRESETGlass", JSON.stringify({ "FlipT": "false", "TimeBGC": "#000000", "IMGSBOX": "100", "AutoEXPIPT": "true", "ThemeFortC": "#ffffff", "VisualT": "false", "TimeH": "18", "SubtitleO": "100", "TimeAniT": "true", "STUPIDME": "true", "SubtitleC": "#ffffff", "IMGS": "100", "SyncLogoT": "true", "ADDCUSTOM": "", "TextC": "#ffffff", "BGO": "77", "ThumbHoverColorC": "#808080", "MediaBlurT": "true", "ThumbHoverColorO": "100", "Time-LineBGO": "20", "NVDOC": "1", "EndBGC": "#000000", "Border": "1", "CenterUDFT": "true", "MediaBGO": "31", "ScWidth": "0", "BlurBGAM": "0", "ThemehoverC": "#dc5cff", "VDOTEXTO": "100", "NdTextO": "100", "IconFillT": "true", "ScrollT": "true", "ThemeSndO": "54", "AutoPIPT": "true", "LoadVDOT": "false", "ThemeThrC": "#474747", "PlaylisthoverO": "50", "NVDOT": "2", "SubOutT": "true", "SwapRowT": "false", "TimeBGO": "50", "TimeLoadedO": "50", "CenterMedia": "true", "OutShaO": "37", "SPSubScribeBGC": "#ff0000", "ThemehoverO": "50", "HBTO": "100", "CenterUDT": "true", "IMGXBOX": "50", "PlaylisthoverC": "#d666ff", "SPSubScribeColorC": "#000000", "ThumbClickC": "#ff0000", "TimeOutT": "true", "EnaCUSCSST": "false", "PlayerOutT": "true", "IMGY": "0", "ThumbClickO": "100", "transitionT": "true", "TIMETEXTO": "100", "ConUnderVDOT": "false", "BlurWhatT": "all", "PlayerBorder": "-1", "ThumbAnimT": "true", "SPSubScribeBGO": "100", "OutShaC": "#000000", "ThemeC": "#ffffff", "subShaColorC": "#000000", "CenterTimeT": "true", "LeftBarT": "true", "LeftBar": "true", "NewSubT": "true", "EndBGO": "50", "BGC": "#000000", "CanvasQua": "40", "HoverBorder": "1", "IMGX": "50", "Test": "Test", "CapBGC": "#000000", "TimeLoadedC": "#ffffff", "Enable": "false", "ControlUnderVDOT": "true", "NVDOB": "50", "TIMETEXTC": "#ffffff", "ThemeO": "63", "CapOutT": "false", "CUSTOM": "", "subSpace": "1", "LeftBarC": "#000000", "CenterMediaT": "true", "ThumbHoverT": "Slide", "RepeatT": "false", "subWidth": "700", "OutOrShaT": "Sha", "ThemeSndC": "#000000", "SPSubScribeColorO": "100", "LeftBarO": "39", "BottomGT": "true", "MediaH": "30", "TextO": "100", "subShaWidth": "0", "ThemeThrO": "46", "APIT": "false", "subShaColorO": "100", "TopOutT": "true", "VBGT": "true", "Edge": "10", "subShaBlur": "0", "VDOTEXTC": "#ffffff", "PlayerEdge": "20", "CapBGO": "0", "BlurAm": "15", "PtranT": "true", "VDOBGT": "true", "Zoom": "1.075", "TimeEdge": "10", "VDOSYT": "true", "MediaBGC": "#000000", "MediaSpace": "70", "NewSub": "true", "NewVDOanimaT": "true", "EnaADDCSST": "false", "NdTextC": "#b8b8b8", "SPSubScribeT": "false", "HBTC": "#ffffff", "NVDOBGT": "0.4", "BlurSubT": "false", "ThemeFortO": "17", "Time-LineBGC": "#ffffff", "BGIMG": "https://www.shutterstock.com/blog/wp-content/uploads/sites/5/2020/02/Usign-Gradients-Featured-Image.jpg" }))
 }
 
 var Set = document.createElement("button"),
@@ -782,6 +784,9 @@ function SetNull() {
     SetTo("IconFillT", true)
     SetTo("SPSubScribeT", false)
 
+    SetTo("DelBarT", false)
+    SetTo("DelBarDebugT", false)
+
     //Select------------------------
 
     SetTo("BlurWhatT", "none")
@@ -1432,8 +1437,6 @@ function update() {
                 .style-scope.ytd-comment-renderer.no-transition,
                 div.html5-video-player:not(.ytp-fullscreen) video,
                 .ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title,
-                #container.ytd-playlist-panel-renderer,
-                ytd-live-chat-frame,
                 ytd-thumbnail-overlay-side-panel-renderer,
                 ytd-thumbnail-overlay-bottom-panel-renderer,
                 `+ GetCodeC("PlayerOut") + `
@@ -1461,8 +1464,7 @@ function update() {
                 .ytp-ce-element.ytp-ce-element-show,
                 #contentWrapper.tp-yt-iron-dropdown > *,
                 .ytp-tooltip-bg,
-                .skeleton-bg-color.ytd-ghost-grid-renderer,
-                #player
+                .skeleton-bg-color.ytd-ghost-grid-renderer
                 {
                     border-collapse: separate;
                     `+ JSON.parse(GetCodeC("OutOrSha"))[0] + `
@@ -1559,6 +1561,10 @@ function update() {
                     transition: opacity 2s , margin-top 0.1s , margin-left 0.1s;
                     filter: blur(` + localStorage["nt-NVDOB"] + `px) contrast(` + localStorage["nt-NVDOC"] + `) brightness(` + localStorage["nt-NVDOBGT"] + `);
                     transform: scale(` + localStorage["nt-NVDOT"] + `);
+                }
+
+                #NewtubeVDOCanvas{
+                    transition: margin-top 0.1s , margin-left 0.1s;
                 }
 
                 html:has(div.html5-video-player.ytp-fullscreen) #NewtubeBlurBG {
@@ -2085,7 +2091,8 @@ function update() {
                     `+ GetCodeC("BottomG") + `
                 }
 
-                #player{
+                #player,
+                #NewtubeVDOCanvas{
                     border-radius: var(--theme-radius-big) !important;
                 }
 
@@ -2093,15 +2100,24 @@ function update() {
                         border-radius: var(--theme-radius-big) var(--theme-radius-big) 0px 0px !important;
                 }
                 
+                ytd-player:has(div.html5-video-player:not(.ytp-fullscreen)){
+                    transition: all 1s;
+                    top: 0px !important
+                }
+
                 div.html5-video-player:not(.ytp-fullscreen) video{
                     transition: all 1s ,background 0.1s;
                     top: 0px !important
                 }
               
                 div.ended-mode video,
-                div.unstarted-mode:not(.ytp-small-mode) video.video-stream.html5-main-video{
+                div.unstarted-mode:not(.ytp-small-mode) video{
                     transform:scale(0.5);
                     opacity:0 !important;
+                }
+
+                div.ended-mode video,
+                div.unstarted-mode:not(.ytp-small-mode) video.html5-main-video{
                     background: black;
                 }
               
@@ -2168,9 +2184,9 @@ function update() {
                     display: block !important;
                     overflow:hidden;
                     transition: all 0.4s ease;
-                }
+                }   
                 
-                html:has(ytd-searchbox:not([has-focus])) div.gstl_50.sbdd_a{
+                html:has(input#search:not(:focus)) div.gstl_50.sbdd_a{
                         transform: translate(50px,0) !important;
                         pointer-events: none;
                         opacity:0;
@@ -2179,7 +2195,7 @@ function update() {
                 path[stroke="rgb(255,255,255)"] {
                     stroke: var(--theme) !important;
                }
-               
+
                yt-button-shape button{
                    transition: all 0.2s ease-out;
                }
@@ -3644,11 +3660,11 @@ function CreateMENU() {
 
     createColor("EndBG", "End of video chanel hover background color")
 
-    createCheck("SPSubScribe", "Separate Subscribe button color.",true)
+    createCheck("SPSubScribe", "Separate Subscribe button color.")
 
-    createColor("SPSubScribeBG", "(Subscribe button) Background color",true)
+    createColor("SPSubScribeBG", "(Subscribe button) Background color")
 
-    createColor("SPSubScribeColor", "(Subscribe button) Text color",true)
+    createColor("SPSubScribeColor", "(Subscribe button) Text color")
 
 
     //Outline-------------------------------------------------------------------------------
@@ -4003,6 +4019,10 @@ function CreateMENU() {
     createCheck("Visual", "Audio Visualizer")
 
     createCheck("NewVDOanima", "New video animation (Volume up/down,Pause,Play)")
+
+    createCheck("DelBar", "Remove black bar top-bottom (Background VDO Should Enabled)", true)
+
+    createCheck("DelBarDebug", "Remove black bar Debug", true)
 }
 
 
@@ -4238,32 +4258,6 @@ function ShowUpdated() {
 
     sndblock.append(changelogbt)
 }
-
-var below
-
-// function FindBelow() {
-//     below = document.getElementById('below')
-//     if (below) {
-//         NeedToShow = below.getElementsByTagName('ytd-watch-metadata')[0]
-
-//         if (document.getElementsByClassName('watch-active-metadata')[0] != NeedToShow) {
-//             if (NeedToShow.getAttribute('disable-upgrade') == '') {
-//                 NeedToShow.removeAttribute('disable-upgrade')
-//             }
-
-//             NeedToShow.style = `display: block !important;`
-
-//             NeedToHide = below.getElementsByClassName('watch-active-metadata')[0]
-//             NeedToHide.setAttribute('hidden', '')
-
-//             setTimeout(() => {
-//                 Array.from(document.getElementById('top-row').getElementsByTagName('yt-button-shape')).forEach(e => {
-//                     e.getElementsByTagName('button')[0].style.background = 'transparent'
-//                 })
-//             }, 0);
-//         }
-//     }
-// }
 
 function SettoEnd() {
     setTimeout(() => {
@@ -4590,12 +4584,12 @@ function SetCanvas() {
 
             context.drawImage(tempCanvas, 0, 0)
             tempCanvas.remove()
+        }
 
-
-
-            if (EnaCanvas2 == true) {
-                canvas2.width = cw
-                canvas2.height = ch
+        if (EnaCanvas2 == true) {
+            if (canvas2.height != VDOBOUND.height) {
+                canvas2.width = 5
+                canvas2.height = VDOBOUND.height
             }
         }
     } else {
@@ -4603,34 +4597,6 @@ function SetCanvas() {
             SetCanvas()
         }, 100);
     }
-}
-
-var WaitFrame = 2
-var thisframe
-
-function CalFrame() {
-    var oldtime = v.currentTime
-    v.requestVideoFrameCallback(function () {
-        v.requestVideoFrameCallback(function () {
-            v.requestVideoFrameCallback(function () {
-                v.requestVideoFrameCallback(function () {
-                    console.log(Math.ceil(1 / ((v.currentTime - oldtime) / 4)))
-                    drawpic()
-                })
-            })
-        })
-    })
-}
-
-function WaitForFrame() {
-    v.requestVideoFrameCallback(function () {
-        if (thisframe == WaitFrame) {
-            CalFrame()
-        } else {
-            thisframe++
-            WaitForFrame()
-        }
-    })
 }
 
 function DetectPlay() {
@@ -4656,6 +4622,8 @@ function SetBGTran(Status) {
 
 function CheckVDO() {
     if (FindVideo().parentNode) {
+        LastHeight = 0
+
         VDOPARCLASS = FindVideo().parentNode.parentNode.className
 
         pg = document.getElementById("page-manager")
@@ -4664,6 +4632,9 @@ function CheckVDO() {
             pg.style = ``
         } else {
             pg.style = `margin-top:0px;`
+            v.style.marginTop = "unset"
+            v.parentNode.style.height = "100%"
+            v.parentNode.style.marginTop = "unset"
         }
 
         if (
@@ -4708,12 +4679,73 @@ function CheckVDOSTATUS() {
 
 
 BlackMode = false
-EnaCanvas2 = false
+BlackBar = JSON.parse(localStorage["nt-DelBarT"])
+EnaCanvas2 = JSON.parse(localStorage["nt-DelBarT"])
 
-let drawing = false
+let drawing = false,
+    CheckBlackQua = 300
+CheckBlackThreshold = 20,
+    LastFind = null,
+    ThisR = null,
+    ThisG = null,
+    ThisB = null
+
+BlackDebug = JSON.parse(localStorage["nt-DelBarDebugT"])
+
+addMultiply = 1.2
+
+function CheckAddMultiply(R, G, B) {
+    // if (R < 100) {
+    //     R *= addMultiply
+    // }
+
+    // if (G < 100) {
+    //     G *= addMultiply
+    // }
+
+    // if (B < 100) {
+    //     B *= addMultiply
+    // }
+
+    return [R, G, B]
+}
+
+function CheckThisPX(R, G, B) {
+    GetRGB = CheckAddMultiply(R, G, B)
+    R = GetRGB[0]
+    G = GetRGB[1]
+    B = GetRGB[2]
+
+    return Math.abs(R - ThisR) + Math.abs(G - ThisG) + Math.abs(B - ThisB) > CheckBlackThreshold
+}
+
+function Check2ThisPX(R, G, B) {
+    GetRGB = CheckAddMultiply(R, G, B)
+    R = GetRGB[0]
+    G = GetRGB[1]
+    B = GetRGB[2]
+
+    return Math.abs(R - ThisR) + Math.abs(G - ThisG) + Math.abs(B - ThisB) > 10
+}
+
+function contrastImage(imgData, contrast) {  //input range [-100..100]
+    var d = imgData.data;
+    contrast = (contrast / 100) + 1;  //convert to decimal & shift range: [0..2]
+    var intercept = 128 * (1 - contrast);
+    for (var i = 0; i < d.length; i += 4) {   //r,g,b,a
+        d[i] = d[i] * contrast
+        d[i + 1] = d[i + 1] * contrast
+        d[i + 2] = d[i + 2] * contrast
+    }
+    return imgData;
+}
+
+var LastFrame
+var LastHeight = 0
 
 function drawOnePic() {
     if (document.visibilityState == 'visible') {
+
         SetCanvas()
         Scale = 1
         context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
@@ -4730,8 +4762,8 @@ function drawOnePic() {
 
 
         if (BlackMode == true) {
-            context2.drawImage(v, 0, 0, cw, ch);
-            frame = context2.getImageData(0, 0, cw, ch)
+            context2.drawImage(v, 0, 0, VDOBOUND.width, VDOBOUND.height);
+            frame = context2.getImageData(0, 0, VDOBOUND.width, VDOBOUND.height)
             l = frame.data.length / 4
             for (let i = 0; i < l; i++) {
                 frame.data[i * 4 + 3] = (frame.data[i * 4 + 0] * 10 +
@@ -4740,6 +4772,281 @@ function drawOnePic() {
             }
             context2.putImageData(frame, 0, 0)
         }
+
+        if (BlackBar) {
+            redPX = context2.createImageData(1, 1)
+            redPX.data[0] = 255
+            redPX.data[3] = 255
+
+            context2.clearRect(0, 0, VDOBOUND.width, VDOBOUND.height);
+
+            context2.drawImage(v, 0, 0, 5, VDOBOUND.height);
+
+
+
+
+            // for (var i = 0; i < VDOBOUND.height; i++) {
+            //     var IMGDATA = context2.getImageData(0, i, VDOBOUND.width, 1)
+            //     var Getimgdata = IMGDATA.data
+
+            //     AllR = []
+            //     AllG = []
+            //     AllB = []
+
+            //     for (var j = 0; j < Getimgdata.length; j += 4) {
+
+            //         AllR.push(Getimgdata[j])
+            //         AllG.push(Getimgdata[j + 1])
+            //         AllB.push(Getimgdata[j + 2])
+            //     }
+
+            //     R = 0
+            //     G = 0
+            //     B = 0
+
+            //     for (var j = 0; j < AllR.length; j++) {
+            //         R += AllR[j]
+            //     }
+
+            //     for (var j = 0; j < AllG.length; j++) {
+            //         G += AllG[j]
+            //     }
+
+            //     for (var j = 0; j < AllB.length; j++) {
+            //         B += AllB[j]
+            //     }
+
+            //     R /= AllR.length
+            //     G /= AllG.length
+            //     B /= AllB.length
+
+            //     for (var j = 0; j < Getimgdata.length; j += 4) {
+            //         Getimgdata[j] = R
+            //         Getimgdata[j + 1] = G
+            //         Getimgdata[j + 2] = B
+            //     }
+
+            //     context2.putImageData(IMGDATA, 0, i);
+            // }
+
+
+
+
+
+
+
+            // // context2.putImageData(contrastImage(context2.getImageData(0, 0, VDOBOUND.width, VDOBOUND.height),50),0,0)
+
+            ThisActualPX = context2.getImageData(1, 3, 1, 1)
+            ThisPX = ThisActualPX.data
+
+
+            FistGetRGB = CheckAddMultiply(ThisPX[0], ThisPX[1], ThisPX[2])
+
+            ThisR = FistGetRGB[0]
+            ThisG = FistGetRGB[1]
+            ThisB = FistGetRGB[2]
+
+
+            ThisHeightArray = []
+
+            for (x = 0; x < 5; x++) {
+                ThisFind = x
+                ThisR = FistGetRGB[0]
+                ThisG = FistGetRGB[1]
+                ThisB = FistGetRGB[2]
+
+                Find = null
+                ThisActualPX = context2.getImageData(ThisFind, 0, 1, VDOBOUND.height)
+                ThisPX = ThisActualPX.data
+
+                for (i = 5; i < VDOBOUND.height / 2; i++) {
+                    if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                        i += 10
+                        if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                            Find = i - 10
+                            i = VDOBOUND.height / 2
+                        }
+                    } else {
+                        if (!Check2ThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                            ThisR = ThisPX[i * 4]
+                            ThisG = ThisPX[i * 4 + 1]
+                            ThisB = ThisPX[i * 4 + 2]
+                        }
+                    }
+                }
+
+                if (Find) {
+                    ThisHeightArray.push(Find)
+
+                    if (BlackDebug) {
+                        for (i = 5; i < Find; i++) {
+                            context2.putImageData(redPX, ThisFind, i)
+                        }
+                    }
+                } else {
+                    ThisHeightArray.push("inf")
+                }
+
+                ThisR = FistGetRGB[0]
+                ThisG = FistGetRGB[1]
+                ThisB = FistGetRGB[2]
+
+                //-----------------------------------------------------------------
+
+                Find = null
+                ThisActualPX = context2.getImageData(ThisFind, 0, 1, VDOBOUND.height)
+                ThisPX = ThisActualPX.data
+
+                for (i = VDOBOUND.height - 5; i > VDOBOUND.height / 2; i--) {
+                    if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                        i -= 10
+                        if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                            Find = i + 10
+                            i = VDOBOUND.height / 2
+                        }
+                    } else {
+                        if (!Check2ThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                            ThisR = ThisPX[i * 4]
+                            ThisG = ThisPX[i * 4 + 1]
+                            ThisB = ThisPX[i * 4 + 2]
+                        }
+                    }
+                }
+
+                if (Find) {
+                    ThisHeightArray.push(VDOBOUND.height - Find)
+
+                    if (BlackDebug) {
+                        for (i = VDOBOUND.height - 5; i > Find; i--) {
+                            context2.putImageData(redPX, ThisFind, i)
+                        }
+                    }
+                } else {
+                    ThisHeightArray.push("inf")
+                }
+
+
+                ThisFind += CheckBlackQua
+            }
+
+            var mf = 0;
+            var m = 0;
+            var SureTHisHeight;
+
+            for (var i = 0; i < ThisHeightArray.length; i++) {
+                lowest = null
+                for (var j = i; j < ThisHeightArray.length; j++) {
+                    if (ThisHeightArray[i] == ThisHeightArray[j] || Math.abs(ThisHeightArray[i] - ThisHeightArray[j]) < 5) {
+                        if (ThisHeightArray[i] == "inf") {
+                            lowest = "inf"
+                        } else {
+                            if (ThisHeightArray[j] > lowest || lowest == null) {
+                                lowest = ThisHeightArray[j]
+                            }
+                        }
+                        m++;
+                    }
+                }
+
+                if (lowest == "inf") {
+                    if (m > mf) {
+                        mf = m;
+                        SureTHisHeight = lowest;
+                    }
+                } else {
+                    if (m > mf || (m == mf && lowest > SureTHisHeight)) {
+                        mf = m;
+                        SureTHisHeight = lowest;
+                    }
+                }
+                m = 0;
+            }
+
+            if (BlackDebug) {
+                YellowLinePX = context2.createImageData(VDOBOUND.width, 1)
+
+                for (i = 0; i < VDOBOUND.width; i++) {
+                    YellowLinePX.data[i * 4] = 255
+                    YellowLinePX.data[i * 4 + 1] = 255
+                    YellowLinePX.data[i * 4 + 3] = 255
+                }
+
+                context2.putImageData(YellowLinePX, 0, 10)
+            }
+
+            // ThisFrame = context2.getImageData(VDOBOUND.width / 2, 0, 1, VDOBOUND.height)
+            // ThisFrameData = ThisFrame.data
+
+            // if (LastFrame) {
+            //     for (i = 0; i < VDOBOUND.height; i += 4) {
+            //         if (ThisFrameData[i] == LastFrame[i] && ThisFrameData[i + 1] == LastFrame[i + 1] && ThisFrameData[i+2] == LastFrame[i+2]) {
+            //             context2.putImageData(redPX, VDOBOUND.width / 2, i/4)
+            //         } else {
+            //             i = VDOBOUND.height
+            //         }
+            //     }
+            // }
+
+            // LastFrame = ThisFrameData
+
+            if (mf < 5 || SureTHisHeight == "inf") {
+                SureTHisHeight = LastHeight
+            }
+
+            if (SureTHisHeight > 10 && (Math.abs(SureTHisHeight - LastHeight) > 10 || SureTHisHeight > LastHeight)) {
+
+                if (SureTHisHeight > LastHeight) {
+                    v.style.transition = "none"
+                    v.parentNode.style.transition = "none"
+                } else {
+                    v.style.transition = "margin-top 0.5s"
+                    v.parentNode.style.transition = "all 0.5s"
+                }
+
+                LastHeight = SureTHisHeight
+
+                v.parentNode.style.overflow = "hidden"
+                v.parentNode.style.position = "absolute"
+                v.parentNode.style.width = "100%"
+
+                v.parentNode.style.borderRadius = "var(--theme-radius-big)"
+
+                v.parentNode.style.marginTop = LastHeight + 2 + 'px'
+                v.style.marginTop = -LastHeight - 1 + 'px'
+                v.parentNode.style.height = VDOBOUND.height - LastHeight * 2 - 2 + 'px'
+            } else {
+                if (SureTHisHeight <= 10) {
+                    v.style.transition = "margin-top 0.5s"
+                    v.parentNode.style.transition = "all 0.5s"
+                    LastHeight = 0
+                    v.style.marginTop = "unset"
+                    v.parentNode.style.height = "100%"
+                    v.parentNode.style.marginTop = "unset"
+                }
+            }
+
+            if (BlackDebug) {
+                GreenLinePX = context2.createImageData(VDOBOUND.width, 1)
+
+                for (i = 0; i < VDOBOUND.width; i++) {
+                    GreenLinePX.data[i * 4 + 1] = 255
+                    GreenLinePX.data[i * 4 + 3] = 255
+                }
+
+                context2.putImageData(GreenLinePX, 0, LastHeight)
+                context2.putImageData(GreenLinePX, 0, VDOBOUND.height - LastHeight)
+            }
+        }
+
+
+
+
+
+
+
+
+
     }
 }
 
@@ -4768,10 +5075,12 @@ function drawpic() {
 }
 
 function callback(mutationsList, observer) {
-    console.log("CHANGE")
-    CheckVDOSTATUS()
-    if (!FindVideo().paused) {
-        SetCanvas()
+    if (mutationsList[0].type == "attributes") {
+        console.log("CHANGE")
+        CheckVDOSTATUS()
+        if (!FindVideo().paused) {
+            SetCanvas()
+        }
     }
 }
 
@@ -4808,13 +5117,22 @@ function CreateCanvas() {
     }, 0);
 
     context = canvas.getContext('2d', { alpha: false })
+    context.imageSmoothingEnabled = false
 
     if (EnaCanvas2 == true) {
-        canvas2 = document.createElement('canvas');
-        FindVideo().parentNode.append(canvas2)
+        canvas2 = document.createElement('canvas')
+        v.parentNode.parentNode.append(canvas2)
         canvas2.style = `position: absolute;
-        top: 0px;`
+        top: 0px;
+        image-rendering: pixelated;
+        z-index:100;
+        width:50px;
+        height:calc(100% - 70px);
+        left:0px;`
+
+        canvas2.id = "NewtubeVDOCanvas"
         context2 = canvas2.getContext('2d')
+        context2.imageSmoothingEnabled = false
     }
 
     v.addEventListener('play', DetectPlay)
@@ -4830,8 +5148,12 @@ function CreateCanvas() {
     SetBGTran(true)
     BGFRAME.style.setProperty("opacity", "0")
 
-    if (BlackMode == true) {
-        FindVideo().style.setProperty("opacity", "0")
+    if (EnaCanvas2 == true || BlackDebug == true) {
+        if (BlackDebug == true) {
+            FindVideo().style.setProperty("opacity", "1")
+        } else {
+            canvas2.style.setProperty("display", "none")
+        }
     }
 }
 
