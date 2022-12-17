@@ -2,7 +2,11 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.2.9 (Current)
+## Version 3.2.10 (Current)
+
+- Add separate subscribe color button
+
+## Version 3.2.9
 
 - New Check button style
 
