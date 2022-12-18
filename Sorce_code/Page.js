@@ -4620,9 +4620,10 @@ function SetBGTran(Status) {
     }
 }
 
+LastMode = null
+
 function CheckVDO() {
     if (FindVideo().parentNode) {
-        LastHeight = 0
 
         VDOPARCLASS = FindVideo().parentNode.parentNode.className
 
@@ -4635,6 +4636,9 @@ function CheckVDO() {
             v.style.marginTop = "unset"
             v.parentNode.style.height = "100%"
             v.parentNode.style.marginTop = "unset"
+
+            console.log("Set LastHeight")
+            LastHeight = 0
         }
 
         if (
@@ -4650,6 +4654,8 @@ function CheckVDO() {
         } else {
             if (Cloning == true) {
                 RemoveCanvas()
+                console.log("Set LastHeight")
+                LastHeight = 0
             }
         }
     } else {
@@ -4670,7 +4676,7 @@ function CheckVDOSTATUS() {
                     CheckVDOSTATUS()
                 }, 1000);
             } else {
-                VDOChangeEvent.observe(FindVideo(), { attributes: true })
+                VDOChangeEvent.observe(FindVideo().parentNode.parentNode, { attributes: true })
                 CheckVDO()
             }
         }, 1);
