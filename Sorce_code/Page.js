@@ -1,5 +1,8 @@
 /* Yeaaaaaah :3 AzPepoze https://www.youtube.com/channel/UCJ2C0UTfxQo6iGTfudPfoRQ */
 
+//html5-video-player ytp-transparent ytp-exp-bottom-control-flexbox ytp-exp-ppp-update ytp-hide-info-bar ytp-rounded-miniplayer ytp-autonav-endscreen-cancelled-state ytp-fine-scrubbing-exp ytp-rounded-miniplayer-extra-wide-video ytp-fit-cover-video ytp-heat-map playing-mode ytp-autohide ytp-large-width-mode ytp-branding-shown
+//html5-video-player ytp-transparent ytp-exp-bottom-control-flexbox ytp-exp-ppp-update playing-mode buffering-mode unstarted-mode ytp-hide-controls ytp-hide-info-bar ytp-large-width-mode ytp-rounded-miniplayer ytp-autonav-endscreen-cancelled-state ytp-autohide
+
 Ver = chrome.runtime.getManifest().version
 
 var PreloadImg = new Image
@@ -18,10 +21,22 @@ window.onerror =
     };
 
 function SetWhenUpdate() {
+    presetarray = JSON.parse(localStorage["nt-NUMPRESET"])
 
+    for (obj of ForcePre) {
+        if (!presetarray.includes(obj)) {
+            presetarray.push(obj)
+            break;
+        }
+    }
+
+    localStorage["nt-NUMPRESET"] = JSON.stringify(presetarray)
+
+    SetNormalPre()
 }
 
 ForcePre = [
+    "(Current)",
     "(Low PC) Purple",
     "(Low-end PC) Cyan",
     "(SUPER LOW PC) (CSS) Potato machine (less blur)",
@@ -681,19 +696,7 @@ function GetCodeC(Id) {
 //-----------------------------------------------------------------
 
 function SetNull() {
-    SetTo("NUMPRESET", JSON.stringify([
-        "(Current)",
-        "(Low PC) Purple",
-        "(Low-end PC) Cyan",
-        "(SUPER LOW PC) (CSS) Potato machine (less blur)",
-        "(SUPER_SUPER LOW PC) (CSS) Potato machine (none blur)",
-        "Light Theme",
-        "Dark Theme",
-        "Black Theme",
-        "Pink-Black",
-        "My Waifu ♥",
-        "I'm Using :D"
-    ]))
+    SetTo("NUMPRESET", JSON.stringify(ForcePre))
     //Text-------------------------
     SetTo("BlurAm", `5`)
     SetTo("BlurBGAM", '10')
@@ -1676,7 +1679,8 @@ function update() {
                 }
                 
                 ytd-multi-page-menu-renderer,
-                div.html5-video-player:not(.ytp-fullscreen) video
+                div.html5-video-player:not(.ytp-fullscreen) video,
+                .ytp-offline-slate-background
                 {   
                     border-radius: var(--theme-radius-big) !important;
                 }
@@ -2158,16 +2162,16 @@ function update() {
                     display: flex !important;
                 }
 
-                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary,
-                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #below,
-                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) div.ytp-gradient-bottom,
-                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) div.ytp-chrome-bottom
+                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #secondary,
+                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #below,
+                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) div.ytp-gradient-bottom,
+                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) div.ytp-chrome-bottom
                 {
                     transition: all 0.5s !important;
                     opacity:0 !important;
                 }
 
-                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #below {
+                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #below {
                     transform: translate(0,100px);
                 }
 
@@ -2194,12 +2198,16 @@ function update() {
 
                 path[stroke="rgb(255,255,255)"] {
                     stroke: var(--theme) !important;
-               }
+                }
 
-               yt-button-shape button{
-                   transition: all 0.2s ease-out;
-               }
-                
+                yt-button-shape button{
+                    transition: all 0.2s ease-out;
+                }
+
+                .ytp-offline-slate > button{
+                    display:none;
+                }
+                    
                 `+ BGBLURCODE + `
                 
                 `+ BGIMGCODE + `
@@ -2246,12 +2254,12 @@ function update() {
 
                 if (localStorage["nt-SwapRowT"] == "true") {
                     thisStyle = thisStyle + `
-                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary{
+                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #secondary{
                         transform: translate(-100px,0);
                     }`
                 } else {
                     thisStyle = thisStyle + `
-                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary{
+                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #secondary{
                         transform: translate(100px,0);
                     }`
                 }
@@ -2649,8 +2657,6 @@ function PRESET() {
                             Par.style.padding = null
                             Par.style.opacity = null
                         }
-
-                        console.log("Add", Name)
                     }
                 })
             } else {
@@ -3018,8 +3024,6 @@ function createframe(inner, NEW) {
 
     if (NEW) {
         CreateNew(List)
-
-        console.log(LeftList.getElementsByClassName("New"))
         if (LeftList.getElementsByClassName("New").length == 0) {
             CreateNew(LeftList)
         }
@@ -3236,7 +3240,6 @@ function CreateXY(XorY) {
 String.prototype.LoadNTubeCode = function () {
     let array = JSON.parse(this),
         BG
-    console.log((Object.prototype.toString.call(array) == '[object Object]'), array)
 
     if (Object.prototype.toString.call(array) == '[object Object]') {
         Object.entries(array).forEach(entry => {
@@ -3253,7 +3256,6 @@ String.prototype.LoadNTubeCode = function () {
                 BG = array[i + 1]
             } else {
                 localStorage["nt-" + array[i]] = array[i + 1]
-                console.log("nt-" + array[i], array[i + 1])
             }
         }
     }
@@ -5113,6 +5115,7 @@ function CreateCanvas() {
                 object-position: center;
                 overflow: hidden;
                 z-index: -1;
+                image-rendering: pixelated;
                 }`
         canvas.id = "NewtubeBlurBG"
 
