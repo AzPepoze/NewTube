@@ -802,6 +802,7 @@ function SetNull() {
     NUllColor("ThemeSnd", `#000000`, `50`)
     NUllColor("ThemeThr", `#659aff`, `20`)
     NUllColor("ThemeFort", `#659aff`, `20`)
+    NUllColor("ThemeChips", `#000000`, `50`)
 
     NUllColor("OutSha", `#000000`, `50`)
     NUllColor("BG", `#000000`, `70`)
@@ -1390,6 +1391,10 @@ function update() {
 
                     --SubSc-BG : ${'SPSubScribeBG'.GetSaveRgba()};
                     --SubSc-Tx : ${'SPSubScribeColor'.GetSaveRgba()};
+                }
+
+                #chips-wrapper{
+                    background: ${'ThemeChips'.GetSaveRgba()} !important;
                 }
 
                 ytd-app::-webkit-scrollbar {
@@ -3641,6 +3646,8 @@ function CreateMENU() {
     createColor("ThemeFort", "3 theme color")
 
     createColor("ThemeSnd", "Topbar & Search list color")
+
+    createColor("ThemeChips", "Snd Topbar color")
 
     createColor("LeftBar", "Sidebar color")
 
