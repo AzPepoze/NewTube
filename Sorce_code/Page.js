@@ -402,6 +402,24 @@ function SetValueCheck() {
     }
     `, ``)
 
+    SetValueCheck2("AutohideBar", ``, `
+    div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed).ytp-autohide .ytp-gradient-bottom,
+    div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed).ytp-autohide .ytp-chrome-bottom
+    {
+    margin-left:0px !important;
+    opacity: 1 !important;
+    }
+    
+    div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed).ytp-autohide .ytp-gradient-bottom
+    {
+    width:100% !important;
+    }
+    
+    div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed).ytp-autohide .ytp-chrome-bottom
+    {
+    width: calc(100% - 24px) !important;
+    }`)
+
     SetValueCheck2("ControlUnderVDO", `
 .html5-video-container{
       height:100%;
@@ -421,14 +439,9 @@ div.html5-video-player:not(.ytp-fullscreen) .ytp-chrome-bottom{
 
 div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .ytp-gradient-bottom,
 div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .ytp-chrome-bottom{
-      
+    overflow: hidden !important;
 }
 
-div.html5-video-player:not(.ytp-fullscreen) .ytp-gradient-bottom,
-div.html5-video-player:not(.ytp-fullscreen) .ytp-chrome-bottom{
-      overflow: hidden !important;
-}
-                
 .ytp-gradient-bottom[aria-hidden=true], .ytp-autohide .ytp-gradient-bottom,.ytp-autohide .ytp-playlist-menu-button, .ytp-autohide .ytp-back-button, .ytp-autohide .ytp-title-channel, .ytp-autohide .ytp-title, .ytp-autohide .ytp-chrome-top .ytp-watch-later-button, .ytp-autohide .ytp-chrome-top .ytp-share-button, .ytp-autohide .ytp-chrome-top .ytp-copylink-button, .ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button, .ytp-autohide .ytp-overflow-button, .ytp-autohide .ytp-chrome-bottom, .ytp-chrome-top[aria-hidden=true], .ytp-chrome-bottom[aria-hidden=true]
 {
       transition: all 0.5s !important;
@@ -789,6 +802,8 @@ function SetNull() {
 
     SetTo("DelBarT", false)
     SetTo("DelBarDebugT", false)
+
+    SetTo("AutohideBarT", true)
 
     //Select------------------------
 
@@ -2251,6 +2266,8 @@ function update() {
 
                 `+ GetCodeC("SPSubScribe") + `
                 
+                `+ GetCodeC("AutohideBar") + `
+                
                 `+ ADDCSS + `
 
                 `
@@ -3501,6 +3518,7 @@ function CreateMENU() {
 
     createCheck("ControlUnderVDO", `Move to under of video`)
     createTextBox("MediaSpace", `Under video distance`)
+    createCheck("AutohideBar", `Autohide (If you enabled Under VDO)`,true)
     createCheck("CenterMedia", "Move to center")
     createCheck("BottomG", "remove background gradient")
     createTextBox("MediaH", "Background height")
@@ -3509,6 +3527,7 @@ function CreateMENU() {
 
     createCheck("AutoPIP", "Auto Pictue In Pictue mode<br>(Pls click anywhere In page after you back to page)<br>(Security problem) (I do my best T_T)")
     createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode")
+    
 
     //-------------------------------------------------------------------------------
 
