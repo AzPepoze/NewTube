@@ -2,7 +2,11 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.5.0 (Current)
+## Version 3.5.1 (Current)
+
+- Add more VDO Animation
+
+## Version 3.5.0
 
 - Changable Autohide Under VDO
 
