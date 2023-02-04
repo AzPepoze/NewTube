@@ -33,6 +33,8 @@ function SetWhenUpdate() {
     localStorage["nt-NUMPRESET"] = JSON.stringify(presetarray)
 
     SetNormalPre()
+
+    localStorage["nt-NewVDOanimaT"] = "true"
 }
 
 ForcePre = [
@@ -626,6 +628,11 @@ function SetValueSelect() {
     {    
         margin-inline-start: -15px !important;
     }
+
+    ytd-compact-link-renderer:hover
+    {    
+        margin-inline-start: 15px !important;
+    }
     
     ytd-compact-playlist-renderer:hover>div>div>div>a,
     ytd-compact-video-renderer:hover>div>div>div>a,
@@ -668,6 +675,11 @@ function SetValueSelect() {
     ytd-playlist-renderer:hover
     {
         margin-inline-end: 15px !important;
+    }
+
+    ytd-compact-link-renderer:hover
+    {
+        margin-inline-end: -15px !important;
     }
     
     ytd-thumbnail:hover,
@@ -1627,7 +1639,9 @@ function update() {
                 #button.ytd-menu-renderer.yt-icon.ytd-menu-renderer,
                 ytd-playlist-video-renderer,
                 ytd-video-renderer,
-                ytd-playlist-renderer
+                ytd-playlist-renderer,
+                ytd-compact-link-renderer,
+                ytd-notification-renderer
                 {
                     transition: all .2s;
                 }
@@ -1792,7 +1806,9 @@ function update() {
                 #container,
                 [round],
                 ytd-engagement-panel-section-list-renderer,
-                #tooltip
+                #tooltip,
+                ytd-compact-link-renderer,
+                ytd-notification-renderer
                 {
                     border-radius: var(--theme-radius) !important;
                 }
@@ -3518,7 +3534,7 @@ function CreateMENU() {
 
     createCheck("ControlUnderVDO", `Move to under of video`)
     createTextBox("MediaSpace", `Under video distance`)
-    createCheck("AutohideBar", `Autohide (If you enabled Under VDO)`,true)
+    createCheck("AutohideBar", `Autohide (If you enabled Under VDO)`, true)
     createCheck("CenterMedia", "Move to center")
     createCheck("BottomG", "remove background gradient")
     createTextBox("MediaH", "Background height")
@@ -3527,7 +3543,7 @@ function CreateMENU() {
 
     createCheck("AutoPIP", "Auto Pictue In Pictue mode<br>(Pls click anywhere In page after you back to page)<br>(Security problem) (I do my best T_T)")
     createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode")
-    
+
 
     //-------------------------------------------------------------------------------
 
@@ -4287,34 +4303,43 @@ function ShowUpdated() {
     sndblock.append(changelogbt)
 }
 
+SeeRemove = 1
+
 function SettoEnd() {
     setTimeout(() => {
         if (document.getElementById("end") == null) {
             SettoEnd()
         }
         else {
-            document.getElementById("end").appendChild(Set);
+            if (SeeRemove == 1) {
+                SeeRemove = 0
+                document.getElementById("end").addEventListener('DOMNodeRemoved', function(e) {
+                    SettoEnd()
+                });
+            }
+            if (document.getElementById("NEWTUBESET") == null) {
+                document.getElementById("end").appendChild(Set);
+                
+                // window.addEventListener('yt-page-data-updated', FindBelow)
+                // FindBelow()
 
-            // window.addEventListener('yt-page-data-updated', FindBelow)
-            // FindBelow()
+                if (localStorage["nt-SHOWPRESET"] == "true") {
+                    //-----------PRESET------------------
+                    DOwithindexed(function () {
+                        store.put(Ver, "Oldver")
 
-            if (localStorage["nt-SHOWPRESET"] == "true") {
-                //-----------PRESET------------------
-                DOwithindexed(function () {
-                    store.put(Ver, "Oldver")
+                        store.put("https://i.ibb.co/NmLxJBM/64.png", "IconURL")
+                        UpdateIcon()
+                        SetidxTo("BGIMG", "https://i.ibb.co/FYPBxC5/1647030608836.jpg")
+                        SetNormalPre()
 
-                    store.put("https://i.ibb.co/NmLxJBM/64.png", "IconURL")
-                    UpdateIcon()
-                    SetidxTo("BGIMG", "https://i.ibb.co/FYPBxC5/1647030608836.jpg")
-                    SetNormalPre()
+                        update()
+                        PRESET()
+                    })
+                    localStorage["nt-SHOWPRESET"] = "STOP"
 
-                    update()
-                    PRESET()
-                })
-                localStorage["nt-SHOWPRESET"] = "STOP"
-
-                setTimeout(() => {
-                    window.alert(`*Warning*
+                    setTimeout(() => {
+                        window.alert(`*Warning*
 
                     If you use ** Dark Reader ** please do this step!
                     (I'm sorry,for inconvenience.)
@@ -4325,38 +4350,38 @@ function SettoEnd() {
                     4.Add "www.youtube.com" to the list
                     
                     Done!`)
-                }, 200);
-            } else {
-                DOwithindexed(function () {
+                    }, 200);
+                } else {
+                    DOwithindexed(function () {
 
-                    get = store.get("Oldver")
-                    get.onsuccess = function (e) {
+                        get = store.get("Oldver")
+                        get.onsuccess = function (e) {
 
-                        if (e.target.result != Ver) {
-                            ShowUpdated()
-                            DOwithindexed(function () {
-                                SetNormalPre()
-                            })
+                            if (e.target.result != Ver) {
+                                ShowUpdated()
+                                DOwithindexed(function () {
+                                    SetNormalPre()
+                                })
 
-                            SetWhenUpdate()
+                                SetWhenUpdate()
+                            }
+
                         }
 
-                    }
+                    })
+                }
 
-                })
-            }
+                var YTAPP
 
-            var YTAPP
+                if (document.getElementById('BGFRAME') == null) {
+                    BGFRAME = document.createElement('div')
+                    BGFRAME.id = "BGFRAME"
+                    YTAPP = document.getElementsByTagName('ytd-app')[0]
+                    YTAPP.appendChild(BGFRAME)
+                }
 
-            if (document.getElementById('BGFRAME') == null) {
-                BGFRAME = document.createElement('div')
-                BGFRAME.id = "BGFRAME"
-                YTAPP = document.getElementsByTagName('ytd-app')[0]
-                YTAPP.appendChild(BGFRAME)
-            }
-
-            Can = true
-            Set.addEventListener('click', clickSetting);
+                Can = true
+                Set.addEventListener('click', clickSetting);
 
 
 
@@ -4366,22 +4391,87 @@ function SettoEnd() {
 
 
 
-            if (localStorage["nt-" + 'NewVDOanimaT'] == 'true') {
-                function ThisFunc() {
-                    if (FindVideo()) {
-                        thisStyle = document.createElement('style')
-                        thisStyle.textContent = `
-                        .ytp-bezel,.ytp-bezel-text-wrapper{
-                            display:none !important;
-                        }`
+                if (localStorage["nt-" + 'NewVDOanimaT'] == 'true') {
+                    function ThisFunc() {
+                        if (FindVideo()) {
+                            thisStyle = document.createElement('style')
+                            thisStyle.textContent = `
+                            .ytp-doubletap-ui-legacy{
+                                display: flex !important;
+                                align-content: center;
+                                justify-content: center;
+                                opacity: 0;
+                                transition: all 0.5s;
+                                pointer-events: none;
+                                backdrop-filter: blur(var(--blur-amount));
+                                border-radius: var(--theme-radius-big) !important;
+                                height: 0% !important;
+                                margin: auto;
+                            }
+                            
+                            .ytp-doubletap-ui-legacy.ytp-time-seeking{
+                                opacity: 1 !important;
+                                height: 20% !important;
+                            }
+                            
+                            .ytp-doubletap-overlay-a11y{
+                                background: transparent !important;
+                            }
+                            
+                            .ytp-doubletap-static-circle{
+                                background: radial-gradient(circle, rgba(0,0,0,.8), transparent 50%) !important;
+                                height: 100% !important;
+                                left: 0px !important;
+                                width: 100% !important;
+                                top: 50% !important;
+                                border-radius: var(--theme-radius-big) !important;
+                            }
+                            
+                            .ytp-doubletap-seek-info-container{
+                                text-align: center;
+                                left: 0px !important;
+                                top: 0px !important;
+                                font-weight: 700;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                transition:all 1s;
+                                filter: drop-shadow(0px 0px 10px white) drop-shadow(0px 0px 0px var(--theme)) drop-shadow(0px 0px 1px black);
+                            }
+                            
+                            .ytp-doubletap-ui-legacy.ytp-time-seeking > .ytp-doubletap-seek-info-container{
+                                transform: scale(2);
+                            }
+                            
+                            .ytp-doubletap-ui-legacy[data-side=forward] .ytp-doubletap-base-arrow{
+                                border-left-color: var(--theme) !important;
+                            }
+                            
+                            .ytp-doubletap-ui-legacy[data-side=back] .ytp-doubletap-base-arrow{
+                                border-right-color: var(--theme) !important;
+                            }
+                            
+                            .ytp-bezel, .ytp-bezel-text-wrapper{
+                                display: block !important;
+                            }
+                            
+                            .ytp-bezel{
+                                background: black !important;
+                                filter: drop-shadow(0px 0px 10px var(--theme)) drop-shadow(0px 0px 10px white);
+                            }
+                            
+                            .ytp-bezel path{
+                                fill: var(--theme);
+                            }`
 
-                        document.head.append(thisStyle)
+                            document.head.append(thisStyle)
 
-                        vdpar = FindVideo().parentNode
+                            vdpar = FindVideo().parentNode
 
-                        volpanel = document.createElement('p')
+                            volpanel = document.createElement('p')
 
-                        volpanel.style = `top: -50px;
+                            volpanel.style = `top: -50px;
                         background: #0000008c;
                         width: 100px;
                         height: 50px;
@@ -4398,22 +4488,22 @@ function SettoEnd() {
                         transition: all 0.5s ease;
                         box-shadow: 0px 0px 10px white;`
 
-                        volpanel.setAttribute('round', '')
+                            volpanel.setAttribute('round', '')
 
-                        vdpar.append(volpanel)
+                            vdpar.append(volpanel)
 
-                        FindVideo().addEventListener('volumechange', function () {
-                            UpdateVol()
-                        })
+                            FindVideo().addEventListener('volumechange', function () {
+                                UpdateVol()
+                            })
+                        }
+                        else {
+                            setTimeout(() => {
+                                ThisFunc()
+                            }, 1000);
+                        }
                     }
-                    else {
-                        setTimeout(() => {
-                            ThisFunc()
-                        }, 1000);
-                    }
+                    ThisFunc()
                 }
-                ThisFunc()
-            }
 
 
 
@@ -4437,99 +4527,99 @@ function SettoEnd() {
 
 
 
-            if (localStorage["nt-VisualT"] == 'true') {
-                window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
+                if (localStorage["nt-VisualT"] == 'true') {
+                    window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
 
-                setTimeout(() => {
-                    var ctx = new AudioContext();
-                    var analyser = ctx.createAnalyser();
-                    var audioSrc = ctx.createMediaElementSource(v);
-                    // we have to connect the MediaElementSource with the analyser 
-                    audioSrc.connect(analyser);
-                    analyser.connect(ctx.destination);
-                    // we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
-                    analyser.fftSize = 1024;
+                    setTimeout(() => {
+                        var ctx = new AudioContext();
+                        var analyser = ctx.createAnalyser();
+                        var audioSrc = ctx.createMediaElementSource(v);
+                        // we have to connect the MediaElementSource with the analyser 
+                        audioSrc.connect(analyser);
+                        analyser.connect(ctx.destination);
+                        // we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
+                        analyser.fftSize = 1024;
 
-                    // we're ready to receive some data!
-                    canvas3 = document.createElement('canvas')
+                        // we're ready to receive some data!
+                        canvas3 = document.createElement('canvas')
 
-                    canvas3.style = `position: fixed;
+                        canvas3.style = `position: fixed;
                     z-index: 1;
                 bottom: 0px;
                 pointer-events: none;
                 filter: drop-shadow(0px 0px 3px white);`
-                    canvas3.width = 1920
-                    canvas3.height = 250
+                        canvas3.width = 1920
+                        canvas3.height = 250
 
-                    var cwidth = canvas3.width,
-                        cheight = canvas3.height,
-                        meterWidth = 5, //width of the meters in the spectrum
-                        gap = 4, //gap between meters
-                        capHeight = 2,
-                        capStyle = '#fff',
-                        meterNum = 1024, //count of the meters
-                        capYPositionArray = []; ////store the vertical position of hte caps for the preivous frame
+                        var cwidth = canvas3.width,
+                            cheight = canvas3.height,
+                            meterWidth = 5, //width of the meters in the spectrum
+                            gap = 4, //gap between meters
+                            capHeight = 2,
+                            capStyle = '#fff',
+                            meterNum = 1024, //count of the meters
+                            capYPositionArray = []; ////store the vertical position of hte caps for the preivous frame
 
-                    YTAPP.insertBefore(canvas3, YTAPP.firstChild)
+                        YTAPP.insertBefore(canvas3, YTAPP.firstChild)
 
-                    ctx = canvas3.getContext('2d'),
-                        gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                    gradient.addColorStop(1, '#ffffff00');
-                    gradient.addColorStop(0.5, '#ffffff');
-                    gradient.addColorStop(0, '#ffffff');
-                    // loop
-                    function renderFrame() {
-                        var array = new Uint8Array(analyser.frequencyBinCount);
-                        analyser.getByteFrequencyData(array);
-                        var step = 1; //sample limited data from the total array
-                        ctx.clearRect(0, 0, cwidth, cheight);
-                        for (var i = 0; i < meterNum; i++) {
-                            var value = array[i * step]
-                            value = ((value * value) / 500) - 20
-                            if (capYPositionArray.length < Math.round(meterNum)) {
-                                capYPositionArray.push(value);
-                            };
-                            ctx.fillStyle = capStyle;
-                            //draw the cap, with transition effect
-                            if (value < capYPositionArray[i]) {
-                                ctx.fillRect(i * 12, cheight - (--capYPositionArray[i]), meterWidth, capHeight);
-                            } else {
-                                ctx.fillRect(i * 12, cheight - value, meterWidth, capHeight);
-                                capYPositionArray[i] = value;
-                            };
-                            ctx.fillStyle = gradient; //set the filllStyle to gradient for a better look
-                            ctx.fillRect(i * 12 /*meterWidth+gap*/, cheight - value + capHeight, meterWidth, cheight); //the meter
+                        ctx = canvas3.getContext('2d'),
+                            gradient = ctx.createLinearGradient(0, 0, 0, 300);
+                        gradient.addColorStop(1, '#ffffff00');
+                        gradient.addColorStop(0.5, '#ffffff');
+                        gradient.addColorStop(0, '#ffffff');
+                        // loop
+                        function renderFrame() {
+                            var array = new Uint8Array(analyser.frequencyBinCount);
+                            analyser.getByteFrequencyData(array);
+                            var step = 1; //sample limited data from the total array
+                            ctx.clearRect(0, 0, cwidth, cheight);
+                            for (var i = 0; i < meterNum; i++) {
+                                var value = array[i * step]
+                                value = ((value * value) / 500) - 20
+                                if (capYPositionArray.length < Math.round(meterNum)) {
+                                    capYPositionArray.push(value);
+                                };
+                                ctx.fillStyle = capStyle;
+                                //draw the cap, with transition effect
+                                if (value < capYPositionArray[i]) {
+                                    ctx.fillRect(i * 12, cheight - (--capYPositionArray[i]), meterWidth, capHeight);
+                                } else {
+                                    ctx.fillRect(i * 12, cheight - value, meterWidth, capHeight);
+                                    capYPositionArray[i] = value;
+                                };
+                                ctx.fillStyle = gradient; //set the filllStyle to gradient for a better look
+                                ctx.fillRect(i * 12 /*meterWidth+gap*/, cheight - value + capHeight, meterWidth, cheight); //the meter
+                            }
+                            requestAnimationFrame(renderFrame);
                         }
-                        requestAnimationFrame(renderFrame);
-                    }
-                    renderFrame();
-                }, 1000);
-            }
-
-
-
-
-
-
-
-
-
-
-
-            if (localStorage["nt-EnableButtonT"] == 'true') {
-                function RemoveCinema() {
-                    if (document.getElementById("cinematics")) {
-                        console.log("Removed")
-                        document.getElementById("cinematics").remove()
-                    } else {
-                        setTimeout(() => {
-                            RemoveCinema()
-                        }, 1000)
-                    }
+                        renderFrame();
+                    }, 1000);
                 }
-                RemoveCinema()
-            }
 
+
+
+
+
+
+
+
+
+
+
+                if (localStorage["nt-EnableButtonT"] == 'true') {
+                    function RemoveCinema() {
+                        if (document.getElementById("cinematics")) {
+                            console.log("Removed")
+                            document.getElementById("cinematics").remove()
+                        } else {
+                            setTimeout(() => {
+                                RemoveCinema()
+                            }, 1000)
+                        }
+                    }
+                    RemoveCinema()
+                }
+            }
         }
     }, 1000);
 }
