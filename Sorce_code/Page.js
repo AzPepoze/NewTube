@@ -348,7 +348,7 @@ function SetValueCheck() {
         margin-bottom:-20px !important;
     }`, ``)
 
-    SetValueCheck2("Scroll", `#masthead{
+    SetValueCheck2("Scroll", `#masthead > #background{
         transition: background .2s;
     }`, ``)
 
@@ -1247,8 +1247,12 @@ function LOADANIMATION(e) {
     EPar = null
 }
 
+var Masterhead
+
 function ScrollEv() {
-    var Masterhead = document.getElementById("masthead")
+    if (Masterhead == null) {
+        Masterhead = document.querySelector("#masthead > #background")
+    }
 
     if (Masterhead) {
         toppo = document.documentElement.scrollTop
@@ -1264,6 +1268,7 @@ function ScrollEv() {
                 Masterhead.style = ``
             }
         }
+
     } else {
         setTimeout(() => {
             ScrollEv()
@@ -2242,6 +2247,10 @@ function update() {
 
                 .ytp-offline-slate > button{
                     display:none;
+                }
+
+                #content{
+                    overflow-x: hidden;
                 }
                     
                 `+ BGBLURCODE + `
@@ -4452,8 +4461,12 @@ function SettoEnd() {
                                 border-right-color: var(--theme) !important;
                             }
                             
-                            .ytp-bezel, .ytp-bezel-text-wrapper{
+                            .ytp-bezel{
                                 display: block !important;
+                            }
+
+                            .ytp-bezel-text-wrapper{
+                                display: none !important;
                             }
                             
                             .ytp-bezel{

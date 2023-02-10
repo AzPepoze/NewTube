@@ -2,7 +2,11 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.5.1 (Current)
+## Version 3.5.2 (Current)
+
+- Fix bug!
+
+## Version 3.5.1
 
 - Add more VDO Animation
 
