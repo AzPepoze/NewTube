@@ -1,8 +1,5 @@
 /* Yeaaaaaah :3 AzPepoze https://www.youtube.com/channel/UCJ2C0UTfxQo6iGTfudPfoRQ */
 
-//html5-video-player ytp-transparent ytp-exp-bottom-control-flexbox ytp-exp-ppp-update ytp-hide-info-bar ytp-rounded-miniplayer ytp-autonav-endscreen-cancelled-state ytp-fine-scrubbing-exp ytp-rounded-miniplayer-extra-wide-video ytp-fit-cover-video ytp-heat-map playing-mode ytp-autohide ytp-large-width-mode ytp-branding-shown
-//html5-video-player ytp-transparent ytp-exp-bottom-control-flexbox ytp-exp-ppp-update playing-mode buffering-mode unstarted-mode ytp-hide-controls ytp-hide-info-bar ytp-large-width-mode ytp-rounded-miniplayer ytp-autonav-endscreen-cancelled-state ytp-autohide
-
 Ver = chrome.runtime.getManifest().version
 
 var PreloadImg = new Image
@@ -1247,25 +1244,29 @@ function LOADANIMATION(e) {
     EPar = null
 }
 
+var MasterheadBG
 var Masterhead
 
 function ScrollEv() {
     if (Masterhead == null) {
-        Masterhead = document.querySelector("#masthead > #background")
+        Masterhead = document.querySelector("#masthead")
+        MasterheadBG = document.querySelector("#masthead > #background")
     }
 
     if (Masterhead) {
         toppo = document.documentElement.scrollTop
         if (toppo == 0 && TranHead == false) {
             TranHead = true
-            Masterhead.style = `background:transparent;
+            Masterhead.style = `
                 backdrop-filter: none !important;
                 box-shadow: 0px 0px transparent !important;
                 outline: transparent !important;`
+            MasterheadBG.style = `background:transparent;`
         } else {
             if (toppo > 0 && TranHead == true) {
                 TranHead = false
                 Masterhead.style = ``
+                MasterheadBG.style = ``
             }
         }
 
@@ -2379,7 +2380,7 @@ function RESETTUBE() {
         document.getElementById("NEWTUBE").scrollTop = remem
     }
 }
-
+ width:
 //IDK----------------------------------------------------------------------------
 
 function createList(Name, num) {
@@ -2393,15 +2394,17 @@ function createList(Name, num) {
     ThisList.style = `display: flex;
     overflow: hidden;
     width: -webkit-fill-available;
+    width: -moz-available;
     flex-direction: row;
     align-items: center;
     transition: all 0.2s;
-    position: relative;`
+    position: relative;`   
 
     TellName = document.createElement("lable")
     TellName.style = `overflow-wrap: break-word;
     word-break: break-all;
-    width: -webkit-fill-available;`
+    width: -webkit-fill-available;
+    width: -moz-available;`
     TellName.innerHTML = Name
     TellName.className = `DES`
 
@@ -2821,7 +2824,8 @@ function PRESET() {
 
     LIST = document.createElement("body")
     LIST.style = `width: 90%;
-    height: -webkit-fill-available;
+    height: width: -webkit-fill-available;
+width: -moz-available;
     top: 50%;
     left: 50%;
     border-radius: 10px;
@@ -2870,6 +2874,7 @@ function PRESET() {
     let SavePRe = document.getElementById("SavePreset")
 
     TextPre.style = `width: -webkit-fill-available;
+width: -moz-available;
     background: rgb(56, 56, 56);
     border-radius: 10px;
     border: transparent;
@@ -3001,6 +3006,7 @@ function createMainframe() {
     Head.className = "DES"
     Head.innerHTML = THISPar
     Head.style = `width: -webkit-fill-available;
+width: -moz-available;
     font-size: 18px;
     padding: 10px;
     margin-inline: -10px;
@@ -3017,6 +3023,7 @@ function createMainframe() {
     LeftList.style = `
     position:relative;
     width: -webkit-fill-available;
+width: -moz-available;
     font-size: 16px;
     padding: 10px;
     color: white;`
@@ -3378,6 +3385,7 @@ function CreateMENU() {
     LeftCount = 0
 
     let DeBu = `width: -webkit-fill-available;
+width: -moz-available;
     padding: 10px;
     background: rgb(94 94 94 / 76%);
     color: white;
@@ -3441,6 +3449,7 @@ function CreateMENU() {
     -webkit-text-stroke: black 1px;
     text-shadow: 0px 0px 3px white;;
     width: -webkit-fill-available;
+width: -moz-available;
     font-size: 18px;
     padding: 10px;
     margin-inline: -10px;
