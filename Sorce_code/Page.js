@@ -181,14 +181,14 @@ function CheckPar(ThisE) {
     }
 }
 
-Set.innerHTML = "<span>◉</span>";
+Set.innerHTML = "<span>✦</span>";
 Set.id = "NEWTUBESET";
 Set.style = `display: inline-block;
 background-color: transparent;
 border: transparent;
 color: var(--yt-spec-text-primary);
 text-align: center;
-font-size: 15px;
+font-size: 20px;
 transition: all 0.5s;
 margin: 5px;
 width: 50px;`
@@ -290,8 +290,7 @@ function SetValueCheck() {
 
     SetValueCheck2("BottomG", 'background-image: none !important;', ``)
 
-    SetValueCheck2("VBG", `ytd-watch-flexy[theater] #player-theater-container.ytd-watch-flexy,
-    ytd-watch-flexy[fullscreen] #player-theater-container.ytd-watch-flexy,`, ``)
+    SetValueCheck2("VBG", `#player-wide-container:has(div.html5-video-player:not(.ytp-fullscreen)),`, ``)
 
     SetValueCheck2("CenterMedia", `.ytp-chrome-controls {
         display: flex !important;
@@ -420,16 +419,16 @@ function SetValueCheck() {
     }`)
 
     SetValueCheck2("ControlUnderVDO", `
+#player div.html5-video-player:not(.ytp-fullscreen){
+    padding-bottom: var(--Media-Space);
+}
+
 .html5-video-container{
-      height:100%;
+    height:100%;
 }
 
 div.html5-video-player:not(.ytp-fullscreen) video {
     position: unset !important;
-}
-
-div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed){
-      padding-bottom: var(--Media-Space);
 }
 
 div.html5-video-player:not(.ytp-fullscreen) .ytp-chrome-bottom{
@@ -449,9 +448,14 @@ div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .ytp-chrome-bottom{
       margin-left: 50% !important;
 }
 
-#player:has(div.html5-video-player:not(.ytp-embed)),
-#player-theater-container:has(#player-container){
-      margin-bottom:var(--Media-Space);
+#player-wide-container div.html5-video-player:not(.ytp-small-mode):not(.ytp-embed) > .ytp-chrome-bottom,
+#player-wide-container div.html5-video-player:not(.ytp-small-mode):not(.ytp-embed) > .ytp-gradient-bottom{
+    transform: translate(0px, var(--Media-Space));
+}
+
+#player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)),
+#player-wide-container > #player-container{
+    margin-bottom: var(--Media-Space);
 }
 
 div.html5-video-player:not(.ytp-embed) div[aria-live="polite"]{
@@ -463,19 +467,20 @@ div.html5-video-player.ytp-embed{
     overflow:hidden !important;
 }
 
-div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-caption-window-container,
-div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-player-content,
-div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-cued-thumbnail-overlay{
-      height:calc(100% - var(--Media-Space)) !important;
+#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-caption-window-container,
+#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-player-content,
+#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-cued-thumbnail-overlay{
+      height: calc(100% - var(--Media-Space)) !important;
+}
+
+#player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-caption-window-container,
+#player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-player-content,
+#player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-cued-thumbnail-overlay{
+      height: 100% !important;
 }
 
 div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode) .ytp-caption-window-bottom{
       margin-bottom: 0px !important;
-}
-
-#player-theater-container div.html5-video-player:not(.ytp-fullscreen) video{
-      height:100% !important;
-      width:auto !important;
 }
 
 .html5-video-container{
@@ -917,7 +922,7 @@ let NORMAL = `
         transition: 0.5s;
 	}
 	#NEWTUBESET span:after {
-        content: '\◀';
+        content: '\⇠';
         position: absolute;
         opacity: 0;
         top: 0;
@@ -1591,12 +1596,6 @@ function update() {
                 {
                     background:black !important;
                 }
-                
-                #hover-overlays
-                {
-                    transition: opacity .4s;
-                    opacity: 0 !important;
-                }
 
                 #NewtubeBlurBG{
                     transition: opacity 2s , margin-top 0.1s , margin-left 0.1s;
@@ -1610,11 +1609,6 @@ function update() {
 
                 html:has(div.html5-video-player.ytp-fullscreen) #NewtubeBlurBG {
                     display: none;
-                }
-                
-                #thumbnail:hover > #hover-overlays
-                {
-                    opacity: 1 !important;
                 }
                 
                 .ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title,
@@ -1695,7 +1689,8 @@ function update() {
                 ytd-simple-menu-header-renderer,
                 .yt-spec-button-shape-next--mono.yt-spec-button-shape-next--tonal,
                 #description,
-                #player
+                #player,
+                ytd-thumbnail-overlay-resume-playback-renderer
                 {
                     background: transparent !important;
                 }
@@ -2107,16 +2102,16 @@ function update() {
                     color: black !important;
                 }
 
-                .sbse{
+                .sbpqs_d .sbpqs_a{
                     color: var(--theme) !important;
                 }
                     
-                .sbpqs_a{
+                .sbse:not(.sbpqs_d) .sbpqs_a{
                     color: var(--nd-text-color) !important;
                 }
                     
                 .sbpqs_a:before{
-                    filter: invert(1);
+                    filter: invert(0.5);
                 }
 
                 #guide-content{
@@ -2252,6 +2247,26 @@ function update() {
 
                 ytd-app > #content{
                     overflow-x: hidden;
+                }
+
+                #progress.ytd-thumbnail-overlay-resume-playback-renderer {
+                    background: linear-gradient(-70deg, var(--yt-spec-static-brand-red), var(--ThirdTheme) ) !important;
+                }
+
+                #hover-overlays {
+                    transition: all .4s;
+                    transform: skewX(-20deg) translateX(30px);
+                    height: 100%;
+                    width: 100%;
+                    animation-fill-mode: backwards;
+                    position: absolute;
+                    top: 0;
+                    opacity: 0 !important;
+                }
+                
+                #thumbnail.ytd-compact-video-renderer:hover > #hover-overlays {
+                    opacity: 1 !important;
+                    transform: unset !important;
                 }
                     
                 `+ BGBLURCODE + `

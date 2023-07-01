@@ -2,7 +2,13 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.5.4 (Current)
+## Version 3.5.5 (Current)
+
+- Fix bugs!
+- Change settings icon
+- hover thumbnail animation
+
+## Version 3.5.4
 
 - Fix bug!
 
