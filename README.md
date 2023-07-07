@@ -2,7 +2,11 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.5.5 (Current)
+## Version 3.5.6 (Current)
+
+- Fix bugs!
+
+## Version 3.5.5
 
 - Fix bugs!
 - Change settings icon

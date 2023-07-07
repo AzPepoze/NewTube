@@ -2253,7 +2253,7 @@ function update() {
                     background: linear-gradient(-70deg, var(--yt-spec-static-brand-red), var(--ThirdTheme) ) !important;
                 }
 
-                #hover-overlays {
+                #thumbnail > #hover-overlays {
                     transition: all .4s;
                     transform: skewX(-20deg) translateX(30px);
                     height: 100%;
@@ -2264,7 +2264,7 @@ function update() {
                     opacity: 0 !important;
                 }
                 
-                #thumbnail.ytd-compact-video-renderer:hover > #hover-overlays {
+                #thumbnail:hover > #hover-overlays {
                     opacity: 1 !important;
                     transform: unset !important;
                 }
