@@ -2,7 +2,13 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.5.6 (Current)
+## Version 3.6.0 (Current)
+
+- Fix bugs!!
+- Enable Search animation button
+- Release for Firefox users
+
+## Version 3.5.6
 
 - Fix bugs!
 

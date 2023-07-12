@@ -352,6 +352,22 @@ function SetValueCheck() {
         transition: all 0.5s;
     }`, ``)
 
+    SetValueCheck2("SearchAnim", `
+    div.gstl_50.sbdd_a{
+        display: block !important;
+        overflow:hidden;
+        transition: all 0.4s ease;
+        transform: translate(50px,0);
+        pointer-events: none;
+        opacity:0;
+    }
+    
+    html:has(input#search:focus) div.gstl_50.sbdd_a{
+            transform: none !important;
+            pointer-events: visible !important;
+            opacity:1 !important;
+    }`, ``)
+
     SetValueCheck2("NewSub", `
     .ytp-caption-segment {
         background: transparent !important;
@@ -818,6 +834,7 @@ function SetNull() {
     SetTo("DelBarDebugT", false)
 
     SetTo("AutohideBarT", true)
+    SetTo("SearchAnimT", true)
 
     //Select------------------------
 
@@ -2199,38 +2216,8 @@ function update() {
                     display: flex !important;
                 }
 
-                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #secondary,
-                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #below,
-                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) div.ytp-gradient-bottom,
-                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) div.ytp-chrome-bottom
-                {
-                    transition: all 0.5s !important;
-                    opacity:0 !important;
-                }
-
-                html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #below {
-                    transform: translate(0,100px);
-                }
-
-                #secondary,
-                #below{
-                    transition: all 1.5s;
-                }
-
                 .ytp-spinner-circle{
                     border-color: var(--theme) var(--theme) transparent !important;
-                }
-
-                div.gstl_50.sbdd_a{
-                    display: block !important;
-                    overflow:hidden;
-                    transition: all 0.4s ease;
-                }   
-                
-                html:has(input#search:not(:focus)) div.gstl_50.sbdd_a{
-                        transform: translate(50px,0) !important;
-                        pointer-events: none;
-                        opacity:0;
                 }
 
                 path[stroke="rgb(255,255,255)"] {
@@ -2308,6 +2295,8 @@ function update() {
                 `+ GetCodeC("SPSubScribe") + `
                 
                 `+ GetCodeC("AutohideBar") + `
+
+                `+ GetCodeC("SearchAnim") + `
                 
                 `+ ADDCSS + `
 
@@ -2315,18 +2304,36 @@ function update() {
 
                 var thisStyle = NORMAL + Collect_Style + AfterNEWTUBE
 
-                if (localStorage["nt-SwapRowT"] == "true") {
-                    thisStyle = thisStyle + `
-                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #secondary{
-                        transform: translate(-100px,0);
-                    }`
-                } else {
-                    thisStyle = thisStyle + `
-                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #secondary{
-                        transform: translate(100px,0);
-                    }`
-                }
+                if (localStorage["nt-PtranT"] == "true") {
+                    thisStyle = thisStyle + `html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #secondary,
+                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #below,
+                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) div.ytp-gradient-bottom,
+                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) div.ytp-chrome-bottom
+                    {
+                        transition: all 0.5s !important;
+                        opacity:0 !important;
+                    }
 
+                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #below {
+                        transform: translate(0,100px);
+                    }
+
+                    #secondary,
+                    #below{
+                        transition: all 1.5s;
+                    }`
+                    if (localStorage["nt-SwapRowT"] == "true") {
+                        thisStyle = thisStyle + `
+                        html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #secondary{
+                            transform: translate(-100px,0);
+                        }`
+                    } else {
+                        thisStyle = thisStyle + `
+                        html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #secondary{
+                            transform: translate(100px,0);
+                        }`
+                    }
+                }
 
                 NTstyle.textContent = thisStyle
             };
@@ -3534,6 +3541,23 @@ width: -moz-available;
 
     SetBg.appendChild(Rebug)
 
+
+    var FHotFix = document.createElement('button')
+    FHotFix.innerHTML = "❗Firefox Hotfix❗<br>(Disable features that unstable)"
+    FHotFix.className = "Reset"
+    FHotFix.style = DeBu + `background: rgb(135 51 51 / 76%);`
+    FHotFix.onclick = function () {
+
+        localStorage["SearchAnimT"] = "false"
+        localStorage["PtranT"] = "false"
+        localStorage["ThumbAnimT"] = "false"
+        localStorage["ControlUnderVDOT"] = "false"
+
+        location.reload()
+    }
+
+    SetBg.appendChild(FHotFix)
+
     //-------------------------------------------------------------------------------
 
     THISPar = "🎇 Enhancement"
@@ -3957,6 +3981,8 @@ width: -moz-available;
     createCheck("Ptran", "Enable Page transition")
 
     createCheck("ThumbAnim", "Enable thumbnail loaded animation")
+
+    createCheck("SearchAnim", "Enable Search animation")
 
     //Hover-------------------------------------------------------------------------------
 
@@ -4573,6 +4599,7 @@ function SettoEnd() {
 
                             // we're ready to receive some data!
                             canvas3 = document.createElement('canvas')
+                            canvas3.id = "Newtube_Visaulizer"
 
                             canvas3.style = `position: fixed;
                     z-index: 1;
@@ -4759,7 +4786,7 @@ function DetectPlay() {
     console.log("PLAY")
     SetCanvas()
     thisframe = 0
-    FindVideo().requestVideoFrameCallback(drawpic)
+    drawpic()
     // WaitForFrame()
 }
 
@@ -5213,9 +5240,8 @@ function drawOnePic() {
 }
 
 let fps = 30,
-    calPerFrameTime = 1000 / fps
-
-
+    calPerFrameTime = 1000 / fps,
+    Support = ('requestVideoFrameCallback' in HTMLVideoElement.prototype)
 
 function drawpic() {
     if (drawing == false) {
@@ -5229,7 +5255,13 @@ function drawpic() {
             } else {
                 drawOnePic()
 
-                v.requestVideoFrameCallback(DrawApic)
+                if (Support == true) {
+                    v.requestVideoFrameCallback(DrawApic)
+                }else{
+                    setTimeout(() => {
+                        DrawApic()
+                    }, calPerFrameTime);
+                }
             }
         }
         DrawApic()
@@ -5294,7 +5326,7 @@ function CreateCanvas() {
         left:0px;`
 
         canvas2.id = "NewtubeVDOCanvas"
-        context2 = canvas2.getContext('2d')
+        context2 = canvas2.getContext('2d', { alpha: false })
         context2.imageSmoothingEnabled = false
     }
 

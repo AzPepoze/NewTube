@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Newtube (Youtube Style Customizer)",
-    "version": "3.5.6",
+    "version": "3.6.0",
     "description": "Customize your Youtube website with a lot customizable.",
     "default_locale": "en",
 	"icons":{
@@ -43,5 +43,10 @@
             "description": "Toggle Setting"
         }
     },
-    "host_permissions": ["*://www.youtube.com/*"]
+    "host_permissions": ["*://www.youtube.com/*"],
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "Newtube@AzPepoze"
+        }
+    }
 }
