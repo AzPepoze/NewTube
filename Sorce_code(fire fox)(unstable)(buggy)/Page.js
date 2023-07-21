@@ -9,7 +9,7 @@ PreloadImg.onload = function () {
 
 window.onerror =
     function (msg, source, lineNo, columnNo, error) {
-        if (localStorage["nt-ErrorCollectT"] == true) {
+        if (localStorage["nt-ErrorCollectT"] == "true") {
             alert("NEWTUBE_ERROR" +
                 "\n\n" + msg +
                 "\n" + lineNo)

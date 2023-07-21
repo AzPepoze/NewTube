@@ -1,9 +1,19 @@
-<a href="https://chrome.google.com/webstore/detail/youtube-style-customizer/dnjjchajjdnfbjhjclmilicgheglcopj" style="font-size:20px;" target="_blank">Get this extention!</a>
+<a href="https://chrome.google.com/webstore/detail/youtube-style-customizer/dnjjchajjdnfbjhjclmilicgheglcopj" style="font-size:40px;" target="_blank">(Chrome Web Store) Get this extention!</a>
+<a href="https://addons.mozilla.org/firefox/addon/newtube-youtubestylecustomizer/" style="font-size:40px;" target="_blank">(Firefox addon) Get this extention!</a>
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.6.0 (Current)
+## Version 3.6.2 (Current)
 
+- Fix bug!
+- Search
+
+## Version 3.6.1
+
+- Fix bug!
+- can collect error
+
+## Version 3.6.0
 - Fix bugs!!
 - Enable Search animation button
 - Release for Firefox users

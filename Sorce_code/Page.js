@@ -9,7 +9,7 @@ PreloadImg.onload = function () {
 
 window.onerror =
     function (msg, source, lineNo, columnNo, error) {
-        if (localStorage["nt-ErrorCollectT"] == true) {
+        if (localStorage["nt-ErrorCollectT"] == "true") {
             alert("NEWTUBE_ERROR" +
                 "\n\n" + msg +
                 "\n" + lineNo)
@@ -30,8 +30,10 @@ function SetWhenUpdate() {
     localStorage["nt-NUMPRESET"] = JSON.stringify(presetarray)
 
     SetNormalPre()
+    //------------------------------------------------------
 
-    localStorage["nt-NewVDOanimaT"] = "true"
+
+    
 }
 
 ForcePre = [
@@ -896,6 +898,10 @@ let NORMAL = `
         50% { background-position: 400% 0; }
         100% { background-position: 0 0; }
     }
+    
+    mark {
+        background:rgb(250,200, 250);
+    }
 
     .NDel:hover {
         background: #41ffe5 !important;
@@ -1270,12 +1276,12 @@ var MasterheadBG
 var Masterhead
 
 function ScrollEv() {
-    if (Masterhead == null) {
+    if (Masterhead == null || MasterheadBG == null) {
         Masterhead = document.querySelector("#masthead")
         MasterheadBG = document.querySelector("#masthead > #background")
     }
 
-    if (Masterhead) {
+    if (Masterhead && MasterheadBG) {
         toppo = document.documentElement.scrollTop
         if (toppo == 0 && TranHead == false) {
             TranHead = true
@@ -3401,7 +3407,7 @@ function FindVideo() {
 
 
 //Create MENU----------------------------------------------------------------------------
-
+let SetBg,ThisCheckMainSetting
 function CreateMENU() {
 
     LeftCount = 0
@@ -3437,14 +3443,14 @@ width: -moz-available;
     LIST.style = "width: 210px; height: 100%; display: flex; flex-direction: column;";
     BG.appendChild(LIST)
 
-    let SetBg = document.createElement("body")
+    SetBg = document.createElement("body")
     SetBg.id = "NEWTUBE";
     SetBg.className = "NEWTUBE"
-    SetBg.style = "width: 550px; height: 100%;";
+    SetBg.style = "width: 550px; height: calc(100% - 50px); margin-top: 50px;";
     BG.appendChild(SetBg)
 
     var Reset = document.createElement('button')
-    Reset.innerHTML = "Reset Extention (fix bugs)"
+    Reset.innerHTML = "Reset Extention (Remove saved)"
     Reset.className = "Reset"
     Reset.style = DeBu
     Reset.onclick = function () {
@@ -3810,7 +3816,7 @@ width: -moz-available;
 
     var ChooseBG = createframe(`<lable class="DES">Background Image (Recommend to use URL)</lable>
     <p><input id="ChooseBG" type="file" accept="image/*" > </p>
-    <p><label class="DES" style="display: flex; text-align: center; margin-block: 15px; flex-direction: column;">If your computer is slow. You should enable</br>"Use upload api" button for saving your computer. ♥♥♥</br>(If not please disable it for save saving internet. ♥♥♥)</label> </p>
+    <p><label class="DES" style="display: block; text-align: center; margin-block: 15px; flex-direction: column;">If your computer is slow. You should enable</br>"Use upload api" button for saving your computer. ♥♥♥</br>(If not please disable it for save saving internet. ♥♥♥)</label> </p>
     <p><label class="DES" style="display: flex; text-align: center; margin-bottom: 30px;">(Thanks you imgbb.com for free api image upload! ♥)</label> </p>
     <p><label class="DES">Enter URL :</label><input id="IMGFORBG" class="TextBox" type="text" style="display: flex;"></p>
     <p><lable class="DES" style="display: flex; text-align: center;" id="STATUS"></label></p>`)
@@ -4126,9 +4132,91 @@ width: -moz-available;
     createCheck("DelBar", "Remove black bar top-bottom (Background VDO Should Enabled)", true)
 
     createCheck("DelBarDebug", "Remove black bar Debug", true)
+
+
+    //----------------------------------------------------------------------------------
+
+    var NewtubeSearch = document.createElement('input')
+    NewtubeSearch.id = "NtSearch"
+    NewtubeSearch.style = `
+    position: absolute;
+    width: -webkit-fill-available;
+    height: 40px;
+    top: 0px;
+    border-radius: 0px 0px 20px 20px;
+    color: white;
+    font-size: 20px;
+    padding-left: 20px;
+    background: transparent;
+    border: none;
+    border-bottom: #d084ffb8 dotted;
+    `
+    NewtubeSearch.placeholder = "Search"
+    SetBg.appendChild(NewtubeSearch)
+
+    function StartSearch() {
+        var SearchText = NewtubeSearch.value
+        var RegExpText = new RegExp(SearchText,"gi")
+        var All = SetBg.getElementsByClassName("DES")
+        
+        var AllMain = SetBg.childNodes
+        
+        AllMain.forEach(element => {
+            if (element != NewtubeSearch) {
+                element.style.display = "none"
+            }
+
+            if (SearchText == "") {
+                element.style.display = ""
+            }
+        })
+
+        for (let index = 0; index < All.length; index++) {
+            var element = All[index]
+            GetMainSetting(element)
+            var inner = element.innerHTML
+
+            inner = inner.replaceAll("<mark>", '')
+            inner = inner.replaceAll("</mark>", '')
+
+            if (SearchText == "") {
+                ThisCheckMainSetting.style.display = ""
+            }else{
+                // if (inner.search(SearchText) >= 0) {
+                //     ThisCheckMainSetting.style.display = ""
+                // }
+
+                inner = inner.replace(RegExpText, function name(match) {
+                    ThisCheckMainSetting.style.display = ""
+                    return `<mark>${match}</mark>`
+                })
+            }
+                
+            element.innerHTML = inner
+            
+        }
+    }
+
+    var changing = 0
+    NewtubeSearch.addEventListener("input",function () {
+        changing += 1
+        setTimeout(() => {
+            changing -= 1
+            if (changing == 0) {
+                StartSearch()
+            }
+        }, 100);
+    })
 }
 
-
+function GetMainSetting(thisElement) {
+    var ParElement = thisElement.parentNode
+    if (ParElement == SetBg) {
+        ThisCheckMainSetting = thisElement
+    }else{
+        GetMainSetting(ParElement)
+    }
+}
 
 
 
