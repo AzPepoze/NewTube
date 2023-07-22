@@ -5360,7 +5360,7 @@ function drawOnePic() {
 
             // LastFrame = ThisFrameData
 
-            if (mf < 5 || SureTHisHeight == "inf") {
+            if (mf < 6 || SureTHisHeight == "inf") {
                 SureTHisHeight = LastHeight
             }
 

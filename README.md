@@ -4,7 +4,11 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.7.1 (Current)
+## Version 3.7.2 (Current)
+
+- Fix black bar bug!
+
+## Version 3.7.1
 
 - Fix bugs!
 
