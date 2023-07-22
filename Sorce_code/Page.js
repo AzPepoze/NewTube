@@ -3639,7 +3639,7 @@ width: -moz-available;
 
     createCheck("ControlUnderVDO", `Move to under of video`)
     createTextBox("MediaSpace", `Under video distance`)
-    createCheck("AutohideBar", `Autohide (If you enabled Under VDO)`, true)
+    createCheck("AutohideBar", `Autohide (If you enabled Under VDO)`)
     createCheck("CenterMedia", "Move to center")
     createCheck("BottomG", "remove background gradient")
     createTextBox("MediaH", "Background height")
@@ -3655,7 +3655,12 @@ width: -moz-available;
 
     FontLocatePar = createMainframe()
 
-    createframe(`<textarea id="NTInstallFont" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste Font Faces here."></textarea>`)
+    
+
+    createframe(`<p style="display: flex;flex-direction: column;align-content: center;align-items: center; width: 100%;">
+    <a id="HOVERLINK" style="margin-bottom: 20px;font-size: 18px;background: #4b4b4b;padding: 10px;border-radius: 10px;" href="https://youtu.be/rm6U_4mendc" target="_blank" class="DES" >See how to add fonts!</a>
+    <textarea id="NTInstallFont" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste Font Faces here."></textarea>
+    </p>`)
 
     let CreatedFontsCheck = []
 
@@ -4218,9 +4223,8 @@ width: -moz-available;
 
     createCheck("NewVDOanima", "New video animation (Volume up/down,Pause,Play)")
 
-    createCheck("DelBar", "Remove black bar top-bottom (Background VDO Should Enabled)", true)
-
-    createCheck("DelBarDebug", "Remove black bar Debug", true)
+    createCheck("DelBar", "Remove black bar top-bottom (Background VDO Should Enabled)")
+    createCheck("DelBarDebug", "Remove black bar Debug")
 
 
     //----------------------------------------------------------------------------------
