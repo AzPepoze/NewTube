@@ -466,13 +466,13 @@ div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .ytp-chrome-bottom{
       margin-left: 50% !important;
 }
 
-#player-wide-container div.html5-video-player:not(.ytp-small-mode):not(.ytp-embed) > .ytp-chrome-bottom,
-#player-wide-container div.html5-video-player:not(.ytp-small-mode):not(.ytp-embed) > .ytp-gradient-bottom{
+#player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-chrome-bottom,
+#player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-gradient-bottom{
     transform: translate(0px, var(--Media-Space));
 }
 
 #player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)),
-#player-wide-container > #player-container{
+#player-wide-container > #player-container:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)){
     margin-bottom: var(--Media-Space);
 }
 
@@ -769,6 +769,7 @@ function SetNull() {
 
     SetTo("CUSTOM", ``)
     SetTo("ADDCUSTOM", ``)
+    SetTo("InstallFont", ``)
 
     SetTo("NVDOB", `60`)
     SetTo("NVDOC", `1`)
@@ -898,6 +899,10 @@ let NORMAL = `
         50% { background-position: 400% 0; }
         100% { background-position: 0 0; }
     }
+
+    .HoverList {
+        height: 21px;
+    }    
     
     mark {
         background:rgb(250,200, 250);
@@ -2261,6 +2266,15 @@ function update() {
                     opacity: 1 !important;
                     transform: unset !important;
                 }
+
+                #text.ytd-channel-name{
+                    transition: all 0.2s;
+                    background: transparent;
+                 }
+                 
+                 #text.ytd-channel-name:hover {
+                     background: var(--theme-fort);
+                 }
                     
                 `+ BGBLURCODE + `
                 
@@ -2306,6 +2320,8 @@ function update() {
                 
                 `+ ADDCSS + `
 
+                `+ localStorage["nt-InstallFont"] + `
+
                 `
 
                 var thisStyle = NORMAL + Collect_Style + AfterNEWTUBE
@@ -2342,6 +2358,31 @@ function update() {
                 }
 
                 NTstyle.textContent = thisStyle
+
+                setTimeout(() => {
+                    let ADDFont = ``
+
+                    listFonts().forEach(font => {
+                        let OriginalFontName = font
+                        font = font.replaceAll(" ","_")
+                        let FontSaveName = `nt-Font-${font}T`
+                        if (localStorage[FontSaveName] == "true") {
+                            if (ADDFont != ``) {
+                                ADDFont += ","
+                            }
+                            ADDFont += `'${OriginalFontName}'`
+                        }
+                    })
+
+                    if (ADDFont != ``) {
+                        ADDFont = `
+                        *{
+                            font-family: ${ADDFont} !important;
+                        }`
+                    }
+
+                    NTstyle.textContent += ADDFont
+                }, 100);
             };
         })
     }
@@ -3128,7 +3169,8 @@ function createCheck(id, Des, NEW) {
     createDes(Des, Box);
 
     ThisCheck = document.getElementById(id);
-
+    console.log(ThisCheck)
+    console.log(id)
     ThisCheck.checked = JSON.parse(localStorage["nt-" + id + "T"])
 
     ThisCheck.addEventListener('input', function (WHAT) {
@@ -3142,7 +3184,9 @@ function createCheck(id, Des, NEW) {
         }
 
         update()
-    });
+    })
+
+    return Box
 };
 
 
@@ -3230,7 +3274,6 @@ String.prototype.GetSaveRgba = function () {
 }
 
 function RenderPreImg(GettedImg) {
-    console.log(GettedImg)
 
     var Preimg = document.getElementById("BGIMG")
 
@@ -3409,7 +3452,6 @@ function FindVideo() {
 //Create MENU----------------------------------------------------------------------------
 let SetBg,ThisCheckMainSetting
 function CreateMENU() {
-
     LeftCount = 0
 
     let DeBu = `width: -webkit-fill-available;
@@ -3607,6 +3649,53 @@ width: -moz-available;
     createCheck("AutoPIP", "Auto Pictue In Pictue mode<br>(Pls click anywhere In page after you back to page)<br>(Security problem) (I do my best T_T)")
     createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode")
 
+    //-------------------------------------------------------------------------------
+
+    THISPar = "🔠 Fonts"
+
+    FontLocatePar = createMainframe()
+
+    createframe(`<textarea id="NTInstallFont" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste Font Faces here."></textarea>`)
+
+    let CreatedFontsCheck = []
+
+    function CreateFontsList() {
+
+        console.log(CreatedFontsCheck)
+
+        CreatedFontsCheck.forEach(element => {
+            element.remove()
+        });
+
+        CreatedFontsCheck = []
+        
+        listFonts().forEach(font => {
+            font = font.replaceAll(" ","_")
+            let FontSaveName = `nt-Font-${font}T`
+            if (!localStorage[FontSaveName]) {
+                localStorage[FontSaveName] = "false"
+            }
+            let ThisfontCheck = createCheck("Font-"+font, font)
+            CreatedFontsCheck.push(ThisfontCheck)
+            FontLocatePar.append(ThisfontCheck)
+        })
+    }
+
+    let InstallFont = document.getElementById("NTInstallFont")
+
+    InstallFont.value = localStorage["nt-InstallFont"]
+
+    InstallFont.addEventListener('change', function () {
+        localStorage["nt-InstallFont"] = InstallFont.value
+        update()
+        setTimeout(() => {
+            CreateFontsList()
+            InstallFont.scrollIntoView()
+        }, 100);
+    })
+
+
+    CreateFontsList()
 
     //-------------------------------------------------------------------------------
 
@@ -5550,3 +5639,28 @@ window.addEventListener('blur', function () {
     console.log("Bruh")
     hidden = true
 })
+
+function listFonts() {
+    let { fonts } = document
+    const it = fonts.entries()
+  
+    let arr = []
+    let done = false
+  
+    while (!done) {
+      const font = it.next()
+      if (!font.done) {
+        arr.push(font.value[0])
+      } else {
+        done = font.done
+      }
+    }
+    arr = arr.map(obj => obj.family)
+    let ArrayFont = []
+    arr.forEach(font => {
+        if (!ArrayFont.includes(font)) {
+            ArrayFont.push(font)
+        }
+    })
+    return ArrayFont
+}

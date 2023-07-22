@@ -4,7 +4,12 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.6.2 (Current)
+## Version 3.7.0 (Current)
+
+- Fix bugs!
+- Custom Fonts!
+
+## Version 3.6.2
 
 - Fix bug!
 - Search
