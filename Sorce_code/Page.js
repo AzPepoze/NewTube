@@ -785,6 +785,8 @@ function SetNull() {
     SetTo("MediaSpace", `70`)
 
     SetTo("CanvasQua", `40`)
+    
+    SetTo("ReplaceYTURL", ``)
 
     //Check------------------------
 
@@ -838,6 +840,8 @@ function SetNull() {
 
     SetTo("AutohideBarT", true)
     SetTo("SearchAnimT", true)
+
+    SetTo("ReplaceYTT", false)
 
     //Select------------------------
 
@@ -1320,6 +1324,21 @@ function update() {
     console.log("UPDATE");
     Collect_Style = ``
     ADDCSS = ``
+    ADDReplaceLOGO = ``
+
+    if (localStorage["nt-ReplaceYTT"] == 'true') {
+        ADDReplaceLOGO = `
+          yt-icon.ytd-logo g,#country-code{
+            opacity:0;
+          }
+          
+          #logo.ytd-topbar-logo-renderer{
+            background:url("${localStorage["nt-ReplaceYTURL"]}");
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+          }`
+    }
 
     if (localStorage["nt-VDOBGT"] != 'true' || localStorage["nt-EnableButtonT"] != 'true') {
         if (VDOBG == true) {
@@ -2322,6 +2341,8 @@ function update() {
 
                 `+ localStorage["nt-InstallFont"] + `
 
+                `+ ADDReplaceLOGO + `
+
                 `
 
                 var thisStyle = NORMAL + Collect_Style + AfterNEWTUBE
@@ -2735,11 +2756,7 @@ function PRESET() {
         }
 
         function SetFile() {
-            console.log(F_NameArr.length == F_ReaderArr.length)
             if (F_NameArr.length == F_ReaderArr.length) {
-
-                console.log(F_NameArr)
-                console.log(F_ReaderArr)
 
                 DOwithindexed(async function () {
                     for (var i = 0; i < F_NameArr.length; i++) {
@@ -3169,8 +3186,7 @@ function createCheck(id, Des, NEW) {
     createDes(Des, Box);
 
     ThisCheck = document.getElementById(id);
-    console.log(ThisCheck)
-    console.log(id)
+
     ThisCheck.checked = JSON.parse(localStorage["nt-" + id + "T"])
 
     ThisCheck.addEventListener('input', function (WHAT) {
@@ -3399,7 +3415,6 @@ function GenNTubeCode() {
             arrdata[z.substring(3, z.length)] = localStorage[z]
         }
     }
-    console.log(arrdata)
     return arrdata
 }
 
@@ -3649,6 +3664,42 @@ width: -moz-available;
     createCheck("AutoPIP", "Auto Pictue In Pictue mode<br>(Pls click anywhere In page after you back to page)<br>(Security problem) (I do my best T_T)")
     createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode")
 
+    createframe(`<label class="DES">Custom Youtube logo</label>`)
+
+    createCheck("ReplaceYT", "Enable",true)
+
+    let ReplaceYTFrame = createframe(`<p class="DES" style="display: flex; align-items: center; width:-webkit-fill-available;">Enter URL :  </label><input id="ReplaceYTLOGO" style="width:380px; margin-left: 10px; margin-bottom: 10px;" class="TextBox" type="text" style="display: flex;"></p>`)
+
+    ReplaceYTFrame.style = `display: flex; flex-direction: column;`
+
+    let ReplaceYTLOGO = document.getElementById("ReplaceYTLOGO")
+
+    ReplaceYTLOGO.addEventListener('change', function () {
+        localStorage["nt-ReplaceYTURL"] = ReplaceYTLOGO.value
+        ReplaceYTLOGO.value = ""
+        update()
+    })
+
+    var ReplaceResetBu = document.createElement('button')
+    ReplaceResetBu.innerHTML = "Reset"
+    ReplaceResetBu.className = "Reset"
+    ReplaceResetBu.style = `margin-block-start: 10px;
+    color: #ffffff;
+    border-radius: 10px;
+    transition: all 0.2s;
+    background: #242424;
+    border: transparent;
+    padding: 5px;
+    padding-inline: 10px;`
+
+    ReplaceYTFrame.append(ReplaceResetBu)
+
+    ReplaceResetBu.onclick = function () {
+        localStorage["nt-ReplaceYTURL"] = ""
+        ReplaceYTLOGO.value = ""
+        update()
+    }
+
     //-------------------------------------------------------------------------------
 
     THISPar = "🔠 Fonts"
@@ -3665,8 +3716,6 @@ width: -moz-available;
     let CreatedFontsCheck = []
 
     function CreateFontsList() {
-
-        console.log(CreatedFontsCheck)
 
         CreatedFontsCheck.forEach(element => {
             element.remove()
@@ -3910,7 +3959,7 @@ width: -moz-available;
 
     var ChooseBG = createframe(`<lable class="DES">Background Image (Recommend to use URL)</lable>
     <p><input id="ChooseBG" type="file" accept="image/*" > </p>
-    <p><label class="DES" style="display: block; text-align: center; margin-block: 15px; flex-direction: column;">If your computer is slow. You should enable</br>"Use upload api" button for saving your computer. ♥♥♥</br>(If not please disable it for save saving internet. ♥♥♥)</label> </p>
+    <p><label class="DES" style="display: block; text-align: center; margin-block: 15px; flex-direction: column;">If your computer is slow. You should enable</br>"Use upload api" button for saving your computer. ♥♥♥</br>(If not please disable it to save your internet. ♥♥♥)</label> </p>
     <p><label class="DES" style="display: flex; text-align: center; margin-bottom: 30px;">(Thanks you imgbb.com for free api image upload! ♥)</label> </p>
     <p><label class="DES">Enter URL :</label><input id="IMGFORBG" class="TextBox" type="text" style="display: flex;"></p>
     <p><lable class="DES" style="display: flex; text-align: center;" id="STATUS"></label></p>`)

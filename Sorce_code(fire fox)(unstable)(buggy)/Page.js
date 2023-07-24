@@ -30,8 +30,10 @@ function SetWhenUpdate() {
     localStorage["nt-NUMPRESET"] = JSON.stringify(presetarray)
 
     SetNormalPre()
+    //------------------------------------------------------
 
-    localStorage["nt-NewVDOanimaT"] = "true"
+
+    
 }
 
 ForcePre = [
@@ -464,13 +466,13 @@ div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .ytp-chrome-bottom{
       margin-left: 50% !important;
 }
 
-#player-wide-container div.html5-video-player:not(.ytp-small-mode):not(.ytp-embed) > .ytp-chrome-bottom,
-#player-wide-container div.html5-video-player:not(.ytp-small-mode):not(.ytp-embed) > .ytp-gradient-bottom{
+#player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-chrome-bottom,
+#player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-gradient-bottom{
     transform: translate(0px, var(--Media-Space));
 }
 
 #player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)),
-#player-wide-container > #player-container{
+#player-wide-container > #player-container:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)){
     margin-bottom: var(--Media-Space);
 }
 
@@ -767,6 +769,7 @@ function SetNull() {
 
     SetTo("CUSTOM", ``)
     SetTo("ADDCUSTOM", ``)
+    SetTo("InstallFont", ``)
 
     SetTo("NVDOB", `60`)
     SetTo("NVDOC", `1`)
@@ -895,6 +898,14 @@ let NORMAL = `
         0% { background-position: 0 0; }
         50% { background-position: 400% 0; }
         100% { background-position: 0 0; }
+    }
+
+    .HoverList {
+        height: 21px;
+    }    
+    
+    mark {
+        background:rgb(250,200, 250);
     }
 
     .NDel:hover {
@@ -1270,12 +1281,12 @@ var MasterheadBG
 var Masterhead
 
 function ScrollEv() {
-    if (Masterhead == null) {
+    if (Masterhead == null || MasterheadBG == null) {
         Masterhead = document.querySelector("#masthead")
         MasterheadBG = document.querySelector("#masthead > #background")
     }
 
-    if (Masterhead) {
+    if (Masterhead && MasterheadBG) {
         toppo = document.documentElement.scrollTop
         if (toppo == 0 && TranHead == false) {
             TranHead = true
@@ -2255,6 +2266,15 @@ function update() {
                     opacity: 1 !important;
                     transform: unset !important;
                 }
+
+                #text.ytd-channel-name{
+                    transition: all 0.2s;
+                    background: transparent;
+                 }
+                 
+                 #text.ytd-channel-name:hover {
+                     background: var(--theme-fort);
+                 }
                     
                 `+ BGBLURCODE + `
                 
@@ -2300,6 +2320,8 @@ function update() {
                 
                 `+ ADDCSS + `
 
+                `+ localStorage["nt-InstallFont"] + `
+
                 `
 
                 var thisStyle = NORMAL + Collect_Style + AfterNEWTUBE
@@ -2336,6 +2358,31 @@ function update() {
                 }
 
                 NTstyle.textContent = thisStyle
+
+                setTimeout(() => {
+                    let ADDFont = ``
+
+                    listFonts().forEach(font => {
+                        let OriginalFontName = font
+                        font = font.replaceAll(" ","_")
+                        let FontSaveName = `nt-Font-${font}T`
+                        if (localStorage[FontSaveName] == "true") {
+                            if (ADDFont != ``) {
+                                ADDFont += ","
+                            }
+                            ADDFont += `'${OriginalFontName}'`
+                        }
+                    })
+
+                    if (ADDFont != ``) {
+                        ADDFont = `
+                        *{
+                            font-family: ${ADDFont} !important;
+                        }`
+                    }
+
+                    NTstyle.textContent += ADDFont
+                }, 100);
             };
         })
     }
@@ -2688,11 +2735,7 @@ function PRESET() {
         }
 
         function SetFile() {
-            console.log(F_NameArr.length == F_ReaderArr.length)
             if (F_NameArr.length == F_ReaderArr.length) {
-
-                console.log(F_NameArr)
-                console.log(F_ReaderArr)
 
                 DOwithindexed(async function () {
                     for (var i = 0; i < F_NameArr.length; i++) {
@@ -3136,7 +3179,9 @@ function createCheck(id, Des, NEW) {
         }
 
         update()
-    });
+    })
+
+    return Box
 };
 
 
@@ -3224,7 +3269,6 @@ String.prototype.GetSaveRgba = function () {
 }
 
 function RenderPreImg(GettedImg) {
-    console.log(GettedImg)
 
     var Preimg = document.getElementById("BGIMG")
 
@@ -3350,7 +3394,6 @@ function GenNTubeCode() {
             arrdata[z.substring(3, z.length)] = localStorage[z]
         }
     }
-    console.log(arrdata)
     return arrdata
 }
 
@@ -3401,9 +3444,8 @@ function FindVideo() {
 
 
 //Create MENU----------------------------------------------------------------------------
-
+let SetBg,ThisCheckMainSetting
 function CreateMENU() {
-
     LeftCount = 0
 
     let DeBu = `width: -webkit-fill-available;
@@ -3437,14 +3479,14 @@ width: -moz-available;
     LIST.style = "width: 210px; height: 100%; display: flex; flex-direction: column;";
     BG.appendChild(LIST)
 
-    let SetBg = document.createElement("body")
+    SetBg = document.createElement("body")
     SetBg.id = "NEWTUBE";
     SetBg.className = "NEWTUBE"
-    SetBg.style = "width: 550px; height: 100%;";
+    SetBg.style = "width: 550px; height: calc(100% - 50px); margin-top: 50px;";
     BG.appendChild(SetBg)
 
     var Reset = document.createElement('button')
-    Reset.innerHTML = "Reset Extention (fix bugs)"
+    Reset.innerHTML = "Reset Extention (Remove saved)"
     Reset.className = "Reset"
     Reset.style = DeBu
     Reset.onclick = function () {
@@ -3591,7 +3633,7 @@ width: -moz-available;
 
     createCheck("ControlUnderVDO", `Move to under of video`)
     createTextBox("MediaSpace", `Under video distance`)
-    createCheck("AutohideBar", `Autohide (If you enabled Under VDO)`, true)
+    createCheck("AutohideBar", `Autohide (If you enabled Under VDO)`)
     createCheck("CenterMedia", "Move to center")
     createCheck("BottomG", "remove background gradient")
     createTextBox("MediaH", "Background height")
@@ -3601,6 +3643,56 @@ width: -moz-available;
     createCheck("AutoPIP", "Auto Pictue In Pictue mode<br>(Pls click anywhere In page after you back to page)<br>(Security problem) (I do my best T_T)")
     createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode")
 
+    //-------------------------------------------------------------------------------
+
+    THISPar = "🔠 Fonts"
+
+    FontLocatePar = createMainframe()
+
+    
+
+    createframe(`<p style="display: flex;flex-direction: column;align-content: center;align-items: center; width: 100%;">
+    <a id="HOVERLINK" style="margin-bottom: 20px;font-size: 18px;background: #4b4b4b;padding: 10px;border-radius: 10px;" href="https://youtu.be/rm6U_4mendc" target="_blank" class="DES" >See how to add fonts!</a>
+    <textarea id="NTInstallFont" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste Font Faces here."></textarea>
+    </p>`)
+
+    let CreatedFontsCheck = []
+
+    function CreateFontsList() {
+
+        CreatedFontsCheck.forEach(element => {
+            element.remove()
+        });
+
+        CreatedFontsCheck = []
+        
+        listFonts().forEach(font => {
+            font = font.replaceAll(" ","_")
+            let FontSaveName = `nt-Font-${font}T`
+            if (!localStorage[FontSaveName]) {
+                localStorage[FontSaveName] = "false"
+            }
+            let ThisfontCheck = createCheck("Font-"+font, font)
+            CreatedFontsCheck.push(ThisfontCheck)
+            FontLocatePar.append(ThisfontCheck)
+        })
+    }
+
+    let InstallFont = document.getElementById("NTInstallFont")
+
+    InstallFont.value = localStorage["nt-InstallFont"]
+
+    InstallFont.addEventListener('change', function () {
+        localStorage["nt-InstallFont"] = InstallFont.value
+        update()
+        setTimeout(() => {
+            CreateFontsList()
+            InstallFont.scrollIntoView()
+        }, 100);
+    })
+
+
+    CreateFontsList()
 
     //-------------------------------------------------------------------------------
 
@@ -3810,7 +3902,7 @@ width: -moz-available;
 
     var ChooseBG = createframe(`<lable class="DES">Background Image (Recommend to use URL)</lable>
     <p><input id="ChooseBG" type="file" accept="image/*" > </p>
-    <p><label class="DES" style="display: flex; text-align: center; margin-block: 15px; flex-direction: column;">If your computer is slow. You should enable</br>"Use upload api" button for saving your computer. ♥♥♥</br>(If not please disable it for save saving internet. ♥♥♥)</label> </p>
+    <p><label class="DES" style="display: block; text-align: center; margin-block: 15px; flex-direction: column;">If your computer is slow. You should enable</br>"Use upload api" button for saving your computer. ♥♥♥</br>(If not please disable it for save saving internet. ♥♥♥)</label> </p>
     <p><label class="DES" style="display: flex; text-align: center; margin-bottom: 30px;">(Thanks you imgbb.com for free api image upload! ♥)</label> </p>
     <p><label class="DES">Enter URL :</label><input id="IMGFORBG" class="TextBox" type="text" style="display: flex;"></p>
     <p><lable class="DES" style="display: flex; text-align: center;" id="STATUS"></label></p>`)
@@ -4123,12 +4215,93 @@ width: -moz-available;
 
     createCheck("NewVDOanima", "New video animation (Volume up/down,Pause,Play)")
 
-    createCheck("DelBar", "Remove black bar top-bottom (Background VDO Should Enabled)", true)
+    createCheck("DelBar", "Remove black bar top-bottom (Background VDO Should Enabled)")
+    createCheck("DelBarDebug", "Remove black bar Debug")
 
-    createCheck("DelBarDebug", "Remove black bar Debug", true)
+
+    //----------------------------------------------------------------------------------
+
+    var NewtubeSearch = document.createElement('input')
+    NewtubeSearch.id = "NtSearch"
+    NewtubeSearch.style = `
+    position: absolute;
+    width: -webkit-fill-available;
+    height: 40px;
+    top: 0px;
+    border-radius: 0px 0px 20px 20px;
+    color: white;
+    font-size: 20px;
+    padding-left: 20px;
+    background: transparent;
+    border: none;
+    border-bottom: #d084ffb8 dotted;
+    `
+    NewtubeSearch.placeholder = "Search"
+    SetBg.appendChild(NewtubeSearch)
+
+    function StartSearch() {
+        var SearchText = NewtubeSearch.value
+        var RegExpText = new RegExp(SearchText,"gi")
+        var All = SetBg.getElementsByClassName("DES")
+        
+        var AllMain = SetBg.childNodes
+        
+        AllMain.forEach(element => {
+            if (element != NewtubeSearch) {
+                element.style.display = "none"
+            }
+
+            if (SearchText == "") {
+                element.style.display = ""
+            }
+        })
+
+        for (let index = 0; index < All.length; index++) {
+            var element = All[index]
+            GetMainSetting(element)
+            var inner = element.innerHTML
+
+            inner = inner.replaceAll("<mark>", '')
+            inner = inner.replaceAll("</mark>", '')
+
+            if (SearchText == "") {
+                ThisCheckMainSetting.style.display = ""
+            }else{
+                // if (inner.search(SearchText) >= 0) {
+                //     ThisCheckMainSetting.style.display = ""
+                // }
+
+                inner = inner.replace(RegExpText, function name(match) {
+                    ThisCheckMainSetting.style.display = ""
+                    return `<mark>${match}</mark>`
+                })
+            }
+                
+            element.innerHTML = inner
+            
+        }
+    }
+
+    var changing = 0
+    NewtubeSearch.addEventListener("input",function () {
+        changing += 1
+        setTimeout(() => {
+            changing -= 1
+            if (changing == 0) {
+                StartSearch()
+            }
+        }, 100);
+    })
 }
 
-
+function GetMainSetting(thisElement) {
+    var ParElement = thisElement.parentNode
+    if (ParElement == SetBg) {
+        ThisCheckMainSetting = thisElement
+    }else{
+        GetMainSetting(ParElement)
+    }
+}
 
 
 
@@ -5179,7 +5352,7 @@ function drawOnePic() {
 
             // LastFrame = ThisFrameData
 
-            if (mf < 5 || SureTHisHeight == "inf") {
+            if (mf < 6 || SureTHisHeight == "inf") {
                 SureTHisHeight = LastHeight
             }
 
@@ -5462,3 +5635,28 @@ window.addEventListener('blur', function () {
     console.log("Bruh")
     hidden = true
 })
+
+function listFonts() {
+    let { fonts } = document
+    const it = fonts.entries()
+  
+    let arr = []
+    let done = false
+  
+    while (!done) {
+      const font = it.next()
+      if (!font.done) {
+        arr.push(font.value[0])
+      } else {
+        done = font.done
+      }
+    }
+    arr = arr.map(obj => obj.family)
+    let ArrayFont = []
+    arr.forEach(font => {
+        if (!ArrayFont.includes(font)) {
+            ArrayFont.push(font)
+        }
+    })
+    return ArrayFont
+}
