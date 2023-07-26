@@ -4,12 +4,12 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.8.0 (Current)
+## Version 3.8.1 (Current)
 
 - Fix theater mode bug
 - Change update UI
 
-## Version 3.8.0 (Current)
+## Version 3.8.0
 
 - Custom Youtube Logo!! (can't adjustment yet!)
 
