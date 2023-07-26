@@ -6,6 +6,11 @@
 
 ## Version 3.8.0 (Current)
 
+- Fix theater mode bug
+- Change update UI
+
+## Version 3.8.0 (Current)
+
 - Custom Youtube Logo!! (can't adjustment yet!)
 
 ## Version 3.7.2

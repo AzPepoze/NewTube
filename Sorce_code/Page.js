@@ -1321,7 +1321,7 @@ function SetGlobalBGImage(ImgValue) {
 }
 
 function update() {
-    console.log("UPDATE");
+    // console.log("UPDATE");
     Collect_Style = ``
     ADDCSS = ``
     ADDReplaceLOGO = ``
@@ -3428,11 +3428,11 @@ function FindVideo() {
     try {
         v.tagName
         if (v.tagName != "VIDEO") {
-            console.log("FindVDOE")
+            // // console.log("FindVDOE")
             setV()
         }
     } catch (e) {
-        console.log("FindVDOE")
+        // // console.log("FindVDOE")
         setV()
     }
     return v
@@ -4023,7 +4023,7 @@ width: -moz-available;
                 }
 
                 if (serverSent["success"] == true) {
-                    console.log(serverSent)
+                    // console.log(serverSent)
                     DOwithindexed(function () {
                         store.put(serverSent["data"]["url"], "BGIMG")
                         update()
@@ -4396,7 +4396,7 @@ function Hide() {
 
 var Can = false
 function clickSetting() {
-    console.log(Can)
+    // console.log(Can)
     if (Can == true) {
         if (document.getElementById("NEWTUBEBG") == null) {
             Can = false
@@ -4461,25 +4461,20 @@ function UpdateVol() {
 
 
 function ShowUpdated() {
-    console.log("ShowUp")
+    // console.log("ShowUp")
     upbg = document.createElement('div')
     upbg.style = `
     width: 100%;
     height: 160px;
     position: fixed;
     z-index: 3000;
-    bottom: -130px;
-    border-radius: 15px;
-    left: 0px;
-    margin-left: 0px;
-    box-shadow: white 0px 0px 100px 0px;
-    background: rgb(0 0 0 / 52%);
-    transition: all 1s ease;
-    opacity: 0;
+    bottom: -160px;
+    background: linear-gradient(0deg, black,black, transparent);
+    transition: all 0.5s ease 0s;
+    opacity: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    backdrop-filter: blur(30px);
     `
 
     upbg.innerHTML = `
@@ -4542,11 +4537,7 @@ function ShowUpdated() {
 
 
     setTimeout(() => {
-        upbg.style.width = '550px'
-        upbg.style.opacity = '1'
-        upbg.style.bottom = '20px'
-        upbg.style.left = '50%'
-        upbg.style["margin-left"] = "-275px"
+        upbg.style.bottom = '0px'
         setTimeout(() => {
             upbg.style.transition = "all 0.5s ease"
         }, 1000)
@@ -4897,7 +4888,7 @@ function SettoEnd() {
                     if (localStorage["nt-EnableButtonT"] == 'true') {
                         function RemoveCinema() {
                             if (document.getElementById("cinematics")) {
-                                console.log("Removed")
+                                // console.log("Removed")
                                 document.getElementById("cinematics").remove()
                             } else {
                                 setTimeout(() => {
@@ -4974,7 +4965,7 @@ function SetCanvas() {
         }
 
         if (Distance > 1) {
-            console.log("SetCanvasPo")
+            // console.log("SetCanvasPo")
 
             canvas.style.setProperty('margin-top', VDOBOUND.top + window.pageYOffset + 'px')
             canvas.style.setProperty('margin-left', VDOBOUND.left + window.pageXOffset + 'px')
@@ -4983,20 +4974,32 @@ function SetCanvas() {
         VdoWith = VDOBOUND.width + "px"
 
         if (canvas.style.width != VdoWith) {
-            console.log("SetCanvasSize")
+            // console.log("SetCanvasSize")
+
+            let KeeplastFrame = true
+            if (canvas.style.width == "0px") {
+                KeeplastFrame = false
+            }
+
             VdoHeight = VDOBOUND.height + "px"
-            var tempCanvas = document.createElement('canvas')
-            tempCanvas.width = context.canvas.width
-            tempCanvas.height = context.canvas.height
-            tempCanvas.getContext("2d").drawImage(context.canvas, 0, 0)
+            
+            var tempCanvas
+            if (KeeplastFrame == true) {
+                tempCanvas = document.createElement('canvas')
+                tempCanvas.width = context.canvas.width
+                tempCanvas.height = context.canvas.height
+                tempCanvas.getContext("2d").drawImage(context.canvas, 0, 0)
+            }
 
             canvas.style.width = VdoWith
             canvas.style.height = VdoHeight
 
             ChangeCanvasQua()
 
-            context.drawImage(tempCanvas, 0, 0)
-            tempCanvas.remove()
+            if (KeeplastFrame == true) {
+                context.drawImage(tempCanvas, 0, 0)
+                tempCanvas.remove()
+            }
         }
 
         if (EnaCanvas2 == true) {
@@ -5013,7 +5016,7 @@ function SetCanvas() {
 }
 
 function DetectPlay() {
-    console.log("PLAY")
+    // console.log("PLAY")
     SetCanvas()
     thisframe = 0
     drawpic()
@@ -5050,7 +5053,7 @@ function CheckVDO() {
             v.parentNode.style.height = "100%"
             v.parentNode.style.marginTop = "unset"
 
-            console.log("Set LastHeight")
+            // console.log("Set LastHeight")
             LastHeight = 0
         }
 
@@ -5067,7 +5070,7 @@ function CheckVDO() {
         } else {
             if (Cloning == true) {
                 RemoveCanvas()
-                console.log("Set LastHeight")
+                // console.log("Set LastHeight")
                 LastHeight = 0
             }
         }
@@ -5081,7 +5084,7 @@ function CheckVDO() {
 function CheckVDOSTATUS() {
     if (!inIframe()) {
         setTimeout(() => {
-            console.log("CheckStatus")
+            // console.log("CheckStatus")
             YTAPP = document.getElementsByTagName('ytd-app')[0]
             BGFRAME = document.getElementById("BGFRAME")
             if (FindVideo() == null || YTAPP == null || BGFRAME == null) {
@@ -5481,7 +5484,7 @@ function drawpic() {
             FindVideo()
             if (v.paused || v.ended || Cloning == false) {
                 drawing = false
-                console.log("CancelDraw")
+                // console.log("CancelDraw")
             } else {
                 drawOnePic()
 
@@ -5500,7 +5503,7 @@ function drawpic() {
 
 function callback(mutationsList, observer) {
     if (mutationsList[0].type == "attributes") {
-        console.log("CHANGE")
+        // console.log("CHANGE")
         CheckVDOSTATUS()
         if (!FindVideo().paused) {
             SetCanvas()
@@ -5515,7 +5518,7 @@ let CanvasSpawned = false
 function CreateCanvas() {
     CanvasSpawned = true
     drawing = 0
-    console.log("CreateCanvas")
+    // console.log("CreateCanvas")
 
     Cloning = true
 
@@ -5583,7 +5586,7 @@ function CreateCanvas() {
 }
 
 function RemoveCanvas(Force) {
-    console.log("Remove")
+    // console.log("Remove")
     Cloning = false
 
     if (CanvasSpawned == true) {
@@ -5619,7 +5622,7 @@ function CheckLoop() {
 
 
 function EnableBGBlur() {
-    console.log("EnaVDOBG")
+    // console.log("EnaVDOBG")
     Cloning = false
 
     CheckVDOSTATUS()
@@ -5628,7 +5631,7 @@ function EnableBGBlur() {
 }
 
 function DisableBGBlur(Force) {
-    console.log("DisaVDOBG")
+    // console.log("DisaVDOBG")
     RemoveCanvas(Force)
 
     window.removeEventListener('yt-page-data-updated', CheckVDOSTATUS)
@@ -5651,7 +5654,7 @@ function download(data, filename, type) {
 }
 
 chrome.runtime.onMessage.addListener(function (recived) {
-    console.log("revice " + recived)
+    // console.log("revice " + recived)
     if (recived == 'Enable') {
         if (localStorage["nt-EnableButtonT"] == "true") {
             localStorage["nt-EnableButtonT"] = "false"
@@ -5680,8 +5683,8 @@ document.addEventListener('visibilitychange', function () {
 
 window.addEventListener('focus', function () {
     if (localStorage["nt-AutoEXPIPT"] == "true") {
-        console.log("Focus")
-        console.log(document.pictureInPictureElement)
+        // console.log("Focus")
+        // console.log(document.pictureInPictureElement)
         if (document.pictureInPictureElement) {
             document.exitPictureInPicture();
         }
@@ -5689,7 +5692,7 @@ window.addEventListener('focus', function () {
 })
 
 window.addEventListener('blur', function () {
-    console.log("Bruh")
+    // console.log("Bruh")
     hidden = true
 })
 
