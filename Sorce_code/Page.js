@@ -32,8 +32,8 @@ function SetWhenUpdate() {
     SetNormalPre()
     //------------------------------------------------------
 
-
-    
+    localStorage["nt-BlurWhatT"] = "none"
+    localStorage["nt-NVDOB"] = "40"
 }
 
 ForcePre = [
@@ -55,17 +55,17 @@ function SetidxTo(Name, Va) {
 }
 
 function SetNormalPre() {
-    SetidxTo("PRESETLight Theme", JSON.stringify(["SubtitleC", "#000000", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ffffff", "CUSTOM", "", "TextC", "#000000", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff0000", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#000000", "VDOTEXTC", "#000000", "MediaBGC", "#ffffff", "TimeBGC", "#ffffff", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "3", "OutShaC", "#000000", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#383838", "CapOutT", "true", "PlaylisthoverO", "27", "ThemeO", "100", "ThemehoverC", "#ff0000", "ThumbHoverColorC", "#ff94f6", "ThemeFortC", "#ff0000", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#ffffff", "BlurBGAM", "10", "SubOutT", "true", "BlurWhatT", "all", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Sha", "ThumbClickO", "100", "ThemehoverO", "25", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff0000", "PlaylisthoverC", "#ff0000", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#ffffff", "BGO", "100", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "72", "OutShaO", "32", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#ffffff", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""]))
-    SetidxTo("PRESETDark Theme", JSON.stringify(["SubtitleC", "#ffffff", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#00eeff", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff0000", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "3", "OutShaC", "#000000", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#9e9e9e", "CapOutT", "true", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#ff0000", "ThumbHoverColorC", "#eeff00", "ThemeFortC", "#ff0000", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "10", "SubOutT", "true", "BlurWhatT", "all", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Sha", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff0000", "PlaylisthoverC", "#ff0000", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#000000", "ThemeSndC", "#000000", "BGO", "85", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "72", "OutShaO", "100", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#1a1a1a", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""]))
-    SetidxTo("PRESETBlack Theme", JSON.stringify(["SubtitleC", "#ff8a8a", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ffffff", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff0000", "FlipT", "false", "BottomGT", "false", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "1", "OutShaC", "#ff0000", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#c4c4c4", "CapOutT", "false", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#ff0000", "ThumbHoverColorC", "#00ffd5", "ThemeFortC", "#ff0000", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "10", "SubOutT", "false", "BlurWhatT", "all", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff0000", "PlaylisthoverC", "#ff0000", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#000000", "BGO", "70", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "80", "OutShaO", "50", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""]))
-    SetidxTo("PRESETMy Waifu ♥", JSON.stringify(["SubtitleC", "#da8aff", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ff0000", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#bf70ff", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "1", "OutShaC", "#cd70ff", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#c4c4c4", "CapOutT", "false", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#dc5cff", "ThumbHoverColorC", "#ff00dd", "ThemeFortC", "#c494ff", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "0", "SubOutT", "false", "BlurWhatT", "all", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#b061ff", "PlaylisthoverC", "#d666ff", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "15", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#000000", "BGO", "70", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "80", "OutShaO", "50", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", "https://i.ibb.co/FYPBxC5/1647030608836.jpg"]))
+    SetidxTo("PRESETLight Theme", JSON.stringify(["SubtitleC", "#000000", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ffffff", "CUSTOM", "", "TextC", "#000000", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff0000", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#000000", "VDOTEXTC", "#000000", "MediaBGC", "#ffffff", "TimeBGC", "#ffffff", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "3", "OutShaC", "#000000", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#383838", "CapOutT", "true", "PlaylisthoverO", "27", "ThemeO", "100", "ThemehoverC", "#ff0000", "ThumbHoverColorC", "#ff94f6", "ThemeFortC", "#ff0000", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#ffffff", "BlurBGAM", "10", "SubOutT", "true", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Sha", "ThumbClickO", "100", "ThemehoverO", "25", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff0000", "PlaylisthoverC", "#ff0000", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#ffffff", "BGO", "100", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "72", "OutShaO", "32", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#ffffff", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""]))
+    SetidxTo("PRESETDark Theme", JSON.stringify(["SubtitleC", "#ffffff", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#00eeff", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff0000", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "3", "OutShaC", "#000000", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#9e9e9e", "CapOutT", "true", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#ff0000", "ThumbHoverColorC", "#eeff00", "ThemeFortC", "#ff0000", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "10", "SubOutT", "true", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Sha", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff0000", "PlaylisthoverC", "#ff0000", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#000000", "ThemeSndC", "#000000", "BGO", "85", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "72", "OutShaO", "100", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#1a1a1a", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""]))
+    SetidxTo("PRESETBlack Theme", JSON.stringify(["SubtitleC", "#ff8a8a", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ffffff", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff0000", "FlipT", "false", "BottomGT", "false", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "1", "OutShaC", "#ff0000", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#c4c4c4", "CapOutT", "false", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#ff0000", "ThumbHoverColorC", "#00ffd5", "ThemeFortC", "#ff0000", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "10", "SubOutT", "false", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff0000", "PlaylisthoverC", "#ff0000", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#000000", "BGO", "70", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "80", "OutShaO", "50", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""]))
+    SetidxTo("PRESETMy Waifu ♥", JSON.stringify(["SubtitleC", "#da8aff", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ff0000", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#bf70ff", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "1", "OutShaC", "#cd70ff", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#c4c4c4", "CapOutT", "false", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#dc5cff", "ThumbHoverColorC", "#ff00dd", "ThemeFortC", "#c494ff", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "0", "SubOutT", "false", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#b061ff", "PlaylisthoverC", "#d666ff", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "15", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#000000", "BGO", "70", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "80", "OutShaO", "50", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", "https://i.ibb.co/FYPBxC5/1647030608836.jpg"]))
     SetidxTo("PRESET(SUPER_SUPER LOW PC) (CSS) Potato machine (none blur)", JSON.stringify(["VDOBGT", "false", "EnaCUSCSST", 'true', "CUSTOM", ":root {\n    --blur-amount: 10px;\n    --theme: red;\n    --playlist-bg: rgba(255, 0, 0, 0.1);\n    --text-color: #FFF;\n    --nd-text-color: #7D7D7D;\n    --border-width: 1px;\n    --player-bg-border-width: 1px;\n    --border-color: rgba(0, 0, 0, 0);\n    --border-hover-color: red;\n    --border-click-color: #0FF;\n    --bg-color: #000;\n    --in-player-bg-color: rgba(0, 0, 0, 0.5);\n    --top-bar-and-search-background: rgba(0, 0, 0, 0.507);\n    --things-end-on-video: rgba(66, 66, 66, 0.507);\n    --hover-time-background: rgba(0, 0, 0, 0.425);\n    --search-background-hover: rgba(255, 0, 0, 0.5);\n    --theme-radius: 10px;\n    --theme-time-radius: 10px;\n    --theme-radius-big: 20px;\n    --border-minus: calc(var(--border-width) * -1);\n    --bg-border-minus: calc(var(--player-bg-border-width) * -1)\n}\n\nhtml:not(.style-scope),\n:not(.style-scope),\nhtml:not(.style-scope) {\n    --yt-spec-brand-background-primary: var(--top-bar-and-search-background) !important;\n    --yt-spec-brand-background-solid: var(--bg-color) !important;\n    --yt-spec-general-background-a: var(--bg-color) !important;\n    --yt-spec-call-to-action: var(--theme) !important;\n    --yt-spec-badge-chip-background: var(--playlist-bg) !important;\n    --yt-spec-text-primary: var(--text-color) !important;\n    --yt-spec-text-secondary: var(--nd-text-color) !important;\n    --yt-spec-brand-button-background: var(--theme) !important;\n    --yt-spec-static-brand-red: var(--theme) !important;\n    --yt-spec-brand-icon-inactive: var(--theme) !important\n}\n\n#tooltip.tp-yt-paper-tooltip {\n    background-color: var(--bg-color) !important\n}\n\nbody::-webkit-scrollbar,\n.playlist-items.ytd-playlist-panel-renderer::-webkit-scrollbar,\n#guide-inner-content.ytd-app:hover::-webkit-scrollbar {\n    width: 11px !important\n}\n\n.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title {\n    display: block !important;\n    background-color: var(--hover-time-background) !important\n}\n\nytd-live-chat-frame {\n    transition: all .2s cubic-bezier(0, 1, 1, 1) !important\n}\n\n.ytp-ce-expanding-overlay-background,\n.ytp-ce-playlist-count {\n    background: var(--things-end-on-video) !important\n}\n\n.sbdd_b,\n#scrim,\ntp-yt-iron-overlay-backdrop {\n    background: var(--top-bar-and-search-background) !important\n}\n\nytd-thumbnail-overlay-hover-text-renderer {\n    background-color: var(--top-bar-and-search-background) !important\n}\n\n.sbfl_b,\n.sbsb_a,\n#container.style-scope.ytd-masthead {\n    background: transparent !important\n}\n\n.sbsb_d,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:hover,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:focus,\n.ytp-menuitem:not([aria-disabled=true]):hover {\n    background: var(--search-background-hover) !important;\n    transition: all .2s cubic-bezier(0.1, 0.7, 1, 1) !important\n}\n\n.gsfs,\n.ytp-ce-channel-metadata,\n.ytp-cards-teaser .ytp-cards-teaser-text,\n.ytp-panel-menu,\n.ytp-ce-website-title,\n.ytp-ce-merchandise-title {\n    color: var(--text-color) !important\n}\n\n#player,\nytd-multi-page-menu-renderer {\n    border-radius: var(--theme-radius-big) !important\n}\n\na.thumbnail>.ytcd-basic-item-large-image,\nytcp-thumbnail-with-title,\nytd-playlist-thumbnail,\nytd-thumbnail,\n#thumbnail,\n.thumbnail-container.ytd-notification-renderer,\n.sbdd_b,\n.ytp-ce-video,\n.ytp-ce-playlist,\n[aria-live=\"polite\"],\n.ytp-tooltip-bg,\n.ytp-tooltip-text.ytp-tooltip-text-no-title,\n.branding-img.iv-click-target,\n.branding-context-container-inner,\nytd-thumbnail-overlay-bottom-panel-renderer,\n.ytp-progress-list,\n.ytp-play-progress.ytp-swatch-background-color,\n.ytp-load-progress,\n.ytp-hover-progress.ytp-hover-progress-light,\n.ytp-gradient-bottom,\n.style-scope.ytd-subscribe-button-renderer,\n#container.ytd-playlist-panel-renderer,\n.header.ytd-playlist-panel-renderer,\nytd-button-renderer.style-suggestive[is-paper-button] tp-yt-paper-button.ytd-button-renderer,\nytd-live-chat-frame,\n.ytp-ce-playlist-count,\n.ytp-ce-expanding-overlay-background,\n.ytp-popup.ytp-settings-menu,\n.ytp-sb-subscribe,\n.ytp-sb-unsubscribe,\n.iv-drawer,\n.iv-card,\n.iv-card a.iv-click-target,\n.ytp-cards-teaser-box,\n.miniplayer.ytd-miniplayer,\n.ytp-popup,\n.badge.ytd-badge-supported-renderer,\n.ytp-ce-website .ytp-ce-expanding-image,\n.ytp-ce-merchandise .ytp-ce-expanding-image,\n.ytp-flyout-cta .ytp-flyout-cta-body,\n#ytp-ad-image,\n.ytp-ad-preview-container,\n.ytp-ad-message-container,\n#guide-content,\n.sbsb_d,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer,\n#masthead,\n#search-icon-legacy,\n.ytp-ad-skip-button.ytp-button,\n.ytp-flyout-cta .ytp-flyout-cta-icon,\n#banner>img,\n#icon>img,\n#action,\n.ytp-cards-teaser,\n.ytp-ce-video-duration,\n.ytp-show-tiles .ytp-videowall-still,\n.ytp-videowall-still-info-content,\n.ytp-videowall-still-listlabel-mix.ytp-videowall-still-listlabel,\n.style-scope.ytd-popup-container,\n.style-scope.ytd-miniplayer,\n#action-companion-ad-info-button.ytd-action-companion-ad-renderer,\n.ytp-flyout-cta .ytp-flyout-cta-action-button,\n.ytp-autonav-endscreen-upnext-thumbnail,\n.ytp-autonav-endscreen-upnext-button,\nytd-playlist-panel-video-renderer,\ntp-yt-paper-item.ytd-menu-service-item-renderer,\nytd-menu-service-item-renderer[use-icons],\n.ytp-ad-overlay-image,\n.ytp-ad-button-icon,\n.ytp-ad-overlay-close-button,\n.ytp-ad-text-overlay,\n.ytp-ad-button-icon,\n.ytp-ad-button-icon,\n.html5-video-player .caption-visual-line .ytp-caption-segment:last-child,\n#media-container.ytd-display-ad-renderer,\nytd-display-ad-renderer[layout=display-ad-layout-top-landscape-image] #media-badge.ytd-display-ad-renderer,\n#chips-wrapper.ytd-feed-filter-chip-bar-renderer,\nytd-mini-guide-entry-renderer {\n    border-radius: var(--theme-radius) !important\n}\n\na.thumbnail>.ytcd-basic-item-large-image,\nytcp-thumbnail-with-title,\nytd-playlist-thumbnail,\nytd-thumbnail,\n#thumbnail,\n.thumbnail-container.ytd-notification-renderer,\n#avatar,\n#author-thumbnail.ytd-comment-simplebox-renderer,\n.style-scope.ytd-comment-renderer.no-transition,\n#player,\n.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title,\n#container.ytd-playlist-panel-renderer,\nytd-live-chat-frame,\nytd-thumbnail-overlay-side-panel-renderer,\nytd-thumbnail-overlay-bottom-panel-renderer,\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n.iv-drawer,\n.ytp-cards-teaser-box,\n.miniplayer.ytd-miniplayer,\n.ytp-flyout-cta .ytp-flyout-cta-body,\n#ytp-ad-image,\n.ytp-ad-preview-container,\n.ytp-ad-message-container,\n#guide-content,\n.ytp-ad-skip-button.ytp-button,\n#banner>img,\n#icon>img,\n#action,\n.ytp-show-tiles .ytp-videowall-still,\nyt-confirm-dialog-renderer[dialog][dialog][dialog],\n.ytp-ce-element.ytp-ce-element-show,\n#contentWrapper.tp-yt-iron-dropdown>* {\n    border-collapse: separate !important;\n    overflow: hidden !important;\n    box-shadow: var(--border-minus) 0 var(--border-color), 0 var(--border-width) var(--border-color), var(--border-width) 0 var(--border-color), 0 var(--border-minus) var(--border-color) !important\n}\n\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n.ytp-tooltip-bg {\n    box-shadow: var(--player-bg-border-width) 0 var(--border-color), 0 var(--bg-border-minus) var(--border-color), var(--bg-border-minus) 0 var(--border-color), 0 var(--player-bg-border-width) var(--border-color) !important\n}\n\n#text.ytd-channel-name,\nyt-button-renderer.yt-formatted-string.yt-button-renderer,\npaper-ripple,\na.yt-simple-endpoint.yt-formatted-string,\n.style-scope.ytd-menu-renderer.force-icon-button.style-default-active,\n.badge-style-type-live-now.ytd-badge-supported-renderer,\n.badge-style-type-starting-soon.ytd-badge-supported-renderer {\n    border-color: var(--theme) !important;\n    color: var(--theme) !important\n}\n\npaper-ripple,\n.ytp-swatch-color,\na.ytp-ce-link,\nyt-icon.ytd-compact-link-renderer,\nyt-icon.ytd-toggle-theme-compact-link-renderer {\n    border-radius: var(--theme-radius) !important;\n    color: var(--theme) !important\n}\n\n.ytp-swatch-background-color,\n.ytp-settings-button.ytp-hd-quality-badge:after,\n.ytp-chrome-controls .ytp-button[aria-pressed]:after,\n.ytp-sb-subscribe,\na.ytp-sb-subscribe {\n    background-color: var(--theme) !important\n}\n\nytd-thumbnail-overlay-time-status-renderer,\nytd-thumbnail-overlay-side-panel-renderer,\nytd-thumbnail-overlay-toggle-button-renderer,\n.iv-branding-active .branding-context-container-inner,\n.ytp-ce-video-duration {\n    border-radius: var(--theme-time-radius) !important;\n    background-color: var(--hover-time-background) !important\n}\n\na.yt-simple-endpoint.yt-formatted-string::selection,\nspan::selection,\nyt-formatted-string::selection,\n.ytp-menuitem[aria-checked=true] .ytp-menuitem-toggle-checkbox,\n.ytp-volume-slider-handle,\n.ytp-volume-slider-handle:before {\n    background: var(--theme) !important\n}\n\n#container.ytd-searchbox,\n.yt-ui-ellipsis,\n.ytp-tooltip.ytp-preview:not(.ytp-text-detail),\n#contentContainer,\n.ytp-videowall-still-info-duration {\n    background-color: transparent !important;\n    border-color: transparent !important\n}\n\nytd-playlist-thumbnail,\nytd-thumbnail,\nytd-compact-playlist-renderer,\nytd-compact-video-renderer,\nytd-compact-radio-renderer,\nytd-compact-playlist-renderer>div>div>div>a,\nytd-compact-video-renderer>div>div>div>a,\nytd-compact-radio-renderer>div>div>div>a,\nytd-thumbnail.ytd-rich-grid-media,\nytd-thumbnail.ytd-rich-grid-media>a,\n#button.ytd-menu-renderer.yt-icon.ytd-menu-renderer {\n    transition: all .2s cubic-bezier(0.1, 0.5, 1, 1) !important\n}\n\nytd-thumbnail-overlay-toggle-button-renderer {\n    background-color: transparent\n}\n\nytd-compact-playlist-renderer:hover>div>ytd-playlist-thumbnail,\nytd-compact-video-renderer:hover>div>ytd-thumbnail,\nytd-compact-radio-renderer:hover>div>ytd-thumbnail {\n    box-shadow: var(--border-minus) 0 var(--border-hover-color), 0 var(--border-width) var(--border-hover-color), var(--border-width) 0 var(--border-hover-color), 0 var(--border-minus) var(--border-hover-color) !important\n}\n\nytd-thumbnail.ytd-rich-grid-media:hover {\n    margin-block-start: -15px !important;\n    margin-block-end: 15px !important;\n    box-shadow: var(--border-minus) 0 var(--border-hover-color), 0 var(--border-width) var(--border-hover-color), var(--border-width) 0 var(--border-hover-color), 0 var(--border-minus) var(--border-hover-color) !important\n}\n\nytd-thumbnail.ytd-rich-grid-media:active {\n    box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important\n}\n\nytd-compact-playlist-renderer:hover,\nytd-compact-video-renderer:hover,\nytd-compact-radio-renderer:hover {\n    margin-inline-start: -15px !important\n}\n\nytd-compact-playlist-renderer:hover>div>div>div>a,\nytd-compact-video-renderer:hover>div>div>div>a,\nytd-compact-radio-renderer:hover>div>div>div>a {\n    margin-inline-end: 15px !important\n}\n\nytd-compact-playlist-renderer:active>div>ytd-playlist-thumbnail,\nytd-compact-video-renderer:active>div>ytd-thumbnail,\nytd-compact-radio-renderer:active>div>ytd-thumbnail {\n    box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important\n}\n\n.ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]):hover>svg>path,\nytd-topbar-logo-renderer>a>div>yt-icon>svg>g>g>path {\n    fill: var(--theme) !important\n}\n\n.ytp-chrome-top,\n.ytp-chrome-bottom,\n.ytp-gradient-bottom,\n.ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true])>svg>path {\n    transition: all .2s cubic-bezier(0, 1, 1, 1) !important\n}\n\n.ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-top,\n.ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-bottom {\n    display: block !important\n}\n\n.ytp-gradient-bottom {\n    height: 30px !important;\n    background-image: none !important\n}\n\n.ytp-popup.ytp-settings-menu,\n.ytp-gradient-bottom,\n.iv-drawer,\n.ytp-cards-teaser-box,\n.ytp-popup,\n.ytp-bezel {\n    background-color: var(--in-player-bg-color) !important\n}\n\n.ytp-gradient-top[aria-hidden=true],\n.ytp-gradient-bottom[aria-hidden=true],\n.ytp-autohide .ytp-gradient-top,\n.ytp-autohide .ytp-gradient-bottom,\n.ytp-autohide .ytp-playlist-menu-button,\n.ytp-autohide .ytp-back-button,\n.ytp-autohide .ytp-title-channel,\n.ytp-autohide .ytp-title,\n.ytp-autohide .ytp-chrome-top .ytp-watch-later-button,\n.ytp-autohide .ytp-chrome-top .ytp-share-button,\n.ytp-autohide .ytp-chrome-top .ytp-copylink-button,\n.ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button,\n.ytp-autohide .ytp-overflow-button,\n.ytp-autohide .ytp-chrome-bottom,\n.ytp-chrome-top[aria-hidden=true],\n.ytp-chrome-bottom[aria-hidden=true] {\n    margin-block-start: 50px !important;\n    margin-block-end: -50px !important;\n    transition: all .1s cubic-bezier(0.1, 0.5, 1, 0) !important\n}"]))
     SetidxTo("PRESET(SUPER LOW PC) (CSS) Potato machine (less blur)", JSON.stringify(["VDOBGT", "false", "EnaCUSCSST", 'true', "CUSTOM", ":root {\n    --blur-amount: 10px;\n    --theme: red;\n    --playlist-bg: rgba(255, 0, 0, 0.1);\n    --text-color: #FFF;\n    --nd-text-color: #7D7D7D;\n    --border-width: 1px;\n    --player-bg-border-width: 1px;\n    --border-color: rgba(0, 0, 0, 0);\n    --border-hover-color: red;\n    --border-click-color: #0FF;\n    --bg-color: #000;\n    --in-player-bg-color: rgba(0, 0, 0, 0.5);\n    --top-bar-and-search-background: rgba(0, 0, 0, 0.507);\n    --things-end-on-video: rgba(66, 66, 66, 0.507);\n    --hover-time-background: rgba(0, 0, 0, 0.425);\n    --search-background-hover: rgba(255, 0, 0, 0.5);\n    --theme-radius: 10px;\n    --theme-time-radius: 10px;\n    --theme-radius-big: 20px;\n    --border-minus: calc(var(--border-width) * -1);\n    --bg-border-minus: calc(var(--player-bg-border-width) * -1)\n}\n\nhtml:not(.style-scope),\n:not(.style-scope),\nhtml:not(.style-scope) {\n    --yt-spec-brand-background-primary: var(--top-bar-and-search-background) !important;\n    --yt-spec-brand-background-solid: var(--bg-color) !important;\n    --yt-spec-general-background-a: var(--bg-color) !important;\n    --yt-spec-call-to-action: var(--theme) !important;\n    --yt-spec-badge-chip-background: var(--playlist-bg) !important;\n    --yt-spec-text-primary: var(--text-color) !important;\n    --yt-spec-text-secondary: var(--nd-text-color) !important;\n    --yt-spec-brand-button-background: var(--theme) !important;\n    --yt-spec-static-brand-red: var(--theme) !important;\n    --yt-spec-brand-icon-inactive: var(--theme) !important\n}\n\n#tooltip.tp-yt-paper-tooltip {\n    background-color: var(--bg-color) !important\n}\n\nbody::-webkit-scrollbar,\n.playlist-items.ytd-playlist-panel-renderer::-webkit-scrollbar,\n#guide-inner-content.ytd-app:hover::-webkit-scrollbar {\n    width: 11px !important\n}\n\n.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title {\n    display: block !important;\n    background-color: var(--hover-time-background) !important\n}\n\nytd-live-chat-frame {\n    transition: all .2s cubic-bezier(0, 1, 1, 1) !important\n}\n\n.sbdd_b,\n#container.style-scope.ytd-masthead,\nytd-multi-page-menu-renderer,\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n#chips-wrapper.ytd-feed-filter-chip-bar-renderer,\n.iv-drawer,\n#card.ytd-miniplayer,\nytd-miniplayer,\n.ytp-bezel,\n.ytp-caption-segment,\n.ytp-bezel-text {\n    backdrop-filter: blur(var(--blur-amount)) !important\n}\n\n.ytp-ce-expanding-overlay-background,\n.ytp-ce-playlist-count {\n    background: var(--things-end-on-video) !important\n}\n\n.sbdd_b,\n#scrim,\ntp-yt-iron-overlay-backdrop {\n    background: var(--top-bar-and-search-background) !important\n}\n\nytd-thumbnail-overlay-hover-text-renderer {\n    background-color: var(--top-bar-and-search-background) !important\n}\n\n.sbfl_b,\n.sbsb_a,\n#container.style-scope.ytd-masthead {\n    background: transparent !important\n}\n\n.sbsb_d,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:hover,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:focus,\n.ytp-menuitem:not([aria-disabled=true]):hover {\n    background: var(--search-background-hover) !important;\n    transition: all .2s cubic-bezier(0.1, 0.7, 1, 1) !important\n}\n\n.gsfs,\n.ytp-ce-channel-metadata,\n.ytp-cards-teaser .ytp-cards-teaser-text,\n.ytp-panel-menu,\n.ytp-ce-website-title,\n.ytp-ce-merchandise-title {\n    color: var(--text-color) !important\n}\n\n#player,\nytd-multi-page-menu-renderer {\n    border-radius: var(--theme-radius-big) !important\n}\n\na.thumbnail>.ytcd-basic-item-large-image,\nytcp-thumbnail-with-title,\nytd-playlist-thumbnail,\nytd-thumbnail,\n#thumbnail,\n.thumbnail-container.ytd-notification-renderer,\n.sbdd_b,\n.ytp-ce-video,\n.ytp-ce-playlist,\n[aria-live=\"polite\"],\n.ytp-tooltip-bg,\n.ytp-tooltip-text.ytp-tooltip-text-no-title,\n.branding-img.iv-click-target,\n.branding-context-container-inner,\nytd-thumbnail-overlay-bottom-panel-renderer,\n.ytp-progress-list,\n.ytp-play-progress.ytp-swatch-background-color,\n.ytp-load-progress,\n.ytp-hover-progress.ytp-hover-progress-light,\n.ytp-gradient-bottom,\n.style-scope.ytd-subscribe-button-renderer,\n#container.ytd-playlist-panel-renderer,\n.header.ytd-playlist-panel-renderer,\nytd-button-renderer.style-suggestive[is-paper-button] tp-yt-paper-button.ytd-button-renderer,\nytd-live-chat-frame,\n.ytp-ce-playlist-count,\n.ytp-ce-expanding-overlay-background,\n.ytp-popup.ytp-settings-menu,\n.ytp-sb-subscribe,\n.ytp-sb-unsubscribe,\n.iv-drawer,\n.iv-card,\n.iv-card a.iv-click-target,\n.ytp-cards-teaser-box,\n.miniplayer.ytd-miniplayer,\n.ytp-popup,\n.badge.ytd-badge-supported-renderer,\n.ytp-ce-website .ytp-ce-expanding-image,\n.ytp-ce-merchandise .ytp-ce-expanding-image,\n.ytp-flyout-cta .ytp-flyout-cta-body,\n#ytp-ad-image,\n.ytp-ad-preview-container,\n.ytp-ad-message-container,\n#guide-content,\n.sbsb_d,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer,\n#masthead,\n#search-icon-legacy,\n.ytp-ad-skip-button.ytp-button,\n.ytp-flyout-cta .ytp-flyout-cta-icon,\n#banner>img,\n#icon>img,\n#action,\n.ytp-cards-teaser,\n.ytp-ce-video-duration,\n.ytp-show-tiles .ytp-videowall-still,\n.ytp-videowall-still-info-content,\n.ytp-videowall-still-listlabel-mix.ytp-videowall-still-listlabel,\n.style-scope.ytd-popup-container,\n.style-scope.ytd-miniplayer,\n#action-companion-ad-info-button.ytd-action-companion-ad-renderer,\n.ytp-flyout-cta .ytp-flyout-cta-action-button,\n.ytp-autonav-endscreen-upnext-thumbnail,\n.ytp-autonav-endscreen-upnext-button,\nytd-playlist-panel-video-renderer,\ntp-yt-paper-item.ytd-menu-service-item-renderer,\nytd-menu-service-item-renderer[use-icons],\n.ytp-ad-overlay-image,\n.ytp-ad-button-icon,\n.ytp-ad-overlay-close-button,\n.ytp-ad-text-overlay,\n.ytp-ad-button-icon,\n.ytp-ad-button-icon,\n.html5-video-player .caption-visual-line .ytp-caption-segment:last-child,\n#media-container.ytd-display-ad-renderer,\nytd-display-ad-renderer[layout=display-ad-layout-top-landscape-image] #media-badge.ytd-display-ad-renderer,\n#chips-wrapper.ytd-feed-filter-chip-bar-renderer,\nytd-mini-guide-entry-renderer {\n    border-radius: var(--theme-radius) !important\n}\n\na.thumbnail>.ytcd-basic-item-large-image,\nytcp-thumbnail-with-title,\nytd-playlist-thumbnail,\nytd-thumbnail,\n#thumbnail,\n.thumbnail-container.ytd-notification-renderer,\n#avatar,\n#author-thumbnail.ytd-comment-simplebox-renderer,\n.style-scope.ytd-comment-renderer.no-transition,\n#player,\n.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title,\n#container.ytd-playlist-panel-renderer,\nytd-live-chat-frame,\nytd-thumbnail-overlay-side-panel-renderer,\nytd-thumbnail-overlay-bottom-panel-renderer,\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n.iv-drawer,\n.ytp-cards-teaser-box,\n.miniplayer.ytd-miniplayer,\n.ytp-flyout-cta .ytp-flyout-cta-body,\n#ytp-ad-image,\n.ytp-ad-preview-container,\n.ytp-ad-message-container,\n#guide-content,\n.ytp-ad-skip-button.ytp-button,\n#banner>img,\n#icon>img,\n#action,\n.ytp-show-tiles .ytp-videowall-still,\nyt-confirm-dialog-renderer[dialog][dialog][dialog],\n.ytp-ce-element.ytp-ce-element-show,\n#contentWrapper.tp-yt-iron-dropdown>* {\n    border-collapse: separate !important;\n    overflow: hidden !important;\n    box-shadow: var(--border-minus) 0 var(--border-color), 0 var(--border-width) var(--border-color), var(--border-width) 0 var(--border-color), 0 var(--border-minus) var(--border-color) !important\n}\n\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n.ytp-tooltip-bg {\n    box-shadow: var(--player-bg-border-width) 0 var(--border-color), 0 var(--bg-border-minus) var(--border-color), var(--bg-border-minus) 0 var(--border-color), 0 var(--player-bg-border-width) var(--border-color) !important\n}\n\n#text.ytd-channel-name,\nyt-button-renderer.yt-formatted-string.yt-button-renderer,\npaper-ripple,\na.yt-simple-endpoint.yt-formatted-string,\n.style-scope.ytd-menu-renderer.force-icon-button.style-default-active,\n.badge-style-type-live-now.ytd-badge-supported-renderer,\n.badge-style-type-starting-soon.ytd-badge-supported-renderer {\n    border-color: var(--theme) !important;\n    color: var(--theme) !important\n}\n\npaper-ripple,\n.ytp-swatch-color,\na.ytp-ce-link,\nyt-icon.ytd-compact-link-renderer,\nyt-icon.ytd-toggle-theme-compact-link-renderer {\n    border-radius: var(--theme-radius) !important;\n    color: var(--theme) !important\n}\n\n.ytp-swatch-background-color,\n.ytp-settings-button.ytp-hd-quality-badge:after,\n.ytp-chrome-controls .ytp-button[aria-pressed]:after,\n.ytp-sb-subscribe,\na.ytp-sb-subscribe {\n    background-color: var(--theme) !important\n}\n\nytd-thumbnail-overlay-time-status-renderer,\nytd-thumbnail-overlay-side-panel-renderer,\nytd-thumbnail-overlay-toggle-button-renderer,\n.iv-branding-active .branding-context-container-inner,\n.ytp-ce-video-duration {\n    border-radius: var(--theme-time-radius) !important;\n    background-color: var(--hover-time-background) !important\n}\n\na.yt-simple-endpoint.yt-formatted-string::selection,\nspan::selection,\nyt-formatted-string::selection,\n.ytp-menuitem[aria-checked=true] .ytp-menuitem-toggle-checkbox,\n.ytp-volume-slider-handle,\n.ytp-volume-slider-handle:before {\n    background: var(--theme) !important\n}\n\n#container.ytd-searchbox,\n.yt-ui-ellipsis,\n.ytp-tooltip.ytp-preview:not(.ytp-text-detail),\n#contentContainer,\n.ytp-videowall-still-info-duration {\n    background-color: transparent !important;\n    border-color: transparent !important\n}\n\nytd-playlist-thumbnail,\nytd-thumbnail,\nytd-compact-playlist-renderer,\nytd-compact-video-renderer,\nytd-compact-radio-renderer,\nytd-compact-playlist-renderer>div>div>div>a,\nytd-compact-video-renderer>div>div>div>a,\nytd-compact-radio-renderer>div>div>div>a,\nytd-thumbnail.ytd-rich-grid-media,\nytd-thumbnail.ytd-rich-grid-media>a,\n#button.ytd-menu-renderer.yt-icon.ytd-menu-renderer {\n    transition: all .2s cubic-bezier(0.1, 0.5, 1, 1) !important\n}\n\nytd-thumbnail-overlay-toggle-button-renderer {\n    background-color: transparent\n}\n\nytd-compact-playlist-renderer:hover>div>ytd-playlist-thumbnail,\nytd-compact-video-renderer:hover>div>ytd-thumbnail,\nytd-compact-radio-renderer:hover>div>ytd-thumbnail {\n    box-shadow: var(--border-minus) 0 var(--border-hover-color), 0 var(--border-width) var(--border-hover-color), var(--border-width) 0 var(--border-hover-color), 0 var(--border-minus) var(--border-hover-color) !important\n}\n\nytd-thumbnail.ytd-rich-grid-media:hover {\n    margin-block-start: -15px !important;\n    margin-block-end: 15px !important;\n    box-shadow: var(--border-minus) 0 var(--border-hover-color), 0 var(--border-width) var(--border-hover-color), var(--border-width) 0 var(--border-hover-color), 0 var(--border-minus) var(--border-hover-color) !important\n}\n\nytd-thumbnail.ytd-rich-grid-media:active {\n    box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important\n}\n\nytd-compact-playlist-renderer:hover,\nytd-compact-video-renderer:hover,\nytd-compact-radio-renderer:hover {\n    margin-inline-start: -15px !important\n}\n\nytd-compact-playlist-renderer:hover>div>div>div>a,\nytd-compact-video-renderer:hover>div>div>div>a,\nytd-compact-radio-renderer:hover>div>div>div>a {\n    margin-inline-end: 15px !important\n}\n\nytd-compact-playlist-renderer:active>div>ytd-playlist-thumbnail,\nytd-compact-video-renderer:active>div>ytd-thumbnail,\nytd-compact-radio-renderer:active>div>ytd-thumbnail {\n    box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important\n}\n\n.ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]):hover>svg>path,\nytd-topbar-logo-renderer>a>div>yt-icon>svg>g>g>path {\n    fill: var(--theme) !important\n}\n\n.ytp-chrome-top,\n.ytp-chrome-bottom,\n.ytp-gradient-bottom,\n.ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true])>svg>path {\n    transition: all .2s cubic-bezier(0, 1, 1, 1) !important\n}\n\n.ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-top,\n.ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-bottom {\n    display: block !important\n}\n\n.ytp-gradient-bottom {\n    height: 30px !important;\n    background-image: none !important\n}\n\n.ytp-popup.ytp-settings-menu,\n.ytp-gradient-bottom,\n.iv-drawer,\n.ytp-cards-teaser-box,\n.ytp-popup,\n.ytp-bezel {\n    background-color: var(--in-player-bg-color) !important\n}\n\n.ytp-gradient-top[aria-hidden=true],\n.ytp-gradient-bottom[aria-hidden=true],\n.ytp-autohide .ytp-gradient-top,\n.ytp-autohide .ytp-gradient-bottom,\n.ytp-autohide .ytp-playlist-menu-button,\n.ytp-autohide .ytp-back-button,\n.ytp-autohide .ytp-title-channel,\n.ytp-autohide .ytp-title,\n.ytp-autohide .ytp-chrome-top .ytp-watch-later-button,\n.ytp-autohide .ytp-chrome-top .ytp-share-button,\n.ytp-autohide .ytp-chrome-top .ytp-copylink-button,\n.ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button,\n.ytp-autohide .ytp-overflow-button,\n.ytp-autohide .ytp-chrome-bottom,\n.ytp-chrome-top[aria-hidden=true],\n.ytp-chrome-bottom[aria-hidden=true] {\n    margin-block-start: 50px !important;\n    margin-block-end: -50px !important;\n    transition: all .1s cubic-bezier(0.1, 0.5, 1, 0) !important\n}"]))
-    SetidxTo("PRESETPink-Black", JSON.stringify(["SubtitleC", "#ff94f6", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ffffff", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff94f6", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "1", "OutShaC", "#ff94f6", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#c4c4c4", "CapOutT", "false", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#ff94f6", "ThumbHoverColorC", "#ff94f6", "ThemeFortC", "#ff94f6", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "10", "SubOutT", "false", "BlurWhatT", "all", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff94f6", "PlaylisthoverC", "#ff94f6", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#000000", "BGO", "70", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "50", "OutShaO", "50", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""]))
+    SetidxTo("PRESETPink-Black", JSON.stringify(["SubtitleC", "#ff94f6", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ffffff", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff94f6", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "1", "OutShaC", "#ff94f6", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#c4c4c4", "CapOutT", "false", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#ff94f6", "ThumbHoverColorC", "#ff94f6", "ThemeFortC", "#ff94f6", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "10", "SubOutT", "false", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff94f6", "PlaylisthoverC", "#ff94f6", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#000000", "BGO", "70", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "50", "OutShaO", "50", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""]))
     SetidxTo("PRESET(Low PC) Purple", JSON.stringify(["SubtitleC", "#da8aff", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "CenterUDT", "true", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ff0000", "TextC", "#ffffff", "HBTO", "100", "SubtitleO", "100", "IMGS", "100", "ThemeFortC", "#c494ff", "CenterMediaT", "true", "ThemeC", "#bf70ff", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "NVDOC", "1", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeAniT", "true", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "PlayerOutT", "true", "VDOSYT", "true", "ThemeThrO", "20", "Border", "1", "OutShaC", "#cd70ff", "ThumbHoverT", "Slide", "Edge", "10", "Zoom", "1.075", "NdTextC", "#c4c4c4", "ScrollT", "false", "CapOutT", "false", "CapBGO", "80", "BlurWhatT", "main", "ThemehoverC", "#dc5cff", "TIMETEXTC", "#ffffff", "CenterMedia", "true", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "0", "TimeBGC", "#000000", "SubOutT", "false", "NVDOT", "2", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "NVDOB", "50", "NdTextO", "100", "ThemeFortO", "100", "ThemeThrC", "#b061ff", "PlaylisthoverC", "#d666ff", "TimeLoadedO", "50", "CenterUDFT", "true", "CenterTimeT", "true", "IMGY", "15", "BlurAm", "5", "PlayerEdge", "20", "ThemeSndC", "#000000", "BGO", "70", "VDOBGT", "false", "EnaCUSCSST", "false", "BlurSubT", "true", "CUSTOM", "", "OutShaO", "0", "VDOTEXTO", "100", "MediaBGO", "50", "NVDOBGT", "0.4", "ThemeO", "100", "TimeBGO", "50", "VBGT", "true", "TextO", "100", "LoadVDOT", "false", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Time-LineBGC", "#ffffff", "TopOutT", "true", "SyncLogoT", "true", "PlaylisthoverO", "50", "ScWidth", "0", "ThumbHoverColorC", "#ff00dd", "BGIMG", ""]))
     SetidxTo("PRESETI'm Using :D", JSON.stringify({ "FlipT": "false", "TimeBGC": "#000000", "IMGSBOX": "100", "AutoEXPIPT": "true", "ThemeFortC": "#b67aff", "VisualT": "false", "TimeH": "18", "SubtitleO": "100", "TimeAniT": "true", "STUPIDME": "true", "SubtitleC": "#ffffff", "IMGS": "100", "SyncLogoT": "true", "ADDCUSTOM": "", "TextC": "#ffffff", "BGO": "70", "ThumbHoverColorC": "#ff00dd", "MediaBlurT": "false", "ThumbHoverColorO": "100", "Time-LineBGO": "20", "NVDOC": "1", "EndBGC": "#000000", "Border": "1", "CenterUDFT": "true", "MediaBGO": "31", "ScWidth": "0", "BlurBGAM": "0", "ThemehoverC": "#dc5cff", "VDOTEXTO": "100", "NdTextO": "100", "IconFillT": "true", "ScrollT": "true", "ThemeSndO": "88", "AutoPIPT": "true", "LoadVDOT": "false", "ThemeThrC": "#b061ff", "PlaylisthoverO": "50", "TimeBGO": "50", "NVDOT": "2", "SubOutT": "false", "SwapRowT": "true", "TimeLoadedO": "50", "CenterMedia": "true", "OutShaO": "0", "ThemehoverO": "50", "HBTO": "100", "CenterUDT": "true", "IMGXBOX": "50", "PlaylisthoverC": "#d666ff", "TimeOutT": "true", "ThumbClickC": "#ff0000", "EnaCUSCSST": "false", "PlayerOutT": "true", "IMGY": "0", "ThumbClickO": "100", "transitionT": "true", "TIMETEXTO": "100", "ConUnderVDOT": "false", "BlurWhatT": "none", "PlayerBorder": "1", "ThumbAnimT": "true", "OutShaC": "#cd70ff", "ThemeC": "#c680ff", "subShaColorC": "#000000", "CenterTimeT": "true", "LeftBarT": "true", "LeftBar": "true", "NewSubT": "true", "EndBGO": "50", "BGC": "#000000", "CanvasQua": "40", "HoverBorder": "1", "IMGX": "50", "Test": "Test", "CapBGC": "#000000", "TimeLoadedC": "#ffffff", "Enable": "false", "ControlUnderVDOT": "true", "NVDOB": "50", "TIMETEXTC": "#ffffff", "ThemeO": "100", "CapOutT": "false", "CUSTOM": "", "subSpace": "1", "LeftBarC": "#000000", "CenterMediaT": "true", "ThumbHoverT": "Slide", "RepeatT": "false", "subWidth": "700", "OutOrShaT": "Out", "ThemeSndC": "#000000", "LeftBarO": "0", "BottomGT": "true", "MediaH": "30", "TextO": "100", "subShaWidth": "0", "ThemeThrO": "20", "APIT": "false", "subShaColorO": "100", "TopOutT": "true", "VBGT": "true", "Edge": "10", "subShaBlur": "0", "VDOTEXTC": "#ffffff", "PlayerEdge": "20", "CapBGO": "0", "BlurAm": "5", "PtranT": "true", "VDOBGT": "true", "Zoom": "1.075", "TimeEdge": "10", "VDOSYT": "true", "MediaBGC": "#000000", "MediaSpace": "70", "NewSub": "true", "NewVDOanimaT": "true", "EnaADDCSST": "true", "NdTextC": "#c4c4c4", "HBTC": "#ffffff", "NVDOBGT": "0.4", "BlurSubT": "false", "ThemeFortO": "56", "Time-LineBGC": "#ffffff", "BGIMG": "https://i.ibb.co/m02hLkh/1658222393728.jpg" }))
     SetidxTo("PRESET(Low-end PC) Cyan", JSON.stringify(["SubtitleC", "#8adcff", "RepeatT", "false", "LeftBar", "true", "EndBGO", "50", "CenterUDT", "true", "ThemeSndO", "50", "MediaBlurT", "false", "ThumbClickC", "#ff0000", "TextC", "#ffffff", "HBTO", "100", "SubtitleO", "100", "IMGS", "100", "ThemeFortC", "#94fff3", "CenterMediaT", "true", "ThemeC", "#70cfff", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "NVDOC", "1", "TimeLoadedC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeAniT", "true", "TimeEdge", "10", "TimeOutT", "true", "HBTC", "#ffffff", "PlayerOutT", "true", "VDOSYT", "true", "ThemeThrO", "20", "Border", "1", "OutShaC", "#cd70ff", "ThumbHoverT", "Slide", "Edge", "10", "Zoom", "1.075", "NdTextC", "#c4c4c4", "ScrollT", "false", "CapOutT", "false", "CapBGO", "80", "BlurWhatT", "none", "ThemehoverC", "#5cd6ff", "TIMETEXTC", "#ffffff", "CenterMedia", "true", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "0", "TimeBGC", "#000000", "SubOutT", "false", "NVDOT", "2", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "NVDOB", "50", "NdTextO", "100", "ThemeFortO", "50", "ThemeThrC", "#61fcff", "PlaylisthoverC", "#66d9ff", "TimeLoadedO", "50", "CenterUDFT", "true", "CenterTimeT", "true", "IMGY", "15", "BlurAm", "5", "PlayerEdge", "20", "ThemeSndC", "#000000", "BGO", "70", "VDOBGT", "false", "EnaCUSCSST", "false", "BlurSubT", "false", "CUSTOM", "", "OutShaO", "0", "VDOTEXTO", "100", "MediaBGO", "50", "NVDOBGT", "0.4", "ThemeO", "100", "TimeBGO", "50", "VBGT", "true", "TextO", "100", "LoadVDOT", "false", "BGC", "#000000", "TimeH", "18", "LeftBarT", "true", "Time-LineBGO", "20", "Time-LineBGC", "#ffffff", "TopOutT", "true", "SyncLogoT", "true", "PlaylisthoverO", "50", "ScWidth", "0", "ThumbHoverColorC", "#009dff", "BGIMG", ""]))
-    SetidxTo("PRESETGlass", JSON.stringify({ "FlipT": "false", "TimeBGC": "#000000", "IMGSBOX": "100", "AutoEXPIPT": "true", "ThemeFortC": "#ffffff", "VisualT": "false", "TimeH": "18", "SubtitleO": "100", "TimeAniT": "true", "STUPIDME": "true", "SubtitleC": "#ffffff", "IMGS": "100", "SyncLogoT": "true", "ADDCUSTOM": "", "TextC": "#ffffff", "BGO": "77", "ThumbHoverColorC": "#808080", "MediaBlurT": "true", "ThumbHoverColorO": "100", "Time-LineBGO": "20", "NVDOC": "1", "EndBGC": "#000000", "Border": "1", "CenterUDFT": "true", "MediaBGO": "31", "ScWidth": "0", "BlurBGAM": "0", "ThemehoverC": "#dc5cff", "VDOTEXTO": "100", "NdTextO": "100", "IconFillT": "true", "ScrollT": "true", "ThemeSndO": "54", "AutoPIPT": "true", "LoadVDOT": "false", "ThemeThrC": "#474747", "PlaylisthoverO": "50", "NVDOT": "2", "SubOutT": "true", "SwapRowT": "false", "TimeBGO": "50", "TimeLoadedO": "50", "CenterMedia": "true", "OutShaO": "37", "SPSubScribeBGC": "#ff0000", "ThemehoverO": "50", "HBTO": "100", "CenterUDT": "true", "IMGXBOX": "50", "PlaylisthoverC": "#d666ff", "SPSubScribeColorC": "#000000", "ThumbClickC": "#ff0000", "TimeOutT": "true", "EnaCUSCSST": "false", "PlayerOutT": "true", "IMGY": "0", "ThumbClickO": "100", "transitionT": "true", "TIMETEXTO": "100", "ConUnderVDOT": "false", "BlurWhatT": "all", "PlayerBorder": "-1", "ThumbAnimT": "true", "SPSubScribeBGO": "100", "OutShaC": "#000000", "ThemeC": "#ffffff", "subShaColorC": "#000000", "CenterTimeT": "true", "LeftBarT": "true", "LeftBar": "true", "NewSubT": "true", "EndBGO": "50", "BGC": "#000000", "CanvasQua": "40", "HoverBorder": "1", "IMGX": "50", "Test": "Test", "CapBGC": "#000000", "TimeLoadedC": "#ffffff", "Enable": "false", "ControlUnderVDOT": "true", "NVDOB": "50", "TIMETEXTC": "#ffffff", "ThemeO": "63", "CapOutT": "false", "CUSTOM": "", "subSpace": "1", "LeftBarC": "#000000", "CenterMediaT": "true", "ThumbHoverT": "Slide", "RepeatT": "false", "subWidth": "700", "OutOrShaT": "Sha", "ThemeSndC": "#000000", "SPSubScribeColorO": "100", "LeftBarO": "39", "BottomGT": "true", "MediaH": "30", "TextO": "100", "subShaWidth": "0", "ThemeThrO": "46", "APIT": "false", "subShaColorO": "100", "TopOutT": "true", "VBGT": "true", "Edge": "10", "subShaBlur": "0", "VDOTEXTC": "#ffffff", "PlayerEdge": "20", "CapBGO": "0", "BlurAm": "15", "PtranT": "true", "VDOBGT": "true", "Zoom": "1.075", "TimeEdge": "10", "VDOSYT": "true", "MediaBGC": "#000000", "MediaSpace": "70", "NewSub": "true", "NewVDOanimaT": "true", "EnaADDCSST": "false", "NdTextC": "#b8b8b8", "SPSubScribeT": "false", "HBTC": "#ffffff", "NVDOBGT": "0.4", "BlurSubT": "false", "ThemeFortO": "17", "Time-LineBGC": "#ffffff", "BGIMG": "https://www.shutterstock.com/blog/wp-content/uploads/sites/5/2020/02/Usign-Gradients-Featured-Image.jpg" }))
+    SetidxTo("PRESETGlass", JSON.stringify({ "FlipT": "false", "TimeBGC": "#000000", "IMGSBOX": "100", "AutoEXPIPT": "true", "ThemeFortC": "#ffffff", "VisualT": "false", "TimeH": "18", "SubtitleO": "100", "TimeAniT": "true", "STUPIDME": "true", "SubtitleC": "#ffffff", "IMGS": "100", "SyncLogoT": "true", "ADDCUSTOM": "", "TextC": "#ffffff", "BGO": "77", "ThumbHoverColorC": "#808080", "MediaBlurT": "true", "ThumbHoverColorO": "100", "Time-LineBGO": "20", "NVDOC": "1", "EndBGC": "#000000", "Border": "1", "CenterUDFT": "true", "MediaBGO": "31", "ScWidth": "0", "BlurBGAM": "0", "ThemehoverC": "#dc5cff", "VDOTEXTO": "100", "NdTextO": "100", "IconFillT": "true", "ScrollT": "true", "ThemeSndO": "54", "AutoPIPT": "true", "LoadVDOT": "false", "ThemeThrC": "#474747", "PlaylisthoverO": "50", "NVDOT": "2", "SubOutT": "true", "SwapRowT": "false", "TimeBGO": "50", "TimeLoadedO": "50", "CenterMedia": "true", "OutShaO": "37", "SPSubScribeBGC": "#ff0000", "ThemehoverO": "50", "HBTO": "100", "CenterUDT": "true", "IMGXBOX": "50", "PlaylisthoverC": "#d666ff", "SPSubScribeColorC": "#000000", "ThumbClickC": "#ff0000", "TimeOutT": "true", "EnaCUSCSST": "false", "PlayerOutT": "true", "IMGY": "0", "ThumbClickO": "100", "transitionT": "true", "TIMETEXTO": "100", "ConUnderVDOT": "false", "BlurWhatT": "none", "PlayerBorder": "-1", "ThumbAnimT": "true", "SPSubScribeBGO": "100", "OutShaC": "#000000", "ThemeC": "#ffffff", "subShaColorC": "#000000", "CenterTimeT": "true", "LeftBarT": "true", "LeftBar": "true", "NewSubT": "true", "EndBGO": "50", "BGC": "#000000", "CanvasQua": "40", "HoverBorder": "1", "IMGX": "50", "Test": "Test", "CapBGC": "#000000", "TimeLoadedC": "#ffffff", "Enable": "false", "ControlUnderVDOT": "true", "NVDOB": "50", "TIMETEXTC": "#ffffff", "ThemeO": "63", "CapOutT": "false", "CUSTOM": "", "subSpace": "1", "LeftBarC": "#000000", "CenterMediaT": "true", "ThumbHoverT": "Slide", "RepeatT": "false", "subWidth": "700", "OutOrShaT": "Sha", "ThemeSndC": "#000000", "SPSubScribeColorO": "100", "LeftBarO": "39", "BottomGT": "true", "MediaH": "30", "TextO": "100", "subShaWidth": "0", "ThemeThrO": "46", "APIT": "false", "subShaColorO": "100", "TopOutT": "true", "VBGT": "true", "Edge": "10", "subShaBlur": "0", "VDOTEXTC": "#ffffff", "PlayerEdge": "20", "CapBGO": "0", "BlurAm": "15", "PtranT": "true", "VDOBGT": "true", "Zoom": "1.075", "TimeEdge": "10", "VDOSYT": "true", "MediaBGC": "#000000", "MediaSpace": "70", "NewSub": "true", "NewVDOanimaT": "true", "EnaADDCSST": "false", "NdTextC": "#b8b8b8", "SPSubScribeT": "false", "HBTC": "#ffffff", "NVDOBGT": "0.4", "BlurSubT": "false", "ThemeFortO": "17", "Time-LineBGC": "#ffffff", "BGIMG": "https://www.shutterstock.com/blog/wp-content/uploads/sites/5/2020/02/Usign-Gradients-Featured-Image.jpg" }))
 }
 
 var Set = document.createElement("button"),
@@ -84,7 +84,8 @@ var Set = document.createElement("button"),
     TranHead = false,
     EPar,
     LoopCheck,
-    ADDCSS
+    ADDCSS,
+    BGSmooth
 
 NTstyle = document.createElement("style");
 
@@ -771,10 +772,10 @@ function SetNull() {
     SetTo("ADDCUSTOM", ``)
     SetTo("InstallFont", ``)
 
-    SetTo("NVDOB", `60`)
+    SetTo("NVDOB", `40`)
     SetTo("NVDOC", `1`)
     SetTo("NVDOBGT", `0.4`)
-    SetTo("NVDOT", `2`)
+    SetTo("NVDOT", `2.2`)
 
     SetTo("subWidth", `700`)
     SetTo("subSpace", `2`)
@@ -787,6 +788,10 @@ function SetNull() {
     SetTo("CanvasQua", `40`)
     
     SetTo("ReplaceYTURL", ``)
+
+    SetTo("VDOSmooth", `10`)
+
+    SetTo("YTSize", `100`)
 
     //Check------------------------
 
@@ -1322,6 +1327,13 @@ function SetGlobalBGImage(ImgValue) {
 
 function update() {
     // console.log("UPDATE");
+    BGSmooth = 1/parseInt(localStorage["nt-VDOSmooth"])
+    if (BGSmooth > 1) {
+        BGSmooth = 1
+    }
+    if (BGSmooth == 1) {
+        LastFrame = null
+    }
     Collect_Style = ``
     ADDCSS = ``
     ADDReplaceLOGO = ``
@@ -1334,7 +1346,7 @@ function update() {
           
           #logo.ytd-topbar-logo-renderer{
             background:url("${localStorage["nt-ReplaceYTURL"]}");
-            background-size: 100%;
+            background-size: ${localStorage["nt-YTSize"]}%;
             background-repeat: no-repeat;
             background-position: center;
           }`
@@ -1646,7 +1658,7 @@ function update() {
 
                 #NewtubeBlurBG{
                     transition: opacity 2s , margin-top 0.1s , margin-left 0.1s;
-                    filter: blur(` + localStorage["nt-NVDOB"] + `px) contrast(` + localStorage["nt-NVDOC"] + `) brightness(` + localStorage["nt-NVDOBGT"] + `);
+                    filter: contrast(` + localStorage["nt-NVDOC"] + `) brightness(` + localStorage["nt-NVDOBGT"] + `);
                     transform: scale(` + localStorage["nt-NVDOT"] + `);
                 }
 
@@ -1939,9 +1951,7 @@ function update() {
                     background-color: var(--hover-time-background) !important;
                 }
                 
-                a.yt-simple-endpoint.yt-formatted-string::selection,
-                span::selection,
-                yt-formatted-string::selection,
+                *::selection,
                 .ytp-menuitem[aria-checked=true] .ytp-menuitem-toggle-checkbox,
                 .ytp-volume-slider-handle,
                 .ytp-volume-slider-handle:before
@@ -3633,6 +3643,7 @@ width: -moz-available;
 
     createTextBox("CanvasQua", "% (Background VDO) Quality")
     createTextBox("NVDOB", `(Background VDO) Blur amount`)
+    createTextBox("VDOSmooth", '(Background VDO) Smooth frame (Minimum & None is 1)',true)
     createTextBox("NVDOC", `(Background VDO) Contrast`)
     createTextBox("NVDOBGT", `(Background VDO) Brightness`)
     createTextBox("NVDOT", `(Background VDO) Size`)
@@ -3666,9 +3677,56 @@ width: -moz-available;
 
     createframe(`<label class="DES">Custom Youtube logo</label>`)
 
-    createCheck("ReplaceYT", "Enable",true)
+    createCheck("ReplaceYT", "Enable")
 
-    let ReplaceYTFrame = createframe(`<p class="DES" style="display: flex; align-items: center; width:-webkit-fill-available;">Enter URL :  </label><input id="ReplaceYTLOGO" style="width:380px; margin-left: 10px; margin-bottom: 10px;" class="TextBox" type="text" style="display: flex;"></p>`)
+    let ReplaceYTFrame = createframe(`<p class="DES" style="display: flex; align-items: center; width:-webkit-fill-available;">Enter URL :  </label><input id="ReplaceYTLOGO" style="width:380px; margin-left: 10px; margin-bottom: 10px;" class="TextBox" type="text" style="display: flex;"></p>
+    <a class="yt-simple-endpoint style-scope ytd-topbar-logo-renderer" id="logo" aria-label="" href="/" title="หน้าแรกของ YouTube">
+    <div class="style-scope ytd-topbar-logo-renderer">
+        <ytd-logo class="style-scope ytd-topbar-logo-renderer"><yt-icon id="logo-icon" class="style-scope ytd-logo"><yt-icon-shape class="style-scope yt-icon"><icon-shape class="yt-spec-icon-shape"><div style="width: 100%; height: 100%; fill: currentcolor;"><svg class="external-icon" viewBox="0 0 90 20" focusable="false" style="pointer-events: none; display: block; width: 100%; height: 100%;">
+    <svg viewBox="0 0 90 20" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <g>
+        <path d="M27.9727 3.12324C27.6435 1.89323 26.6768 0.926623 25.4468 0.597366C23.2197 2.24288e-07 14.285 0 14.285 0C14.285 0 5.35042 2.24288e-07 3.12323 0.597366C1.89323 0.926623 0.926623 1.89323 0.597366 3.12324C2.24288e-07 5.35042 0 10 0 10C0 10 2.24288e-07 14.6496 0.597366 16.8768C0.926623 18.1068 1.89323 19.0734 3.12323 19.4026C5.35042 20 14.285 20 14.285 20C14.285 20 23.2197 20 25.4468 19.4026C26.6768 19.0734 27.6435 18.1068 27.9727 16.8768C28.5701 14.6496 28.5701 10 28.5701 10C28.5701 10 28.5677 5.35042 27.9727 3.12324Z" fill="#FF0000"></path>
+        <path d="M11.4253 14.2854L18.8477 10.0004L11.4253 5.71533V14.2854Z" fill="white"></path>
+        </g>
+        <g>
+        <g>
+            <path d="M34.6024 13.0036L31.3945 1.41846H34.1932L35.3174 6.6701C35.6043 7.96361 35.8136 9.06662 35.95 9.97913H36.0323C36.1264 9.32532 36.3381 8.22937 36.665 6.68892L37.8291 1.41846H40.6278L37.3799 13.0036V18.561H34.6001V13.0036H34.6024Z"></path>
+            <path d="M41.4697 18.1937C40.9053 17.8127 40.5031 17.22 40.2632 16.4157C40.0257 15.6114 39.9058 14.5437 39.9058 13.2078V11.3898C39.9058 10.0422 40.0422 8.95805 40.315 8.14196C40.5878 7.32588 41.0135 6.72851 41.592 6.35457C42.1706 5.98063 42.9302 5.79248 43.871 5.79248C44.7976 5.79248 45.5384 5.98298 46.0981 6.36398C46.6555 6.74497 47.0647 7.34234 47.3234 8.15137C47.5821 8.96275 47.7115 10.0422 47.7115 11.3898V13.2078C47.7115 14.5437 47.5845 15.6161 47.3329 16.4251C47.0812 17.2365 46.672 17.8292 46.1075 18.2031C45.5431 18.5771 44.7764 18.7652 43.8098 18.7652C42.8126 18.7675 42.0342 18.5747 41.4697 18.1937ZM44.6353 16.2323C44.7905 15.8231 44.8705 15.1575 44.8705 14.2309V10.3292C44.8705 9.43077 44.7929 8.77225 44.6353 8.35833C44.4777 7.94206 44.2026 7.7351 43.8074 7.7351C43.4265 7.7351 43.156 7.94206 43.0008 8.35833C42.8432 8.77461 42.7656 9.43077 42.7656 10.3292V14.2309C42.7656 15.1575 42.8408 15.8254 42.9914 16.2323C43.1419 16.6415 43.4123 16.8461 43.8074 16.8461C44.2026 16.8461 44.4777 16.6415 44.6353 16.2323Z"></path>
+            <path d="M56.8154 18.5634H54.6094L54.3648 17.03H54.3037C53.7039 18.1871 52.8055 18.7656 51.6061 18.7656C50.7759 18.7656 50.1621 18.4928 49.767 17.9496C49.3719 17.4039 49.1743 16.5526 49.1743 15.3955V6.03751H51.9942V15.2308C51.9942 15.7906 52.0553 16.188 52.1776 16.4256C52.2999 16.6631 52.5045 16.783 52.7914 16.783C53.036 16.783 53.2712 16.7078 53.497 16.5573C53.7228 16.4067 53.8874 16.2162 53.9979 15.9858V6.03516H56.8154V18.5634Z"></path>
+            <path d="M64.4755 3.68758H61.6768V18.5629H58.9181V3.68758H56.1194V1.42041H64.4755V3.68758Z"></path>
+            <path d="M71.2768 18.5634H69.0708L68.8262 17.03H68.7651C68.1654 18.1871 67.267 18.7656 66.0675 18.7656C65.2373 18.7656 64.6235 18.4928 64.2284 17.9496C63.8333 17.4039 63.6357 16.5526 63.6357 15.3955V6.03751H66.4556V15.2308C66.4556 15.7906 66.5167 16.188 66.639 16.4256C66.7613 16.6631 66.9659 16.783 67.2529 16.783C67.4974 16.783 67.7326 16.7078 67.9584 16.5573C68.1842 16.4067 68.3488 16.2162 68.4593 15.9858V6.03516H71.2768V18.5634Z"></path>
+            <path d="M80.609 8.0387C80.4373 7.24849 80.1621 6.67699 79.7812 6.32186C79.4002 5.96674 78.8757 5.79035 78.2078 5.79035C77.6904 5.79035 77.2059 5.93616 76.7567 6.23014C76.3075 6.52412 75.9594 6.90747 75.7148 7.38489H75.6937V0.785645H72.9773V18.5608H75.3056L75.5925 17.3755H75.6537C75.8724 17.7988 76.1993 18.1304 76.6344 18.3774C77.0695 18.622 77.554 18.7443 78.0855 18.7443C79.038 18.7443 79.7412 18.3045 80.1904 17.4272C80.6396 16.5476 80.8653 15.1765 80.8653 13.3092V11.3266C80.8653 9.92722 80.7783 8.82892 80.609 8.0387ZM78.0243 13.1492C78.0243 14.0617 77.9867 14.7767 77.9114 15.2941C77.8362 15.8115 77.7115 16.1808 77.5328 16.3971C77.3564 16.6158 77.1165 16.724 76.8178 16.724C76.585 16.724 76.371 16.6699 76.1734 16.5594C75.9759 16.4512 75.816 16.2866 75.6937 16.0702V8.96062C75.7877 8.6196 75.9524 8.34209 76.1852 8.12337C76.4157 7.90465 76.6697 7.79646 76.9401 7.79646C77.2271 7.79646 77.4481 7.90935 77.6034 8.13278C77.7609 8.35855 77.8691 8.73485 77.9303 9.26636C77.9914 9.79787 78.022 10.5528 78.022 11.5335V13.1492H78.0243Z"></path>
+            <path d="M84.8657 13.8712C84.8657 14.6755 84.8892 15.2776 84.9363 15.6798C84.9833 16.0819 85.0821 16.3736 85.2326 16.5594C85.3831 16.7428 85.6136 16.8345 85.9264 16.8345C86.3474 16.8345 86.639 16.6699 86.7942 16.343C86.9518 16.0161 87.0365 15.4705 87.0506 14.7085L89.4824 14.8519C89.4965 14.9601 89.5035 15.1106 89.5035 15.3011C89.5035 16.4582 89.186 17.3237 88.5534 17.8952C87.9208 18.4667 87.0247 18.7536 85.8676 18.7536C84.4777 18.7536 83.504 18.3185 82.9466 17.446C82.3869 16.5735 82.1094 15.2259 82.1094 13.4008V11.2136C82.1094 9.33452 82.3987 7.96105 82.9772 7.09558C83.5558 6.2301 84.5459 5.79736 85.9499 5.79736C86.9165 5.79736 87.6597 5.97375 88.1771 6.32888C88.6945 6.684 89.059 7.23433 89.2707 7.98457C89.4824 8.7348 89.5882 9.76961 89.5882 11.0913V13.2362H84.8657V13.8712ZM85.2232 7.96811C85.0797 8.14449 84.9857 8.43377 84.9363 8.83593C84.8892 9.2381 84.8657 9.84722 84.8657 10.6657V11.5641H86.9283V10.6657C86.9283 9.86133 86.9001 9.25221 86.846 8.83593C86.7919 8.41966 86.6931 8.12803 86.5496 7.95635C86.4062 7.78702 86.1851 7.7 85.8864 7.7C85.5854 7.70235 85.3643 7.79172 85.2232 7.96811Z"></path>
+        </g>
+        </g>
+    </svg>
+    </svg></div></icon-shape></yt-icon-shape></yt-icon></ytd-logo>
+    </div>
+    <ytd-yoodle-renderer class="style-scope ytd-topbar-logo-renderer" hidden=""><!--css-build:shady--><!--css-build:shady--><picture class="style-scope ytd-yoodle-renderer" hidden="">
+    <source type="image/webp" class="style-scope ytd-yoodle-renderer">
+    <img class="style-scope ytd-yoodle-renderer">
+    </picture>
+    <ytd-logo class="style-scope ytd-yoodle-renderer"><!--css-build:shady--><!--css-build:shady--><yt-icon id="logo-icon" class="style-scope ytd-logo"><!--css-build:shady--><!--css-build:shady--><yt-icon-shape class="style-scope yt-icon"><icon-shape class="yt-spec-icon-shape"><div style="width: 100%; height: 100%; fill: currentcolor;"><svg class="external-icon" viewBox="0 0 90 20" focusable="false" style="pointer-events: none; display: block; width: 100%; height: 100%;">
+    <svg viewBox="0 0 90 20" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <g>
+        <path d="M27.9727 3.12324C27.6435 1.89323 26.6768 0.926623 25.4468 0.597366C23.2197 2.24288e-07 14.285 0 14.285 0C14.285 0 5.35042 2.24288e-07 3.12323 0.597366C1.89323 0.926623 0.926623 1.89323 0.597366 3.12324C2.24288e-07 5.35042 0 10 0 10C0 10 2.24288e-07 14.6496 0.597366 16.8768C0.926623 18.1068 1.89323 19.0734 3.12323 19.4026C5.35042 20 14.285 20 14.285 20C14.285 20 23.2197 20 25.4468 19.4026C26.6768 19.0734 27.6435 18.1068 27.9727 16.8768C28.5701 14.6496 28.5701 10 28.5701 10C28.5701 10 28.5677 5.35042 27.9727 3.12324Z" fill="#FF0000"></path>
+        <path d="M11.4253 14.2854L18.8477 10.0004L11.4253 5.71533V14.2854Z" fill="white"></path>
+        </g>
+        <g>
+        <g>
+            <path d="M34.6024 13.0036L31.3945 1.41846H34.1932L35.3174 6.6701C35.6043 7.96361 35.8136 9.06662 35.95 9.97913H36.0323C36.1264 9.32532 36.3381 8.22937 36.665 6.68892L37.8291 1.41846H40.6278L37.3799 13.0036V18.561H34.6001V13.0036H34.6024Z"></path>
+            <path d="M41.4697 18.1937C40.9053 17.8127 40.5031 17.22 40.2632 16.4157C40.0257 15.6114 39.9058 14.5437 39.9058 13.2078V11.3898C39.9058 10.0422 40.0422 8.95805 40.315 8.14196C40.5878 7.32588 41.0135 6.72851 41.592 6.35457C42.1706 5.98063 42.9302 5.79248 43.871 5.79248C44.7976 5.79248 45.5384 5.98298 46.0981 6.36398C46.6555 6.74497 47.0647 7.34234 47.3234 8.15137C47.5821 8.96275 47.7115 10.0422 47.7115 11.3898V13.2078C47.7115 14.5437 47.5845 15.6161 47.3329 16.4251C47.0812 17.2365 46.672 17.8292 46.1075 18.2031C45.5431 18.5771 44.7764 18.7652 43.8098 18.7652C42.8126 18.7675 42.0342 18.5747 41.4697 18.1937ZM44.6353 16.2323C44.7905 15.8231 44.8705 15.1575 44.8705 14.2309V10.3292C44.8705 9.43077 44.7929 8.77225 44.6353 8.35833C44.4777 7.94206 44.2026 7.7351 43.8074 7.7351C43.4265 7.7351 43.156 7.94206 43.0008 8.35833C42.8432 8.77461 42.7656 9.43077 42.7656 10.3292V14.2309C42.7656 15.1575 42.8408 15.8254 42.9914 16.2323C43.1419 16.6415 43.4123 16.8461 43.8074 16.8461C44.2026 16.8461 44.4777 16.6415 44.6353 16.2323Z"></path>
+            <path d="M56.8154 18.5634H54.6094L54.3648 17.03H54.3037C53.7039 18.1871 52.8055 18.7656 51.6061 18.7656C50.7759 18.7656 50.1621 18.4928 49.767 17.9496C49.3719 17.4039 49.1743 16.5526 49.1743 15.3955V6.03751H51.9942V15.2308C51.9942 15.7906 52.0553 16.188 52.1776 16.4256C52.2999 16.6631 52.5045 16.783 52.7914 16.783C53.036 16.783 53.2712 16.7078 53.497 16.5573C53.7228 16.4067 53.8874 16.2162 53.9979 15.9858V6.03516H56.8154V18.5634Z"></path>
+            <path d="M64.4755 3.68758H61.6768V18.5629H58.9181V3.68758H56.1194V1.42041H64.4755V3.68758Z"></path>
+            <path d="M71.2768 18.5634H69.0708L68.8262 17.03H68.7651C68.1654 18.1871 67.267 18.7656 66.0675 18.7656C65.2373 18.7656 64.6235 18.4928 64.2284 17.9496C63.8333 17.4039 63.6357 16.5526 63.6357 15.3955V6.03751H66.4556V15.2308C66.4556 15.7906 66.5167 16.188 66.639 16.4256C66.7613 16.6631 66.9659 16.783 67.2529 16.783C67.4974 16.783 67.7326 16.7078 67.9584 16.5573C68.1842 16.4067 68.3488 16.2162 68.4593 15.9858V6.03516H71.2768V18.5634Z"></path>
+            <path d="M80.609 8.0387C80.4373 7.24849 80.1621 6.67699 79.7812 6.32186C79.4002 5.96674 78.8757 5.79035 78.2078 5.79035C77.6904 5.79035 77.2059 5.93616 76.7567 6.23014C76.3075 6.52412 75.9594 6.90747 75.7148 7.38489H75.6937V0.785645H72.9773V18.5608H75.3056L75.5925 17.3755H75.6537C75.8724 17.7988 76.1993 18.1304 76.6344 18.3774C77.0695 18.622 77.554 18.7443 78.0855 18.7443C79.038 18.7443 79.7412 18.3045 80.1904 17.4272C80.6396 16.5476 80.8653 15.1765 80.8653 13.3092V11.3266C80.8653 9.92722 80.7783 8.82892 80.609 8.0387ZM78.0243 13.1492C78.0243 14.0617 77.9867 14.7767 77.9114 15.2941C77.8362 15.8115 77.7115 16.1808 77.5328 16.3971C77.3564 16.6158 77.1165 16.724 76.8178 16.724C76.585 16.724 76.371 16.6699 76.1734 16.5594C75.9759 16.4512 75.816 16.2866 75.6937 16.0702V8.96062C75.7877 8.6196 75.9524 8.34209 76.1852 8.12337C76.4157 7.90465 76.6697 7.79646 76.9401 7.79646C77.2271 7.79646 77.4481 7.90935 77.6034 8.13278C77.7609 8.35855 77.8691 8.73485 77.9303 9.26636C77.9914 9.79787 78.022 10.5528 78.022 11.5335V13.1492H78.0243Z"></path>
+            <path d="M84.8657 13.8712C84.8657 14.6755 84.8892 15.2776 84.9363 15.6798C84.9833 16.0819 85.0821 16.3736 85.2326 16.5594C85.3831 16.7428 85.6136 16.8345 85.9264 16.8345C86.3474 16.8345 86.639 16.6699 86.7942 16.343C86.9518 16.0161 87.0365 15.4705 87.0506 14.7085L89.4824 14.8519C89.4965 14.9601 89.5035 15.1106 89.5035 15.3011C89.5035 16.4582 89.186 17.3237 88.5534 17.8952C87.9208 18.4667 87.0247 18.7536 85.8676 18.7536C84.4777 18.7536 83.504 18.3185 82.9466 17.446C82.3869 16.5735 82.1094 15.2259 82.1094 13.4008V11.2136C82.1094 9.33452 82.3987 7.96105 82.9772 7.09558C83.5558 6.2301 84.5459 5.79736 85.9499 5.79736C86.9165 5.79736 87.6597 5.97375 88.1771 6.32888C88.6945 6.684 89.059 7.23433 89.2707 7.98457C89.4824 8.7348 89.5882 9.76961 89.5882 11.0913V13.2362H84.8657V13.8712ZM85.2232 7.96811C85.0797 8.14449 84.9857 8.43377 84.9363 8.83593C84.8892 9.2381 84.8657 9.84722 84.8657 10.6657V11.5641H86.9283V10.6657C86.9283 9.86133 86.9001 9.25221 86.846 8.83593C86.7919 8.41966 86.6931 8.12803 86.5496 7.95635C86.4062 7.78702 86.1851 7.7 85.8864 7.7C85.5854 7.70235 85.3643 7.79172 85.2232 7.96811Z"></path>
+        </g>
+        </g>
+    </svg>
+    </svg></div></icon-shape></yt-icon-shape></yt-icon></ytd-logo>
+    <ytd-lottie-player class="style-scope ytd-yoodle-renderer" hidden=""></ytd-lottie-player></ytd-yoodle-renderer>
+    </a>`)
 
     ReplaceYTFrame.style = `display: flex; flex-direction: column;`
 
@@ -3699,6 +3757,8 @@ width: -moz-available;
         ReplaceYTLOGO.value = ""
         update()
     }
+
+    createTextBox("YTSize", "% Logo image size",true)
 
     //-------------------------------------------------------------------------------
 
@@ -4491,12 +4551,19 @@ function ShowUpdated() {
     style="
     filter: drop-shadow(0px 0px 8px rgba(255,255,255,0.7));
     ">
+    <img src=https://media.tenor.com/gNcXkIbCvpsAAAAj/tsurumaki-kokoro.gif"
+    style="height:60%;
+    padding: 20px;">
     <p style="
     font-size: 28px;
     padding: 10px;
     color: white;
     font-weight: 700;
+    font-family: cursive !important;
     ">🎉 Newtube `+ Ver + ` has updated! 🎉</p>
+    <img src=https://media.tenor.com/gNcXkIbCvpsAAAAj/tsurumaki-kokoro.gif"
+    style="height:60%;
+    padding: 20px;">
     
     </div>
     
@@ -4520,7 +4587,8 @@ function ShowUpdated() {
     okbut.style = `
     width: 40%;
     height: 30px;
-    background: #57ffbc;
+    box-shadow: inset rgb(87, 255, 188) 0px 0px 1px 1px;
+    background: transparent;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -4528,8 +4596,10 @@ function ShowUpdated() {
     font-size: 24px;
     font-weight: 700;
     cursor: pointer;
-    transition:all 0.2s ease;
+    transition: all 0.2s ease 0s;
     padding: 5px;
+    color: rgb(87, 255, 188);
+    font-family: cursive !important;
     `
     okbut.innerHTML = "Ok !"
 
@@ -4559,7 +4629,8 @@ function ShowUpdated() {
     changelogbt.style = `
     width: 40%;
     height: 30px;
-    background: rgb(255 201 87);
+    box-shadow: inset rgb(255 201 87) 0px 0px 1px 1px;
+    background: transparent;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -4567,9 +4638,11 @@ function ShowUpdated() {
     font-size: 24px;
     font-weight: 700;
     cursor: pointer;
-    transition:all 0.2s ease;
-    margin-left: 10px;
+    transition: all 0.2s ease 0s;
     padding: 5px;
+    margin-left: 10px;
+    color: rgb(255 201 87);
+    font-family: cursive !important;
     `
     changelogbt.innerHTML = "Changes log"
 
@@ -4902,9 +4975,20 @@ function SettoEnd() {
             }
             if (SeeRemove == 1) {
                 SeeRemove = 0
-                document.getElementById("end").addEventListener('DOMNodeRemoved', function (e) {
-                    SettoEnd()
+
+                ENDobserver = new MutationObserver(function(mutations_list) {
+                    mutations_list.forEach(function(mutation) {
+                        mutation.removedNodes.forEach(function(removed_node) {
+                            if(removed_node.id == 'child') {
+                                console.log('#child has been removed');
+                                SettoEnd()
+                                observer.disconnect();
+                            }
+                        });
+                    });
                 });
+
+                ENDobserver.observe(document.getElementById("end"), { subtree: false, childList: true });
             }
         }
     }, 1000);
@@ -4943,7 +5027,7 @@ function ChangeCanvasQua() {
     CanvasQua = CanvasNewQua
     canvas.width = cw
     canvas.height = ch
-}
+}   
 
 function SetCanvas() {
     if (canvas) {
@@ -4985,10 +5069,7 @@ function SetCanvas() {
             
             var tempCanvas
             if (KeeplastFrame == true) {
-                tempCanvas = document.createElement('canvas')
-                tempCanvas.width = context.canvas.width
-                tempCanvas.height = context.canvas.height
-                tempCanvas.getContext("2d").drawImage(context.canvas, 0, 0)
+                tempCanvas = context.getImageData(0,0,cw,ch);
             }
 
             canvas.style.width = VdoWith
@@ -4997,8 +5078,8 @@ function SetCanvas() {
             ChangeCanvasQua()
 
             if (KeeplastFrame == true) {
-                context.drawImage(tempCanvas, 0, 0)
-                tempCanvas.remove()
+                context.putImageData(tempCanvas, 0, 0)
+                tempCanvas = null
             }
         }
 
@@ -5164,14 +5245,55 @@ function contrastImage(imgData, contrast) {  //input range [-100..100]
 
 var LastFrame
 var LastHeight = 0
+var LastFrame = null
 
 function drawOnePic() {
     if (document.visibilityState == 'visible') {
-
+        // console.log("Draw")
         SetCanvas()
         Scale = 1
+
+        // Bcontext.globalCompositeOperation = "copy"
+
+        // var Xgradient = Bcontext.createLinearGradient(0, 0, cw, 0);
+        // Xgradient.addColorStop(0, "black");
+        // Xgradient.addColorStop(0.2, "transparent");
+        // Xgradient.addColorStop(0.8, "transparent");
+        // Xgradient.addColorStop(1, "black");
+
+        // var Ygradient = Bcontext.createLinearGradient(0, 0, 0, ch);
+        // Ygradient.addColorStop(0, "black");
+        // Ygradient.addColorStop(0.2, "transparent");
+        // Ygradient.addColorStop(0.8, "transparent");
+        // Ygradient.addColorStop(1, "black");
+
+        // Bcontext.fillStyle = Xgradient;
+        // Bcontext.fillRect(0, 0, cw, ch);
+        // Bcontext.globalCompositeOperation = "source-over"
+        // Bcontext.fillStyle = Ygradient;
+        // Bcontext.fillRect(0, 0, cw, ch);
+
+        context.globalAlpha = 1
+        if (BGSmooth != 1) {
+            context.globalCompositeOperation = "copy"
+            if (LastFrame) {
+                context.putImageData(LastFrame,0,0);
+            }
+
+            context.globalAlpha = BGSmooth
+        }
+
+        context.globalCompositeOperation = "source-over"
+        context.filter = `blur(${localStorage["nt-NVDOB"]}px)`
         context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
-        // Scale = 0.9
+        if (BGSmooth != 1) {
+            LastFrame = context.getImageData(0,0,cw,ch);
+        }
+        context.filter = `none`
+
+        // context.globalCompositeOperation = "destination-out"
+        // context.globalAlpha = 1
+
         // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
         // Scale = 0.8
         // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
@@ -5181,6 +5303,26 @@ function drawOnePic() {
         // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
         // Scale = 0.55
         // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+
+        if (BGSmooth != 1) {
+            context.globalAlpha = 1
+        }
+        var Xgradient = context.createLinearGradient(0, 0, cw, 0);
+        Xgradient.addColorStop(0, "black");
+        Xgradient.addColorStop(0.2, "transparent");
+        Xgradient.addColorStop(0.8, "transparent");
+        Xgradient.addColorStop(1, "black");
+
+        var Ygradient = context.createLinearGradient(0, 0, 0, ch);
+        Ygradient.addColorStop(0, "black");
+        Ygradient.addColorStop(0.2, "transparent");
+        Ygradient.addColorStop(0.8, "transparent");
+        Ygradient.addColorStop(1, "black");
+
+        context.fillStyle = Xgradient;
+        context.fillRect(0, 0, cw, ch);
+        context.fillStyle = Ygradient;
+        context.fillRect(0, 0, cw, ch);
 
 
         if (BlackMode == true) {
@@ -5537,7 +5679,7 @@ function CreateCanvas() {
                 image-rendering: pixelated;
                 }`
         canvas.id = "NewtubeBlurBG"
-
+        canvas.style.position = "absolute"
         canvas.style.opacity = 0
     }
     setTimeout(() => {

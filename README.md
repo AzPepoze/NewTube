@@ -4,7 +4,14 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.8.1 (Current)
+## Version 3.10.0 (Current)
+
+- Fix bugs!
+- Improve background video performance
+- (Background VDO) Smooth frame
+- Logo image size
+
+## Version 3.8.1
 
 - Fix theater mode bug
 - Change update UI
