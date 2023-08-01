@@ -5094,11 +5094,12 @@ function SetCanvas() {
             }
         }
 
-        var CalOverlay = cw*0.2
+        var CalOverlay = VDOBOUND.height*0.2
 
         BlackOverlay.style = canvas.getAttribute("style") + `
         box-shadow: inset black 0px 0px ${CalOverlay}px ${CalOverlay}px;
-        position:absolute;`
+        position:absolute;
+        padding:1px;`
         BlackOverlay.style.zIndex = 1
 
         canvas.style.zIndex = 0
