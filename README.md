@@ -4,6 +4,10 @@
 
 # Newtube (Customize youtube) changelog!
 
+## Version 3.10.3 (Current)
+
+- Fix bug!
+
 ## Version 3.10.2 (Current)
 
 - Fix bugs!

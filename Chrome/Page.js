@@ -5094,7 +5094,12 @@ function SetCanvas() {
             }
         }
 
-        var CalOverlay = VDOBOUND.height*0.2
+        var CalOverlay
+        if (VDOBOUND.height <= VDOBOUND.width) {
+            CalOverlay = VDOBOUND.height*0.2
+        }else{
+            CalOverlay = VDOBOUND.width*0.2
+        }
 
         BlackOverlay.style = canvas.getAttribute("style") + `
         box-shadow: inset black 0px 0px ${CalOverlay}px ${CalOverlay}px;
@@ -5163,6 +5168,12 @@ function CheckVDO() {
             if (Cloning == false) {
                 CreateCanvas()
             }
+            // if (StaticVDO) {
+            //     console.log("Setcanvas")
+            //     SetCanvas()
+            //     drawOnePic()
+            // }
+            
         } else {
             if (Cloning == true) {
                 RemoveCanvas()
@@ -5295,7 +5306,12 @@ function drawOnePic() {
         //         context.putImageData(LastFrame,0,0);
         //     }
 
+        // if (StaticVDO) {
+        //     context.globalAlpha = 1
+        // } else {
             context.globalAlpha = BGSmooth
+        // }
+            
         // }
 
         // context.globalCompositeOperation = "source-over"
@@ -5429,6 +5445,8 @@ function drawOnePic() {
 
             ThisHeightArray = []
 
+            halfVDO = VDOBOUND.height / 2
+
             for (x = 0; x < 5; x++) {
                 ThisFind = x
                 ThisR = FistGetRGB[0]
@@ -5436,15 +5454,15 @@ function drawOnePic() {
                 ThisB = FistGetRGB[2]
 
                 Find = null
-                ThisActualPX = context2.getImageData(ThisFind, 0, 1, VDOBOUND.height)
+                ThisActualPX = context2.getImageData(ThisFind, 0, 1, halfVDO)
                 ThisPX = ThisActualPX.data
 
-                for (i = 5; i < VDOBOUND.height / 2; i++) {
+                for (i = 5; i < halfVDO; i++) {
                     if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
                         i += 10
                         if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
                             Find = i - 10
-                            i = VDOBOUND.height / 2
+                            i = halfVDO
                         }
                     } else {
                         if (!Check2ThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
@@ -5459,7 +5477,7 @@ function drawOnePic() {
                     ThisHeightArray.push(Find)
 
                     if (BlackDebug) {
-                        for (i = 5; i < Find; i++) {
+                        for (i = 5; i < Find; i++) { 
                             context2.putImageData(redPX, ThisFind, i)
                         }
                     }
@@ -5474,15 +5492,15 @@ function drawOnePic() {
                 //-----------------------------------------------------------------
 
                 Find = null
-                ThisActualPX = context2.getImageData(ThisFind, 0, 1, VDOBOUND.height)
+                ThisActualPX = context2.getImageData(ThisFind, halfVDO, 1, halfVDO)
                 ThisPX = ThisActualPX.data
 
-                for (i = VDOBOUND.height - 5; i > VDOBOUND.height / 2; i--) {
+                for (i = halfVDO - 5; i > 0; i--) {
                     if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
                         i -= 10
                         if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
                             Find = i + 10
-                            i = VDOBOUND.height / 2
+                            i = 0
                         }
                     } else {
                         if (!Check2ThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
@@ -5494,6 +5512,7 @@ function drawOnePic() {
                 }
 
                 if (Find) {
+                    Find += halfVDO
                     ThisHeightArray.push(VDOBOUND.height - Find)
 
                     if (BlackDebug) {
@@ -5631,7 +5650,8 @@ function drawOnePic() {
 
 let fps = 30,
     calPerFrameTime = 1000 / fps,
-    Support = ('requestVideoFrameCallback' in HTMLVideoElement.prototype)
+    Support = ('requestVideoFrameCallback' in HTMLVideoElement.prototype),
+    StaticVDO = false
 
 function drawpic() {
     if (drawing == false) {
@@ -5639,18 +5659,19 @@ function drawpic() {
 
         function DrawApic() {
             FindVideo()
-            if (v.paused || v.ended || Cloning == false) {
+            if (v.paused || v.ended || Cloning == false || StaticVDO == true) {
                 drawing = false
                 // console.log("CancelDraw")
             } else {
                 drawOnePic()
-
-                if (Support == true) {
-                    v.requestVideoFrameCallback(DrawApic)
-                }else{
-                    setTimeout(() => {
-                        DrawApic()
-                    }, calPerFrameTime);
+                if (!StaticVDO){
+                    if (Support == true) {
+                        v.requestVideoFrameCallback(DrawApic)
+                    }else{
+                        setTimeout(() => {
+                            DrawApic()
+                        }, calPerFrameTime);
+                    }
                 }
             }
         }
@@ -5658,10 +5679,30 @@ function drawpic() {
     }
 }
 
+function getBase64Image(img) {
+    // Create an empty canvas element
+    var canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    // Copy the image contents to the canvas
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+
+    // Get the data-URL formatted image
+    // Firefox supports PNG and JPEG. You could check img.src to
+    // guess the original format, but be aware the using "image/jpg"
+    // will re-encode the image.
+    var dataURL = canvas.toDataURL("image/png");
+
+    return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+}
+
 function callback(mutationsList, observer) {
     if (mutationsList[0].type == "attributes") {
         // console.log("CHANGE")
         CheckVDOSTATUS()
+
         if (!FindVideo().paused) {
             SetCanvas()
         }
@@ -5781,6 +5822,52 @@ function CheckLoop() {
     }, 100);
 }
 
+// function CheckStaticVDO(){
+//     console.log("Check if static")
+//     videoID = document.getElementsByTagName("ytd-watch-flexy")[0].getAttribute("video-id")
+//         console.log(videoID)
+
+//         var Frame1Loaded,
+//         Frame2Loaded,
+//         Frame3Loaded
+
+//         var frame1 = new Image()
+//         frame1.crossOrigin = "anonymous"
+//         frame1.onload = function(){
+//             Frame1Loaded = getBase64Image(frame1).length
+//         }
+//         frame1.src = `http://i.ytimg.com/vi/${videoID}/1.jpg`
+
+//         var frame2 = new Image()
+//         frame2.crossOrigin = "anonymous"
+//         frame2.onload = function(){
+//             Frame2Loaded = getBase64Image(frame2).length
+//         }
+//         frame2.src = `http://i.ytimg.com/vi/${videoID}/2.jpg`
+
+//         var frame3 = new Image()
+//         frame3.crossOrigin = "anonymous"
+//         frame3.onload = function(){
+//             Frame3Loaded = getBase64Image(frame3).length
+//         }
+//         frame3.src = `http://i.ytimg.com/vi/${videoID}/3.jpg`
+
+
+//     setTimeout(() => {
+//         if (isNaN(Frame1Loaded) || isNaN(Frame2Loaded) || isNaN(Frame3Loaded)) {
+//             CheckStaticVDO()
+//         } else {
+//             Max = Math.max(Frame1Loaded,Frame2Loaded,Frame3Loaded)
+//             Min = Math.min(Frame1Loaded,Frame2Loaded,Frame3Loaded)
+//             CalDiff = Max/Min
+//             console.log(Max,Min,CalDiff)
+//             StaticVDO = Math.abs(CalDiff - 1) < 0.03
+//             console.log(StaticVDO)
+//             drawpic()
+//         }
+//     }, 500);
+// }
+
 
 function EnableBGBlur() {
     // console.log("EnaVDOBG")
@@ -5789,6 +5876,7 @@ function EnableBGBlur() {
     CheckVDOSTATUS()
 
     window.addEventListener('yt-page-data-updated', CheckVDOSTATUS)
+    // window.addEventListener('yt-page-data-updated', CheckStaticVDO)
 }
 
 function DisableBGBlur(Force) {
@@ -5796,6 +5884,7 @@ function DisableBGBlur(Force) {
     RemoveCanvas(Force)
 
     window.removeEventListener('yt-page-data-updated', CheckVDOSTATUS)
+    // window.removeEventListener('yt-page-data-updated', CheckStaticVDO)
     VDOChangeEvent.disconnect()
 }
 
