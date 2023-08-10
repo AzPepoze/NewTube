@@ -435,7 +435,7 @@ function SetValueCheck() {
     }`)
 
     SetValueCheck2("ControlUnderVDO", `
-#player div.html5-video-player:not(.ytp-fullscreen){
+#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed){
     padding-bottom: var(--Media-Space);
 }
 
@@ -443,11 +443,11 @@ function SetValueCheck() {
     height:100%;
 }
 
-div.html5-video-player:not(.ytp-fullscreen) video {
+div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) video {
     position: unset !important;
 }
 
-div.html5-video-player:not(.ytp-fullscreen) .ytp-chrome-bottom{
+div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .ytp-chrome-bottom{
       padding-top: 50px !important;
 }
 
@@ -1157,6 +1157,7 @@ let NORMAL = `
         left: 0;
         transition: all .2s;
         justify-content: center;
+        color: black !important;
 	}
 
     .NDel,.NUp
@@ -1775,7 +1776,7 @@ function update() {
                 }
                 
                 ytd-multi-page-menu-renderer,
-                div.html5-video-player:not(.ytp-fullscreen) video,
+                div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) video,
                 .ytp-offline-slate-background
                 {   
                     border-radius: var(--theme-radius-big) !important;
@@ -2205,7 +2206,7 @@ function update() {
                     top: 0px !important
                 }
 
-                div.html5-video-player:not(.ytp-fullscreen) video{
+                div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) video{
                     transition: all 1s ,background 0.1s;
                     top: 0px !important
                 }
@@ -2234,6 +2235,7 @@ function update() {
                 .badge-style-type-live-now-alternate.ytd-badge-supported-renderer{
                     width: 100%;
                     text-align: center;
+                    justify-content: center;
                 }
               
                 div.html5-video-player:not(.ytp-embed):not(.playing-mode.unstarted-mode) div.ytp-cued-thumbnail-overlay{
@@ -5275,7 +5277,7 @@ var LastFrame = null
 
 function drawOnePic() {
     if (document.visibilityState == 'visible') {
-        // console.log("Draw")
+        console.log("Draw")
         SetCanvas()
         Scale = 1
 
