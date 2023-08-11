@@ -267,12 +267,17 @@ function SetValueCheck() {
         bottom: 0px;
     }
     
-    #text.ytd-thumbnail-overlay-time-status-renderer
+    #time-status #text
     {
         margin-left: auto;
         margin-right: auto;
     }
-    
+
+    #time-status {
+        width:100% !important;
+        position:absolute !important;
+    }
+
     .ytp-ce-video-duration
     {
         width: 97% !important;
@@ -2227,8 +2232,13 @@ function update() {
                     border-radius:10px !important;
                 }
               
-                div.html5-video-player:not(.ytp-fullscreen){
+                div.html5-video-player:not(.ytp-fullscreen),
+                #time-status{
                     background:transparent !important;
+                }
+
+                #time-status {
+                    padding-left: 0px !important;
                 }
               
                 .badge-style-type-simple.ytd-badge-supported-renderer,
