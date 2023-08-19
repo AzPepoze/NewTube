@@ -3664,7 +3664,7 @@ width: -moz-available;
 
     createTextBox("CanvasQua", "% (Background VDO) Quality")
     createTextBox("NVDOB", `(Background VDO) Blur amount`)
-    createTextBox("VDOSmooth", '(Background VDO) Smooth frame (Minimum & None is 1)',true)
+    createTextBox("VDOSmooth", '(Background VDO) Smooth frame (Minimum & None is 1)')
     createTextBox("NVDOC", `(Background VDO) Contrast`)
     createTextBox("NVDOBGT", `(Background VDO) Brightness`)
     createTextBox("NVDOT", `(Background VDO) Size`)
@@ -3779,7 +3779,7 @@ width: -moz-available;
         update()
     }
 
-    createTextBox("YTSize", "% Logo image size",true)
+    createTextBox("YTSize", "% Logo image size")
 
     //-------------------------------------------------------------------------------
 
@@ -4024,7 +4024,7 @@ width: -moz-available;
 
     createCheck("SubOut", "(Subscribe button) enable Borders/Shadows");
     
-    createCheck("SndOut", "(Second topbar) enable Borders/Shadows");
+    createCheck("SndOut", "(Second topbar) enable Borders/Shadows",true);
 
     //Text-------------------------------------------------------------------------------
 
