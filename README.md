@@ -8,6 +8,7 @@
 
 - Fix bug!
 - (Second topbar) enable Borders/Shadows
+- Enable Video transition
 
 ## Version 3.10.5
 

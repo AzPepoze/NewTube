@@ -4221,7 +4221,7 @@ width: -moz-available;
 
     createCheck("SearchAnim", "Enable Search animation")
 
-    createCheck("VdoAnim", "Enable Video animation")
+    createCheck("VdoAnim", "Enable Video transition",true)
 
     //Hover-------------------------------------------------------------------------------
 
