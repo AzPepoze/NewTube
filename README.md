@@ -7,6 +7,7 @@
 ## Version 3.11.0 (Current)
 
 - Fix bug!
+- (Second topbar) enable Borders/Shadows
 
 ## Version 3.10.5
 

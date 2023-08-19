@@ -1106,6 +1106,7 @@ let NORMAL = `
 	{
 		background: rgba(0, 0, 0);
 		border-radius:10px;
+
 	}
 
     .NEWTUBEBG,.NEWTUBEMAIN{
@@ -1234,6 +1235,10 @@ let NORMAL = `
         border: 0px transparent;
         padding: 0px;
         border-radius:10px;
+    }
+
+    #NEWTUBELIST {
+        overflow-y:scroll;
     }
 	`, AfterNEWTUBE = `#NEWTUBEBG,
     .NEWTUBEMAIN {
@@ -3145,7 +3150,7 @@ width: -moz-available;
     padding: 10px;
     color: white;`
     LeftCount++
-    document.getElementById("NEWTUBEBG").style.height = (LeftCount * 41) + "px"
+    document.getElementById("NEWTUBEBG").style.maxHeight = (LeftCount * 41) + "px"
 
     LeftList.onclick = function () {
         List.scrollIntoView({ behavior: 'smooth' });
@@ -3522,7 +3527,7 @@ width: -moz-available;
     let BG = document.createElement("div")
     BG.id = "NEWTUBEBG";
     BG.className = "NEWTUBE"
-    BG.style = "width: 750px; height: 0px; position: fixed; top:56px; right: 0px; transition: all 0.5s; z-index: 2020; display: flex; flex-direction: row;";
+    BG.style = "width: 755px; height: -webkit-fill-available; position: fixed; top:56px; right: 0px; transition: all 0.5s; z-index: 2020; display: flex; flex-direction: row;";
     document.body.appendChild(BG)
 
     let LIST = document.createElement("div")
