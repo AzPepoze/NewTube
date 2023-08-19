@@ -252,11 +252,25 @@ function SetValueCheck() {
 
     SetValueCheck2("TopOut", `#masthead,`, ``)
 
+    SetValueCheck2("VdoAnim", `
+    div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) video{
+        transition: all 1s ,background 0.1s;
+        top: 0px !important
+    }
+  
+    div.ended-mode video,
+    div.unstarted-mode:not(.ytp-small-mode) video{
+        transform:scale(0.5);
+        opacity:0 !important;
+    }`, ``)
+
     SetValueCheck2("TimeOut", `ytd-thumbnail-overlay-time-status-renderer,`, ``)
 
     SetValueCheck2("SubOut", `tp-yt-paper-button.ytd-subscribe-button-renderer,`, ``)
 
     SetValueCheck2("CapOut", `.caption-window.ytp-caption-window-bottom,`, ``)
+
+    SetValueCheck2("SndOut", `#chips-wrapper,`, ``)
 
     SetValueCheck2("CenterTime", `
     ytd-thumbnail-overlay-time-status-renderer
@@ -849,6 +863,9 @@ function SetNull() {
     SetTo("SearchAnimT", true)
 
     SetTo("ReplaceYTT", false)
+
+    SetTo("VdoAnimT", true)
+    SetTo("SndOutT", false)
 
     //Select------------------------
 
@@ -1561,11 +1578,12 @@ function update() {
                 #banner > img,
                 #icon > img,
                 #action,
-                `+ GetCodeC("TopOut") + `
                 ytd-video-preview,
+                `+ GetCodeC("TopOut") + `
                 `+ GetCodeC("CapOut") + `
                 `+ GetCodeC("SubOut") + `
                 `+ GetCodeC("TimeOut") + `
+                `+ GetCodeC("SndOut") + `
                 .ytp-show-tiles .ytp-videowall-still,
                 #tabs-container,
                 yt-confirm-dialog-renderer[dialog][dialog][dialog],
@@ -2209,17 +2227,6 @@ function update() {
                 ytd-player:has(div.html5-video-player:not(.ytp-fullscreen)){
                     transition: all 1s;
                     top: 0px !important
-                }
-
-                div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) video{
-                    transition: all 1s ,background 0.1s;
-                    top: 0px !important
-                }
-              
-                div.ended-mode video,
-                div.unstarted-mode:not(.ytp-small-mode) video{
-                    transform:scale(0.5);
-                    opacity:0 !important;
                 }
 
                 div.ended-mode video,
@@ -4016,6 +4023,8 @@ width: -moz-available;
     createCheck("CapOut", "(Subtitles/Captions) enable Borders/Shadows");
 
     createCheck("SubOut", "(Subscribe button) enable Borders/Shadows");
+    
+    createCheck("SndOut", "(Second topbar) enable Borders/Shadows");
 
     //Text-------------------------------------------------------------------------------
 
@@ -4206,6 +4215,8 @@ width: -moz-available;
     createCheck("ThumbAnim", "Enable thumbnail loaded animation")
 
     createCheck("SearchAnim", "Enable Search animation")
+
+    createCheck("VdoAnim", "Enable Video animation")
 
     //Hover-------------------------------------------------------------------------------
 
