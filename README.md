@@ -4,9 +4,12 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.11.0 (Current)
+## Version 3.11.1 (Current)
 
 - Fix bug!
+
+## Version 3.11.0
+
 - (Second topbar) enable Borders/Shadows
 - Enable Video transition
 

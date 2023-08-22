@@ -325,6 +325,10 @@ function SetValueCheck() {
     
     .ytp-big-mode .ytp-chrome-controls .ytp-fullerscreen-edu-button.ytp-button{
         display:none !important;
+    }
+    
+    #ytd-player {
+        overflow: visible !important;
     }`, ``)
 
     SetValueCheck2("MediaBlur", `.ytp-gradient-bottom{
@@ -930,6 +934,7 @@ let NORMAL = `
 
     .HoverList {
         height: 21px;
+        padding-right: 0px !important;
     }    
     
     mark {
@@ -2372,6 +2377,8 @@ function update() {
                 `+ GetCodeC("AutohideBar") + `
 
                 `+ GetCodeC("SearchAnim") + `
+
+                `+ GetCodeC("VdoAnim") + `
                 
                 `+ ADDCSS + `
 
@@ -3145,7 +3152,7 @@ width: -moz-available;
     LeftList.style = `
     position:relative;
     width: -webkit-fill-available;
-width: -moz-available;
+    width: -moz-available;
     font-size: 16px;
     padding: 10px;
     color: white;`
