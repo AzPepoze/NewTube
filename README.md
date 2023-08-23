@@ -4,7 +4,14 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.11.1 (Current)
+## Version 3.12.2 (Current)
+
+- Fix bug!
+- Change logo
+- Add Coding Preset
+- Add Rainbow Preset
+
+## Version 3.11.1
 
 - Fix bug!
 
