@@ -32,8 +32,6 @@ function SetWhenUpdate() {
     SetNormalPre()
     //------------------------------------------------------
 
-    store.put("https://i.ibb.co/WpFdcc2/128.png", "IconURL")
-    UpdateIcon()
 }
 
 ForcePre = [
@@ -1617,6 +1615,7 @@ function update() {
 
                 div.html5-video-player{
                     overflow: visible;
+                    position: absolute !important;
                 }
                 
                 `+ GetCodeC("PlayerOut") + `
