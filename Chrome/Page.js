@@ -465,24 +465,24 @@ function SetValueCheck() {
     }`)
 
     SetValueCheck2("ControlUnderVDO", `
-#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed){
+#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode){
     padding-bottom: var(--Media-Space);
 }
 
-.html5-video-container{
+.html5-video-container:not(.ytp-small-mode){
     height:100%;
 }
 
-div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) video {
+div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) video {
     position: unset !important;
 }
 
-div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .ytp-chrome-bottom{
-      padding-top: 50px !important;
+div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) .ytp-chrome-bottom{
+    padding-top: 50px !important;
 }
 
-div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .ytp-gradient-bottom,
-div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .ytp-chrome-bottom{
+div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) .ytp-gradient-bottom,
+div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) .ytp-chrome-bottom{
     overflow: hidden !important;
 }
 
@@ -499,12 +499,12 @@ div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .ytp-chrome-bottom{
     transform: translate(0px, var(--Media-Space));
 }
 
-#player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)),
+#player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not(.ytp-small-mode)),
 #player-wide-container > #player-container:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)){
     margin-bottom: var(--Media-Space);
 }
 
-div.html5-video-player:not(.ytp-embed) div[aria-live="polite"]{
+div.html5-video-player:not(.ytp-embed):not(.ytp-small-mode) div[aria-live="polite"]{
       top: unset !important;
       bottom: 100px;
 }
@@ -877,6 +877,8 @@ function SetNull() {
 
     SetTo("VdoAnimT", true)
     SetTo("SndOutT", false)
+
+    SetTo("EQT", false)
 
     //Select------------------------
 
@@ -1613,9 +1615,13 @@ function update() {
                     `+ JSON.parse(GetCodeC("OutOrSha"))[0] + `
                 }
 
-                div.html5-video-player{
+                div.html5-video-player:not(.ytp-small-mode){
                     overflow: visible;
                     position: absolute !important;
+                }
+
+                #container {
+                    position: relative !important;
                 }
                 
                 `+ GetCodeC("PlayerOut") + `
@@ -2239,7 +2245,7 @@ function update() {
                 }
 
                 div.html5-video-player.ytp-fullscreen .ytp-gradient-bottom{
-                        border-radius: var(--theme-radius-big) var(--theme-radius-big) 0px 0px !important;
+                    border-radius: var(--theme-radius-big) var(--theme-radius-big) 0px 0px !important;
                 }
                 
                 ytd-player:has(div.html5-video-player:not(.ytp-fullscreen)){
@@ -2399,16 +2405,16 @@ function update() {
                 var thisStyle = NORMAL + Collect_Style + AfterNEWTUBE
 
                 if (localStorage["nt-PtranT"] == "true") {
-                    thisStyle = thisStyle + `html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #secondary,
-                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #below,
-                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) div.ytp-gradient-bottom,
-                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) div.ytp-chrome-bottom
+                    thisStyle = thisStyle + `html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary,
+                    html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #below,
+                    html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) div.ytp-gradient-bottom,
+                    html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) div.ytp-chrome-bottom
                     {
                         transition: all 0.5s !important;
                         opacity:0 !important;
                     }
 
-                    html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #below {
+                    html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #below{
                         transform: translate(0,100px);
                     }
 
@@ -2418,12 +2424,12 @@ function update() {
                     }`
                     if (localStorage["nt-SwapRowT"] == "true") {
                         thisStyle = thisStyle + `
-                        html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #secondary{
+                        html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary{
                             transform: translate(-100px,0);
                         }`
                     } else {
                         thisStyle = thisStyle + `
-                        html:has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)):not(:has(div.ytp-offline-slate)) #secondary{
+                        html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary{
                             transform: translate(100px,0);
                         }`
                     }
@@ -3575,7 +3581,7 @@ width: -moz-available;
 
     //----------------------------------------------------------------------------------------------
 
-    THISPar = "💵 " + chrome.i18n.getMessage("Donate")
+    THISPar = "☕ Buy me a coffee!"
 
     DonateFrame = createframe(`<p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://i.ibb.co/269h23M/2020021209494988264-logo-truemoneywallet-300x300.jpg" class="DONATEIMG"><lable class="DES">Wallet ID : AzDonate</lable></p>
     <p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://i.ibb.co/4sCYzXK/index.jpg" class="DONATEIMG"><a id="HOVERLINK" href="https://www.paypal.com/signin?returnUri=https%3A%2F%2Fwww.paypal.com%2Fmyaccount%2Ftransfer%2Fhomepage%2Fexternal%2Fprofile%3FflowContextData%3DTmV7sH9Ip5x6ax_bhu-4ib7mr3qtJYLUST5ILgPTUCV-aPS5wiTHYReTyrjZUrzo6RnqrG_IGcMdzZxRSNMClpiXW_YUozCtGT_myuY-Iz482jS6LkbxXl-gkNRo--RFIFS5jtg954mBPuxa3P8N6dBFNsBMVJEOLK1-ZP-PxAwS6mdpbwpVFeEEuJwof9Nl2PE-NgFySGvPQWI_rjkTbugXS-O6HuRR3SRqTTe1SuhE25IMdYvBvUBK2y4zpVk2KbEVhQg63WzznD1emOkCq2orEG1bCTi0M4Txky3iSId11K7Xg8e_qpf4rjOaXEPDsIlw1IbKw3WAJRLdIHx0MJFLL0yfGjE7GzR42C0GeYLnods79sPkPJCqo2GjLZzLJ07epiRk2bv33AnwcLEwp4_eVm8TMwNFK-5JX_RZOd8AiOzq3_Q9hY_A19S&onboardData=%7B%22country.x%22%3A%22US%22%2C%22locale.x%22%3A%22en_US%22%2C%22intent%22%3A%22paypalme%22%2C%22redirect_url%22%3A%22https%253A%252F%252Fwww.paypal.com%252Fmyaccount%252Ftransfer%252Fhomepage%252Fexternal%252Fprofile%253FflowContextData%253DTmV7sH9Ip5x6ax_bhu-4ib7mr3qtJYLUST5ILgPTUCV-aPS5wiTHYReTyrjZUrzo6RnqrG_IGcMdzZxRSNMClpiXW_YUozCtGT_myuY-Iz482jS6LkbxXl-gkNRo--RFIFS5jtg954mBPuxa3P8N6dBFNsBMVJEOLK1-ZP-PxAwS6mdpbwpVFeEEuJwof9Nl2PE-NgFySGvPQWI_rjkTbugXS-O6HuRR3SRqTTe1SuhE25IMdYvBvUBK2y4zpVk2KbEVhQg63WzznD1emOkCq2orEG1bCTi0M4Txky3iSId11K7Xg8e_qpf4rjOaXEPDsIlw1IbKw3WAJRLdIHx0MJFLL0yfGjE7GzR42C0GeYLnods79sPkPJCqo2GjLZzLJ07epiRk2bv33AnwcLEwp4_eVm8TMwNFK-5JX_RZOd8AiOzq3_Q9hY_A19S%22%2C%22sendMoneyText%22%3A%22You%2520are%2520sending%2520Jakkrit%2520Kaewtong%22%7D" target="_blank" class="DES" >jakkrit_portraitist@hotmail.com</a></p>
@@ -4918,10 +4924,23 @@ function SettoEnd() {
 
 
 
+                    // var audioCtx = new AudioContext()  
+                    // var audioSrc = audioCtx.createMediaElementSource(FindVideo())
+                    // var analyser = audioCtx.createAnalyser()
+                    
 
+                    // if (localStorage["nt-EQT"] == 'true') {
+                    //     console.log("RunEQ")
 
+                    //     var AudioFilter = audioCtx.createBiquadFilter()
+                    //     AudioFilter.type = "peaking"
+                    //     AudioFilter.frequency.value = 50
+                    //     AudioFilter.gain.value = 0
 
-
+                    //     audioSrc.connect(AudioFilter)
+                    //     AudioFilter.connect(analyser)
+                    //     analyser.connect(audioCtx.destination)
+                    // }
 
 
 
@@ -4931,16 +4950,17 @@ function SettoEnd() {
 
 
                     if (localStorage["nt-VisualT"] == 'true') {
-                        window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
 
                         setTimeout(() => {
-                            var ctx = new AudioContext();
-                            var analyser = ctx.createAnalyser();
-                            var audioSrc = ctx.createMediaElementSource(v);
-                            // we have to connect the MediaElementSource with the analyser 
-                            audioSrc.connect(analyser);
-                            analyser.connect(ctx.destination);
+                            // we have to connect the MediaElementSource with the analyser
                             // we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
+                            var audioCtx = new AudioContext()  
+                            var audioSrc = audioCtx.createMediaElementSource(FindVideo())
+                            var analyser = audioCtx.createAnalyser()
+
+                            audioSrc.connect(AudioFilter)
+                            analyser.connect(audioCtx.destination)
+
                             analyser.fftSize = 1024;
 
                             // we're ready to receive some data!
@@ -4948,10 +4968,10 @@ function SettoEnd() {
                             canvas3.id = "Newtube_Visaulizer"
 
                             canvas3.style = `position: fixed;
-                    z-index: 1;
-                bottom: 0px;
-                pointer-events: none;
-                filter: drop-shadow(0px 0px 3px white);`
+                            z-index: 1;
+                            bottom: 0px;
+                            pointer-events: none;
+                            filter: drop-shadow(0px 0px 3px white);`
                             canvas3.width = 1920
                             canvas3.height = 250
 
@@ -5324,8 +5344,9 @@ var LastHeight = 0
 var LastFrame = null
 
 function drawOnePic() {
-    if (document.visibilityState == 'visible') {
-        console.log("Draw")
+    console.log("Check")
+    if (document.visibilityState == 'visible' && document.pictureInPictureElement == null) {
+        // console.log("Draw")
         SetCanvas()
         Scale = 1
 
@@ -5686,15 +5707,6 @@ function drawOnePic() {
                 context2.putImageData(GreenLinePX, 0, VDOBOUND.height - LastHeight)
             }
         }
-
-
-
-
-
-
-
-
-
     }
 }
 
@@ -5709,9 +5721,9 @@ function drawpic() {
 
         function DrawApic() {
             FindVideo()
-            if (v.paused || v.ended || Cloning == false || StaticVDO == true) {
+            if (v.paused || v.ended || Cloning == false || StaticVDO == true || PipMode == true || document.visibilityState == 'hidden') {
                 drawing = false
-                // console.log("CancelDraw")
+                console.log("CancelDraw")
             } else {
                 drawOnePic()
                 if (!StaticVDO){
@@ -5762,6 +5774,18 @@ function callback(mutationsList, observer) {
 VDOChangeEvent = new MutationObserver(callback)
 
 let CanvasSpawned = false
+
+var PipMode = false
+
+function EnterPip() {
+    PipMode = true
+}
+
+function LeavePip() {
+    PipMode = false
+    requestAnimationFrame(DetectPlay)
+}
+
 
 function CreateCanvas() {
     CanvasSpawned = true
@@ -5816,6 +5840,8 @@ function CreateCanvas() {
     }
 
     v.addEventListener('play', DetectPlay)
+    v.addEventListener("enterpictureinpicture", EnterPip)
+    v.addEventListener("leavepictureinpicture", LeavePip)
 
     v.pause()
 
@@ -5857,6 +5883,8 @@ function RemoveCanvas(Force) {
         FindVideo()
         v.style.setProperty("opacity", "1")
         v.removeEventListener('play', DetectPlay, false)
+        v.removeEventListener("enterpictureinpicture", EnterPip)
+        v.removeEventListener("leavepictureinpicture", LeavePip)
 
         CanvasSpawned = false
     }
