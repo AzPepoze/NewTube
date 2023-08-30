@@ -4957,8 +4957,8 @@ function SettoEnd() {
                             var audioCtx = new AudioContext()  
                             var audioSrc = audioCtx.createMediaElementSource(FindVideo())
                             var analyser = audioCtx.createAnalyser()
-
-                            audioSrc.connect(AudioFilter)
+                            
+                            audioSrc.connect(analyser)
                             analyser.connect(audioCtx.destination)
 
                             analyser.fftSize = 1024;
