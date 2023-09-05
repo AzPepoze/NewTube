@@ -4,7 +4,18 @@
 
 # Newtube (Customize youtube) changelog!
 
-## Version 3.12.5 (Current)
+## Version 3.13.0 (Current)
+
+- Add (Link) Text color
+- Add Full Theater
+- Fix bugs!
+- More (I can't remember XD)
+
+## Version 3.12.7
+
+- Fix bug!
+
+## Version 3.12.5
 
 - Fix bug!
 

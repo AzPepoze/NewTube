@@ -315,8 +315,14 @@ function SetValueCheck() {
     SetValueCheck2("Repeat", `background-repeat: repeat !important;`, `background-repeat: no-repeat !important;`)
 
     SetValueCheck2("BottomG", 'background-image: none !important;', ``)
+    
+    SetValueCheck2("FullTheater", `
+    #full-bleed-container:has(div.html5-video-player:not(.ytp-fullscreen)){
+        height: calc(100vh - 56px) !important;
+        max-height: unset !important;
+     }`, ``)
 
-    SetValueCheck2("VBG", `#player-wide-container:has(div.html5-video-player:not(.ytp-fullscreen)),`, ``)
+    SetValueCheck2("VBG", `#full-bleed-container:has(div.html5-video-player:not(.ytp-fullscreen)),`, ``)
 
     SetValueCheck2("CenterMedia", `.ytp-chrome-controls {
         display: flex !important;
@@ -469,14 +475,6 @@ function SetValueCheck() {
     padding-bottom: var(--Media-Space);
 }
 
-.html5-video-container:not(.ytp-small-mode){
-    height:100%;
-}
-
-div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) video {
-    position: unset !important;
-}
-
 div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) .ytp-chrome-bottom{
     padding-top: 50px !important;
 }
@@ -486,12 +484,28 @@ div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)
     overflow: hidden !important;
 }
 
-.ytp-gradient-bottom[aria-hidden=true], .ytp-autohide .ytp-gradient-bottom,.ytp-autohide .ytp-playlist-menu-button, .ytp-autohide .ytp-back-button, .ytp-autohide .ytp-title-channel, .ytp-autohide .ytp-title, .ytp-autohide .ytp-chrome-top .ytp-watch-later-button, .ytp-autohide .ytp-chrome-top .ytp-share-button, .ytp-autohide .ytp-chrome-top .ytp-copylink-button, .ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button, .ytp-autohide .ytp-overflow-button, .ytp-autohide .ytp-chrome-bottom, .ytp-chrome-top[aria-hidden=true], .ytp-chrome-bottom[aria-hidden=true]
+.ytp-gradient-bottom[aria-hidden=true],
+.ytp-autohide .ytp-gradient-bottom,.ytp-autohide .ytp-playlist-menu-button,
+.ytp-autohide .ytp-back-button,
+.ytp-autohide .ytp-title-channel,
+.ytp-autohide .ytp-title,
+.ytp-autohide .ytp-chrome-top .ytp-watch-later-button,
+.ytp-autohide .ytp-chrome-top .ytp-share-button,
+.ytp-autohide .ytp-chrome-top .ytp-copylink-button,
+.ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button,
+.ytp-autohide .ytp-overflow-button,
+.ytp-autohide .ytp-chrome-bottom,
+.ytp-chrome-top[aria-hidden=true],
+.ytp-chrome-bottom[aria-hidden=true]
 {
       transition: all 0.5s !important;
-      opacity:0 !important;
-      width:0px !important;
-      margin-left: 50% !important;
+      opacity: 0 !important;
+      width: 0px !important;
+}
+
+.ytp-chrome-bottom,
+.ytp-gradient-bottom{
+    left: unset !important;
 }
 
 #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-chrome-bottom,
@@ -527,11 +541,6 @@ div.html5-video-player.ytp-embed{
 
 div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode) .ytp-caption-window-bottom{
       margin-bottom: 0px !important;
-}
-
-.html5-video-container{
-      display: flex;
-      justify-content: center;
 }
 
 .iv-branding {
@@ -570,9 +579,9 @@ div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode) .ytp-caption-wi
                     transition: all .1s cubic-bezier(0.1,0.5,1,0) !important;
                 }
 
-                #player{
-                    overflow: hidden;
-                }
+        #player{
+             overflow: hidden;
+        }
     `)
 }
 
@@ -880,6 +889,8 @@ function SetNull() {
 
     SetTo("EQT", false)
 
+    SetTo("FullTheaterT", false)
+
     //Select------------------------
 
     SetTo("BlurWhatT", "none")
@@ -931,6 +942,8 @@ function SetNull() {
 
     NUllColor("SPSubScribeColor", `#ffffff`, `100`)
     NUllColor("SPSubScribeBG", `#ff0000`, `100`)
+
+    NUllColor("LinkColor", `#fe0000`, `100`)
 }
 
 let NORMAL = `
@@ -992,7 +1005,7 @@ let NORMAL = `
         transition: 0.5s;
 	}
 	#NEWTUBESET span:after {
-        content: '\⇠';
+        content: '\«';
         position: absolute;
         opacity: 0;
         top: 0;
@@ -1001,12 +1014,17 @@ let NORMAL = `
 	}
 
 	#NEWTUBESET:hover span {
-	    padding-right: 25px;
+	    padding-right: 20px;
 	}
 	#NEWTUBESET:hover span:after {
         opacity: 1;
         right: 0;
 	}
+
+    #NEWTUBE {
+        border-radius: 20px;
+	}
+
 
 	[hover]:hover
 	{
@@ -1021,7 +1039,7 @@ let NORMAL = `
     }
 
     .HoverList:hover {
-        background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%) !important;
+        background: #ffffffd1;
         color: black !important;
         margin-inline-start: 0px !important;
     }
@@ -1058,7 +1076,7 @@ let NORMAL = `
 	}
 
 	.MainBox{
-		padding: 10px;
+		padding-block: 10px;
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
@@ -1529,6 +1547,35 @@ function update() {
 
                     --SubSc-BG : ${'SPSubScribeBG'.GetSaveRgba()};
                     --SubSc-Tx : ${'SPSubScribeColor'.GetSaveRgba()};
+                }
+
+                ytd-text-inline-expander yt-attributed-string a{
+                    color: ${'LinkColor'.GetSaveRgba()} !important;
+                }
+
+                div.html5-video-player video {
+                    position: unset !important;
+                }
+
+                div.html5-video-player {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                }
+
+                div.html5-video-player:not(.ytp-fullscreen) div.html5-video-container{
+                    width: unset !important;
+                    margin-top: unset !important;
+                    height: fit-content;
+                }
+
+                .ytp-right-controls{
+                    flex-wrap: nowrap;
+                    display: flex;
+                }
+
+                .html5-video-container{
+                    overflow:hidden;
                 }
 
                 #chips-wrapper{
@@ -2395,6 +2442,8 @@ function update() {
                 `+ GetCodeC("SearchAnim") + `
 
                 `+ GetCodeC("VdoAnim") + `
+
+                `+ GetCodeC("FullTheater") + `
                 
                 `+ ADDCSS + `
 
@@ -3608,7 +3657,7 @@ width: -moz-available;
 
     //----------------------------------------------------------------------------------------------
 
-    THISPar = "🎉 Join my discord 🎉"
+    THISPar = "🎉 Join my Discord 🎉"
 
     createframe(`<p style="display: flex; align-items: center;"><img src="https://brandlogos.net/wp-content/uploads/2021/11/discord-logo.png" class="DONATEIMG"><a id="HOVERLINK" href="https://discord.gg/BgxvVqap4G" target="_blank" class="DES" >NEWTUBE</a></p>`)
 
@@ -3808,6 +3857,8 @@ width: -moz-available;
     }
 
     createTextBox("YTSize", "% Logo image size")
+
+    createCheck("FullTheater", "Enable Full Theater", true)
 
     //-------------------------------------------------------------------------------
 
@@ -4025,6 +4076,8 @@ width: -moz-available;
 
     createColor("SPSubScribeColor", "(Subscribe button) Text color")
 
+    createColor("LinkColor", "(Link) Text color", true)
+
 
     //Outline-------------------------------------------------------------------------------
 
@@ -4052,7 +4105,7 @@ width: -moz-available;
 
     createCheck("SubOut", "(Subscribe button) enable Borders/Shadows");
 
-    createCheck("SndOut", "(Second topbar) enable Borders/Shadows", true);
+    createCheck("SndOut", "(Second topbar) enable Borders/Shadows");
 
     //Text-------------------------------------------------------------------------------
 
@@ -4244,7 +4297,7 @@ width: -moz-available;
 
     createCheck("SearchAnim", "Enable Search animation")
 
-    createCheck("VdoAnim", "Enable Video transition", true)
+    createCheck("VdoAnim", "Enable Video transition")
 
     //Hover-------------------------------------------------------------------------------
 
@@ -4268,7 +4321,7 @@ width: -moz-available;
 
 
 
-    var IconFrame = createframe(`<lable class="DES">Icon Image (Recommend to use URL)</lable>
+    var IconFrame = createframe(`<lable class="DES">Tab Icon Image (Recommend to use URL)</lable>
     <p><input id="IconFrame" type="file" accept="image/*" > </p>
     <p class="DES">Enter URL :  </label><input id="IconURL" class="TextBox" type="text" style="display: flex;"></p>
     <p><lable class="DES" style="display: flex; text-align: center;" id="IconSTATUS"></label></p>`)
@@ -4577,17 +4630,21 @@ function ShowUpdated() {
     // console.log("ShowUp")
     upbg = document.createElement('div')
     upbg.style = `
-    width: 100%;
+    width: 800px;
     height: 160px;
     position: fixed;
     z-index: 3000;
-    bottom: -160px;
-    background: linear-gradient(0deg, black,black, transparent);
     transition: all 0.5s ease 0s;
-    opacity: 1;
+    opacity: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    left: calc(50% - 400px);
+    bottom: -160px;
+    background: #00000087;
+    border-radius: 20px;
+    box-shadow: white 0px 0px 4px;
+    backdrop-filter: blur(10px);
     `
 
     upbg.innerHTML = `
@@ -4667,7 +4724,8 @@ function ShowUpdated() {
 
 
     setTimeout(() => {
-        upbg.style.bottom = '0px'
+        upbg.style.bottom = '10px'
+        upbg.style.opacity = '1'
         setTimeout(() => {
             upbg.style.transition = "all 0.5s ease"
         }, 1000)
@@ -4883,21 +4941,22 @@ function SettoEnd() {
                                 volpanel = document.createElement('p')
 
                                 volpanel.style = `top: -50px;
-                        background: #0000008c;
-                        width: 100px;
-                        height: 50px;
-                        opacity:0;
-                        position: absolute;
-                        margin: auto;
-                        z-index: 1;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 30px;
-                        backdrop-filter: blur(10px);
-                        font-weight: 600;
-                        transition: all 0.5s ease;
-                        box-shadow: 0px 0px 10px white;`
+                                background: #0000008c;
+                                width: 100px;
+                                height: 50px;
+                                opacity:0;
+                                position: absolute;
+                                margin: auto;
+                                z-index: 1;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 30px;
+                                backdrop-filter: blur(10px);
+                                font-weight: 600;
+                                transition: all 0.5s ease;
+                                box-shadow: 0px 0px 10px white;
+                                left: calc(50% - 50px);`
 
                                 volpanel.setAttribute('round', '')
 
@@ -5054,7 +5113,7 @@ function SettoEnd() {
                     mutations_list.forEach(function (mutation) {
                         mutation.removedNodes.forEach(function (removed_node) {
                             if (removed_node.id == 'child') {
-                                console.log('#child has been removed');
+                                // console.log('#child has been removed');
                                 SettoEnd()
                                 observer.disconnect();
                             }
@@ -5346,368 +5405,364 @@ var LastHeight = 0
 var LastFrame = null
 
 function drawOnePic() {
-    console.log("Check")
-    if (document.visibilityState == 'visible' && document.pictureInPictureElement == null) {
-        // console.log("Draw")
-        SetCanvas()
-        Scale = 1
+    // console.log("Check")
+    // console.log("Draw")
+    SetCanvas()
+    Scale = 1
 
-        // Bcontext.globalCompositeOperation = "copy"
+    // Bcontext.globalCompositeOperation = "copy"
 
-        // var Xgradient = Bcontext.createLinearGradient(0, 0, cw, 0);
-        // Xgradient.addColorStop(0, "black");
-        // Xgradient.addColorStop(0.2, "transparent");
-        // Xgradient.addColorStop(0.8, "transparent");
-        // Xgradient.addColorStop(1, "black");
+    // var Xgradient = Bcontext.createLinearGradient(0, 0, cw, 0);
+    // Xgradient.addColorStop(0, "black");
+    // Xgradient.addColorStop(0.2, "transparent");
+    // Xgradient.addColorStop(0.8, "transparent");
+    // Xgradient.addColorStop(1, "black");
 
-        // var Ygradient = Bcontext.createLinearGradient(0, 0, 0, ch);
-        // Ygradient.addColorStop(0, "black");
-        // Ygradient.addColorStop(0.2, "transparent");
-        // Ygradient.addColorStop(0.8, "transparent");
-        // Ygradient.addColorStop(1, "black");
+    // var Ygradient = Bcontext.createLinearGradient(0, 0, 0, ch);
+    // Ygradient.addColorStop(0, "black");
+    // Ygradient.addColorStop(0.2, "transparent");
+    // Ygradient.addColorStop(0.8, "transparent");
+    // Ygradient.addColorStop(1, "black");
 
-        // Bcontext.fillStyle = Xgradient;
-        // Bcontext.fillRect(0, 0, cw, ch);
-        // Bcontext.globalCompositeOperation = "source-over"
-        // Bcontext.fillStyle = Ygradient;
-        // Bcontext.fillRect(0, 0, cw, ch);
+    // Bcontext.fillStyle = Xgradient;
+    // Bcontext.fillRect(0, 0, cw, ch);
+    // Bcontext.globalCompositeOperation = "source-over"
+    // Bcontext.fillStyle = Ygradient;
+    // Bcontext.fillRect(0, 0, cw, ch);
 
-        // context.globalAlpha = 1
-        // if (BGSmooth != 1) {
-        //     context.globalCompositeOperation = "copy"
-        //     if (LastFrame) {
-        //         context.putImageData(LastFrame,0,0);
+    // context.globalAlpha = 1
+    // if (BGSmooth != 1) {
+    //     context.globalCompositeOperation = "copy"
+    //     if (LastFrame) {
+    //         context.putImageData(LastFrame,0,0);
+    //     }
+
+    // if (StaticVDO) {
+    //     context.globalAlpha = 1
+    // } else {
+    context.globalAlpha = BGSmooth
+    // }
+
+    // }
+
+    // context.globalCompositeOperation = "source-over"
+    context.filter = `blur(${localStorage["nt-NVDOB"]}px)`
+    context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
+    // if (BGSmooth != 1) {
+    //     LastFrame = context.getImageData(0,0,cw,ch);
+    // }
+    // context.filter = `none`
+
+    // context.globalCompositeOperation = "destination-out"
+    // context.globalAlpha = 1
+
+    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+    // Scale = 0.8
+    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+    // Scale = 0.7
+    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+    // Scale = 0.6
+    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+    // Scale = 0.55
+    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+
+    // if (BGSmooth != 1) {
+    //     context.globalAlpha = 1
+    // }
+    // var Xgradient = context.createLinearGradient(0, 0, cw, 0);
+    // Xgradient.addColorStop(0, "black");
+    // Xgradient.addColorStop(0.2, "transparent");
+    // Xgradient.addColorStop(0.8, "transparent");
+    // Xgradient.addColorStop(1, "black");
+
+    // var Ygradient = context.createLinearGradient(0, 0, 0, ch);
+    // Ygradient.addColorStop(0, "black");
+    // Ygradient.addColorStop(0.2, "transparent");
+    // Ygradient.addColorStop(0.8, "transparent");
+    // Ygradient.addColorStop(1, "black");
+
+    // context.fillStyle = Xgradient;
+    // context.fillRect(0, 0, cw, ch);
+    // context.fillStyle = Ygradient;
+    // context.fillRect(0, 0, cw, ch);
+
+
+    if (BlackMode == true) {
+        context2.drawImage(v, 0, 0, VDOBOUND.width, VDOBOUND.height);
+        frame = context2.getImageData(0, 0, VDOBOUND.width, VDOBOUND.height)
+        l = frame.data.length / 4
+        for (let i = 0; i < l; i++) {
+            frame.data[i * 4 + 3] = (frame.data[i * 4 + 0] * 10 +
+                frame.data[i * 4 + 1] * 10 +
+                frame.data[i * 4 + 2] * 10) / 10
+        }
+        context2.putImageData(frame, 0, 0)
+    }
+
+    if (BlackBar == true) {
+        redPX = context2.createImageData(1, 1)
+        redPX.data[0] = 255
+        redPX.data[3] = 255
+
+        context2.clearRect(0, 0, VDOBOUND.width, VDOBOUND.height);
+
+        context2.drawImage(v, 0, 0, 5, VDOBOUND.height);
+
+
+
+
+        // for (var i = 0; i < VDOBOUND.height; i++) {
+        //     var IMGDATA = context2.getImageData(0, i, VDOBOUND.width, 1)
+        //     var Getimgdata = IMGDATA.data
+
+        //     AllR = []
+        //     AllG = []
+        //     AllB = []
+
+        //     for (var j = 0; j < Getimgdata.length; j += 4) {
+
+        //         AllR.push(Getimgdata[j])
+        //         AllG.push(Getimgdata[j + 1])
+        //         AllB.push(Getimgdata[j + 2])
         //     }
 
-        // if (StaticVDO) {
-        //     context.globalAlpha = 1
-        // } else {
-        context.globalAlpha = BGSmooth
+        //     R = 0
+        //     G = 0
+        //     B = 0
+
+        //     for (var j = 0; j < AllR.length; j++) {
+        //         R += AllR[j]
+        //     }
+
+        //     for (var j = 0; j < AllG.length; j++) {
+        //         G += AllG[j]
+        //     }
+
+        //     for (var j = 0; j < AllB.length; j++) {
+        //         B += AllB[j]
+        //     }
+
+        //     R /= AllR.length
+        //     G /= AllG.length
+        //     B /= AllB.length
+
+        //     for (var j = 0; j < Getimgdata.length; j += 4) {
+        //         Getimgdata[j] = R
+        //         Getimgdata[j + 1] = G
+        //         Getimgdata[j + 2] = B
+        //     }
+
+        //     context2.putImageData(IMGDATA, 0, i);
         // }
 
-        // }
-
-        // context.globalCompositeOperation = "source-over"
-        context.filter = `blur(${localStorage["nt-NVDOB"]}px)`
-        context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
-        // if (BGSmooth != 1) {
-        //     LastFrame = context.getImageData(0,0,cw,ch);
-        // }
-        // context.filter = `none`
-
-        // context.globalCompositeOperation = "destination-out"
-        // context.globalAlpha = 1
-
-        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-        // Scale = 0.8
-        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-        // Scale = 0.7
-        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-        // Scale = 0.6
-        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-        // Scale = 0.55
-        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-
-        // if (BGSmooth != 1) {
-        //     context.globalAlpha = 1
-        // }
-        // var Xgradient = context.createLinearGradient(0, 0, cw, 0);
-        // Xgradient.addColorStop(0, "black");
-        // Xgradient.addColorStop(0.2, "transparent");
-        // Xgradient.addColorStop(0.8, "transparent");
-        // Xgradient.addColorStop(1, "black");
-
-        // var Ygradient = context.createLinearGradient(0, 0, 0, ch);
-        // Ygradient.addColorStop(0, "black");
-        // Ygradient.addColorStop(0.2, "transparent");
-        // Ygradient.addColorStop(0.8, "transparent");
-        // Ygradient.addColorStop(1, "black");
-
-        // context.fillStyle = Xgradient;
-        // context.fillRect(0, 0, cw, ch);
-        // context.fillStyle = Ygradient;
-        // context.fillRect(0, 0, cw, ch);
-
-
-        if (BlackMode == true) {
-            context2.drawImage(v, 0, 0, VDOBOUND.width, VDOBOUND.height);
-            frame = context2.getImageData(0, 0, VDOBOUND.width, VDOBOUND.height)
-            l = frame.data.length / 4
-            for (let i = 0; i < l; i++) {
-                frame.data[i * 4 + 3] = (frame.data[i * 4 + 0] * 10 +
-                    frame.data[i * 4 + 1] * 10 +
-                    frame.data[i * 4 + 2] * 10) / 10
-            }
-            context2.putImageData(frame, 0, 0)
-        }
-
-        if (BlackBar) {
-            redPX = context2.createImageData(1, 1)
-            redPX.data[0] = 255
-            redPX.data[3] = 255
-
-            context2.clearRect(0, 0, VDOBOUND.width, VDOBOUND.height);
-
-            context2.drawImage(v, 0, 0, 5, VDOBOUND.height);
-
-
-
-
-            // for (var i = 0; i < VDOBOUND.height; i++) {
-            //     var IMGDATA = context2.getImageData(0, i, VDOBOUND.width, 1)
-            //     var Getimgdata = IMGDATA.data
-
-            //     AllR = []
-            //     AllG = []
-            //     AllB = []
-
-            //     for (var j = 0; j < Getimgdata.length; j += 4) {
-
-            //         AllR.push(Getimgdata[j])
-            //         AllG.push(Getimgdata[j + 1])
-            //         AllB.push(Getimgdata[j + 2])
-            //     }
-
-            //     R = 0
-            //     G = 0
-            //     B = 0
-
-            //     for (var j = 0; j < AllR.length; j++) {
-            //         R += AllR[j]
-            //     }
-
-            //     for (var j = 0; j < AllG.length; j++) {
-            //         G += AllG[j]
-            //     }
-
-            //     for (var j = 0; j < AllB.length; j++) {
-            //         B += AllB[j]
-            //     }
-
-            //     R /= AllR.length
-            //     G /= AllG.length
-            //     B /= AllB.length
-
-            //     for (var j = 0; j < Getimgdata.length; j += 4) {
-            //         Getimgdata[j] = R
-            //         Getimgdata[j + 1] = G
-            //         Getimgdata[j + 2] = B
-            //     }
-
-            //     context2.putImageData(IMGDATA, 0, i);
-            // }
 
 
 
 
 
 
+        // // context2.putImageData(contrastImage(context2.getImageData(0, 0, VDOBOUND.width, VDOBOUND.height),50),0,0)
 
-            // // context2.putImageData(contrastImage(context2.getImageData(0, 0, VDOBOUND.width, VDOBOUND.height),50),0,0)
+        ThisActualPX = context2.getImageData(1, 3, 1, 1)
+        ThisPX = ThisActualPX.data
 
-            ThisActualPX = context2.getImageData(1, 3, 1, 1)
+
+        FistGetRGB = CheckAddMultiply(ThisPX[0], ThisPX[1], ThisPX[2])
+
+        ThisR = FistGetRGB[0]
+        ThisG = FistGetRGB[1]
+        ThisB = FistGetRGB[2]
+
+
+        ThisHeightArray = []
+
+        halfVDO = Math.floor(VDOBOUND.height / 2)
+
+        for (x = 0; x < 5; x++) {
+            ThisFind = x
+            ThisR = FistGetRGB[0]
+            ThisG = FistGetRGB[1]
+            ThisB = FistGetRGB[2]
+
+            Find = null
+            ThisActualPX = context2.getImageData(ThisFind, 0, 1, halfVDO)
             ThisPX = ThisActualPX.data
 
+            for (i = 5; i < halfVDO; i++) {
+                if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                    i += 10
+                    if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                        Find = i - 10
+                        i = halfVDO
+                    }
+                } else {
+                    if (!Check2ThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                        ThisR = ThisPX[i * 4]
+                        ThisG = ThisPX[i * 4 + 1]
+                        ThisB = ThisPX[i * 4 + 2]
+                    }
+                }
+            }
 
-            FistGetRGB = CheckAddMultiply(ThisPX[0], ThisPX[1], ThisPX[2])
+            if (Find) {
+                ThisHeightArray.push(Find)
+
+                if (BlackDebug) {
+                    for (i = 5; i < Find; i++) {
+                        context2.putImageData(redPX, ThisFind, i)
+                    }
+                }
+            } else {
+                ThisHeightArray.push("inf")
+            }
 
             ThisR = FistGetRGB[0]
             ThisG = FistGetRGB[1]
             ThisB = FistGetRGB[2]
 
+            //-----------------------------------------------------------------
 
-            ThisHeightArray = []
+            Find = null
+            ThisActualPX = context2.getImageData(ThisFind, halfVDO, 1, halfVDO)
+            ThisPX = ThisActualPX.data
 
-            halfVDO = VDOBOUND.height / 2
-
-            for (x = 0; x < 5; x++) {
-                ThisFind = x
-                ThisR = FistGetRGB[0]
-                ThisG = FistGetRGB[1]
-                ThisB = FistGetRGB[2]
-
-                Find = null
-                ThisActualPX = context2.getImageData(ThisFind, 0, 1, halfVDO)
-                ThisPX = ThisActualPX.data
-
-                for (i = 5; i < halfVDO; i++) {
+            for (i = halfVDO - 5; i > 0; i--) {
+                if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                    i -= 10
                     if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
-                        i += 10
-                        if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
-                            Find = i - 10
-                            i = halfVDO
-                        }
-                    } else {
-                        if (!Check2ThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
-                            ThisR = ThisPX[i * 4]
-                            ThisG = ThisPX[i * 4 + 1]
-                            ThisB = ThisPX[i * 4 + 2]
-                        }
-                    }
-                }
-
-                if (Find) {
-                    ThisHeightArray.push(Find)
-
-                    if (BlackDebug) {
-                        for (i = 5; i < Find; i++) {
-                            context2.putImageData(redPX, ThisFind, i)
-                        }
+                        Find = i + 10
+                        i = 0
                     }
                 } else {
-                    ThisHeightArray.push("inf")
-                }
-
-                ThisR = FistGetRGB[0]
-                ThisG = FistGetRGB[1]
-                ThisB = FistGetRGB[2]
-
-                //-----------------------------------------------------------------
-
-                Find = null
-                ThisActualPX = context2.getImageData(ThisFind, halfVDO, 1, halfVDO)
-                ThisPX = ThisActualPX.data
-
-                for (i = halfVDO - 5; i > 0; i--) {
-                    if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
-                        i -= 10
-                        if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
-                            Find = i + 10
-                            i = 0
-                        }
-                    } else {
-                        if (!Check2ThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
-                            ThisR = ThisPX[i * 4]
-                            ThisG = ThisPX[i * 4 + 1]
-                            ThisB = ThisPX[i * 4 + 2]
-                        }
+                    if (!Check2ThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                        ThisR = ThisPX[i * 4]
+                        ThisG = ThisPX[i * 4 + 1]
+                        ThisB = ThisPX[i * 4 + 2]
                     }
                 }
-
-                if (Find) {
-                    Find += halfVDO
-                    ThisHeightArray.push(VDOBOUND.height - Find)
-
-                    if (BlackDebug) {
-                        for (i = VDOBOUND.height - 5; i > Find; i--) {
-                            context2.putImageData(redPX, ThisFind, i)
-                        }
-                    }
-                } else {
-                    ThisHeightArray.push("inf")
-                }
-
-
-                ThisFind += CheckBlackQua
             }
 
-            var mf = 0;
-            var m = 0;
-            var SureTHisHeight;
+            if (Find) {
+                Find += halfVDO
+                ThisHeightArray.push(VDOBOUND.height - Find)
 
-            for (var i = 0; i < ThisHeightArray.length; i++) {
-                lowest = null
-                for (var j = i; j < ThisHeightArray.length; j++) {
-                    if (ThisHeightArray[i] == ThisHeightArray[j] || Math.abs(ThisHeightArray[i] - ThisHeightArray[j]) < 5) {
-                        if (ThisHeightArray[i] == "inf") {
-                            lowest = "inf"
-                        } else {
-                            if (ThisHeightArray[j] > lowest || lowest == null) {
-                                lowest = ThisHeightArray[j]
-                            }
-                        }
-                        m++;
+                if (BlackDebug) {
+                    for (i = VDOBOUND.height - 5; i > Find; i--) {
+                        context2.putImageData(redPX, ThisFind, i)
                     }
                 }
-
-                if (lowest == "inf") {
-                    if (m > mf) {
-                        mf = m;
-                        SureTHisHeight = lowest;
-                    }
-                } else {
-                    if (m > mf || (m == mf && lowest > SureTHisHeight)) {
-                        mf = m;
-                        SureTHisHeight = lowest;
-                    }
-                }
-                m = 0;
-            }
-
-            if (BlackDebug) {
-                YellowLinePX = context2.createImageData(VDOBOUND.width, 1)
-
-                for (i = 0; i < VDOBOUND.width; i++) {
-                    YellowLinePX.data[i * 4] = 255
-                    YellowLinePX.data[i * 4 + 1] = 255
-                    YellowLinePX.data[i * 4 + 3] = 255
-                }
-
-                context2.putImageData(YellowLinePX, 0, 10)
-            }
-
-            // ThisFrame = context2.getImageData(VDOBOUND.width / 2, 0, 1, VDOBOUND.height)
-            // ThisFrameData = ThisFrame.data
-
-            // if (LastFrame) {
-            //     for (i = 0; i < VDOBOUND.height; i += 4) {
-            //         if (ThisFrameData[i] == LastFrame[i] && ThisFrameData[i + 1] == LastFrame[i + 1] && ThisFrameData[i+2] == LastFrame[i+2]) {
-            //             context2.putImageData(redPX, VDOBOUND.width / 2, i/4)
-            //         } else {
-            //             i = VDOBOUND.height
-            //         }
-            //     }
-            // }
-
-            // LastFrame = ThisFrameData
-
-            if (mf < 6 || SureTHisHeight == "inf") {
-                SureTHisHeight = LastHeight
-            }
-
-            if (SureTHisHeight > 10 && (Math.abs(SureTHisHeight - LastHeight) > 10 || SureTHisHeight > LastHeight)) {
-
-                if (SureTHisHeight > LastHeight) {
-                    v.style.transition = "none"
-                    v.parentNode.style.transition = "none"
-                } else {
-                    v.style.transition = "margin-top 0.5s"
-                    v.parentNode.style.transition = "all 0.5s"
-                }
-
-                LastHeight = SureTHisHeight
-
-                v.parentNode.style.overflow = "hidden"
-                v.parentNode.style.position = "absolute"
-                v.parentNode.style.width = "100%"
-
-                v.parentNode.style.borderRadius = "var(--theme-radius-big)"
-
-                v.parentNode.style.marginTop = LastHeight + 2 + 'px'
-                v.style.marginTop = -LastHeight - 1 + 'px'
-                v.parentNode.style.height = VDOBOUND.height - LastHeight * 2 - 2 + 'px'
             } else {
-                if (SureTHisHeight <= 10) {
-                    v.style.transition = "margin-top 0.5s"
-                    v.parentNode.style.transition = "all 0.5s"
-                    LastHeight = 0
-                    v.style.marginTop = "unset"
-                    v.parentNode.style.height = "100%"
-                    v.parentNode.style.marginTop = "unset"
+                ThisHeightArray.push("inf")
+            }
+
+
+            ThisFind += CheckBlackQua
+        }
+
+        var mf = 0;
+        var m = 0;
+        var SureTHisHeight;
+
+        for (var i = 0; i < ThisHeightArray.length; i++) {
+            lowest = null
+            for (var j = i; j < ThisHeightArray.length; j++) {
+                if (ThisHeightArray[i] == ThisHeightArray[j] || Math.abs(ThisHeightArray[i] - ThisHeightArray[j]) < 5) {
+                    if (ThisHeightArray[i] == "inf") {
+                        lowest = "inf"
+                    } else {
+                        if (ThisHeightArray[j] > lowest || lowest == null) {
+                            lowest = ThisHeightArray[j]
+                        }
+                    }
+                    m++;
                 }
             }
 
-            if (BlackDebug) {
-                GreenLinePX = context2.createImageData(VDOBOUND.width, 1)
-
-                for (i = 0; i < VDOBOUND.width; i++) {
-                    GreenLinePX.data[i * 4 + 1] = 255
-                    GreenLinePX.data[i * 4 + 3] = 255
+            if (lowest == "inf") {
+                if (m > mf) {
+                    mf = m;
+                    SureTHisHeight = lowest;
                 }
-
-                context2.putImageData(GreenLinePX, 0, LastHeight)
-                context2.putImageData(GreenLinePX, 0, VDOBOUND.height - LastHeight)
+            } else {
+                if (m > mf || (m == mf && lowest > SureTHisHeight)) {
+                    mf = m;
+                    SureTHisHeight = lowest;
+                }
             }
+            m = 0;
+        }
+
+        if (BlackDebug) {
+            YellowLinePX = context2.createImageData(VDOBOUND.width, 1)
+
+            for (i = 0; i < VDOBOUND.width; i++) {
+                YellowLinePX.data[i * 4] = 255
+                YellowLinePX.data[i * 4 + 1] = 255
+                YellowLinePX.data[i * 4 + 3] = 255
+            }
+
+            context2.putImageData(YellowLinePX, 0, 10)
+        }
+
+        // ThisFrame = context2.getImageData(VDOBOUND.width / 2, 0, 1, VDOBOUND.height)
+        // ThisFrameData = ThisFrame.data
+
+        // if (LastFrame) {
+        //     for (i = 0; i < VDOBOUND.height; i += 4) {
+        //         if (ThisFrameData[i] == LastFrame[i] && ThisFrameData[i + 1] == LastFrame[i + 1] && ThisFrameData[i+2] == LastFrame[i+2]) {
+        //             context2.putImageData(redPX, VDOBOUND.width / 2, i/4)
+        //         } else {
+        //             i = VDOBOUND.height
+        //         }
+        //     }
+        // }
+
+        // LastFrame = ThisFrameData
+
+        if (mf < 6 || SureTHisHeight == "inf") {
+            SureTHisHeight = LastHeight
+        }
+
+        if (SureTHisHeight > 10 && (Math.abs(SureTHisHeight - LastHeight) > 10 || SureTHisHeight > LastHeight)) {
+
+            if (SureTHisHeight > LastHeight) {
+                v.style.transition = "none"
+                v.parentNode.style.transition = "none"
+            } else {
+                v.style.transition = "margin-top 0.5s"
+                v.parentNode.style.transition = "all 0.5s"
+            }
+
+            LastHeight = SureTHisHeight
+
+            v.parentNode.style.overflow = "hidden"
+            v.parentNode.style.position = "absolute"
+            v.parentNode.style.width = "100%"
+
+            v.parentNode.style.borderRadius = "var(--theme-radius-big)"
+            v.style.marginTop = -LastHeight - 1 + 'px'
+            v.parentNode.style.height = VDOBOUND.height - LastHeight * 2 - 2 + 'px'
+        } else {
+            if (SureTHisHeight <= 10) {
+                v.style.transition = "margin-top 0.5s"
+                v.parentNode.style.transition = "all 0.5s"
+                LastHeight = 0
+                v.style.marginTop = "unset"
+                v.parentNode.style.height = "fit-content"
+                v.parentNode.style.marginTop = "unset"
+            }
+        }
+
+        if (BlackDebug) {
+            GreenLinePX = context2.createImageData(VDOBOUND.width, 1)
+
+            for (i = 0; i < VDOBOUND.width; i++) {
+                GreenLinePX.data[i * 4 + 1] = 255
+                GreenLinePX.data[i * 4 + 3] = 255
+            }
+
+            context2.putImageData(GreenLinePX, 0, LastHeight)
+            context2.putImageData(GreenLinePX, 0, VDOBOUND.height - LastHeight)
         }
     }
 }
@@ -5725,7 +5780,7 @@ function drawpic() {
             FindVideo()
             if (v.paused || v.ended || Cloning == false || StaticVDO == true || PipMode == true || document.visibilityState == 'hidden') {
                 drawing = false
-                console.log("CancelDraw")
+                // console.log("CancelDraw")
             } else {
                 drawOnePic()
                 if (!StaticVDO) {
@@ -5744,19 +5799,13 @@ function drawpic() {
 }
 
 function getBase64Image(img) {
-    // Create an empty canvas element
     var canvas = document.createElement("canvas");
     canvas.width = img.width;
     canvas.height = img.height;
 
-    // Copy the image contents to the canvas
     var ctx = canvas.getContext("2d");
     ctx.drawImage(img, 0, 0);
 
-    // Get the data-URL formatted image
-    // Firefox supports PNG and JPEG. You could check img.src to
-    // guess the original format, but be aware the using "image/jpg"
-    // will re-encode the image.
     var dataURL = canvas.toDataURL("image/png");
 
     return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
