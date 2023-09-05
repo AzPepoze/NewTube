@@ -1553,6 +1553,17 @@ function update() {
                     color: ${'LinkColor'.GetSaveRgba()} !important;
                 }
 
+                ytd-menu-renderer .ytd-menu-renderer[style-target=button] {
+                    transition: background 0.2s, transform 0.1s;
+                    background: transparent;
+                    border-radius: var(--theme-radius);
+                }
+                  
+                  ytd-menu-renderer .ytd-menu-renderer[style-target=button]:hover {
+                    background: var(--ThirdTheme);
+                    transform: scale(1.3); 
+                }
+
                 div.html5-video-player video {
                     position: unset !important;
                 }
