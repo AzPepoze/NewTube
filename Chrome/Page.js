@@ -260,13 +260,13 @@ function SetValueCheck() {
     SetValueCheck2("TopOut", `#masthead,`, ``)
 
     SetValueCheck2("VdoAnim", `
-    div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) video{
+    div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .html5-video-container{
         transition: all 1s ,background 0.1s;
         top: 0px !important
     }
   
-    div.ended-mode video,
-    div.unstarted-mode:not(.ytp-small-mode) video{
+    div.ended-mode .html5-video-container,
+    div.unstarted-mode:not(.ytp-small-mode) .html5-video-container{
         transform:scale(0.5);
         opacity:0 !important;
     }`, ``)
@@ -955,8 +955,9 @@ let NORMAL = `
     }
 
     .HoverList {
-        height: 21px;
+        margin-block: -3px;
         padding-right: 0px !important;
+        text-wrap: nowrap;
     }    
     
     mark {
@@ -1021,6 +1022,10 @@ let NORMAL = `
         right: 0;
 	}
 
+    #NEWTUBEHOVER:hover {
+        filter: grayscale(0) !important;
+    }
+
     #NEWTUBE {
         border-radius: 20px;
 	}
@@ -1032,7 +1037,7 @@ let NORMAL = `
 	}
 
     .HoverList {
-        border-radius: 10px;
+        border-radius: 20px;
         transition: all 0.2s;
         margin-inline-start: 10px;
         user-select: none;
@@ -1076,17 +1081,26 @@ let NORMAL = `
 	}
 
 	.MainBox{
-		padding-block: 10px;
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		-webkit-box-flex: 1;
-		-ms-flex: 1;
-		flex: 1;
-		font-size: 10px;
-		margin-inline: 10px;
-		margin-block: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        -webkit-box-flex: 1;
+        -ms-flex: 1;
+        flex: 1;
+        font-size: 10px;
+        padding-inline: 10px;
+        margin-block: 10px;
+        border-radius: 20px;
+        border-bottom: #ffadfdad solid 3px;
+        margin-top: 50px;
 	}
+
+    .NewtubeLeftText{
+        text-overflow: ellipsis;
+        overflow: hidden;
+        font-size: 16px;
+        width:100%;
+    }
 
     .ListBox {
         padding: 10px 15px 10px 20px;
@@ -1105,8 +1119,6 @@ let NORMAL = `
 
 	.SndBox{
         position: relative;
-		border-radius: 10px;
-        background: rgb(60 60 60 / 40%);
         padding: 10px;
         width: 100%;
         display: flex;
@@ -1116,8 +1128,9 @@ let NORMAL = `
         flex: 1;
         font-size: 10px;
         margin-inline: -10px;
-        margin-block: 10px;
-        border-bottom: 1px solid #ffffff6b;
+        margin-top: 20px;
+        border-radius: 20px;
+        background: linear-gradient(90deg, #313131, transparent);
 	}
 
 
@@ -1136,10 +1149,14 @@ let NORMAL = `
 
 	#NEWTUBEBG
 	{
-		background: rgba(0, 0, 0);
-		border-radius:10px;
-
+		background: rgb(0 0 0);
+		border-radius:20px 20px 0px 20px;
+        overflow: hidden;
 	}
+
+    #NEWTUBEBG textarea {
+        border-radius: 5px;
+    }
 
     .NEWTUBEBG,.NEWTUBEMAIN{
         overflow: hidden;
@@ -1271,10 +1288,13 @@ let NORMAL = `
 
     #NEWTUBELIST {
         overflow-y:scroll;
+        margin-right: 10px;
+        border-radius: 0px 20px 20px 0px;
+        padding-right: 10px;
     }
 	`, AfterNEWTUBE = `#NEWTUBEBG,
     .NEWTUBEMAIN {
-        background: rgba(0,0,0,0.95) !important;
+        background: rgb(0 0 0 / 87%) !important;
     }
     
     .NEWTUBEBG {
@@ -1559,7 +1579,7 @@ function update() {
                     border-radius: var(--theme-radius);
                 }
                   
-                  ytd-menu-renderer .ytd-menu-renderer[style-target=button]:hover {
+                ytd-menu-renderer .ytd-menu-renderer[style-target=button]:hover {
                     background: var(--ThirdTheme);
                     transform: scale(1.3); 
                 }
@@ -1568,10 +1588,15 @@ function update() {
                     position: unset !important;
                 }
 
-                div.html5-video-player {
+                div.html5-video-player,
+                div.html5-video-player.ytp-fullscreen div.html5-video-container {
                     display: flex !important;
                     align-items: center !important;
                     justify-content: center !important;
+                }
+
+                div.html5-video-container{
+                    position: absolute !important;
                 }
 
                 div.html5-video-player:not(.ytp-fullscreen) div.html5-video-container{
@@ -1639,7 +1664,7 @@ function update() {
                 yt-img-shadow.ytd-channel-renderer,
                 #author-thumbnail.ytd-comment-simplebox-renderer,
                 .style-scope.ytd-comment-renderer.no-transition,
-                div.html5-video-player:not(.ytp-fullscreen) video,
+                div.html5-video-player:not(.ytp-fullscreen) .html5-video-container,
                 .ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title,
                 ytd-thumbnail-overlay-side-panel-renderer,
                 ytd-thumbnail-overlay-bottom-panel-renderer,
@@ -1883,7 +1908,7 @@ function update() {
                 }
                 
                 ytd-multi-page-menu-renderer,
-                div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) video,
+                div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .html5-video-container,
                 .ytp-offline-slate-background
                 {   
                     border-radius: var(--theme-radius-big) !important;
@@ -2299,7 +2324,7 @@ function update() {
                     `+ GetCodeC("BottomG") + `
                 }
 
-                #player,
+                
                 #NewtubeVDOCanvas{
                     border-radius: var(--theme-radius-big) !important;
                 }
@@ -2589,7 +2614,32 @@ function RESETTUBE() {
         document.getElementById("NEWTUBE").scrollTop = remem
     }
 }
-width:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //IDK----------------------------------------------------------------------------
 
 function createList(Name, num) {
@@ -2728,6 +2778,47 @@ z-index: 5000;
 top: 0px;
 position: fixed;
 transition: opacity 0.2s ease 0s;`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //Preset--------------------------------------------------------------------------------------
 
@@ -3196,6 +3287,46 @@ width: -moz-available;
     sndmain.appendChild(Cancel)
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //Function----------------------------------------------------------------------------
 
 var THISPar = "NEWTUBE",
@@ -3211,29 +3342,28 @@ function createMainframe() {
     Head.className = "DES"
     Head.innerHTML = THISPar
     Head.style = `width: -webkit-fill-available;
-width: -moz-available;
     font-size: 18px;
     padding: 10px;
     margin-inline: -10px;
-    color: black !important;
-    background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,0,0,0) 100%);
-    border-radius: 10px;`
+    color: white !important;
+    background: linear-gradient(45deg, transparent, rgb(133 75 130), transparent);
+    text-align: center;
+    border-radius: 20px;`
 
     List.appendChild(Head)
 
     LeftList = document.createElement('label');
     LeftList.className = "HoverList"
-    LeftList.innerHTML = THISPar
+    LeftList.innerHTML = `<div class="NewtubeLeftText">${THISPar}</div>`
 
     LeftList.style = `
     position:relative;
     width: -webkit-fill-available;
     width: -moz-available;
-    font-size: 16px;
     padding: 10px;
     color: white;`
     LeftCount++
-    document.getElementById("NEWTUBEBG").style.maxHeight = (LeftCount * 41) + "px"
+    // document.getElementById("NEWTUBEBG").style.maxHeight = (LeftCount * 41) + "px"
 
     LeftList.onclick = function () {
         List.scrollIntoView({ behavior: 'smooth' });
@@ -3608,21 +3738,59 @@ width: -moz-available;
     }
 
     let BG = document.createElement("div")
-    BG.id = "NEWTUBEBG";
+    BG.id = "NEWTUBEBG"
     BG.className = "NEWTUBE"
-    BG.style = "width: 755px; height: -webkit-fill-available; position: fixed; top:56px; right: 0px; transition: all 0.5s; z-index: 2020; display: flex; flex-direction: row;";
+    BG.style = `resize: both; padding-top: 20px; width: 755px; height: 615px; max-height: -webkit-fill-available; position: fixed; top:56px; transition: opacity 0.5s, left 0.5s; z-index: 2020; display: flex; flex-direction: row;
+    min-width: 602px;
+    min-height: 247px;`
     document.body.appendChild(BG)
+
+    let MoveBar = document.createElement("div")
+    MoveBar.innerHTML = "="
+    MoveBar.id = "NEWTUBEHOVER"
+    MoveBar.style = `position: absolute;
+    top: 0px;
+    transition: all 0.2s;
+    border-bottom: 1px gray solid;
+    border-radius: 20px;
+    height: 20px; width:100%;
+    background: linear-gradient(45deg, transparent, rgb(133, 75, 130), transparent);
+    filter: grayscale(1);
+    color: white;
+    text-align: center;
+    font-size: 15px;`;
+    BG.appendChild(MoveBar)
+
+    let CalMousePo = null
+
+    function MoveToMouse (Mouse) {
+        Mouse.preventDefault();
+        BG.style.left = Mouse.clientX - CalMousePo[0] + "px"
+        BG.style.top = Mouse.clientY - CalMousePo[1] + "px"
+    }
+
+    MoveBar.onmousedown = function(Mouse) {
+        WidnowW = window.innerWidth
+        CalMousePo = [Mouse.clientX - BG.offsetLeft,Mouse.clientY - BG.offsetTop]
+        BG.style.transition = null
+        addEventListener("mousemove", MoveToMouse)
+    }
+
+    document.onmouseup = function() {
+        BG.style.transition = "opacity 0.5s, left 0.5s"
+        removeEventListener("mousemove", MoveToMouse)
+    }
 
     let LIST = document.createElement("div")
     LIST.id = "NEWTUBELIST"
     LIST.className = "NEWTUBE"
-    LIST.style = "width: 210px; height: 100%; display: flex; flex-direction: column;";
+    LIST.style = "width: 210px; height: 100%; display: flex; flex-direction: column; border-radius: 20px; min-width: 210px;";
     BG.appendChild(LIST)
 
     SetBg = document.createElement("body")
     SetBg.id = "NEWTUBE";
     SetBg.className = "NEWTUBE"
-    SetBg.style = "width: 550px; height: calc(100% - 50px); margin-top: 50px;";
+    SetBg.style = "width: -webkit-fill-available; height: calc(100% - 50px); margin-top: 50px;";
     BG.appendChild(SetBg)
 
     var Reset = document.createElement('button')
@@ -3653,15 +3821,16 @@ width: -moz-available;
     -webkit-text-stroke: black 1px;
     text-shadow: 0px 0px 3px white;;
     width: -webkit-fill-available;
-width: -moz-available;
+    width: -moz-available;
     font-size: 18px;
     padding: 10px;
     margin-inline: -10px;
-    border-radius: 10px;
     color: black;
     background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
     animation: glowing 20s linear infinite;
-    background-size: 400%;`
+    background-size: 400%;
+    text-align: center;
+    border-radius: 20px;`
 
     DonateFrame.style = `display: flex;
     flex-direction: column;`
@@ -3742,22 +3911,63 @@ width: -moz-available;
 
     //-------------------------------------------------------------------------------
 
-    THISPar = "🎇 Enhancement"
+    THISPar = "📺 Video"
 
-    createCheck("Scroll", "Auto transparent top bar");
+    createTextBox("PlayerEdge", "Round edges amount")
 
-    createframe(`<label class="DES">Background Video</label>`)
+    createCheck("VdoAnim", "Enable Chaning Video transition")
 
-    createCheck("VDOBG", "Background Video<br>(NOT RECOMMEND FOR LOW END PC!)");
+    createColor("Time-LineBG", "Time-line background color")
 
-    createTextBox("CanvasQua", "% (Background VDO) Quality")
-    createTextBox("NVDOB", `(Background VDO) Blur amount`)
-    createTextBox("VDOSmooth", '(Background VDO) Smooth frame (Minimum & None is 1)')
-    createTextBox("NVDOC", `(Background VDO) Contrast`)
-    createTextBox("NVDOBGT", `(Background VDO) Brightness`)
-    createTextBox("NVDOT", `(Background VDO) Size`)
+    createColor("TimeLoaded", "Time-line loaded color")
 
-    createframe(`<label class="DES">New Subtitles/Captions</label>`)
+    createColor("EndBG", "End of video chanel hover background color")
+
+    createCheck("CenterUD", "(Under Video) Move tittle to the center")
+
+    createCheck("CenterUDF", "(Fullscreen) Move tittle to the center")
+
+    createCheck("FullTheater", "Enable Full Theater")
+
+    createCheck("AutoPIP", "Auto Pictue In Pictue mode<br>(Pls click anywhere In page after you back to page)<br>(Security problem) (I do my best T_T)")
+    createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode")
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "🎆 Background Video"
+
+    createCheck("VDOBG", "Enable<br>(NOT RECOMMEND FOR LOW END PC!)")
+
+    createTextBox("CanvasQua", "% Quality")
+    createTextBox("NVDOB", `Blur amount`)
+    createTextBox("VDOSmooth", 'Smooth frame (Minimum & None is 1)')
+    createTextBox("NVDOC", `Contrast`)
+    createTextBox("NVDOBGT", `Brightness`)
+    createTextBox("NVDOT", `Size`)
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "🎚️ Video control panel"
+
+    createColor("VDOTEXT", "Text color")
+    createColor("HBT", "Button hover color")
+
+    createCheck("ControlUnderVDO", `Move to under of video`)
+    createTextBox("MediaSpace", `Under video distance`)
+    createCheck("AutohideBar", `Autohide (If you enabled Under VDO)`)
+    createCheck("CenterMedia", "Move to center")
+    createColor("MediaBG", "Background color")
+    createCheck("BottomG", "Remove default background gradient")
+    createTextBox("MediaH", "Background height")
+
+    createCheck("PlayerOut", "Enable Borders/Shadows");
+    createTextBox("PlayerBorder", "Borders/Shadows width")
+
+    createCheck("MediaBlur", "Blur background")
+    
+    //-------------------------------------------------------------------------------
+
+    THISPar = "🔤 Subtitles/Captions"
 
     createCheck("NewSub", `New Subtitles/Captions`)
 
@@ -3770,25 +3980,191 @@ width: -moz-available;
     createColor("subShaColor", `(Shadow) Color`)
     createTextBox("subShaBlur", `(Shadow) Blur amount`)
 
-    createframe(`<label class="DES">Video controls panel</label>`,)
+    createCheck("BlurSub", "Blur background")
 
-    createCheck("ControlUnderVDO", `Move to under of video`)
-    createTextBox("MediaSpace", `Under video distance`)
-    createCheck("AutohideBar", `Autohide (If you enabled Under VDO)`)
-    createCheck("CenterMedia", "Move to center")
-    createCheck("BottomG", "remove background gradient")
-    createTextBox("MediaH", "Background height")
+    createCheck("CapOut", "Enable Borders/Shadows")
 
-    createframe(`<label class="DES">Pictue In Pictue (For stable pls use Opera browser)</label>`)
+    //----------------------------------------------------------------------------------------------
 
-    createCheck("AutoPIP", "Auto Pictue In Pictue mode<br>(Pls click anywhere In page after you back to page)<br>(Security problem) (I do my best T_T)")
-    createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode")
+    THISPar = "🔎 Topbar & Search"
 
-    createframe(`<label class="DES">Custom Youtube logo</label>`)
+    createCheck("Scroll", "(Topbar) Auto transparent")
 
-    createCheck("ReplaceYT", "Enable")
+    createColor("ThemeSnd", "(Topbar) Color")
+    createCheck("TopOut", "(Topbar) Enable Borders/Shadows")
 
-    let ReplaceYTFrame = createframe(`<p class="DES" style="display: flex; align-items: center; width:-webkit-fill-available;">Enter URL :  </label><input id="ReplaceYTLOGO" style="width:380px; margin-left: 10px; margin-bottom: 10px;" class="TextBox" type="text" style="display: flex;"></p>
+    createColor("ThemeChips", "(Second topbar) Topbar color")
+    createCheck("SndOut", "(Second topbar) Enable Borders/Shadows")
+
+    createCheck("SearchAnim", "Enable Search animation")
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "📰 Thumbnail/Clip cover"
+
+    createTextBox("TimeEdge", "(UI in Thumbnail) Round edges amount")
+
+    createColor("TIMETEXT", "Time text color")
+
+    createColor("TimeBG", "Video preview time background color")
+
+    createCheck("TimeOut", "Enable time Borders/Shadows")
+
+    createTextBox("HoverBorder", "Hover Borders width")
+    createColor("ThumbHoverColor", "Borders/Shadows on hover color")
+    createColor("ThumbClick", "Borders/Shadows on click color")
+
+    createselect("ThumbHover",
+        `<option value="Slide">Slide</option>
+	<option value="Zoom">Zoom</option>
+    <option value="Slide&Zoom">Slide&Zoom</option>
+	<option value="none">None</option>`,
+        "Hover animation style")
+
+    createTextBox("Zoom", 'Zoom amount (If you choose "Zoom")')
+
+    createCheck("TimeAni", "Enable hide time when hover")
+
+    createCheck("ThumbAnim", "Enable loaded animation")
+
+    createCheck("CenterTime", "Move the time position to the center")
+
+    createTextBox("TimeH", "Time height")
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "🎇 Enhancement"
+
+    createTextBox("Edge", "Round edges amount (Most UI)")
+
+    createCheck("SwapRow", "Swap left-right row (In watching mode)")
+
+    //theme-------------------------------------------------------------------------------
+
+    THISPar = "🌈 Color/Theme"
+
+    createColor("Theme", "1 Theme color")
+
+    createColor("ThemeThr", "2 theme color")
+
+    createColor("ThemeFort", "3 theme color")
+
+    createColor("LeftBar", "Left sidebar color")
+
+    createColor("Text", "Main text color")
+
+    createColor("NdText", "Second text color")
+
+    createColor("LinkColor", "(Link) Text color")
+
+    //theme-------------------------------------------------------------------------------
+
+    THISPar = "▶️ Subscribe Button"
+
+    createCheck("SPSubScribe", "Enable Separate Subscribe Button Color")
+
+    createColor("SPSubScribeBG", "(Separate) Background color")
+
+    createColor("SPSubScribeColor", "(Separate) Text color")
+
+    createCheck("SubOut", "Enable Borders/Shadows")
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "💠 Logo"
+
+    createCheck("IconFill", `Logo theme sync with Theme 1<br>Work when disable *Custom Top-Left Icon Image*`)
+
+    var IconFrame = createframe(`<lable class="DES">Tab Icon Image (Recommend to use URL)</lable>
+    <p><input id="IconFrame" type="file" accept="image/*" > </p>
+    <p class="DES">Enter URL :  </label><input id="IconURL" class="TextBox" type="text" style="display: flex;"></p>
+    <p><lable class="DES" style="display: flex; text-align: center;" id="IconSTATUS"></label></p>`)
+
+    IconFrame.style = `display: flex; flex-direction: column;`
+
+    var IconURL = document.getElementById("IconURL")
+    IconURL.style = `width:200px;  margin-bottom: 10px;`
+
+    IconURL.addEventListener('change', function () {
+        ShowTexForICON("Please wait...")
+        DOwithindexed(function () {
+            store.put(IconURL.value, "IconURL")
+            UpdateIcon()
+            applyIcon()
+            ShowTexForICON("Successful.</br>(If an image didn't show up.Then the URL can't access.)")
+            IconURL.value = ``
+        })
+    })
+
+    var Par = document.createElement('p')
+    Par.style = "margin-block: 10px; width:100%;"
+    var IconArea = document.createElement('canvas')
+    IconArea.id = "IconUrlSHOW"
+    IconArea.style = `background-repeat: no-repeat; background-position: center; background-size: contain; width:100%;`
+
+    IconFrame.appendChild(Par)
+    Par.appendChild(IconArea)
+
+    var Iconinput = document.getElementById('IconFrame');
+    Iconinput.setAttribute('Newtube', '')
+    Iconinput.style = "margin-block: 10px; padding:10px; color:white; border-radius:10px; background:rgb(37, 37, 37);"
+    Iconinput.onchange = function (evt) {
+        var file = evt.target.files[0]
+        const reader = new FileReader();
+        reader.addEventListener('loadend', () => {
+            ShowTexForICON("Please wait...")
+            DOwithindexed(function () {
+                store.put(reader.result, "IconURL")
+                applyIcon()
+                UpdateIcon()
+                ShowTexForICON("Successful.</br>(If an image not show yet,Your image might too large!)")
+            })
+        });
+        try {
+            reader.readAsDataURL(file);
+        } catch (e) {
+
+        }
+    }
+
+    Iconid = document.createElement('a')
+    Iconid.className = "DES"
+    Iconid.style = `white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;`
+    Iconid.id = "Iconid"
+    Iconid.target = "_blank"
+
+    IconFrame.appendChild(Iconid)
+
+
+    var ResetBu = document.createElement('button')
+    ResetBu.innerHTML = "Reset"
+    ResetBu.className = "Reset"
+    ResetBu.style = `margin-block-start: 10px;
+    color: #ffffff;
+    border-radius: 10px;
+    transition: all 0.2s;
+    background: #242424;
+    border: transparent;
+    padding: 5px;
+    padding-inline: 10px;`
+    ResetBu.onclick = function () {
+        DOwithindexed(function () {
+            store.put('https://www.youtube.com/s/desktop/6588612c/img/favicon.ico', "IconURL")
+            applyIcon()
+            UpdateIcon()
+        })
+    }
+    IconFrame.appendChild(ResetBu)
+
+    applyIcon()
+
+    createCheck("ReplaceYT", "Enable Custom Top-Left Icon Image")
+
+    let ReplaceYTFrame = createframe(`<lable class="DES">Top-Left Icon Image</lable>
+    <p class="DES" style="display: flex; align-items: center; width:-webkit-fill-available;">Enter URL :  </label><input id="ReplaceYTLOGO" style="width:380px; margin-left: 10px; margin-bottom: 10px;" class="TextBox" type="text" style="display: flex;"></p>
     <a class="yt-simple-endpoint style-scope ytd-topbar-logo-renderer" id="logo" aria-label="" href="/" title="หน้าแรกของ YouTube">
     <div class="style-scope ytd-topbar-logo-renderer">
         <ytd-logo class="style-scope ytd-topbar-logo-renderer"><yt-icon id="logo-icon" class="style-scope ytd-logo"><yt-icon-shape class="style-scope yt-icon"><icon-shape class="yt-spec-icon-shape"><div style="width: 100%; height: 100%; fill: currentcolor;"><svg class="external-icon" viewBox="0 0 90 20" focusable="false" style="pointer-events: none; display: block; width: 100%; height: 100%;">
@@ -3869,226 +4245,6 @@ width: -moz-available;
 
     createTextBox("YTSize", "% Logo image size")
 
-    createCheck("FullTheater", "Enable Full Theater", true)
-
-    //-------------------------------------------------------------------------------
-
-    THISPar = "🔠 Fonts"
-
-    FontLocatePar = createMainframe()
-
-
-
-    createframe(`<p style="display: flex;flex-direction: column;align-content: center;align-items: center; width: 100%;">
-    <a id="HOVERLINK" style="margin-bottom: 20px;font-size: 18px;background: #4b4b4b;padding: 10px;border-radius: 10px;" href="https://youtu.be/rm6U_4mendc" target="_blank" class="DES" >See how to add fonts!</a>
-    <textarea id="NTInstallFont" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste Font Faces here."></textarea>
-    </p>`)
-
-    let CreatedFontsCheck = []
-
-    function CreateFontsList() {
-
-        CreatedFontsCheck.forEach(element => {
-            element.remove()
-        });
-
-        CreatedFontsCheck = []
-
-        listFonts().forEach(font => {
-            font = font.replaceAll(" ", "_")
-            let FontSaveName = `nt-Font-${font}T`
-            if (!localStorage[FontSaveName]) {
-                localStorage[FontSaveName] = "false"
-            }
-            let ThisfontCheck = createCheck("Font-" + font, font)
-            CreatedFontsCheck.push(ThisfontCheck)
-            FontLocatePar.append(ThisfontCheck)
-        })
-    }
-
-    let InstallFont = document.getElementById("NTInstallFont")
-
-    InstallFont.value = localStorage["nt-InstallFont"]
-
-    InstallFont.addEventListener('change', function () {
-        localStorage["nt-InstallFont"] = InstallFont.value
-        update()
-        setTimeout(() => {
-            CreateFontsList()
-            InstallFont.scrollIntoView()
-        }, 100);
-    })
-
-
-    CreateFontsList()
-
-    //-------------------------------------------------------------------------------
-
-    THISPar = "📜 Import / Export Style"
-
-    imexstyle = `width: 100%;
-    padding: 10px;
-    margin-block: 5px;
-    right: 0px;
-    top: 560px;
-    background: rgb(56 56 56);
-    color: white;
-    border-radius: 10px;
-    transition: all 0.5s ease 0s;
-    border: transparent;`
-
-    LocatePar = createMainframe()
-
-
-    createframe(`<textarea id="Export" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste NTubeCode here."></textarea>`)
-
-    var ExportTEXT = document.getElementById("Export")
-
-
-    var Import = document.createElement('button')
-    Import.innerHTML = "Import NTubeCode"
-    Import.className = "Reset"
-    Import.style = imexstyle
-
-    LocatePar.appendChild(Import)
-
-    var Export = document.createElement('button')
-    Export.innerHTML = "Export NTubeCode"
-    Export.className = "Reset"
-    Export.style = imexstyle
-
-    LocatePar.appendChild(Export)
-
-    var Export2 = document.createElement('button')
-    Export2.innerHTML = "Export Style as CSS"
-    Export2.className = "Reset"
-    Export2.style = imexstyle
-
-    LocatePar.appendChild(Export2)
-
-
-    Import.onclick = function () {
-        let save = ExportTEXT.value
-        ExportTEXT.value = "Please wait...(If it's take too long it might eror!)"
-        save.LoadNTubeCode()
-        ExportTEXT.value = "Successful."
-    }
-
-    Export.onclick = function () {
-        ExportTEXT.value = "Please wait..."
-        DOwithindexed(function () {
-            let get = store.get("BGIMG")
-            get.onsuccess = function (e) {
-                let arr = GenNTubeCode()
-                if (e.target.result == null) {
-                    arr["BGIMG"] = ""
-                } else {
-                    arr["BGIMG"] = e.target.result
-                }
-                gentext = JSON.stringify(arr).replace(/",/g, '",\n')
-                gentext = gentext.substring(0, 1) + '\n' + gentext.substring(1)
-                gentextL = gentext.length
-                gentext = gentext.substring(0, gentextL - 1) + '\n' + gentext.substring(gentextL - 1)
-                ExportTEXT.value = gentext
-            }
-        })
-    }
-
-    Export2.onclick = function () {
-        ExportTEXT.value = "Please wait..."
-        ExportTEXT.value = Collect_Style
-    }
-
-    //-------------------------------------------------------------------------------
-
-    THISPar = "📝 Custom CSS"
-
-    createCheck("EnaCUSCSS", "Enable Custom CSS")
-
-    createframe(`<textarea id="Custom_CSS" placeholder="Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
-
-    CusText = document.getElementById("Custom_CSS")
-
-    CusText.value = localStorage["nt-CUSTOM"]
-
-    CusText.addEventListener('change', function () {
-        localStorage["nt-CUSTOM"] = CusText.value
-        update()
-    })
-
-
-    //-------------------------------------------------------------------------------
-
-    THISPar = "⏫ Additional CSS"
-
-    createCheck("EnaADDCSS", "Enable Additional CSS")
-
-    createframe(`<textarea id="Additional_CSS" placeholder="Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
-
-    ADDTEXT = document.getElementById("Additional_CSS")
-
-    ADDTEXT.value = localStorage["nt-ADDCUSTOM"]
-
-    ADDTEXT.addEventListener('change', function () {
-        localStorage["nt-ADDCUSTOM"] = ADDTEXT.value
-        update()
-    })
-
-
-    //EDGE-------------------------------------------------------------------------------
-
-    THISPar = "⏹️ Round Edges"
-
-    createTextBox("Edge", "Round edges amount")
-
-    createTextBox("TimeEdge", "(UI in Thumbnail) Round edges amount")
-
-    createTextBox("PlayerEdge", "Round video player edges amount")
-
-    //theme-------------------------------------------------------------------------------
-
-    THISPar = "🌈 Color/Theme"
-
-    createColor("Theme", "1 Theme color")
-
-    createCheck("IconFill", `Logo theme sync`)
-
-    createColor("ThemeThr", "2 theme color")
-
-    createColor("ThemeFort", "3 theme color")
-
-    createColor("ThemeSnd", "Topbar & Search list color")
-
-    createColor("ThemeChips", "Snd Topbar color")
-
-    createColor("LeftBar", "Sidebar color")
-
-    createColor("Time-LineBG", "Time-line background color")
-
-    createColor("TimeLoaded", "Time-line loaded color")
-
-    createColor("Text", "Main text color")
-
-    createColor("NdText", "Second text color")
-
-    createColor("VDOTEXT", "Video controls panel text color")
-
-    createColor("TIMETEXT", "Thumbnails time text color")
-
-    createColor("MediaBG", "Video controls panel background color")
-
-    createColor("TimeBG", "Video preview time background color")
-
-    createColor("EndBG", "End of video chanel hover background color")
-
-    createCheck("SPSubScribe", "Separate Subscribe button color.")
-
-    createColor("SPSubScribeBG", "(Subscribe button) Background color")
-
-    createColor("SPSubScribeColor", "(Subscribe button) Text color")
-
-    createColor("LinkColor", "(Link) Text color", true)
-
 
     //Outline-------------------------------------------------------------------------------
 
@@ -4102,25 +4258,7 @@ width: -moz-available;
 
     createTextBox("Border", "Borders/Shadows width")
 
-    createTextBox("PlayerBorder", "(Video controls panel) Borders/Shadows width")
-
-    createColor("OutSha", "Borders/Shadows color")
-
-    createCheck("TopOut", "Enable top_bar Borders/Shadows");
-
-    createCheck("TimeOut", "(Clip cover) enable time Borders/Shadows");
-
-    createCheck("PlayerOut", "(Video controls panel) enable Borders/Shadows");
-
-    createCheck("CapOut", "(Subtitles/Captions) enable Borders/Shadows");
-
-    createCheck("SubOut", "(Subscribe button) enable Borders/Shadows");
-
-    createCheck("SndOut", "(Second topbar) enable Borders/Shadows");
-
-    //Text-------------------------------------------------------------------------------
-
-    THISPar = "Text"
+    createColor("OutSha", "Borders/Shadows Color")
 
     //BG-------------------------------------------------------------------------------
 
@@ -4283,150 +4421,23 @@ width: -moz-available;
 	<option value="none">None</option>`,
         "Things to blur")
 
-    createCheck("BlurSub", "(Caption/Subtitle) blur background")
-
-    createCheck("MediaBlur", "(Video controls panel) blur background")
-
     //Animate-------------------------------------------------------------------------------
 
     THISPar = "🚶 Animations"
 
-    createselect("ThumbHover",
-        `<option value="Slide">Slide</option>
-	<option value="Zoom">Zoom</option>
-    <option value="Slide&Zoom">Slide&Zoom</option>
-	<option value="none">None</option>`,
-        "Thumbnail hover style")
-
-    createTextBox("Zoom", 'Zoom amount (If you choose "Zoom")')
-
-    createCheck("TimeAni", "Enable hide video time when hover")
-
     createCheck("Ptran", "Enable Page transition")
-
-    createCheck("ThumbAnim", "Enable thumbnail loaded animation")
-
-    createCheck("SearchAnim", "Enable Search animation")
-
-    createCheck("VdoAnim", "Enable Video transition")
 
     //Hover-------------------------------------------------------------------------------
 
     THISPar = "🖱️ Hover/Click color"
 
-    createTextBox("HoverBorder", "(Clip cover) hover Borders width")
-
-    createColor("ThumbHoverColor", "(Clip cover) Borders/Shadows on hover color")
-
-    createColor("ThumbClick", "(Clip cover) Borders/Shadows on click color")
-
     createColor("Themehover", "Most hover background color")
 
     createColor("Playlisthover", "(Playlist) hover background color")
 
-    createColor("HBT", "(Video controls panel) button hover color")
-
     //-------------------------------------------------------------------------------
 
     THISPar = "⚛️ Other settings"
-
-
-
-    var IconFrame = createframe(`<lable class="DES">Tab Icon Image (Recommend to use URL)</lable>
-    <p><input id="IconFrame" type="file" accept="image/*" > </p>
-    <p class="DES">Enter URL :  </label><input id="IconURL" class="TextBox" type="text" style="display: flex;"></p>
-    <p><lable class="DES" style="display: flex; text-align: center;" id="IconSTATUS"></label></p>`)
-
-    IconFrame.style = `display: flex; flex-direction: column;`
-
-    var IconURL = document.getElementById("IconURL")
-    IconURL.style = `width:200px;  margin-bottom: 10px;`
-
-    IconURL.addEventListener('change', function () {
-        ShowTexForICON("Please wait...")
-        DOwithindexed(function () {
-            store.put(IconURL.value, "IconURL")
-            UpdateIcon()
-            applyIcon()
-            ShowTexForICON("Successful.</br>(If an image didn't show up.Then the URL can't access.)")
-            IconURL.value = ``
-        })
-    })
-
-    var Par = document.createElement('p')
-    Par.style = "margin-block: 10px; width:100%;"
-    var IconArea = document.createElement('canvas')
-    IconArea.id = "IconUrlSHOW"
-    IconArea.style = `background-repeat: no-repeat; background-position: center; background-size: contain; width:100%;`
-
-    IconFrame.appendChild(Par)
-    Par.appendChild(IconArea)
-
-    var Iconinput = document.getElementById('IconFrame');
-    Iconinput.setAttribute('Newtube', '')
-    Iconinput.style = "margin-block: 10px; padding:10px; color:white; border-radius:10px; background:rgb(37, 37, 37);"
-    Iconinput.onchange = function (evt) {
-        var file = evt.target.files[0]
-        const reader = new FileReader();
-        reader.addEventListener('loadend', () => {
-            ShowTexForICON("Please wait...")
-            DOwithindexed(function () {
-                store.put(reader.result, "IconURL")
-                applyIcon()
-                UpdateIcon()
-                ShowTexForICON("Successful.</br>(If an image not show yet,Your image might too large!)")
-            })
-        });
-        try {
-            reader.readAsDataURL(file);
-        } catch (e) {
-
-        }
-    }
-
-    Iconid = document.createElement('a')
-    Iconid.className = "DES"
-    Iconid.style = `white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 400px;`
-    Iconid.id = "Iconid"
-    Iconid.target = "_blank"
-
-    IconFrame.appendChild(Iconid)
-
-
-    var ResetBu = document.createElement('button')
-    ResetBu.innerHTML = "Reset"
-    ResetBu.className = "Reset"
-    ResetBu.style = `margin-block-start: 10px;
-    color: #ffffff;
-    border-radius: 10px;
-    transition: all 0.2s;
-    background: #242424;
-    border: transparent;
-    padding: 5px;
-    padding-inline: 10px;`
-    ResetBu.onclick = function () {
-        DOwithindexed(function () {
-            store.put('https://www.youtube.com/s/desktop/6588612c/img/favicon.ico', "IconURL")
-            applyIcon()
-            UpdateIcon()
-        })
-    }
-    IconFrame.appendChild(ResetBu)
-
-    applyIcon()
-
-    createCheck("SwapRow", "(Video) Move to right row")
-
-    createCheck("CenterUD", "(Under Video) Move tittle to the center")
-
-    createCheck("CenterUDF", "(Fullscreen) Move tittle to the center")
-
-    createCheck("CenterTime", "(Clip cover) Move the time position to the center")
-
-    createTextBox("TimeH", "(Clip cover) time height")
 
     createTextBox("ScWidth", "(Scrollbar) width")
 
@@ -4437,6 +4448,169 @@ width: -moz-available;
         get.onsuccess = function (e) {
             RenderPreImg(e.target.result)
         }
+    })
+
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "🔠 Fonts"
+
+    FontLocatePar = createMainframe()
+
+
+
+    createframe(`<p style="display: flex;flex-direction: column;align-content: center;align-items: center; width: 100%;">
+    <a id="HOVERLINK" style="margin-bottom: 20px;font-size: 18px;background: #4b4b4b;padding: 10px;border-radius: 10px;" href="https://youtu.be/rm6U_4mendc" target="_blank" class="DES" >See how to add fonts!</a>
+    <textarea id="NTInstallFont" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste Font Faces here."></textarea>
+    </p>`)
+
+    let CreatedFontsCheck = []
+
+    function CreateFontsList() {
+
+        CreatedFontsCheck.forEach(element => {
+            element.remove()
+        });
+
+        CreatedFontsCheck = []
+
+        listFonts().forEach(font => {
+            font = font.replaceAll(" ", "_")
+            let FontSaveName = `nt-Font-${font}T`
+            if (!localStorage[FontSaveName]) {
+                localStorage[FontSaveName] = "false"
+            }
+            let ThisfontCheck = createCheck("Font-" + font, font)
+            CreatedFontsCheck.push(ThisfontCheck)
+            FontLocatePar.append(ThisfontCheck)
+        })
+    }
+
+    let InstallFont = document.getElementById("NTInstallFont")
+
+    InstallFont.value = localStorage["nt-InstallFont"]
+
+    InstallFont.addEventListener('change', function () {
+        localStorage["nt-InstallFont"] = InstallFont.value
+        update()
+        setTimeout(() => {
+            CreateFontsList()
+            InstallFont.scrollIntoView()
+        }, 100);
+    })
+
+
+    CreateFontsList()
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "⏫ Additional CSS"
+
+    createCheck("EnaADDCSS", "Enable Additional CSS")
+
+    createframe(`<textarea id="Additional_CSS" placeholder="Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
+
+    ADDTEXT = document.getElementById("Additional_CSS")
+
+    ADDTEXT.value = localStorage["nt-ADDCUSTOM"]
+
+    ADDTEXT.addEventListener('change', function () {
+        localStorage["nt-ADDCUSTOM"] = ADDTEXT.value
+        update()
+    })
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "📜 Import / Export Style"
+
+    imexstyle = `width: 100%;
+    padding: 10px;
+    margin-block: 5px;
+    right: 0px;
+    top: 560px;
+    background: rgb(56 56 56);
+    color: white;
+    border-radius: 10px;
+    transition: all 0.5s ease 0s;
+    border: transparent;`
+
+    LocatePar = createMainframe()
+
+
+    createframe(`<textarea id="Export" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste NTubeCode here."></textarea>`)
+
+    var ExportTEXT = document.getElementById("Export")
+
+
+    var Import = document.createElement('button')
+    Import.innerHTML = "Import NTubeCode"
+    Import.className = "Reset"
+    Import.style = imexstyle
+
+    LocatePar.appendChild(Import)
+
+    var Export = document.createElement('button')
+    Export.innerHTML = "Export NTubeCode"
+    Export.className = "Reset"
+    Export.style = imexstyle
+
+    LocatePar.appendChild(Export)
+
+    var Export2 = document.createElement('button')
+    Export2.innerHTML = "Export Style as CSS"
+    Export2.className = "Reset"
+    Export2.style = imexstyle
+
+    LocatePar.appendChild(Export2)
+
+
+    Import.onclick = function () {
+        let save = ExportTEXT.value
+        ExportTEXT.value = "Please wait...(If it's take too long it might eror!)"
+        save.LoadNTubeCode()
+        ExportTEXT.value = "Successful."
+    }
+
+    Export.onclick = function () {
+        ExportTEXT.value = "Please wait..."
+        DOwithindexed(function () {
+            let get = store.get("BGIMG")
+            get.onsuccess = function (e) {
+                let arr = GenNTubeCode()
+                if (e.target.result == null) {
+                    arr["BGIMG"] = ""
+                } else {
+                    arr["BGIMG"] = e.target.result
+                }
+                gentext = JSON.stringify(arr).replace(/",/g, '",\n')
+                gentext = gentext.substring(0, 1) + '\n' + gentext.substring(1)
+                gentextL = gentext.length
+                gentext = gentext.substring(0, gentextL - 1) + '\n' + gentext.substring(gentextL - 1)
+                ExportTEXT.value = gentext
+            }
+        })
+    }
+
+    Export2.onclick = function () {
+        ExportTEXT.value = "Please wait..."
+        ExportTEXT.value = Collect_Style
+    }
+
+    //-------------------------------------------------------------------------------
+
+    THISPar = "📝 Custom CSS"
+
+    createCheck("EnaCUSCSS", "Enable Custom CSS")
+
+    createframe(`<textarea id="Custom_CSS" placeholder="Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
+
+    CusText = document.getElementById("Custom_CSS")
+
+    CusText.value = localStorage["nt-CUSTOM"]
+
+    CusText.addEventListener('change', function () {
+        localStorage["nt-CUSTOM"] = CusText.value
+        update()
     })
 
     //-------------------------------------------------------------------------------
@@ -4453,6 +4627,8 @@ width: -moz-available;
     createCheck("DelBarDebug", "Remove black bar Debug")
 
 
+
+
     //----------------------------------------------------------------------------------
 
     var NewtubeSearch = document.createElement('input')
@@ -4461,7 +4637,7 @@ width: -moz-available;
     position: absolute;
     width: -webkit-fill-available;
     height: 40px;
-    top: 0px;
+    top: 20px;
     border-radius: 0px 0px 20px 20px;
     color: white;
     font-size: 20px;
@@ -4562,12 +4738,12 @@ function GetMainSetting(thisElement) {
 
 //----------------------------------------------------------------------------------
 function Show() {
-    document.getElementById("NEWTUBEBG").style.setProperty('right', "0px");
+    document.getElementById("NEWTUBEBG").style.setProperty('left', "calc(100% - 755px)");
     document.getElementById("NEWTUBEBG").style.setProperty('opacity', "1");
 }
 
 function Hide() {
-    document.getElementById("NEWTUBEBG").style.setProperty('right', "-700px");
+    document.getElementById("NEWTUBEBG").style.setProperty('left', "95%");
     document.getElementById("NEWTUBEBG").style.setProperty('opacity', "0");
 }
 
@@ -4879,7 +5055,6 @@ function SettoEnd() {
                                 opacity: 0;
                                 transition: all 0.5s;
                                 pointer-events: none;
-                                backdrop-filter: blur(var(--blur-amount));
                                 border-radius: var(--theme-radius-big) !important;
                                 height: 0% !important;
                                 margin: auto;
@@ -5750,7 +5925,6 @@ function drawOnePic() {
             v.parentNode.style.position = "absolute"
             v.parentNode.style.width = "100%"
 
-            v.parentNode.style.borderRadius = "var(--theme-radius-big)"
             v.style.marginTop = -LastHeight - 1 + 'px'
             v.parentNode.style.height = VDOBOUND.height - LastHeight * 2 - 2 + 'px'
         } else {
@@ -5761,6 +5935,7 @@ function drawOnePic() {
                 v.style.marginTop = "unset"
                 v.parentNode.style.height = "fit-content"
                 v.parentNode.style.marginTop = "unset"
+                v.parentNode.style.borderRadius = "unset"
             }
         }
 

@@ -4,6 +4,10 @@
 
 # Newtube (Customize youtube) changelog!
 
+## Version 4.0.0 (Current)
+
+- Upgrade Setting menu
+
 ## Version 3.13.0 (Current)
 
 - Add (Link) Text color
