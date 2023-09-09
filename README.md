@@ -8,7 +8,7 @@
 
 - Upgrade Setting menu
 
-## Version 3.13.0 (Current)
+## Version 3.13.0
 
 - Add (Link) Text color
 - Add Full Theater
