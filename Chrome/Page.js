@@ -315,7 +315,7 @@ function SetValueCheck() {
     SetValueCheck2("Repeat", `background-repeat: repeat !important;`, `background-repeat: no-repeat !important;`)
 
     SetValueCheck2("BottomG", 'background-image: none !important;', ``)
-    
+
     SetValueCheck2("FullTheater", `
     #full-bleed-container:has(div.html5-video-player:not(.ytp-fullscreen)){
         height: calc(100vh - 56px) !important;
@@ -891,6 +891,9 @@ function SetNull() {
 
     SetTo("FullTheaterT", false)
 
+    SetTo("DropFrameT", true)
+    SetTo("CheckStaticT", true)
+
     //Select------------------------
 
     SetTo("BlurWhatT", "none")
@@ -952,6 +955,14 @@ let NORMAL = `
         0% { background-position: 0 0; }
         50% { background-position: 400% 0; }
         100% { background-position: 0 0; }
+    }
+
+    #MAINPRESET{
+        height: -webkit-fill-available;
+    }
+
+    .CheckBox:hover {
+        filter: brightness(2);
     }
 
     .HoverList {
@@ -1578,6 +1589,19 @@ function update() {
                     background: transparent;
                     border-radius: var(--theme-radius);
                 }
+
+                .ytp-ad-module {
+                    width: 0px !important;
+                }
+
+                .ytp-chapters-container{
+                    flex-wrap: nowrap;
+                    display: flex;
+                }
+
+                .ytp-gradient-top{
+                    border-radius: var(--theme-radius-big) var(--theme-radius-big) 0px 0px;
+                }
                   
                 ytd-menu-renderer .ytd-menu-renderer[style-target=button]:hover {
                     background: var(--ThirdTheme);
@@ -1596,11 +1620,13 @@ function update() {
                 }
 
                 div.html5-video-container{
-                    position: absolute !important;
+                    position: revert !important;
+                    display: flex;
+                    align-items: center;
                 }
 
                 div.html5-video-player:not(.ytp-fullscreen) div.html5-video-container{
-                    width: unset !important;
+                    width: fit-content !important;
                     margin-top: unset !important;
                     height: fit-content;
                 }
@@ -3022,7 +3048,7 @@ function PRESET() {
 
     sndmain.style = `width:100%;
     position: relative;
-    height: 140px;`
+    min-height: 110px;`
 
     OK = document.createElement("button")
     OK.innerHTML = "OK"
@@ -3106,7 +3132,7 @@ function PRESET() {
         CancelCode()
     }
 
-    THISDES = createDes("Select preset", Main).style = `font-size: 25px; padding:10px; font-width:700;`
+    THISDES = createDes("✨ Select preset ✨", Main).style = `font-size: 25px; padding:10px; font-width:700;`
 
     THISDES.style = 'font-size:20px'
 
@@ -3742,11 +3768,12 @@ width: -moz-available;
     BG.className = "NEWTUBE"
     BG.style = `resize: both; padding-top: 20px; width: 755px; height: 615px; max-height: -webkit-fill-available; position: fixed; top:56px; transition: opacity 0.5s, left 0.5s; z-index: 2020; display: flex; flex-direction: row;
     min-width: 602px;
-    min-height: 247px;`
+    min-height: 247px;
+    left: calc(100% - 755px);`
     document.body.appendChild(BG)
 
     let MoveBar = document.createElement("div")
-    MoveBar.innerHTML = "="
+    MoveBar.innerHTML = "Drag to move panel"
     MoveBar.id = "NEWTUBEHOVER"
     MoveBar.style = `position: absolute;
     top: 0px;
@@ -3763,20 +3790,20 @@ width: -moz-available;
 
     let CalMousePo = null
 
-    function MoveToMouse (Mouse) {
+    function MoveToMouse(Mouse) {
         Mouse.preventDefault();
         BG.style.left = Mouse.clientX - CalMousePo[0] + "px"
         BG.style.top = Mouse.clientY - CalMousePo[1] + "px"
     }
 
-    MoveBar.onmousedown = function(Mouse) {
+    MoveBar.onmousedown = function (Mouse) {
         WidnowW = window.innerWidth
-        CalMousePo = [Mouse.clientX - BG.offsetLeft,Mouse.clientY - BG.offsetTop]
+        CalMousePo = [Mouse.clientX - BG.offsetLeft, Mouse.clientY - BG.offsetTop]
         BG.style.transition = null
         addEventListener("mousemove", MoveToMouse)
     }
 
-    document.onmouseup = function() {
+    document.onmouseup = function () {
         BG.style.transition = "opacity 0.5s, left 0.5s"
         removeEventListener("mousemove", MoveToMouse)
     }
@@ -3850,11 +3877,13 @@ width: -moz-available;
     createframe(`<label class="DES">Version : ` + Ver + `</label>`)
 
     var Preset = document.createElement('button')
-    Preset.innerHTML = "Select Preset"
+    Preset.innerHTML = "✨ Select Preset ✨"
     Preset.className = "Reset"
     Preset.style = DeBu + `width: 100% !important;
     margin-inline: 0px !important;
-    margin-block-start: 20px !important;`
+    margin-block-start: 20px !important;
+    box-shadow: rgb(255 223 0) 0px 0px 3px;
+    background: rgb(63 57 14);`
     Preset.onclick = function () {
         PRESET()
     }
@@ -3867,9 +3896,11 @@ width: -moz-available;
     createCheck("ErrorCollect", "Error Detector");
 
     var Chlog = document.createElement('button')
-    Chlog.innerHTML = "Changes log"
+    Chlog.innerHTML = "✳️ Changes log ✳️"
     Chlog.className = "Reset"
-    Chlog.style = DeBu
+    Chlog.style = DeBu + `box-shadow: rgb(0 255 33) 0px 0px 3px;
+    background: rgb(14 63 14);
+}`
     Chlog.onclick = function () {
         window.open(
             'https://github.com/AzPepoze/Newtube',
@@ -3964,7 +3995,7 @@ width: -moz-available;
     createTextBox("PlayerBorder", "Borders/Shadows width")
 
     createCheck("MediaBlur", "Blur background")
-    
+
     //-------------------------------------------------------------------------------
 
     THISPar = "🔤 Subtitles/Captions"
@@ -4624,7 +4655,9 @@ width: -moz-available;
     createCheck("NewVDOanima", "New video animation (Volume up/down,Pause,Play)")
 
     createCheck("DelBar", "Remove black bar top-bottom (Background VDO Should Enabled)")
+    createCheck("DropFrame", "Remove black bar Lazy Check (Drop frame)", true)
     createCheck("DelBarDebug", "Remove black bar Debug")
+    createCheck("CheckStatic", "Check Static video (for Background VDO & Remove black bar)", true)
 
 
 
@@ -5316,7 +5349,39 @@ function SettoEnd() {
 SetNull()
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //---------------------------------------------------------------------------
+
+var CanDropFrame = JSON.parse(localStorage["nt-DropFrameT"]),
+    CanCheckStatic = JSON.parse(localStorage["nt-CheckStaticT"])
+
+//--EX-----
 
 var UPSEQ = 33,
     NotOverFlow,
@@ -5330,6 +5395,11 @@ var UPSEQ = 33,
     context2,
     cw2,
     ch2,
+
+    // ReBlack,
+    // ReBlackctx,
+    // ReBlackcw,
+    // ReBlackch,
 
     BlackOverlay,
 
@@ -5402,6 +5472,11 @@ function SetCanvas() {
                 context.putImageData(tempCanvas, 0, 0)
                 tempCanvas = null
             }
+
+            // if (BlackMode == true) {
+            //     ReBlack.style.width = VdoWith
+            //     ReBlack.style.height = VdoHeight
+            // }
         }
 
         if (EnaCanvas2 == true) {
@@ -5485,11 +5560,11 @@ function CheckVDO() {
             if (Cloning == false) {
                 CreateCanvas()
             }
-            // if (StaticVDO) {
-            //     console.log("Setcanvas")
-            //     SetCanvas()
-            //     drawOnePic()
-            // }
+            if (StaticVDO) {
+                console.log("Setcanvas")
+                SetCanvas()
+                drawOnePic()
+            }
 
         } else {
             if (Cloning == true) {
@@ -5590,366 +5665,415 @@ var LastFrame
 var LastHeight = 0
 var LastFrame = null
 
-function drawOnePic() {
-    // console.log("Check")
-    // console.log("Draw")
-    SetCanvas()
-    Scale = 1
+var NoWaitFrame = true
 
-    // Bcontext.globalCompositeOperation = "copy"
+var SkipFrame = 5
+var ThisFrame = 0
 
-    // var Xgradient = Bcontext.createLinearGradient(0, 0, cw, 0);
-    // Xgradient.addColorStop(0, "black");
-    // Xgradient.addColorStop(0.2, "transparent");
-    // Xgradient.addColorStop(0.8, "transparent");
-    // Xgradient.addColorStop(1, "black");
+var CompleteCal = true
 
-    // var Ygradient = Bcontext.createLinearGradient(0, 0, 0, ch);
-    // Ygradient.addColorStop(0, "black");
-    // Ygradient.addColorStop(0.2, "transparent");
-    // Ygradient.addColorStop(0.8, "transparent");
-    // Ygradient.addColorStop(1, "black");
+function WatingFrame(ThisFrame, TargetFrame, Func, arg) {
+    if (ThisFrame == TargetFrame) {
+        Func(arg)
+    } else {
+        ThisFrame++
+        requestAnimationFrame(function () {
+            WatingFrame(ThisFrame, TargetFrame, Func, arg)
+        })
+    }
+}
 
-    // Bcontext.fillStyle = Xgradient;
-    // Bcontext.fillRect(0, 0, cw, ch);
-    // Bcontext.globalCompositeOperation = "source-over"
-    // Bcontext.fillStyle = Ygradient;
-    // Bcontext.fillRect(0, 0, cw, ch);
+function WaitFrame(TargetFrame, Func, arg) {
+    WatingFrame(0, TargetFrame, Func, arg)
+}
 
-    // context.globalAlpha = 1
-    // if (BGSmooth != 1) {
-    //     context.globalCompositeOperation = "copy"
-    //     if (LastFrame) {
-    //         context.putImageData(LastFrame,0,0);
-    //     }
+var GetThisTime
 
-    // if (StaticVDO) {
-    //     context.globalAlpha = 1
-    // } else {
-    context.globalAlpha = BGSmooth
-    // }
+function CalVdoHeight() {
+    var mf = 0;
+    var m = 0;
+    var SureTHisHeight;
 
-    // }
-
-    // context.globalCompositeOperation = "source-over"
-    context.filter = `blur(${localStorage["nt-NVDOB"]}px)`
-    context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
-    // if (BGSmooth != 1) {
-    //     LastFrame = context.getImageData(0,0,cw,ch);
-    // }
-    // context.filter = `none`
-
-    // context.globalCompositeOperation = "destination-out"
-    // context.globalAlpha = 1
-
-    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-    // Scale = 0.8
-    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-    // Scale = 0.7
-    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-    // Scale = 0.6
-    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-    // Scale = 0.55
-    // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-
-    // if (BGSmooth != 1) {
-    //     context.globalAlpha = 1
-    // }
-    // var Xgradient = context.createLinearGradient(0, 0, cw, 0);
-    // Xgradient.addColorStop(0, "black");
-    // Xgradient.addColorStop(0.2, "transparent");
-    // Xgradient.addColorStop(0.8, "transparent");
-    // Xgradient.addColorStop(1, "black");
-
-    // var Ygradient = context.createLinearGradient(0, 0, 0, ch);
-    // Ygradient.addColorStop(0, "black");
-    // Ygradient.addColorStop(0.2, "transparent");
-    // Ygradient.addColorStop(0.8, "transparent");
-    // Ygradient.addColorStop(1, "black");
-
-    // context.fillStyle = Xgradient;
-    // context.fillRect(0, 0, cw, ch);
-    // context.fillStyle = Ygradient;
-    // context.fillRect(0, 0, cw, ch);
-
-
-    if (BlackMode == true) {
-        context2.drawImage(v, 0, 0, VDOBOUND.width, VDOBOUND.height);
-        frame = context2.getImageData(0, 0, VDOBOUND.width, VDOBOUND.height)
-        l = frame.data.length / 4
-        for (let i = 0; i < l; i++) {
-            frame.data[i * 4 + 3] = (frame.data[i * 4 + 0] * 10 +
-                frame.data[i * 4 + 1] * 10 +
-                frame.data[i * 4 + 2] * 10) / 10
+    for (var i = 0; i < ThisHeightArray.length; i++) {
+        lowest = null
+        for (var j = i; j < ThisHeightArray.length; j++) {
+            if (ThisHeightArray[i] == ThisHeightArray[j] || Math.abs(ThisHeightArray[i] - ThisHeightArray[j]) < 5) {
+                if (ThisHeightArray[i] == "inf") {
+                    lowest = "inf"
+                } else {
+                    if (ThisHeightArray[j] > lowest || lowest == null) {
+                        lowest = ThisHeightArray[j]
+                    }
+                }
+                m++;
+            }
         }
-        context2.putImageData(frame, 0, 0)
+
+        if (lowest == "inf") {
+            if (m > mf) {
+                mf = m;
+                SureTHisHeight = lowest;
+            }
+        } else {
+            if (m > mf || (m == mf && lowest > SureTHisHeight)) {
+                mf = m;
+                SureTHisHeight = lowest;
+            }
+        }
+        m = 0;
     }
 
-    if (BlackBar == true) {
-        redPX = context2.createImageData(1, 1)
-        redPX.data[0] = 255
-        redPX.data[3] = 255
+    if (BlackDebug) {
+        YellowLinePX = context2.createImageData(VDOBOUND.width, 1)
 
-        context2.clearRect(0, 0, VDOBOUND.width, VDOBOUND.height);
-
-        context2.drawImage(v, 0, 0, 5, VDOBOUND.height);
-
-
-
-
-        // for (var i = 0; i < VDOBOUND.height; i++) {
-        //     var IMGDATA = context2.getImageData(0, i, VDOBOUND.width, 1)
-        //     var Getimgdata = IMGDATA.data
-
-        //     AllR = []
-        //     AllG = []
-        //     AllB = []
-
-        //     for (var j = 0; j < Getimgdata.length; j += 4) {
-
-        //         AllR.push(Getimgdata[j])
-        //         AllG.push(Getimgdata[j + 1])
-        //         AllB.push(Getimgdata[j + 2])
-        //     }
-
-        //     R = 0
-        //     G = 0
-        //     B = 0
-
-        //     for (var j = 0; j < AllR.length; j++) {
-        //         R += AllR[j]
-        //     }
-
-        //     for (var j = 0; j < AllG.length; j++) {
-        //         G += AllG[j]
-        //     }
-
-        //     for (var j = 0; j < AllB.length; j++) {
-        //         B += AllB[j]
-        //     }
-
-        //     R /= AllR.length
-        //     G /= AllG.length
-        //     B /= AllB.length
-
-        //     for (var j = 0; j < Getimgdata.length; j += 4) {
-        //         Getimgdata[j] = R
-        //         Getimgdata[j + 1] = G
-        //         Getimgdata[j + 2] = B
-        //     }
-
-        //     context2.putImageData(IMGDATA, 0, i);
-        // }
-
-
-
-
-
-
-
-        // // context2.putImageData(contrastImage(context2.getImageData(0, 0, VDOBOUND.width, VDOBOUND.height),50),0,0)
-
-        ThisActualPX = context2.getImageData(1, 3, 1, 1)
-        ThisPX = ThisActualPX.data
-
-
-        FistGetRGB = CheckAddMultiply(ThisPX[0], ThisPX[1], ThisPX[2])
-
-        ThisR = FistGetRGB[0]
-        ThisG = FistGetRGB[1]
-        ThisB = FistGetRGB[2]
-
-
-        ThisHeightArray = []
-
-        halfVDO = Math.floor(VDOBOUND.height / 2)
-
-        for (x = 0; x < 5; x++) {
-            ThisFind = x
-            ThisR = FistGetRGB[0]
-            ThisG = FistGetRGB[1]
-            ThisB = FistGetRGB[2]
-
-            Find = null
-            ThisActualPX = context2.getImageData(ThisFind, 0, 1, halfVDO)
-            ThisPX = ThisActualPX.data
-
-            for (i = 5; i < halfVDO; i++) {
-                if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
-                    i += 10
-                    if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
-                        Find = i - 10
-                        i = halfVDO
-                    }
-                } else {
-                    if (!Check2ThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
-                        ThisR = ThisPX[i * 4]
-                        ThisG = ThisPX[i * 4 + 1]
-                        ThisB = ThisPX[i * 4 + 2]
-                    }
-                }
-            }
-
-            if (Find) {
-                ThisHeightArray.push(Find)
-
-                if (BlackDebug) {
-                    for (i = 5; i < Find; i++) {
-                        context2.putImageData(redPX, ThisFind, i)
-                    }
-                }
-            } else {
-                ThisHeightArray.push("inf")
-            }
-
-            ThisR = FistGetRGB[0]
-            ThisG = FistGetRGB[1]
-            ThisB = FistGetRGB[2]
-
-            //-----------------------------------------------------------------
-
-            Find = null
-            ThisActualPX = context2.getImageData(ThisFind, halfVDO, 1, halfVDO)
-            ThisPX = ThisActualPX.data
-
-            for (i = halfVDO - 5; i > 0; i--) {
-                if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
-                    i -= 10
-                    if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
-                        Find = i + 10
-                        i = 0
-                    }
-                } else {
-                    if (!Check2ThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
-                        ThisR = ThisPX[i * 4]
-                        ThisG = ThisPX[i * 4 + 1]
-                        ThisB = ThisPX[i * 4 + 2]
-                    }
-                }
-            }
-
-            if (Find) {
-                Find += halfVDO
-                ThisHeightArray.push(VDOBOUND.height - Find)
-
-                if (BlackDebug) {
-                    for (i = VDOBOUND.height - 5; i > Find; i--) {
-                        context2.putImageData(redPX, ThisFind, i)
-                    }
-                }
-            } else {
-                ThisHeightArray.push("inf")
-            }
-
-
-            ThisFind += CheckBlackQua
+        for (i = 0; i < VDOBOUND.width; i++) {
+            YellowLinePX.data[i * 4] = 255
+            YellowLinePX.data[i * 4 + 1] = 255
+            YellowLinePX.data[i * 4 + 3] = 255
         }
 
-        var mf = 0;
-        var m = 0;
-        var SureTHisHeight;
+        context2.putImageData(YellowLinePX, 0, 10)
+    }
 
-        for (var i = 0; i < ThisHeightArray.length; i++) {
-            lowest = null
-            for (var j = i; j < ThisHeightArray.length; j++) {
-                if (ThisHeightArray[i] == ThisHeightArray[j] || Math.abs(ThisHeightArray[i] - ThisHeightArray[j]) < 5) {
-                    if (ThisHeightArray[i] == "inf") {
-                        lowest = "inf"
-                    } else {
-                        if (ThisHeightArray[j] > lowest || lowest == null) {
-                            lowest = ThisHeightArray[j]
-                        }
-                    }
-                    m++;
-                }
-            }
+    // ThisFrame = context2.getImageData(VDOBOUND.width / 2, 0, 1, VDOBOUND.height)
+    // ThisFrameData = ThisFrame.data
 
-            if (lowest == "inf") {
-                if (m > mf) {
-                    mf = m;
-                    SureTHisHeight = lowest;
-                }
-            } else {
-                if (m > mf || (m == mf && lowest > SureTHisHeight)) {
-                    mf = m;
-                    SureTHisHeight = lowest;
-                }
-            }
-            m = 0;
-        }
+    // if (LastFrame) {
+    //     for (i = 0; i < VDOBOUND.height; i += 4) {
+    //         if (ThisFrameData[i] == LastFrame[i] && ThisFrameData[i + 1] == LastFrame[i + 1] && ThisFrameData[i+2] == LastFrame[i+2]) {
+    //             context2.putImageData(redPX, VDOBOUND.width / 2, i/4)
+    //         } else {
+    //             i = VDOBOUND.height
+    //         }
+    //     }
+    // }
 
-        if (BlackDebug) {
-            YellowLinePX = context2.createImageData(VDOBOUND.width, 1)
+    // LastFrame = ThisFrameData
 
-            for (i = 0; i < VDOBOUND.width; i++) {
-                YellowLinePX.data[i * 4] = 255
-                YellowLinePX.data[i * 4 + 1] = 255
-                YellowLinePX.data[i * 4 + 3] = 255
-            }
+    if (mf < 6 || SureTHisHeight == "inf") {
+        SureTHisHeight = LastHeight
+    }
 
-            context2.putImageData(YellowLinePX, 0, 10)
-        }
+    if (SureTHisHeight > 10 && (Math.abs(SureTHisHeight - LastHeight) > 10 || SureTHisHeight > LastHeight)) {
 
-        // ThisFrame = context2.getImageData(VDOBOUND.width / 2, 0, 1, VDOBOUND.height)
-        // ThisFrameData = ThisFrame.data
-
-        // if (LastFrame) {
-        //     for (i = 0; i < VDOBOUND.height; i += 4) {
-        //         if (ThisFrameData[i] == LastFrame[i] && ThisFrameData[i + 1] == LastFrame[i + 1] && ThisFrameData[i+2] == LastFrame[i+2]) {
-        //             context2.putImageData(redPX, VDOBOUND.width / 2, i/4)
-        //         } else {
-        //             i = VDOBOUND.height
-        //         }
-        //     }
-        // }
-
-        // LastFrame = ThisFrameData
-
-        if (mf < 6 || SureTHisHeight == "inf") {
-            SureTHisHeight = LastHeight
-        }
-
-        if (SureTHisHeight > 10 && (Math.abs(SureTHisHeight - LastHeight) > 10 || SureTHisHeight > LastHeight)) {
-
-            if (SureTHisHeight > LastHeight) {
-                v.style.transition = "none"
-                v.parentNode.style.transition = "none"
-            } else {
-                v.style.transition = "margin-top 0.5s"
-                v.parentNode.style.transition = "all 0.5s"
-            }
-
-            LastHeight = SureTHisHeight
-
-            v.parentNode.style.overflow = "hidden"
-            v.parentNode.style.position = "absolute"
-            v.parentNode.style.width = "100%"
-
-            v.style.marginTop = -LastHeight - 1 + 'px'
-            v.parentNode.style.height = VDOBOUND.height - LastHeight * 2 - 2 + 'px'
+        if (SureTHisHeight > LastHeight) {
+            // v.style.transition = "none"
+            v.parentNode.style.transition = "none"
         } else {
-            if (SureTHisHeight <= 10) {
-                v.style.transition = "margin-top 0.5s"
-                v.parentNode.style.transition = "all 0.5s"
-                LastHeight = 0
-                v.style.marginTop = "unset"
-                v.parentNode.style.height = "fit-content"
-                v.parentNode.style.marginTop = "unset"
-                v.parentNode.style.borderRadius = "unset"
+            // v.style.transition = "margin-top 0.5s"
+            v.parentNode.style.transition = "all 0.5s ease-out"
+        }
+
+        LastHeight = SureTHisHeight
+
+        // v.parentNode.style.overflow = "hidden"
+        // v.parentNode.style.position = "absolute"
+        // v.parentNode.style.width = "100%"
+
+        // v.style.marginTop = -LastHeight - 1 + 'px'
+        v.parentNode.style.height = VDOBOUND.height - LastHeight * 2 - 2 + 'px'
+    } else {
+        if (SureTHisHeight <= 10) {
+            // v.style.transition = "margin-top 0.5s"
+            v.parentNode.style.transition = "all 0.5s ease-out"
+            LastHeight = 0
+            // v.style.marginTop = "unset"
+            v.parentNode.style.height = VDOBOUND.height + "px"
+            // v.parentNode.style.marginTop = "unset"
+            // v.parentNode.style.borderRadius = "unset"
+        }
+    }
+
+    if (BlackDebug) {
+        GreenLinePX = context2.createImageData(VDOBOUND.width, 1)
+
+        for (i = 0; i < VDOBOUND.width; i++) {
+            GreenLinePX.data[i * 4 + 1] = 255
+            GreenLinePX.data[i * 4 + 3] = 255
+        }
+
+        context2.putImageData(GreenLinePX, 0, LastHeight)
+        context2.putImageData(GreenLinePX, 0, VDOBOUND.height - LastHeight)
+    }
+
+    CompleteCal = true
+
+    // console.log("Complete",Date.now() - GetThisTime)
+}
+
+function CheckPxLine(x) {
+    var ThisFind = x
+    var ThisR = FistGetRGB[0]
+    var ThisG = FistGetRGB[1]
+    var ThisB = FistGetRGB[2]
+
+    Find = null
+    ThisActualPX = context2.getImageData(ThisFind, 0, 1, halfVDO)
+    ThisPX = ThisActualPX.data
+
+    for (i = 5; i < halfVDO; i++) {
+        if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+            i += 10
+            if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                Find = i - 10
+                i = halfVDO
+            }
+        } else {
+            if (!Check2ThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                ThisR = ThisPX[i * 4]
+                ThisG = ThisPX[i * 4 + 1]
+                ThisB = ThisPX[i * 4 + 2]
             }
         }
+    }
+
+    if (Find) {
+        ThisHeightArray.push(Find)
 
         if (BlackDebug) {
-            GreenLinePX = context2.createImageData(VDOBOUND.width, 1)
-
-            for (i = 0; i < VDOBOUND.width; i++) {
-                GreenLinePX.data[i * 4 + 1] = 255
-                GreenLinePX.data[i * 4 + 3] = 255
+            for (i = 5; i < Find; i++) {
+                context2.putImageData(redPX, ThisFind, i)
             }
-
-            context2.putImageData(GreenLinePX, 0, LastHeight)
-            context2.putImageData(GreenLinePX, 0, VDOBOUND.height - LastHeight)
         }
+    } else {
+        ThisHeightArray.push("inf")
+    }
+
+    //-----------------------------------------------------------------
+    if (CanDropFrame) {
+        setTimeout(() => {
+            CheckBottom(x)
+        }, 0);
+    } else {
+        CheckBottom(x)
+    }
+
+}
+
+function CheckBottom(x) {
+    var ThisFind = x
+
+    var ThisR = FistGetRGB[0]
+    var ThisG = FistGetRGB[1]
+    var ThisB = FistGetRGB[2]
+
+    Find = null
+    ThisActualPX = context2.getImageData(ThisFind, halfVDO, 1, halfVDO)
+    ThisPX = ThisActualPX.data
+
+    for (i = halfVDO - 5; i > 0; i--) {
+        if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+            i -= 10
+            if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                Find = i + 10
+                i = 0
+            }
+        } else {
+            if (!Check2ThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
+                ThisR = ThisPX[i * 4]
+                ThisG = ThisPX[i * 4 + 1]
+                ThisB = ThisPX[i * 4 + 2]
+            }
+        }
+    }
+
+    if (Find) {
+        Find += halfVDO
+        ThisHeightArray.push(VDOBOUND.height - Find)
+
+        if (BlackDebug) {
+            for (i = VDOBOUND.height - 5; i > Find; i--) {
+                context2.putImageData(redPX, ThisFind, i)
+            }
+        }
+    } else {
+        ThisHeightArray.push("inf")
+    }
+
+
+    // ThisFind += CheckBlackQua
+
+    if (x == 4) {
+        CalVdoHeight()
+    } else {
+        if (CanDropFrame) {
+            setTimeout(() => {
+                CheckPxLine(x + 1)
+            }, 0);
+        } else {
+            CheckPxLine(x + 1)
+        }
+    }
+}
+
+function CheckNumLine(from, to) {
+    for (x = from; x < to; x++) {
+        CheckPxLine(x)
+    }
+}
+
+function CheckBlackBar() {
+    CompleteCal = false
+
+    redPX = context2.createImageData(1, 1)
+    redPX.data[0] = 255
+    redPX.data[3] = 255
+
+    // context2.clearRect(0, 0, VDOBOUND.width, VDOBOUND.height);
+
+    context2.drawImage(v, 0, 0, 5, VDOBOUND.height);
+
+    ThisActualPX = context2.getImageData(1, 3, 1, 1)
+    ThisPX = ThisActualPX.data
+
+    FistGetRGB = CheckAddMultiply(ThisPX[0], ThisPX[1], ThisPX[2])
+
+    ThisR = FistGetRGB[0]
+    ThisG = FistGetRGB[1]
+    ThisB = FistGetRGB[2]
+
+    ThisHeightArray = []
+
+    halfVDO = Math.floor(VDOBOUND.height / 2)
+
+    if (CanDropFrame) {
+        setTimeout(() => {
+            CheckPxLine(0)
+        }, 0);
+    } else {
+        CheckPxLine(0)
+    }
+
+
+    // WaitFrame(1,CheckPxLine,0)
+}
+
+function drawOnePic() {
+    if (NoWaitFrame) {
+        NoWaitFrame = false
+        // console.log("Check")
+        // console.log("Draw")
+        SetCanvas()
+        Scale = 1
+
+        // Bcontext.globalCompositeOperation = "copy"
+
+        // var Xgradient = Bcontext.createLinearGradient(0, 0, cw, 0);
+        // Xgradient.addColorStop(0, "black");
+        // Xgradient.addColorStop(0.2, "transparent");
+        // Xgradient.addColorStop(0.8, "transparent");
+        // Xgradient.addColorStop(1, "black");
+
+        // var Ygradient = Bcontext.createLinearGradient(0, 0, 0, ch);
+        // Ygradient.addColorStop(0, "black");
+        // Ygradient.addColorStop(0.2, "transparent");
+        // Ygradient.addColorStop(0.8, "transparent");
+        // Ygradient.addColorStop(1, "black");
+
+        // Bcontext.fillStyle = Xgradient;
+        // Bcontext.fillRect(0, 0, cw, ch);
+        // Bcontext.globalCompositeOperation = "source-over"
+        // Bcontext.fillStyle = Ygradient;
+        // Bcontext.fillRect(0, 0, cw, ch);
+
+        // context.globalAlpha = 1
+        // if (BGSmooth != 1) {
+        //     context.globalCompositeOperation = "copy"
+        //     if (LastFrame) {
+        //         context.putImageData(LastFrame,0,0);
+        //     }
+
+        if (StaticVDO) {
+            context.globalAlpha = 1
+        } else {
+            context.globalAlpha = BGSmooth
+        }
+
+        // }
+
+        // context.globalCompositeOperation = "source-over"
+        context.filter = `blur(${localStorage["nt-NVDOB"]}px)`
+
+        // createImageBitmap(v, {resizeWidth: cw, resizeHeight: ch})
+        // .then((img) => {
+        //     // Draw each sprite onto the canvas
+        //     context.drawImage(img, 0, 0)
+        // })
+
+        context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
+
+
+        // if (BGSmooth != 1) {
+        //     LastFrame = context.getImageData(0,0,cw,ch);
+        // }
+        // context.filter = `none`
+
+        // context.globalCompositeOperation = "destination-out"
+        // context.globalAlpha = 1
+
+        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+        // Scale = 0.8
+        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+        // Scale = 0.7
+        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+        // Scale = 0.6
+        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+        // Scale = 0.55
+        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+
+        // if (BGSmooth != 1) {
+        //     context.globalAlpha = 1
+        // }
+        // var Xgradient = context.createLinearGradient(0, 0, cw, 0);
+        // Xgradient.addColorStop(0, "black");
+        // Xgradient.addColorStop(0.2, "transparent");
+        // Xgradient.addColorStop(0.8, "transparent");
+        // Xgradient.addColorStop(1, "black");
+
+        // var Ygradient = context.createLinearGradient(0, 0, 0, ch);
+        // Ygradient.addColorStop(0, "black");
+        // Ygradient.addColorStop(0.2, "transparent");
+        // Ygradient.addColorStop(0.8, "transparent");
+        // Ygradient.addColorStop(1, "black");
+
+        // context.fillStyle = Xgradient;
+        // context.fillRect(0, 0, cw, ch);
+        // context.fillStyle = Ygradient;
+        // context.fillRect(0, 0, cw, ch);
+
+
+        if (BlackMode == true) {
+            ReBlackctx.drawImage(v, 0, 0, VDOBOUND.width, VDOBOUND.height);
+            frame = ReBlackctx.getImageData(0, 0, VDOBOUND.width, VDOBOUND.height)
+            l = frame.data.length / 4
+            for (let i = 0; i < l; i++) {
+                frame.data[i * 4 + 3] = (frame.data[i * 4 + 0] * 10 +
+                    frame.data[i * 4 + 1] * 10 +
+                    frame.data[i * 4 + 2] * 10) / 10
+            }
+            ReBlackctx.putImageData(frame, 0, 0)
+        }
+
+        if (BlackBar == true) {
+            // console.log("VDO Update Frame")
+            if (CompleteCal) {
+                // GetThisTime = Date.now()
+                CheckBlackBar()
+            }
+            // else {
+            //     console.log("DropFrame")
+            // }
+
+            // if (ThisFrame > SkipFrame) {
+            //     ThisFrame = 0
+            // }
+            // CheckPxLine(ThisFrame)
+            // ThisFrame++
+        }
+
+        NoWaitFrame = true
+    } else {
+        console.log("Drop frame")
     }
 }
 
@@ -6008,7 +6132,7 @@ function callback(mutationsList, observer) {
     }
 }
 
-VDOChangeEvent = new MutationObserver(callback)
+var VDOChangeEvent = new MutationObserver(callback)
 
 let CanvasSpawned = false
 
@@ -6137,51 +6261,53 @@ function CheckLoop() {
     }, 100);
 }
 
-// function CheckStaticVDO(){
-//     console.log("Check if static")
-//     videoID = document.getElementsByTagName("ytd-watch-flexy")[0].getAttribute("video-id")
-//         console.log(videoID)
+function CheckStaticVDO() {
+    if (CanCheckStatic) {
+        console.log("Check if static")
+        videoID = document.getElementsByTagName("ytd-watch-flexy")[0].getAttribute("video-id")
+        console.log(videoID)
 
-//         var Frame1Loaded,
-//         Frame2Loaded,
-//         Frame3Loaded
+        var Frame1Loaded,
+            Frame2Loaded,
+            Frame3Loaded
 
-//         var frame1 = new Image()
-//         frame1.crossOrigin = "anonymous"
-//         frame1.onload = function(){
-//             Frame1Loaded = getBase64Image(frame1).length
-//         }
-//         frame1.src = `http://i.ytimg.com/vi/${videoID}/1.jpg`
+        var frame1 = new Image()
+        frame1.crossOrigin = "anonymous"
+        frame1.onload = function () {
+            Frame1Loaded = getBase64Image(frame1).length
+        }
+        frame1.src = `http://i.ytimg.com/vi/${videoID}/1.jpg`
 
-//         var frame2 = new Image()
-//         frame2.crossOrigin = "anonymous"
-//         frame2.onload = function(){
-//             Frame2Loaded = getBase64Image(frame2).length
-//         }
-//         frame2.src = `http://i.ytimg.com/vi/${videoID}/2.jpg`
+        var frame2 = new Image()
+        frame2.crossOrigin = "anonymous"
+        frame2.onload = function () {
+            Frame2Loaded = getBase64Image(frame2).length
+        }
+        frame2.src = `http://i.ytimg.com/vi/${videoID}/2.jpg`
 
-//         var frame3 = new Image()
-//         frame3.crossOrigin = "anonymous"
-//         frame3.onload = function(){
-//             Frame3Loaded = getBase64Image(frame3).length
-//         }
-//         frame3.src = `http://i.ytimg.com/vi/${videoID}/3.jpg`
+        var frame3 = new Image()
+        frame3.crossOrigin = "anonymous"
+        frame3.onload = function () {
+            Frame3Loaded = getBase64Image(frame3).length
+        }
+        frame3.src = `http://i.ytimg.com/vi/${videoID}/3.jpg`
 
 
-//     setTimeout(() => {
-//         if (isNaN(Frame1Loaded) || isNaN(Frame2Loaded) || isNaN(Frame3Loaded)) {
-//             CheckStaticVDO()
-//         } else {
-//             Max = Math.max(Frame1Loaded,Frame2Loaded,Frame3Loaded)
-//             Min = Math.min(Frame1Loaded,Frame2Loaded,Frame3Loaded)
-//             CalDiff = Max/Min
-//             console.log(Max,Min,CalDiff)
-//             StaticVDO = Math.abs(CalDiff - 1) < 0.03
-//             console.log(StaticVDO)
-//             drawpic()
-//         }
-//     }, 500);
-// }
+        setTimeout(() => {
+            if (isNaN(Frame1Loaded) || isNaN(Frame2Loaded) || isNaN(Frame3Loaded)) {
+                CheckStaticVDO()
+            } else {
+                Max = Math.max(Frame1Loaded, Frame2Loaded, Frame3Loaded)
+                Min = Math.min(Frame1Loaded, Frame2Loaded, Frame3Loaded)
+                CalDiff = Max / Min
+                console.log(Max, Min, CalDiff)
+                StaticVDO = Math.abs(CalDiff - 1) < 0.03
+                console.log(StaticVDO)
+                drawpic()
+            }
+        }, 500);
+    }
+}
 
 
 function EnableBGBlur() {
@@ -6191,7 +6317,7 @@ function EnableBGBlur() {
     CheckVDOSTATUS()
 
     window.addEventListener('yt-page-data-updated', CheckVDOSTATUS)
-    // window.addEventListener('yt-page-data-updated', CheckStaticVDO)
+    window.addEventListener('yt-page-data-updated', CheckStaticVDO)
 }
 
 function DisableBGBlur(Force) {
@@ -6199,7 +6325,7 @@ function DisableBGBlur(Force) {
     RemoveCanvas(Force)
 
     window.removeEventListener('yt-page-data-updated', CheckVDOSTATUS)
-    // window.removeEventListener('yt-page-data-updated', CheckStaticVDO)
+    window.removeEventListener('yt-page-data-updated', CheckStaticVDO)
     VDOChangeEvent.disconnect()
 }
 
