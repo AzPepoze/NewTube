@@ -1,6 +1,6 @@
-# If you want to report the issue/bug pls tell me in my discord server (I always use discord)
+# ⚠️ If you want to report the issue/bug pls tell me in my discord server (I always use discord) ⚠️
 
-<a href="discord.gg/BgxvVqap4G" style="font-size:40px;" target="_blank">Newtube discord</a>
+## <a href="discord.gg/BgxvVqap4G" style="font-size: xxx-large;" target="_blank">Newtube discord</a>
 
 # ⏬ Download this extension ⏬
 
