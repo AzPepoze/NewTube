@@ -4,6 +4,8 @@
 
 # Newtube (Customize youtube) changelog!
 
+*I'm too lazy to list this anymore.Just enjoy lastest version XD*
+
 ## Version 4.0.0 (Current)
 
 - Upgrade Setting menu

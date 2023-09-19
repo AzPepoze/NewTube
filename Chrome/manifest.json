@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Newtube ( Youtube Style Customizer )",
-    "version": "4.1.0",
+    "version": "4.1.1",
     "description": "Customize your Youtube website with a lot customizable.",
     "homepage_url": "https://github.com/AzPepoze/Newtube",
     "default_locale": "en",

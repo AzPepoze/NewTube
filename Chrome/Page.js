@@ -2118,6 +2118,7 @@ function update() {
                 .ytp-volume-slider-handle:before
                 {
                     background: var(--theme) !important;
+                    color: var(--text-color) !important;
                 }
 
                 #container.ytd-searchbox input.ytd-searchbox{
@@ -5951,127 +5952,130 @@ function CheckBlackBar() {
 function drawOnePic() {
     if (NoWaitFrame) {
         NoWaitFrame = false
-        // console.log("Check")
-        // console.log("Draw")
-        SetCanvas()
-        Scale = 1
+        setTimeout(() => {
+            // console.log("Check")
+            // console.log("Draw")
+            SetCanvas()
+            Scale = 1
 
-        // Bcontext.globalCompositeOperation = "copy"
+            // Bcontext.globalCompositeOperation = "copy"
 
-        // var Xgradient = Bcontext.createLinearGradient(0, 0, cw, 0);
-        // Xgradient.addColorStop(0, "black");
-        // Xgradient.addColorStop(0.2, "transparent");
-        // Xgradient.addColorStop(0.8, "transparent");
-        // Xgradient.addColorStop(1, "black");
+            // var Xgradient = Bcontext.createLinearGradient(0, 0, cw, 0);
+            // Xgradient.addColorStop(0, "black");
+            // Xgradient.addColorStop(0.2, "transparent");
+            // Xgradient.addColorStop(0.8, "transparent");
+            // Xgradient.addColorStop(1, "black");
 
-        // var Ygradient = Bcontext.createLinearGradient(0, 0, 0, ch);
-        // Ygradient.addColorStop(0, "black");
-        // Ygradient.addColorStop(0.2, "transparent");
-        // Ygradient.addColorStop(0.8, "transparent");
-        // Ygradient.addColorStop(1, "black");
+            // var Ygradient = Bcontext.createLinearGradient(0, 0, 0, ch);
+            // Ygradient.addColorStop(0, "black");
+            // Ygradient.addColorStop(0.2, "transparent");
+            // Ygradient.addColorStop(0.8, "transparent");
+            // Ygradient.addColorStop(1, "black");
 
-        // Bcontext.fillStyle = Xgradient;
-        // Bcontext.fillRect(0, 0, cw, ch);
-        // Bcontext.globalCompositeOperation = "source-over"
-        // Bcontext.fillStyle = Ygradient;
-        // Bcontext.fillRect(0, 0, cw, ch);
+            // Bcontext.fillStyle = Xgradient;
+            // Bcontext.fillRect(0, 0, cw, ch);
+            // Bcontext.globalCompositeOperation = "source-over"
+            // Bcontext.fillStyle = Ygradient;
+            // Bcontext.fillRect(0, 0, cw, ch);
 
-        // context.globalAlpha = 1
-        // if (BGSmooth != 1) {
-        //     context.globalCompositeOperation = "copy"
-        //     if (LastFrame) {
-        //         context.putImageData(LastFrame,0,0);
-        //     }
+            // context.globalAlpha = 1
+            // if (BGSmooth != 1) {
+            //     context.globalCompositeOperation = "copy"
+            //     if (LastFrame) {
+            //         context.putImageData(LastFrame,0,0);
+            //     }
 
-        if (StaticVDO) {
-            context.globalAlpha = 1
-        } else {
-            context.globalAlpha = BGSmooth
-        }
-
-        // }
-
-        // context.globalCompositeOperation = "source-over"
-        context.filter = `blur(${localStorage["nt-NVDOB"]}px)`
-
-        // createImageBitmap(v, {resizeWidth: cw, resizeHeight: ch})
-        // .then((img) => {
-        //     // Draw each sprite onto the canvas
-        //     context.drawImage(img, 0, 0)
-        // })
-
-        context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
-
-
-        // if (BGSmooth != 1) {
-        //     LastFrame = context.getImageData(0,0,cw,ch);
-        // }
-        // context.filter = `none`
-
-        // context.globalCompositeOperation = "destination-out"
-        // context.globalAlpha = 1
-
-        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-        // Scale = 0.8
-        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-        // Scale = 0.7
-        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-        // Scale = 0.6
-        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-        // Scale = 0.55
-        // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-
-        // if (BGSmooth != 1) {
-        //     context.globalAlpha = 1
-        // }
-        // var Xgradient = context.createLinearGradient(0, 0, cw, 0);
-        // Xgradient.addColorStop(0, "black");
-        // Xgradient.addColorStop(0.2, "transparent");
-        // Xgradient.addColorStop(0.8, "transparent");
-        // Xgradient.addColorStop(1, "black");
-
-        // var Ygradient = context.createLinearGradient(0, 0, 0, ch);
-        // Ygradient.addColorStop(0, "black");
-        // Ygradient.addColorStop(0.2, "transparent");
-        // Ygradient.addColorStop(0.8, "transparent");
-        // Ygradient.addColorStop(1, "black");
-
-        // context.fillStyle = Xgradient;
-        // context.fillRect(0, 0, cw, ch);
-        // context.fillStyle = Ygradient;
-        // context.fillRect(0, 0, cw, ch);
-
-
-        if (BlackMode == true) {
-            ReBlackctx.drawImage(v, 0, 0, VDOBOUND.width, VDOBOUND.height);
-            frame = ReBlackctx.getImageData(0, 0, VDOBOUND.width, VDOBOUND.height)
-            l = frame.data.length / 4
-            for (let i = 0; i < l; i++) {
-                frame.data[i * 4 + 3] = (frame.data[i * 4 + 0] * 10 +
-                    frame.data[i * 4 + 1] * 10 +
-                    frame.data[i * 4 + 2] * 10) / 10
+            if (StaticVDO) {
+                context.globalAlpha = 1
+            } else {
+                context.globalAlpha = BGSmooth
             }
-            ReBlackctx.putImageData(frame, 0, 0)
-        }
 
-        if (BlackBar == true) {
-            // console.log("VDO Update Frame")
-            if (CompleteCal) {
-                // GetThisTime = Date.now()
-                CheckBlackBar()
-            }
-            // else {
-            //     console.log("DropFrame")
             // }
 
-            // if (ThisFrame > SkipFrame) {
-            //     ThisFrame = 0
-            // }
-            // CheckPxLine(ThisFrame)
-            // ThisFrame++
-        }
+            // context.globalCompositeOperation = "source-over"
+            context.filter = `blur(${localStorage["nt-NVDOB"]}px)`
 
-        NoWaitFrame = true
+            // createImageBitmap(v, { resizeWidth: cw, resizeHeight: ch })
+            //     .then((img) => {
+            //         // Draw each sprite onto the canvas
+            //         context.drawImage(img, 0, 0)
+            //     })
+
+            context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
+
+
+            // if (BGSmooth != 1)
+            //     LastFrame = context.getImageData(0,0,cw,ch);
+            // }
+            // context.filter = `none`
+
+            // context.globalCompositeOperation = "destination-out"
+            // context.globalAlpha = 1
+
+            // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+            // Scale = 0.8
+            // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+            // Scale = 0.7
+            // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+            // Scale = 0.6
+            // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+            // Scale = 0.55
+            // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
+
+            // if (BGSmooth != 1) {
+            //     context.globalAlpha = 1
+            // }
+            // var Xgradient = context.createLinearGradient(0, 0, cw, 0);
+            // Xgradient.addColorStop(0, "black");
+            // Xgradient.addColorStop(0.2, "transparent");
+            // Xgradient.addColorStop(0.8, "transparent");
+            // Xgradient.addColorStop(1, "black");
+
+            // var Ygradient = context.createLinearGradient(0, 0, 0, ch);
+            // Ygradient.addColorStop(0, "black");
+            // Ygradient.addColorStop(0.2, "transparent");
+            // Ygradient.addColorStop(0.8, "transparent");
+            // Ygradient.addColorStop(1, "black");
+
+            // context.fillStyle = Xgradient;
+            // context.fillRect(0, 0, cw, ch);
+            // context.fillStyle = Ygradient;
+            // context.fillRect(0, 0, cw, ch);
+
+
+            if (BlackMode == true) {
+                ReBlackctx.drawImage(v, 0, 0, VDOBOUND.width, VDOBOUND.height);
+                frame = ReBlackctx.getImageData(0, 0, VDOBOUND.width, VDOBOUND.height)
+                l = frame.data.length / 4
+                for (let i = 0; i < l; i++) {
+                    frame.data[i * 4 + 3] = (frame.data[i * 4 + 0] * 10 +
+                        frame.data[i * 4 + 1] * 10 +
+                        frame.data[i * 4 + 2] * 10) / 10
+                }
+                ReBlackctx.putImageData(frame, 0, 0)
+            }
+
+            if (BlackBar == true) {
+                // console.log("VDO Update Frame")
+                if (CompleteCal) {
+                    // GetThisTime = Date.now()
+                    CheckBlackBar()
+                }
+                // else {
+                //     console.log("DropFrame")
+                // }
+
+                // if (ThisFrame > SkipFrame) {
+                //     ThisFrame = 0
+                // }
+                // CheckPxLine(ThisFrame)
+                // ThisFrame++
+            }
+
+            NoWaitFrame = true
+        }, 0)
+
     } else {
         console.log("Drop frame")
     }
