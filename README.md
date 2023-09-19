@@ -1,10 +1,16 @@
+# If you want to report the issue/bug pls tell me in my discord server (I always use discord)
+
+<a href="discord.gg/BgxvVqap4G" style="font-size:40px;" target="_blank">Newtube discord</a>
+
+# ⏬ Download this extension ⏬
+
 <a href="https://chrome.google.com/webstore/detail/youtube-style-customizer/dnjjchajjdnfbjhjclmilicgheglcopj" style="font-size:40px;" target="_blank">(Chrome Web Store) Get this extention!</a>
 
 <a href="https://addons.mozilla.org/firefox/addon/newtube-youtubestylecustomizer/" style="font-size:40px;" target="_blank">(Firefox addon) Get this extention!</a>
 
-# Newtube (Customize youtube) changelog!
+# ✳️ Newtube (Customize youtube) changelog! ✳️
 
-*I'm too lazy to list this anymore.Just enjoy lastest version XD*
+*I'm too lazy to list this anymore. Just enjoy the lastest version 🤣🤣🤣*
 
 ## Version 4.0.0 (Current)
 

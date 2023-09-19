@@ -2302,7 +2302,8 @@ function update() {
                     margin-left: 10px;
                 }
 
-                .yt-spec-button-shape-next--mono.yt-spec-button-shape-next--filled{
+                .yt-spec-button-shape-next--mono.yt-spec-button-shape-next--filled,
+                yt-chip-cloud-chip-renderer[selected]{
                     color: var(--yt-spec-text-primary) !important;
                     background: var(--theme) !important;
                 }
@@ -2458,9 +2459,9 @@ function update() {
                     background: transparent;
                  }
                  
-                 #text.ytd-channel-name:hover {
+                #text.ytd-channel-name:hover {
                      background: var(--theme-fort);
-                 }
+                }
                     
                 `+ BGBLURCODE + `
                 
