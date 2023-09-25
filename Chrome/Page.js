@@ -1,6 +1,35 @@
 /* Yeaaaaaah :3 AzPepoze https://www.youtube.com/channel/UCJ2C0UTfxQo6iGTfudPfoRQ */
 
 Ver = chrome.runtime.getManifest().version
+isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+
+AllFont = ["Roboto", "YouTube Sans", "Roboto Mono"]
+
+function DisableForFireFox() {
+    localStorage["nt-SearchAnimT"] = "false"
+    localStorage["nt-PtranT"] = "false"
+    localStorage["nt-ThumbAnimT"] = "false"
+    localStorage["nt-ControlUnderVDOT"] = "false"
+    localStorage["nt-FlyoutT"] = "false"
+}
+
+if (isFirefox) DisableForFireFox()
+
+function UnCompressEnaFont() {
+    return JSON.parse(localStorage["nt-EnaFont"])
+}
+
+function SaveEnaFont(Save) {
+    localStorage["nt-EnaFont"] = JSON.stringify(Save)
+}
+
+function UnCompressAddedFont() {
+    return JSON.parse(localStorage["nt-ADDFONT"])
+}
+
+function SaveAddedFont(Save) {
+    localStorage["nt-ADDFONT"] = JSON.stringify(Save)
+}
 
 var PreloadImg = new Image
 PreloadImg.onload = function () {
@@ -92,8 +121,72 @@ var Set = document.createElement("button"),
     BGSmooth
 
 NTstyle = document.createElement("style");
-
 NTstyle.id = "NEWTUBESTYLE";
+
+var FlyoutStyle = document.createElement("style"),
+    FontElement = document.createElement("link")
+
+FontElement.id = "Newtube-CustomFont"
+
+var FontStart = `family=`
+var FontEnd = `:`
+var FontResult = []
+
+function FindFontFamily(FontLink) {
+    Startidx = FontLink.indexOf(FontStart)
+    FontLink = FontLink.substring(Startidx, FontLink.length)
+    Endidx = FontLink.indexOf(FontEnd)
+    FontName = FontLink.substring(FontStart.length, Endidx)
+    FontName = FontName.replaceAll("+", " ")
+    console.log(FontName)
+    FontResult.push(FontName)
+    FontLink = FontLink.substring(Endidx, FontLink.length)
+    console.log(FontLink)
+    return FontLink
+}
+
+function GetAllFont(FontLink) {
+    if (FontLink.includes(FontStart)) {
+        GetAllFont(FindFontFamily(FontLink))
+    } else {
+        return FontLink
+    }
+}
+
+function GetFontName(FontLink) {
+    FontResult = []
+    GetAllFont(FontLink)
+    return FontResult
+}
+
+function AddFontToWeb(FontID, FontLink, ThisFontLinkName) {
+    ThisLink = document.createElement('link')
+    ThisLink.id = FontID
+    ThisLink.innerHTML = FontLink
+    FontElement.append(ThisLink)
+    AddedFont[FontID] = [FontID, FontLink]
+    AllFont = AllFont.concat(ThisFontLinkName)
+}
+
+function AddListFont(FontLink) {
+    AddedFont = UnCompressAddedFont()
+    ThisFontLinkName = GetFontName(FontLink)
+    FontID = JSON.stringify(ThisFontLinkName)
+    FontID = FontID.replaceAll('"', "Quote")
+    AddFontToWeb(FontID, FontLink, ThisFontLinkName)
+    SaveAddedFont(AddedFont)
+}
+
+function RemoveListFont(FontID) {
+    AddedFont = UnCompressAddedFont()
+    delete AddedFont[FontID]
+    console.log(document.getElementById(FontID))
+    document.getElementById(FontID).remove()
+    FontID = FontID.replaceAll('Quote', '"')
+    GetFontArray = JSON.parse(FontID)
+    AllFont = AllFont.filter(val => !GetFontArray.includes(val));
+    SaveAddedFont(AddedFont)
+}
 
 function styleloop() {
     if (document.head == null) {
@@ -101,7 +194,15 @@ function styleloop() {
             styleloop()
         }, 10);
     } else {
-        document.head.appendChild(NTstyle)
+        document.head.append(NTstyle)
+        document.head.append(FlyoutStyle)
+        document.head.append(FontElement)
+
+        AddedFont = UnCompressAddedFont()
+        Object.keys(AddedFont).forEach(function (TheseFontName) {
+            GetFont = AddedFont[TheseFontName]
+            AddFontToWeb(GetFont[0], GetFont[1], GetFontName(GetFont[1]))
+        })
     }
 }
 
@@ -338,10 +439,6 @@ function SetValueCheck() {
     
     .ytp-big-mode .ytp-chrome-controls .ytp-fullerscreen-edu-button.ytp-button{
         display:none !important;
-    }
-    
-    #ytd-player {
-        overflow: visible !important;
     }`, ``)
 
     SetValueCheck2("MediaBlur", `.ytp-gradient-bottom{
@@ -471,11 +568,11 @@ function SetValueCheck() {
     }`)
 
     SetValueCheck2("ControlUnderVDO", `
-#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode){
+#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not([nt-flyout]){
     padding-bottom: var(--Media-Space);
 }
 
-div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) .ytp-chrome-bottom{
+div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not([nt-flyout]) .ytp-chrome-bottom{
     padding-top: 50px !important;
 }
 
@@ -527,9 +624,9 @@ div.html5-video-player.ytp-embed{
     overflow:hidden !important;
 }
 
-#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-caption-window-container,
-#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-player-content,
-#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-cued-thumbnail-overlay{
+#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([nt-flyout]) .ytp-caption-window-container,
+#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([nt-flyout]) .ytp-player-content,
+#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([nt-flyout]) .ytp-cued-thumbnail-overlay{
       height: calc(100% - var(--Media-Space)) !important;
 }
 
@@ -550,6 +647,10 @@ div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode) .ytp-caption-wi
 #player{
     outline: transparent !important;
     box-shadow: 0px 0px 0px 0px transparent !important;
+}
+
+ytd-player {
+    overflow: visible !important;
 }
     `, `
     .ytp-chrome-top,
@@ -806,7 +907,8 @@ function SetNull() {
 
     SetTo("CUSTOM", ``)
     SetTo("ADDCUSTOM", ``)
-    SetTo("InstallFont", ``)
+    SetTo("ADDFONT", `{}`)
+    SetTo("EnaFont", `[]`)
 
     SetTo("NVDOB", `40`)
     SetTo("NVDOC", `1`)
@@ -828,6 +930,8 @@ function SetNull() {
     SetTo("VDOSmooth", `10`)
 
     SetTo("YTSize", `100`)
+
+    SetTo("BelowSpace", `0`)
 
     //Check------------------------
 
@@ -894,6 +998,8 @@ function SetNull() {
     SetTo("DropFrameT", true)
     SetTo("CheckStaticT", true)
 
+    SetTo("FlyoutT", true)
+
     //Select------------------------
 
     SetTo("BlurWhatT", "none")
@@ -959,6 +1065,7 @@ let NORMAL = `
 
     #MAINPRESET{
         height: -webkit-fill-available;
+        height: -moz-available;
     }
 
     .CheckBox:hover {
@@ -1254,11 +1361,6 @@ let NORMAL = `
         filter: drop-shadow(0px 0px 10px black);
 	}
 
-	#header
-	{
-		z-index:999 !important;
-	}
-
 	.TextBox[type=number]::-webkit-inner-spin-button, 
 	.TextBox[type=number]::-webkit-outer-spin-button { 
 	  -webkit-appearance: meter;
@@ -1294,7 +1396,7 @@ let NORMAL = `
     .ColorPick::-webkit-color-swatch {
         border: 0px transparent;
         padding: 0px;
-        border-radius:10px;
+        border-radius: 10px;
     }
 
     #NEWTUBELIST {
@@ -1302,6 +1404,27 @@ let NORMAL = `
         margin-right: 10px;
         border-radius: 0px 20px 20px 0px;
         padding-right: 10px;
+    }
+
+    .ntdeletefont{
+        color: white;
+        padding: 10px;
+        aspect-ratio: 1/1;
+        height: 20px;
+        background: brown;
+        font-size: medium;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        border-radius: 10px;
+        margin-left: 10px;
+        transition: filter 0.2s;
+        cursor: pointer;
+    }
+
+    .ntdeletefont:hover,
+    #ntAddFont:hover{
+        filter: brightness(1.5);
     }
 	`, AfterNEWTUBE = `#NEWTUBEBG,
     .NEWTUBEMAIN {
@@ -1377,33 +1500,181 @@ function LOADANIMATION(e) {
 var MasterheadBG
 var Masterhead
 
-function ScrollEv() {
-    if (Masterhead == null || MasterheadBG == null) {
-        Masterhead = document.querySelector("#masthead")
-        MasterheadBG = document.querySelector("#masthead > #background")
-    }
+var WindowH = window.innerHeight
+var ADDFlyout = false
 
-    if (Masterhead && MasterheadBG) {
-        toppo = document.documentElement.scrollTop
-        if (toppo == 0 && TranHead == false) {
-            TranHead = true
-            Masterhead.style = `
+var player
+var VdoPlayer
+
+function StartFlyout() {
+    ADDFlyout = !ADDFlyout
+
+    player.style.transition = "unset"
+    player.style.opacity = 0
+    player.style.transform = "translateX(100px)"
+    VdoPlayer.setAttribute('nt-flyout', '')
+
+    setTimeout(() => {
+        below = document.getElementById("below")
+        // below.style.transform = `translateY(${player.offsetHeight}px)`
+
+        player.style.transition = "opacity 0.5s,transform 0.5s"
+        player.style.transform = "unset"
+        player.style.opacity = 1
+
+
+        FlyoutStyle.textContent = `
+                        #player-container:has(.html5-video-player:not(.ytp-small-mode)){
+                            position: fixed !important;
+                            z-index: 3;
+                            background: var(--border-color) !important;
+                            border-radius: var(--theme-radius-big);
+                            aspect-ratio: 16/9;
+                            top: unset !important;
+                            left: unset !important;
+                            right: 20px !important;
+                            bottom: 20px !important;
+                            padding: var(--border-width);
+                        }
+    
+                        .html5-video-player{
+                            padding: 0px !important;
+                        }
+                        
+                        video,#player-container:has(.html5-video-player:not(.ytp-small-mode)){
+                            width: 400px !important;
+                            height: auto !important;
+                            max-width: unset !important;
+                            min-width: unset !important;
+                        }
+                        
+                        .html5-video-player:not(.ytp-autohide) .ytp-chrome-bottom{
+                            width: 400px !important;
+                        }
+                        
+                        .ytp-right-controls,
+                        .ytp-progress-bar-container,
+                        .ytp-chapter-container,
+                        .ytp-ce-element{
+                            display:none !important;
+                        }
+                        
+                        .ytp-chapter-hover-container{
+                            width:100% !important;
+                        }
+                        
+                        ytd-channel-name{
+                            z-index: 0 !important;
+                        }
+    
+                        .html5-video-container{
+                            height: fit-content !important;
+                        }
+    
+                        .ytp-iv-video-content{
+                            width: 100% !important;
+                            height: 100% !important;
+                        }
+    
+                        .ytp-caption-segment{
+                            font-size: 15px !important;
+                        }
+
+                        video{
+                            transition: none !important;
+                            height: 100% !important;
+                            width: max-content !important;
+                        }
+
+                        .html5-video-container{
+                            transition: none !important;
+                            height: 100% !important;
+                        }
+                        `
+    }, 0);
+}
+
+function StopFlyout() {
+    ADDFlyout = !ADDFlyout
+
+    VdoPlayer.removeAttribute('nt-flyout')
+
+    player.style.transition = "unset"
+    // player.style.transform = "translateX(-100px)"
+    player.style.opacity = 0
+
+    setTimeout(() => {
+        player.style.transition = "opacity 0.5s"
+        player.style.opacity = 1
+        // player.style.transform = "unset"
+
+        // document.getElementById("below").style.transform = 'unset'
+        FlyoutStyle.textContent = ``
+    }, 0);
+}
+
+function ScrollEv() {
+
+    toppo = document.documentElement.scrollTop
+    WindowH = window.innerHeight
+
+    if (localStorage["nt-ScrollT"] == "true") {
+        if (Masterhead == null || MasterheadBG == null) {
+            Masterhead = document.querySelector("#masthead")
+            MasterheadBG = document.querySelector("#masthead > #background")
+        }
+
+        if (Masterhead && MasterheadBG) {
+            if (toppo == 0 && TranHead == false) {
+                TranHead = true
+                Masterhead.style = `
                 backdrop-filter: none !important;
                 box-shadow: 0px 0px transparent !important;
                 outline: transparent !important;`
-            MasterheadBG.style = `background:transparent;`
+                MasterheadBG.style = `background:transparent;`
+            } else {
+                if (toppo > 0 && TranHead == true) {
+                    TranHead = false
+                    Masterhead.style = ``
+                    MasterheadBG.style = ``
+                }
+            }
+
         } else {
-            if (toppo > 0 && TranHead == true) {
-                TranHead = false
-                Masterhead.style = ``
-                MasterheadBG.style = ``
+            setTimeout(() => {
+                ScrollEv()
+            }, 2000);
+        }
+    }
+
+    if (localStorage["nt-FlyoutT"] == "true") {
+        // console.log(toppo, WindowH)
+        if (player == null) {
+            if (isFirefox) {
+                player = document.querySelectorAll("[id='player-container']")
+                player.forEach((ThisElement) => {
+                    if (ThisElement.getElementsByClassName(".playing-mode")) {
+                        player = thisElement
+                    }
+                })
+            } else {
+                player = document.querySelector("#player-container:has(.playing-mode:not(.ytp-small-mode))")
+            }
+        } else {
+            if (VdoPlayer == null) {
+                VdoPlayer = player.getElementsByClassName("html5-video-player")[0]
+            } else {
+                if (toppo > WindowH) {
+                    if (!ADDFlyout) {
+                        StartFlyout()
+                    }
+                } else {
+                    if (ADDFlyout) {
+                        StopFlyout()
+                    }
+                }
             }
         }
-
-    } else {
-        setTimeout(() => {
-            ScrollEv()
-        }, 2000);
     }
 }
 
@@ -1413,7 +1684,23 @@ function SetGlobalBGImage(ImgValue) {
     }
 }
 
+function AddScrollEv() {
+    if (ADDScrollEVENT == false) {
+        ADDScrollEVENT = true
+        window.addEventListener("scroll", ScrollEv, { passive: true })
+        ScrollEv()
+    }
+}
+
+function RemoveScrollEv() {
+    if (ADDScrollEVENT == true) {
+        ADDScrollEVENT = false
+        window.removeEventListener('scroll', ScrollEv, { passive: true })
+    }
+}
+
 function update() {
+
     // console.log("UPDATE");
     BGSmooth = 1 / parseInt(localStorage["nt-VDOSmooth"])
     if (BGSmooth > 1) {
@@ -1454,23 +1741,35 @@ function update() {
     }
 
     if (localStorage["nt-EnableButtonT"] == 'false') {
+        if (ADDFlyout) {
+            StopFlyout()
+        }
+
+        RemoveScrollEv()
+
         NTstyle.textContent = NORMAL;
     }
     else if (localStorage["nt-EnaCUSCSST"] == 'true') {
         NTstyle.textContent = NORMAL + localStorage["nt-CUSTOM"] + ADDCSS + AfterNEWTUBE
     } else {
 
-        if (localStorage["nt-ScrollT"] == 'true' && localStorage["nt-EnableButtonT"] == 'true') {
-            if (ADDScrollEVENT == false) {
-                ADDScrollEVENT = true
-                window.addEventListener("scroll", ScrollEv, { passive: true })
-                ScrollEv()
-            }
+        if ((localStorage["nt-ScrollT"] == 'true' || localStorage["nt-FlyoutT"] == 'true') && localStorage["nt-EnableButtonT"] == 'true') {
+            AddScrollEv()
         } else {
-            if (ADDScrollEVENT == true) {
-                ADDScrollEVENT = false
-                window.removeEventListener('scroll', ScrollEv, { passive: true })
-                document.getElementById("masthead").style.removeProperty("background")
+            RemoveScrollEv()
+        }
+
+        if (localStorage["nt-FlyoutT"] == 'false' && ADDFlyout) {
+            StopFlyout()
+        }
+
+        if (localStorage["nt-ScrollT"] == 'false' && TranHead) {
+            if (Masterhead == null || MasterheadBG == null) {
+                Masterhead = document.querySelector("#masthead")
+                MasterheadBG = document.querySelector("#masthead > #background")
+            } else {
+                Masterhead.style = ``
+                MasterheadBG.style = ``
             }
         }
 
@@ -1562,7 +1861,7 @@ function update() {
                     --border-width-hover: `+ localStorage["nt-HoverBorder"] + `px;
                     --border-minus-hover: calc(var(--border-width-hover) * -1);
                     
-                    --ThirdTheme: `+ 'ThemeThr'.GetSaveRgba() + `;
+                    --theme-third: `+ 'ThemeThr'.GetSaveRgba() + `;
                     --Zoom: `+ localStorage["nt-Zoom"] + `;
 
                     --sub-ShaWidth: `+ localStorage["nt-subShaWidth"] + `px;
@@ -1604,8 +1903,8 @@ function update() {
                 }
                   
                 ytd-menu-renderer .ytd-menu-renderer[style-target=button]:hover {
-                    background: var(--ThirdTheme);
-                    transform: scale(1.3); 
+                    background: var(--theme-fort);
+                    transform: scale(1.3);
                 }
 
                 div.html5-video-player video {
@@ -1777,7 +2076,7 @@ function update() {
                     --yt-spec-brand-button-background: var(--theme) !important;
                     --yt-spec-static-brand-red: var(--theme) !important;
                     --yt-spec-brand-icon-inactive: var(--theme) !important;
-                    --yt-spec-10-percent-layer: var(--ThirdTheme) !important;
+                    --yt-spec-10-percent-layer: var(--theme-third) !important;
                     --yt-spec-general-background-b: transparent !important;
                     --yt-spec-wordmark-text: var(--text-color) !important;
                     --yt-spec-button-chip-background-hover: var(--search-background-hover) !important;
@@ -1787,6 +2086,10 @@ function update() {
                     --yt-spec-raised-background: var(--top-bar-and-search-background) !important;
                     --yt-spec-menu-background: var(--top-bar-and-search-background) !important;
                     --yt-spec-static-overlay-text-primary: var(--text-color) !important;
+                }
+
+                .watch-skeleton .skeleton-bg-color{
+                    background: var(--theme-third) !important;
                 }
 
                 ytd-playlist-panel-video-renderer:hover {
@@ -1861,7 +2164,8 @@ function update() {
                 ytd-video-renderer,
                 ytd-playlist-renderer,
                 ytd-compact-link-renderer,
-                ytd-notification-renderer
+                ytd-notification-renderer,
+                ytd-macro-markers-list-item-renderer
                 {
                     transition: all .2s;
                 }
@@ -1928,7 +2232,9 @@ function update() {
                 .ytp-ce-channel-metadata,
                 .ytp-cards-teaser .ytp-cards-teaser-text,
                 .ytp-panel-menu,
-                .ytp-ce-website-title, .ytp-ce-merchandise-title
+                .ytp-ce-website-title, .ytp-ce-merchandise-title,
+                #time.ytd-macro-markers-list-item-renderer,
+                .yt-core-attributed-string--link-inherit-color
                 {
                     color: var(--text-color) !important;
                 }
@@ -2029,7 +2335,10 @@ function update() {
                 ytd-engagement-panel-section-list-renderer,
                 #tooltip,
                 ytd-compact-link-renderer,
-                ytd-notification-renderer
+                ytd-notification-renderer,
+                #time.ytd-macro-markers-list-item-renderer,
+                ytd-macro-markers-list-item-renderer,
+                .ytp-menuitem
                 {
                     border-radius: var(--theme-radius) !important;
                 }
@@ -2065,13 +2374,14 @@ function update() {
                     overflow: visible;
                 }
                 
-                .ytp-menuitem-icon path:not([fill="none"]),.ytd-thumbnail-overlay-hover-text-renderer path,.ytd-thumbnail-overlay-bottom-panel-renderer,#search-icon.ytd-searchbox ,svg path[fill="#FF0000"]${GetCodeC("IconFill")} , svg [fill="#FF0000"]${GetCodeC("IconFill")}, svg [fill="red"], svg [fill="#F00"] , button:not(.yt-share-target-renderer) path:not([fill="none"]), [role="button"] path, [role="option"]:not(.yt-third-party-share-target-section-renderer) path
+                .ytp-menuitem-icon path:not([fill="none"]),.ytd-thumbnail-overlay-hover-text-renderer path,.ytd-thumbnail-overlay-bottom-panel-renderer path,#search-icon.ytd-searchbox path,svg path[fill="#FF0000"]${GetCodeC("IconFill")} , svg [fill="#FF0000"]${GetCodeC("IconFill")}, svg [fill="red"], svg [fill="#F00"] , button:not(.yt-share-target-renderer) path:not([fill="none"]), [role="button"] path, [role="option"]:not(.yt-third-party-share-target-section-renderer) path,
+                .ytp-heat-map-graph
                 {
                     fill: var(--theme) !important;
                 }
 
                 ytd-author-comment-badge-renderer{
-                    background: `+ 'ThemeFort'.GetSaveRgba() + ` !important;
+                    background: var(--theme-fort) !important;
                 }
 
                 #text.ytd-channel-name,
@@ -2163,7 +2473,7 @@ function update() {
                     box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important;
                 }
                 
-                .ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]):hover > svg > path
+                .ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]):hover > svg path
                 {
                     fill: `+ "HBT".GetSaveRgba() + ` !important;
                 }
@@ -2435,18 +2745,25 @@ function update() {
                 }
 
                 #progress.ytd-thumbnail-overlay-resume-playback-renderer {
-                    background: linear-gradient(-70deg, var(--yt-spec-static-brand-red), var(--ThirdTheme) ) !important;
+                    background: linear-gradient(-70deg, var(--theme), var(--theme-third) ) !important;
                 }
 
                 #thumbnail > #hover-overlays {
                     transition: all .4s;
-                    transform: skewX(-20deg) translateX(30px);
                     height: 100%;
                     width: 100%;
                     animation-fill-mode: backwards;
                     position: absolute;
                     top: 0;
                     opacity: 0 !important;
+                }
+
+                #thumbnail:has(ytd-thumbnail-overlay-time-status-renderer) > #hover-overlays {
+                    transform: skewX(-20deg) translateX(30px);
+                }
+                
+                #thumbnail:has(ytd-thumbnail-overlay-bottom-panel-renderer) > #hover-overlays {
+                    transform: scale(1.5);
                 }
                 
                 #thumbnail:hover > #hover-overlays {
@@ -2460,7 +2777,28 @@ function update() {
                  }
                  
                 #text.ytd-channel-name:hover {
-                     background: var(--theme-fort);
+                     background: var(--theme-third);
+                     padding-inline: 10px;
+                }
+
+                .ytp-settings-menu .ytp-menuitem-content,
+                #thumbnail-container.ytd-playlist-panel-video-renderer{
+                    overflow: visible !important;
+                }
+
+                .html5-video-player .ytp-settings-menu:not(.ytpa-ambientlight-settings-menu){
+                    transition: opacity 0.5s,transform 0.25s !important;
+                    margin-bottom: 20px !important;
+                }
+                
+                .html5-video-player:not(.ytp-settings-shown) .ytp-settings-menu:not(.ytpa-ambientlight-settings-menu){
+                    transform: translateX(100px) !important;
+                    opacity:0 !important;
+                    pointer-events: none !important;
+                }
+
+                #below {
+                    margin-top:`+ localStorage["nt-BelowSpace"] + `px;
                 }
                     
                 `+ BGBLURCODE + `
@@ -2511,8 +2849,6 @@ function update() {
                 
                 `+ ADDCSS + `
 
-                `+ localStorage["nt-InstallFont"] + `
-
                 `+ ADDReplaceLOGO + `
 
                 `
@@ -2530,12 +2866,12 @@ function update() {
                     }
 
                     html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #below{
-                        transform: translate(0,100px);
+                        margin-top: 100px;
                     }
 
                     #secondary,
                     #below{
-                        transition: all 1.5s;
+                        transition: margin-top 1.5s, opacity 1.5s;
                     }`
                     if (localStorage["nt-SwapRowT"] == "true") {
                         thisStyle = thisStyle + `
@@ -2550,32 +2886,25 @@ function update() {
                     }
                 }
 
-                NTstyle.textContent = thisStyle
+                // NTstyle.textContent = thisStyle
 
-                setTimeout(() => {
-                    let ADDFont = ``
+                let ADDFont = ``
 
-                    listFonts().forEach(font => {
-                        let OriginalFontName = font
-                        font = font.replaceAll(" ", "_")
-                        let FontSaveName = `nt-Font-${font}T`
-                        if (localStorage[FontSaveName] == "true") {
-                            if (ADDFont != ``) {
-                                ADDFont += ","
-                            }
-                            ADDFont += `'${OriginalFontName}'`
-                        }
-                    })
-
+                UnCompressEnaFont().forEach(font => {
                     if (ADDFont != ``) {
-                        ADDFont = `
+                        ADDFont += `,`
+                    }
+                    ADDFont += `'${font}'`
+                })
+
+                if (ADDFont != ``) {
+                    ADDFont = `
                         *{
                             font-family: ${ADDFont} !important;
                         }`
-                    }
+                }
 
-                    NTstyle.textContent += ADDFont
-                }, 100);
+                NTstyle.textContent = thisStyle + ADDFont
             };
         })
     }
@@ -3149,7 +3478,7 @@ function PRESET() {
     LIST = document.createElement("body")
     LIST.style = `width: 90%;
     height: width: -webkit-fill-available;
-width: -moz-available;
+    width: -moz-available;
     top: 50%;
     left: 50%;
     border-radius: 10px;
@@ -3198,7 +3527,7 @@ width: -moz-available;
     let SavePRe = document.getElementById("SavePreset")
 
     TextPre.style = `width: -webkit-fill-available;
-width: -moz-available;
+    width: -moz-available;
     background: rgb(56, 56, 56);
     border-radius: 10px;
     border: transparent;
@@ -3370,6 +3699,7 @@ function createMainframe() {
     Head.className = "DES"
     Head.innerHTML = THISPar
     Head.style = `width: -webkit-fill-available;
+    width: -moz-available;
     font-size: 18px;
     padding: 10px;
     margin-inline: -10px;
@@ -3413,7 +3743,7 @@ function CreateNew(E) {
     New.style = `
         position: absolute;
         top: -3.5px;
-        left: -3.5px;
+        left: 0px;
         width: 20px;
         height: 20px;
         background: #ff1308;
@@ -3458,25 +3788,40 @@ function createDes(Des, Box) {
     return Descrip
 };
 
-function createCheck(id, Des, NEW) {
+function createCheck(id, Des, NEW, Value, IfTrue, IfFlase) {
     var Box = createframe('<input type="checkbox" id=' + id + ' class="CheckBox" >', NEW);
     createDes(Des, Box);
 
-    ThisCheck = document.getElementById(id);
+    ThisCheck = Box.getElementsByTagName("input")[0];
 
-    ThisCheck.checked = JSON.parse(localStorage["nt-" + id + "T"])
+    if (Value != null) {
+        ThisCheck.checked = Value
+    } else {
+        ThisCheck.checked = JSON.parse(localStorage["nt-" + id + "T"])
+    }
+
 
     ThisCheck.addEventListener('input', function (WHAT) {
         var Tar = WHAT.target
-        var Tarid = Tar.id
 
-        localStorage["nt-" + Tarid + "T"] = Tar.checked
+        if (IfTrue || IfFlase) {
+            if (Tar.checked == true) {
+                IfTrue()
+            } else {
+                IfFlase()
+            }
+        } else {
+            var Tarid = Tar.id
 
-        if (Tarid == "Realtime") {
-            RESETTUBE()
+            localStorage["nt-" + Tarid + "T"] = Tar.checked
+
+            if (Tarid == "Realtime") {
+                RESETTUBE()
+            }
+
+            update()
         }
 
-        update()
     })
 
     return Box
@@ -3715,6 +4060,100 @@ function FindVideo() {
     return v
 }
 
+var CreatedFontsCheck = []
+
+function CreateFontsList() {
+
+    CreatedFontsCheck.forEach(element => {
+        element.remove()
+    });
+
+    CreatedFontsCheck = []
+
+
+    AllFont.forEach(Thisfont => {
+        FontCheck = createCheck(Thisfont, Thisfont, false, UnCompressEnaFont().includes(Thisfont),
+            function () {
+                EnaFont = UnCompressEnaFont()
+                EnaFont.push(Thisfont)
+                SaveEnaFont(EnaFont)
+                update()
+            },
+            function () {
+                EnaFont = UnCompressEnaFont()
+                EnaFont.splice(EnaFont.indexOf(Thisfont), 1)
+                SaveEnaFont(EnaFont)
+                update()
+            })
+        FontLocatePar.append(FontCheck)
+        CreatedFontsCheck.push(FontCheck)
+    })
+}
+
+var AddedFontFrame
+var CreatedAddedFontFrame = []
+
+function CreateAddedFont() {
+    CreatedAddedFontFrame.forEach(element => {
+        element.remove()
+    });
+
+    AddedFont = UnCompressAddedFont()
+    Object.keys(AddedFont).forEach(function (TheseFontName) {
+        var GetTheseFont = AddedFont[TheseFontName]
+
+        var TheseFontFrame = document.createElement("p")
+        TheseFontFrame.style = `display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        padding-bottom:15px;
+        margin-bottom: 15px;
+        transition: margin-bottom 0.5s, padding-bottom 0.5s, height 0.5s;
+        overflow: hidden;
+        border-bottom: 1px solid cornflowerblue;`
+        CreatedAddedFontFrame.push(TheseFontFrame)
+        AddedFontFrame.append(TheseFontFrame)
+
+        ListTheseFont = document.createElement("div")
+        ListTheseFont.className = "DES"
+        ListTheseFont.innerHTML = TheseFontName.substring(1, TheseFontName.length - 1).replaceAll("Quote", "").replaceAll(",", "<br><br>")
+        ListTheseFont.style = `
+        min-width: 150px;
+        margin-right: 0px;`
+        TheseFontFrame.append(ListTheseFont)
+
+        StyleTheseFont = document.createElement("div")
+        StyleTheseFont.className = "DES"
+        StyleTheseFont.textContent = GetTheseFont[1]
+        StyleTheseFont.style = `
+        width: -webkit-fill-available;
+        width: -moz-available;
+        margin-left: 0px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: aquamarine;
+        }`
+        TheseFontFrame.append(StyleTheseFont)
+
+        DeleteTheseFont = document.createElement("div")
+        DeleteTheseFont.textContent = "X"
+        TheseFontFrame.append(DeleteTheseFont)
+        DeleteTheseFont.onclick = function () {
+            console.log(GetTheseFont[0])
+            RemoveListFont(GetTheseFont[0])
+            TheseFontFrame.style.height = "0px"
+            TheseFontFrame.style.paddingBottom = "0px"
+            TheseFontFrame.style.marginBottom = "0px"
+            setTimeout(() => {
+                TheseFontFrame.remove()
+            }, 500);
+            CreateFontsList()
+        }
+        DeleteTheseFont.className = "ntdeletefont"
+    })
+}
 
 
 
@@ -3747,7 +4186,7 @@ function CreateMENU() {
     LeftCount = 0
 
     let DeBu = `width: -webkit-fill-available;
-width: -moz-available;
+    width: -moz-available;
     padding: 10px;
     background: rgb(94 94 94 / 76%);
     color: white;
@@ -3768,7 +4207,7 @@ width: -moz-available;
     let BG = document.createElement("div")
     BG.id = "NEWTUBEBG"
     BG.className = "NEWTUBE"
-    BG.style = `resize: both; padding-top: 20px; width: 755px; height: 615px; max-height: -webkit-fill-available; position: fixed; top:56px; transition: opacity 0.5s, left 0.5s; z-index: 2020; display: flex; flex-direction: row;
+    BG.style = `resize: both; padding-top: 20px; width: 755px; height: 615px; max-height: -webkit-fill-available; max-height: -moz-available; position: fixed; top:56px; transition: opacity 0.5s, left 0.5s; z-index: 2020; display: flex; flex-direction: row;
     min-width: 602px;
     min-height: 247px;
     left: calc(100% - 755px);`
@@ -3819,7 +4258,7 @@ width: -moz-available;
     SetBg = document.createElement("body")
     SetBg.id = "NEWTUBE";
     SetBg.className = "NEWTUBE"
-    SetBg.style = "width: -webkit-fill-available; height: calc(100% - 50px); margin-top: 50px;";
+    SetBg.style = "width: -webkit-fill-available; width: -moz-available; height: calc(100% - 50px); margin-top: 50px;";
     BG.appendChild(SetBg)
 
     var Reset = document.createElement('button')
@@ -3932,10 +4371,7 @@ width: -moz-available;
     FHotFix.style = DeBu + `background: rgb(135 51 51 / 76%);`
     FHotFix.onclick = function () {
 
-        localStorage["SearchAnimT"] = "false"
-        localStorage["PtranT"] = "false"
-        localStorage["ThumbAnimT"] = "false"
-        localStorage["ControlUnderVDOT"] = "false"
+        DisableForFireFox()
 
         location.reload()
     }
@@ -3964,6 +4400,10 @@ width: -moz-available;
 
     createCheck("AutoPIP", "Auto Pictue In Pictue mode<br>(Pls click anywhere In page after you back to page)<br>(Security problem) (I do my best T_T)")
     createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode")
+
+    createCheck("Flyout", "Enable Flyout Video (Show video after scroll down)", true)
+
+    createTextBox("BelowSpace", "Space at Under of video", true)
 
     //-------------------------------------------------------------------------------
 
@@ -4076,11 +4516,11 @@ width: -moz-available;
 
     THISPar = "🌈 Color/Theme"
 
-    createColor("Theme", "1 Theme color")
+    createColor("Theme", "Main Theme color")
 
-    createColor("ThemeThr", "2 theme color")
+    createColor("ThemeThr", "Transparent-things theme color")
 
-    createColor("ThemeFort", "3 theme color")
+    createColor("ThemeFort", "Other theme color")
 
     createColor("LeftBar", "Left sidebar color")
 
@@ -4301,7 +4741,7 @@ width: -moz-available;
 
     createTextBox("BlurBGAM", "Background blur amount (0 = None)")
 
-    createCheck("API", "Use upload api (imgbb.com)");
+    createCheck("API", "Use upload api (imgbb.com)")
 
     var ChooseBG = createframe(`<lable class="DES">Background Image (Recommend to use URL)</lable>
     <p><input id="ChooseBG" type="file" accept="image/*" > </p>
@@ -4490,48 +4930,39 @@ width: -moz-available;
 
     FontLocatePar = createMainframe()
 
+    //Add Added Font
 
+    AddedFontFrame = createframe(`<div class="DES" style="text-align: center;width: 100%; margin-bottom:30px;">Added Fonts</div>`, true)
+    AddedFontFrame.style = `display: flex;
+    flex-direction: column;`
 
-    createframe(`<p style="display: flex;flex-direction: column;align-content: center;align-items: center; width: 100%;">
-    <a id="HOVERLINK" style="margin-bottom: 20px;font-size: 18px;background: #4b4b4b;padding: 10px;border-radius: 10px;" href="https://youtu.be/rm6U_4mendc" target="_blank" class="DES" >See how to add fonts!</a>
-    <textarea id="NTInstallFont" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste Font Faces here."></textarea>
-    </p>`)
+    CreateAddedFont()
 
-    let CreatedFontsCheck = []
+    AddFontFrame = createframe(`<a id="HOVERLINK" style="margin-bottom: 20px;font-size: 18px;background: #4b4b4b;padding: 10px;border-radius: 10px;" href="https://youtu.be/Lk145lrTIcU" target="_blank" class="DES" >See how to add fonts!</a>
+    <textarea id="NTInstallFont" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 200px; font-size: 18px;" placeholder="Paste Fonts here."></textarea>
+    <div id="ntAddFont" class="DES" style="background: #005100; border: #72ff72 solid 1px; border-radius: 10px; padding: 10px; margin-top: 20px;">✳️ Add fonts ✳️</div>`, true)
 
-    function CreateFontsList() {
-
-        CreatedFontsCheck.forEach(element => {
-            element.remove()
-        });
-
-        CreatedFontsCheck = []
-
-        listFonts().forEach(font => {
-            font = font.replaceAll(" ", "_")
-            let FontSaveName = `nt-Font-${font}T`
-            if (!localStorage[FontSaveName]) {
-                localStorage[FontSaveName] = "false"
-            }
-            let ThisfontCheck = createCheck("Font-" + font, font)
-            CreatedFontsCheck.push(ThisfontCheck)
-            FontLocatePar.append(ThisfontCheck)
-        })
-    }
+    AddFontFrame.style = `display: flex;flex-direction: column;align-content: center;align-items: center; width: 100%;`
 
     let InstallFont = document.getElementById("NTInstallFont")
 
-    InstallFont.value = localStorage["nt-InstallFont"]
+    document.getElementById("ntAddFont").onclick = function () {
+        AddedFont = UnCompressAddedFont()
+        ThisFontLinkName = GetFontName(InstallFont.value)
+        FontID = JSON.stringify(ThisFontLinkName)
+        FontID = FontID.replaceAll('"', "Quote")
 
-    InstallFont.addEventListener('change', function () {
-        localStorage["nt-InstallFont"] = InstallFont.value
-        update()
-        setTimeout(() => {
+        if (AddedFont[FontID] == null) {
+            AddListFont(InstallFont.value)
+            update()
             CreateFontsList()
-            InstallFont.scrollIntoView()
-        }, 100);
-    })
+            CreateAddedFont()
+        } else {
+            alert("This font has already Added")
+        }
 
+        InstallFont.value = ""
+    }
 
     CreateFontsList()
 
@@ -4657,9 +5088,9 @@ width: -moz-available;
     createCheck("NewVDOanima", "New video animation (Volume up/down,Pause,Play)")
 
     createCheck("DelBar", "Remove black bar top-bottom (Background VDO Should Enabled)")
-    createCheck("DropFrame", "Remove black bar Lazy Check (Drop frame)", true)
+    createCheck("DropFrame", "Remove black bar Lazy Check (Drop frame)")
     createCheck("DelBarDebug", "Remove black bar Debug")
-    createCheck("CheckStatic", "Check Static video (for Background VDO & Remove black bar)", true)
+    createCheck("CheckStatic", "Check Static video (for Background VDO & Remove black bar)")
 
 
 
@@ -4671,6 +5102,7 @@ width: -moz-available;
     NewtubeSearch.style = `
     position: absolute;
     width: -webkit-fill-available;
+    width: -moz-available;
     height: 40px;
     top: 20px;
     border-radius: 0px 0px 20px 20px;
@@ -5423,7 +5855,7 @@ function ChangeCanvasQua() {
 }
 
 function SetCanvas() {
-    if (canvas) {
+    if (canvas && !ADDFlyout) {
         VDOBOUND = FindVideo().getBoundingClientRect()
 
         VcenY = VDOBOUND.top + VDOBOUND.height / 2
@@ -5510,7 +5942,7 @@ function SetCanvas() {
     // }
 }
 
-function DetectPlay() {
+function StartDraw() {
     // console.log("PLAY")
     SetCanvas()
     thisframe = 0
@@ -6149,7 +6581,7 @@ function EnterPip() {
 
 function LeavePip() {
     PipMode = false
-    requestAnimationFrame(DetectPlay)
+    requestAnimationFrame(StartDraw)
 }
 
 
@@ -6205,7 +6637,7 @@ function CreateCanvas() {
         context2.imageSmoothingEnabled = false
     }
 
-    v.addEventListener('play', DetectPlay)
+    v.addEventListener('play', StartDraw)
     v.addEventListener("enterpictureinpicture", EnterPip)
     v.addEventListener("leavepictureinpicture", LeavePip)
 
@@ -6248,7 +6680,7 @@ function RemoveCanvas(Force) {
 
         FindVideo()
         v.style.setProperty("opacity", "1")
-        v.removeEventListener('play', DetectPlay, false)
+        v.removeEventListener('play', StartDraw, false)
         v.removeEventListener("enterpictureinpicture", EnterPip)
         v.removeEventListener("leavepictureinpicture", LeavePip)
 
@@ -6365,15 +6797,14 @@ chrome.runtime.onMessage.addListener(function (recived) {
     }
 })
 
-var hidden = false
+var rqpip = false
 
 document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState == 'hidden' && hidden == true && localStorage["nt-AutoPIPT"] == "true") {
-        hidden = false
-        if (document.pictureInPictureElement) {
-            document.exitPictureInPicture();
+    if (document.visibilityState == 'hidden' && rqpip == true && localStorage["nt-AutoPIPT"] == "true") {
+        rqpip = false
+        if (document.pictureInPictureElement == null) {
+            FindVideo().requestPictureInPicture()
         }
-        FindVideo().requestPictureInPicture()
     }
 })
 
@@ -6389,7 +6820,7 @@ window.addEventListener('focus', function () {
 
 window.addEventListener('blur', function () {
     // console.log("Bruh")
-    hidden = true
+    rqpip = true
 })
 
 function listFonts() {
@@ -6416,3 +6847,162 @@ function listFonts() {
     })
     return ArrayFont
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// document.addEventListener('DOMContentLoaded',function() {
+//     // will set to true when video can be copied to texture
+//     var copyVideo = false;
+//     const video = document.getElementsByTagName("video")[0];
+
+//     // immediately after finding the video, create canvas and set its dimensions
+//     let canvas = document.createElement('canvas');
+//     canvas.setAttribute('id', 'glcanvas');
+//     canvas.setAttribute('width', '300');
+//     canvas.setAttribute('height', '200');
+//     canvas.setAttribute('style', 'position: absolute;');
+//     video.parentElement.appendChild(canvas);
+//     video.requestVideoFrameCallback(function() {
+//         copyVideo=true;
+//     });
+
+//     // Initialize the GL context
+//     const gl = canvas.getContext("webgl");
+
+//     // Only continue if WebGL is available and working
+//     if (gl === null) {
+//         alert("Unable to initialize WebGL. Your browser or machine may not support it.");
+//         return;
+//     }
+
+//     // Vertex shader program
+//     const vsSource = `
+// attribute vec2 a_position;
+// varying vec2 v_texCoord;
+
+// void main() {
+//    gl_Position = vec4(a_position, 0.0, 1.0);
+//    v_texCoord = a_position*.5+.5;
+//    v_texCoord.y = 1.-v_texCoord.y;
+// }
+// `;
+
+//     // Fragment shader program
+//     const fsSource = `
+// precision mediump float;
+
+// uniform sampler2D u_image;
+// varying vec2 v_texCoord;
+
+// void main() {
+//    gl_FragColor = texture2D(u_image, v_texCoord);
+// }
+//   `;
+
+//     const positionData = new Float32Array([
+//         -1.0,-1.0,
+//          1.0,-1.0,
+//         -1.0, 1.0,
+//          1.0,-1.0,
+//          1.0, 1.0,
+//         -1.0, 1.0
+//     ]);
+
+
+//     // Initialize a shader program, so WebGL knows how to draw our data
+//     function initShaderProgram(gl, vsSource, fsSource) {
+//         const shaderProgram = gl.createProgram();
+//         gl.attachShader(shaderProgram, loadShader(gl, gl.VERTEX_SHADER, vsSource));
+//         gl.attachShader(shaderProgram, loadShader(gl, gl.FRAGMENT_SHADER, fsSource));
+//         gl.linkProgram(shaderProgram);
+
+//         // If creating the shader program failed, alert
+//         if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+//             alert('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
+//             return null;
+//         }
+
+//         return shaderProgram;
+//     }
+
+//     // creates a shader of the given type, uploads the source and compiles it.
+//     function loadShader(gl, type, source) {
+//         const shader = gl.createShader(type);
+//         gl.shaderSource(shader, source);
+//         gl.compileShader(shader);
+
+//         // See if it compiled successfully
+//         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+//             alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
+//             gl.deleteShader(shader);
+//             return null;
+//         }
+
+//         return shader;
+//     }
+
+//     // Initialize shader program
+//     const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+
+//     // look up where the vertex data needs to go.
+//     var positionLocation = gl.getAttribLocation(shaderProgram, "a_position");
+//     var textureLoc = gl.getUniformLocation(shaderProgram, "u_image");
+
+//     // Create a vertex buffer
+//     var positionBuffer = gl.createBuffer();
+//     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+//     gl.bufferData(gl.ARRAY_BUFFER, positionData, gl.STATIC_DRAW);
+
+//     // Create texture
+//     var texture = gl.createTexture();
+//     gl.bindTexture(gl.TEXTURE_2D, texture);
+//     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255]));
+//     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+//     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+//     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+//     // Initialize rendering
+//     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+//     gl.clearColor(1.0,0.0,0.0,1.0);
+
+//     function drawScene() {
+//         gl.clear(gl.COLOR_BUFFER_BIT);
+//         gl.useProgram(shaderProgram);
+
+//         // Turn on the vertex attribute
+//         gl.enableVertexAttribArray(positionLocation);
+//         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+//         gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+//         // Draw the rectangle
+//         gl.drawArrays(gl.TRIANGLES, 0, 6);
+//     }
+
+//     // Draw the scene repeatedly
+//     function render() {
+//         if (copyVideo)
+//             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, video);
+
+//         drawScene();
+//         requestAnimationFrame(render);
+//     }
+//     requestAnimationFrame(render);
+// })
+
+
+
+// AddListFont(`<style>
+// @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@200&family=Noto+Sans+JP:wght@200&family=Noto+Sans+Thai:wght@200&display=swap');
+// </style>`)
+
+// console.log(AllFont, AddedFont)
