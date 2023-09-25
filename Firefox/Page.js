@@ -1,5 +1,17 @@
 /* Yeaaaaaah :3 AzPepoze https://www.youtube.com/channel/UCJ2C0UTfxQo6iGTfudPfoRQ */
 
+ForceShowError = true
+
+window.onerror =
+    function (msg, source, lineNo, columnNo, error) {
+        if (localStorage["nt-ErrorCollectT"] == "true" || ForceShowError) {
+            alert("NEWTUBE_ERROR" +
+                "\n\n" + msg +
+                "\n" + lineNo)
+            return true;
+        }
+    };
+
 Ver = chrome.runtime.getManifest().version
 isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
 
@@ -7,16 +19,6 @@ AllFont = ["Roboto", "YouTube Sans", "Roboto Mono"]
 
 if (localStorage["nt-InstallFont"]) {
     delete localStorage["nt-InstallFont"]
-}
-
-localStorage["nt-ADDFONT"] = JSON.stringify({
-    "[QuoteNoto Sans ThaiQuote]": ["[QuoteNoto Sans ThaiQuote]", "<style> @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@200&display=swap'); </style>"],
-    "[QuoteNoto Sans JPQuote,QuoteNoto Sans KRQuote]": ["[QuoteNoto Sans JPQuote,QuoteNoto Sans KRQuote]", "<style> @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@200&family=Noto+Sans+KR:wght@200&display=swap'); </style>"],
-    "[QuoteAnnie Use Your TelescopeQuote]": ["[QuoteAnnie Use Your TelescopeQuote]", "<style> @import url('https://fonts.googleapis.com/css2?family=Annie+Use+Your+Telescope&display=swap'); </style>\n"]
-})
-
-if (localStorage["nt-ADDFONT"]) {
-    SaveAddedFont(UnCompressAddedFont())
 }
 
 function DisableForFireFox() {
@@ -66,16 +68,6 @@ var PreloadImg = new Image
 PreloadImg.onload = function () {
     SetGlobalBGImage(PreloadImg.src)
 }
-
-window.onerror =
-    function (msg, source, lineNo, columnNo, error) {
-        if (localStorage["nt-ErrorCollectT"] == "true") {
-            alert("NEWTUBE_ERROR" +
-                "\n\n" + msg +
-                "\n" + lineNo)
-            return true;
-        }
-    };
 
 function SetWhenUpdate() {
     presetarray = JSON.parse(localStorage["nt-NUMPRESET"])
@@ -5810,6 +5802,8 @@ function SettoEnd() {
 
                 ENDobserver.observe(document.getElementById("end"), { subtree: false, childList: true });
             }
+
+            ForceShowError = false
         }
     }, 1000);
 }
@@ -6425,40 +6419,11 @@ function drawOnePic() {
             SetCanvas()
             Scale = 1
 
-            // Bcontext.globalCompositeOperation = "copy"
-
-            // var Xgradient = Bcontext.createLinearGradient(0, 0, cw, 0);
-            // Xgradient.addColorStop(0, "black");
-            // Xgradient.addColorStop(0.2, "transparent");
-            // Xgradient.addColorStop(0.8, "transparent");
-            // Xgradient.addColorStop(1, "black");
-
-            // var Ygradient = Bcontext.createLinearGradient(0, 0, 0, ch);
-            // Ygradient.addColorStop(0, "black");
-            // Ygradient.addColorStop(0.2, "transparent");
-            // Ygradient.addColorStop(0.8, "transparent");
-            // Ygradient.addColorStop(1, "black");
-
-            // Bcontext.fillStyle = Xgradient;
-            // Bcontext.fillRect(0, 0, cw, ch);
-            // Bcontext.globalCompositeOperation = "source-over"
-            // Bcontext.fillStyle = Ygradient;
-            // Bcontext.fillRect(0, 0, cw, ch);
-
-            // context.globalAlpha = 1
-            // if (BGSmooth != 1) {
-            //     context.globalCompositeOperation = "copy"
-            //     if (LastFrame) {
-            //         context.putImageData(LastFrame,0,0);
-            //     }
-
             if (StaticVDO) {
                 context.globalAlpha = 1
             } else {
                 context.globalAlpha = BGSmooth
             }
-
-            // }
 
             // context.globalCompositeOperation = "source-over"
             context.filter = `blur(${localStorage["nt-NVDOB"]}px)`
@@ -6470,46 +6435,6 @@ function drawOnePic() {
             //     })
 
             context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
-
-
-            // if (BGSmooth != 1)
-            //     LastFrame = context.getImageData(0,0,cw,ch);
-            // }
-            // context.filter = `none`
-
-            // context.globalCompositeOperation = "destination-out"
-            // context.globalAlpha = 1
-
-            // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-            // Scale = 0.8
-            // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-            // Scale = 0.7
-            // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-            // Scale = 0.6
-            // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-            // Scale = 0.55
-            // context.drawImage(v, (cw*(1-Scale)/2), (ch*(1-Scale)/2), cw*Scale, ch*Scale);
-
-            // if (BGSmooth != 1) {
-            //     context.globalAlpha = 1
-            // }
-            // var Xgradient = context.createLinearGradient(0, 0, cw, 0);
-            // Xgradient.addColorStop(0, "black");
-            // Xgradient.addColorStop(0.2, "transparent");
-            // Xgradient.addColorStop(0.8, "transparent");
-            // Xgradient.addColorStop(1, "black");
-
-            // var Ygradient = context.createLinearGradient(0, 0, 0, ch);
-            // Ygradient.addColorStop(0, "black");
-            // Ygradient.addColorStop(0.2, "transparent");
-            // Ygradient.addColorStop(0.8, "transparent");
-            // Ygradient.addColorStop(1, "black");
-
-            // context.fillStyle = Xgradient;
-            // context.fillRect(0, 0, cw, ch);
-            // context.fillStyle = Ygradient;
-            // context.fillRect(0, 0, cw, ch);
-
 
             if (BlackMode == true) {
                 ReBlackctx.drawImage(v, 0, 0, VDOBOUND.width, VDOBOUND.height);
@@ -6733,7 +6658,7 @@ function CheckLoop() {
 }
 
 function CheckStaticVDO() {
-    if (CanCheckStatic) {
+    if (CanCheckStatic && document.getElementsByTagName("ytd-watch-flexy")) {
         console.log("Check if static")
         videoID = document.getElementsByTagName("ytd-watch-flexy")[0].getAttribute("video-id")
         console.log(videoID)
@@ -6881,162 +6806,3 @@ function listFonts() {
     })
     return ArrayFont
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// document.addEventListener('DOMContentLoaded',function() {
-//     // will set to true when video can be copied to texture
-//     var copyVideo = false;
-//     const video = document.getElementsByTagName("video")[0];
-
-//     // immediately after finding the video, create canvas and set its dimensions
-//     let canvas = document.createElement('canvas');
-//     canvas.setAttribute('id', 'glcanvas');
-//     canvas.setAttribute('width', '300');
-//     canvas.setAttribute('height', '200');
-//     canvas.setAttribute('style', 'position: absolute;');
-//     video.parentElement.appendChild(canvas);
-//     video.requestVideoFrameCallback(function() {
-//         copyVideo=true;
-//     });
-
-//     // Initialize the GL context
-//     const gl = canvas.getContext("webgl");
-
-//     // Only continue if WebGL is available and working
-//     if (gl === null) {
-//         alert("Unable to initialize WebGL. Your browser or machine may not support it.");
-//         return;
-//     }
-
-//     // Vertex shader program
-//     const vsSource = `
-// attribute vec2 a_position;
-// varying vec2 v_texCoord;
-
-// void main() {
-//    gl_Position = vec4(a_position, 0.0, 1.0);
-//    v_texCoord = a_position*.5+.5;
-//    v_texCoord.y = 1.-v_texCoord.y;
-// }
-// `;
-
-//     // Fragment shader program
-//     const fsSource = `
-// precision mediump float;
-
-// uniform sampler2D u_image;
-// varying vec2 v_texCoord;
-
-// void main() {
-//    gl_FragColor = texture2D(u_image, v_texCoord);
-// }
-//   `;
-
-//     const positionData = new Float32Array([
-//         -1.0,-1.0,
-//          1.0,-1.0,
-//         -1.0, 1.0,
-//          1.0,-1.0,
-//          1.0, 1.0,
-//         -1.0, 1.0
-//     ]);
-
-
-//     // Initialize a shader program, so WebGL knows how to draw our data
-//     function initShaderProgram(gl, vsSource, fsSource) {
-//         const shaderProgram = gl.createProgram();
-//         gl.attachShader(shaderProgram, loadShader(gl, gl.VERTEX_SHADER, vsSource));
-//         gl.attachShader(shaderProgram, loadShader(gl, gl.FRAGMENT_SHADER, fsSource));
-//         gl.linkProgram(shaderProgram);
-
-//         // If creating the shader program failed, alert
-//         if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-//             alert('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
-//             return null;
-//         }
-
-//         return shaderProgram;
-//     }
-
-//     // creates a shader of the given type, uploads the source and compiles it.
-//     function loadShader(gl, type, source) {
-//         const shader = gl.createShader(type);
-//         gl.shaderSource(shader, source);
-//         gl.compileShader(shader);
-
-//         // See if it compiled successfully
-//         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-//             alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
-//             gl.deleteShader(shader);
-//             return null;
-//         }
-
-//         return shader;
-//     }
-
-//     // Initialize shader program
-//     const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
-
-//     // look up where the vertex data needs to go.
-//     var positionLocation = gl.getAttribLocation(shaderProgram, "a_position");
-//     var textureLoc = gl.getUniformLocation(shaderProgram, "u_image");
-
-//     // Create a vertex buffer
-//     var positionBuffer = gl.createBuffer();
-//     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-//     gl.bufferData(gl.ARRAY_BUFFER, positionData, gl.STATIC_DRAW);
-
-//     // Create texture
-//     var texture = gl.createTexture();
-//     gl.bindTexture(gl.TEXTURE_2D, texture);
-//     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255]));
-//     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-//     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-//     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-//     // Initialize rendering
-//     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-//     gl.clearColor(1.0,0.0,0.0,1.0);
-
-//     function drawScene() {
-//         gl.clear(gl.COLOR_BUFFER_BIT);
-//         gl.useProgram(shaderProgram);
-
-//         // Turn on the vertex attribute
-//         gl.enableVertexAttribArray(positionLocation);
-//         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-//         gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-
-//         // Draw the rectangle
-//         gl.drawArrays(gl.TRIANGLES, 0, 6);
-//     }
-
-//     // Draw the scene repeatedly
-//     function render() {
-//         if (copyVideo)
-//             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, video);
-
-//         drawScene();
-//         requestAnimationFrame(render);
-//     }
-//     requestAnimationFrame(render);
-// })
-
-
-
-// AddListFont(`<style>
-// @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@200&family=Noto+Sans+JP:wght@200&family=Noto+Sans+Thai:wght@200&display=swap');
-// </style>`)
-
-// console.log(AllFont, AddedFont)
