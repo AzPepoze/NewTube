@@ -2,15 +2,16 @@
 
 ForceShowError = true
 
-window.onerror =
-    function (msg, source, lineNo, columnNo, error) {
-        if (localStorage["nt-ErrorCollectT"] == "true" || ForceShowError) {
-            alert("NEWTUBE_ERROR" +
-                "\n\n" + msg +
-                "\n" + lineNo)
-            return true;
-        }
-    };
+window.onerror = function (msg, source, lineNo, columnNo, error) {
+    if (localStorage["nt-ErrorCollectT"] == "true" || ForceShowError) {
+        console.log("--------------")
+        console.log("NEWTUBE_ERROR")
+        console.log(msg)
+        console.log(lineNo)
+        console.log("--------------")
+        return true;
+    }
+}
 
 Ver = chrome.runtime.getManifest().version
 isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
@@ -26,7 +27,6 @@ function DisableForFireFox() {
     localStorage["nt-PtranT"] = "false"
     localStorage["nt-ThumbAnimT"] = "false"
     localStorage["nt-ControlUnderVDOT"] = "false"
-    localStorage["nt-FlyoutT"] = "false"
 }
 
 if (isFirefox) DisableForFireFox()
@@ -1673,21 +1673,13 @@ function ScrollEv() {
     if (localStorage["nt-FlyoutT"] == "true") {
         // console.log(toppo, WindowH)
         if (player == null) {
-            if (isFirefox) {
-                player = document.querySelectorAll("[id='player-container']")
-                player.forEach((ThisElement) => {
-                    if (ThisElement.getElementsByClassName(".playing-mode")) {
-                        player = thisElement
-                    }
-                })
-            } else {
-                player = document.querySelector("#player-container:has(.playing-mode:not(.ytp-small-mode))")
-            }
+            player = document.querySelector(`#player-container.ytd-watch-flexy`)
         } else {
             if (VdoPlayer == null) {
                 VdoPlayer = player.getElementsByClassName("html5-video-player")[0]
             } else {
-                if (toppo > WindowH) {
+                FindVideo()
+                if (toppo > WindowH && !v.parentNode.parentNode.className.includes("ytp-small-mode")) {
                     if (!ADDFlyout) {
                         StartFlyout()
                     }
@@ -2129,7 +2121,7 @@ function update() {
                     color: var(--yt-spec-static-brand-white) !important;
                 }
 
-                .ytp-tooltip-text.ytp-tooltip-text-no-title{
+                .ytp-tooltip-text-no-title{
                     background: var(--hover-time-background) !important;
                 }
                 
@@ -2823,6 +2815,8 @@ function update() {
                 #below {
                     margin-top:`+ localStorage["nt-BelowSpace"] + `px;
                 }
+
+
                     
                 `+ BGBLURCODE + `
                 
@@ -6657,8 +6651,11 @@ function CheckLoop() {
     }, 100);
 }
 
-function CheckStaticVDO() {
-    if (CanCheckStatic && document.getElementsByTagName("ytd-watch-flexy")) {
+function CheckStaticVDO(attp) {
+    if (attp == null) {
+        attp = 10
+    }
+    if (CanCheckStatic && document.getElementsByTagName("ytd-watch-flexy")[0] && attp > 0) {
         console.log("Check if static")
         videoID = document.getElementsByTagName("ytd-watch-flexy")[0].getAttribute("video-id")
         console.log(videoID)
@@ -6668,21 +6665,21 @@ function CheckStaticVDO() {
             Frame3Loaded
 
         var frame1 = new Image()
-        frame1.crossOrigin = "anonymous"
+        frame1.crossOrigin = "https://www.youtube.com"
         frame1.onload = function () {
             Frame1Loaded = getBase64Image(frame1).length
         }
         frame1.src = `http://i.ytimg.com/vi/${videoID}/1.jpg`
 
         var frame2 = new Image()
-        frame2.crossOrigin = "anonymous"
+        frame2.crossOrigin = "https://www.youtube.com"
         frame2.onload = function () {
             Frame2Loaded = getBase64Image(frame2).length
         }
         frame2.src = `http://i.ytimg.com/vi/${videoID}/2.jpg`
 
         var frame3 = new Image()
-        frame3.crossOrigin = "anonymous"
+        frame3.crossOrigin = "https://www.youtube.com"
         frame3.onload = function () {
             Frame3Loaded = getBase64Image(frame3).length
         }
@@ -6691,7 +6688,7 @@ function CheckStaticVDO() {
 
         setTimeout(() => {
             if (isNaN(Frame1Loaded) || isNaN(Frame2Loaded) || isNaN(Frame3Loaded)) {
-                CheckStaticVDO()
+                CheckStaticVDO(attp)
             } else {
                 Max = Math.max(Frame1Loaded, Frame2Loaded, Frame3Loaded)
                 Min = Math.min(Frame1Loaded, Frame2Loaded, Frame3Loaded)
