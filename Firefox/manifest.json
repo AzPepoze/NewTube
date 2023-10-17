@@ -1,8 +1,8 @@
-{
-    "manifest_version": 3,
-    "name": "Newtube (Youtube Style Customizer)",
-    "version": "4.2.7",
-    "description": "Customize your Youtube website with a lot customizable.",
+{"manifest_version": 3,
+    "name": "NewTube (YouTube Customizer & Enhancement)",
+    "author": "AzPepoze",
+    "version": "4.3.1",
+    "description": "Customize your YouTube website with a lot customizable.",
     "default_locale": "en",
 	"icons":{
 		"128":"icon/128.png",

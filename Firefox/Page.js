@@ -1,9 +1,86 @@
 /* Yeaaaaaah :3 AzPepoze https://www.youtube.com/channel/UCJ2C0UTfxQo6iGTfudPfoRQ */
 
+let AzCached = {}
+
+async function MainLoad(GetLoadArray) {
+    let GetLoad
+
+    if (GetLoadArray != null && AzCached[GetLoadArray] != null) {
+        GetLoad = AzCached[GetLoadArray]
+        // console.log("Load", GetLoadArray, AzCached[GetLoadArray])
+    }
+
+
+    if (GetLoad == null) {
+        await chrome.storage.local.get(GetLoadArray).then((Loaded) => {
+            if (GetLoadArray == null) {
+                GetLoad = Loaded
+            } else {
+                GetLoad = Loaded[GetLoadArray]
+                AzCached[GetLoadArray] = GetLoad
+                // console.log("FirstLoad", GetLoadArray, AzCached[GetLoadArray])
+            }
+        })
+    }
+
+    return GetLoad
+}
+
+async function GetLoad(GetLoad) {
+    let ThisLoad = await MainLoad(GetLoad)
+    // console.log("Loaded", GetLoad, ThisLoad)
+    return ThisLoad
+}
+
+async function LoadCached() {
+    if (await GetLoad("EnableCachedT") == true) {
+        AzCached = await GetLoad("CachedSave")
+        if (AzCached == null) {
+            AzCached = {}
+        } else {
+            console.log("Loaded Cached")
+        }
+    }
+}
+
+LoadCached()
+
+async function MainSave(TheSave) {
+    let OriginTheSave = TheSave
+    console.log("Save", TheSave)
+    if (await GetLoad("EnableCachedT") == true) {
+        Object.keys(TheSave).forEach(function (ThisKey) {
+            AzCached[ThisKey] = TheSave[ThisKey]
+            //console.log("SaveToCached", ThisKey, TheSave[ThisKey])
+        })
+    }
+    await chrome.storage.local.set(OriginTheSave)
+}
+
+async function LoadToConsole(GetLoadArray) {
+    let Get = await MainLoad(GetLoadArray)
+    console.log(Get)
+}
+
+LoadToConsole(null)
+
+async function ClearSave() {
+    await chrome.storage.local.clear()
+    AzCached = {}
+}
+
+window.addEventListener("beforeunload", async function () {
+    if (await GetLoad("EnableCachedT") == true) {
+        MainSave({ "CachedSave": AzCached })
+    } else {
+        MainSave({ "CachedSave": {} })
+    }
+})
+
 ForceShowError = true
 
-window.onerror = function (msg, source, lineNo, columnNo, error) {
-    if (localStorage["nt-ErrorCollectT"] == "true" || ForceShowError) {
+window.onerror = async function (msg, source, lineNo, columnNo, error) {
+    if (await GetLoad("ErrorCollectT") == true || ForceShowError) {
         console.log("--------------")
         console.log("NEWTUBE_ERROR")
         console.log(msg)
@@ -13,27 +90,27 @@ window.onerror = function (msg, source, lineNo, columnNo, error) {
     }
 }
 
+
+
 Ver = chrome.runtime.getManifest().version
 isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
 
 AllFont = ["Roboto", "YouTube Sans", "Roboto Mono"]
 
-if (localStorage["nt-InstallFont"]) {
-    delete localStorage["nt-InstallFont"]
-}
-
-function DisableForFireFox() {
-    localStorage["nt-SearchAnimT"] = "false"
-    localStorage["nt-PtranT"] = "false"
-    localStorage["nt-ThumbAnimT"] = "false"
-    localStorage["nt-ControlUnderVDOT"] = "false"
+async function DisableForFireFox() {
+    MainSave({
+        SearchAnimT: false,
+        PtranT: false,
+        ThumbAnimT: false,
+        ControlUnderVDOT: false
+    })
 }
 
 if (isFirefox) DisableForFireFox()
 
 var RemovedNewLine
 
-function RemoveNewLine(Text) {
+async function RemoveNewLine(Text) {
     if (Text.includes("\n")) {
         Text = Text.replaceAll("\n", "")
         RemoveNewLine(Text)
@@ -42,83 +119,72 @@ function RemoveNewLine(Text) {
     }
 }
 
-function UnCompressEnaFont() {
-    return JSON.parse(localStorage["nt-EnaFont"])
+async function UnCompressEnaFont() {
+    let GetThisLoad = await GetLoad("EnaFonT")
+    return GetThisLoad
 }
 
-function SaveEnaFont(Save) {
-    localStorage["nt-EnaFont"] = JSON.stringify(Save)
+async function SaveEnaFont(Save) {
+    await MainSave({ "EnaFonT": Save })
 }
 
-function UnCompressAddedFont() {
-    return JSON.parse(localStorage["nt-ADDFONT"])
+async function UnCompressAddedFont() {
+    let GetThisLoad = await GetLoad("ADDFONT")
+    // return JSON.parse(GetThisLoad)
+    return GetThisLoad
 }
 
-function SaveAddedFont(Save) {
-    Object.keys(Save).forEach(function (ThisKey) {
+async function SaveAddedFont(Save) {
+    Object.keys(Save).forEach(async function (ThisKey) {
         RemoveNewLine(Save[ThisKey][1])
         Save[ThisKey][1] = RemovedNewLine
     })
     console.log(Save)
-    localStorage["nt-ADDFONT"] = JSON.stringify(Save)
-
+    await MainSave({ ADDFONT: Save })
 }
 
 var PreloadImg = new Image
-PreloadImg.onload = function () {
+PreloadImg.onload = async function () {
+    //console.log(PreloadImg.src)
     SetGlobalBGImage(PreloadImg.src)
 }
 
-function SetWhenUpdate() {
-    presetarray = JSON.parse(localStorage["nt-NUMPRESET"])
-
-    for (obj of ForcePre) {
-        if (!presetarray.includes(obj)) {
-            presetarray.push(obj)
-            break;
-        }
-    }
-
-    localStorage["nt-NUMPRESET"] = JSON.stringify(presetarray)
-
-    SetNormalPre()
-    //------------------------------------------------------
+async function SetWhenUpdate() {
 
 }
 
-ForcePre = [
-    "(Current)",
-    "(Low PC) Purple",
-    "(Low-end PC) Cyan",
-    "(SUPER LOW PC) (CSS) Potato machine (less blur)",
-    "(SUPER_SUPER LOW PC) (CSS) Potato machine (none blur)",
-    "Light Theme",
-    "Dark Theme",
-    "Black Theme",
-    "Pink-Black",
-    "Glass",
-    "Rainbow",
-    "My Waifu ♥",
-    "I'm Using :D",
-    "Coding"
-]
-
-function SetidxTo(Name, Va) {
+async function SetidxTo(Name, Va) {
     store.put(Va, Name)
 }
 
-function SetNormalPre() {
-    // SetidxTo("PRESETGlass", JSON.stringify(  ))
-    SetidxTo("PRESETLight Theme", JSON.stringify(["SubtitleC", "#000000", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ffffff", "CUSTOM", "", "TextC", "#000000", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff0000", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#000000", "VDOTEXTC", "#000000", "MediaBGC", "#ffffff", "TimeBGC", "#ffffff", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "3", "OutShaC", "#000000", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#383838", "CapOutT", "true", "PlaylisthoverO", "27", "ThemeO", "100", "ThemehoverC", "#ff0000", "ThumbHoverColorC", "#ff94f6", "ThemeFortC", "#ff0000", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#ffffff", "BlurBGAM", "10", "SubOutT", "true", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Sha", "ThumbClickO", "100", "ThemehoverO", "25", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff0000", "PlaylisthoverC", "#ff0000", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#ffffff", "BGO", "100", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "72", "OutShaO", "32", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#ffffff", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""]))
-    SetidxTo("PRESETDark Theme", JSON.stringify(["SubtitleC", "#ffffff", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#00eeff", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff0000", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "3", "OutShaC", "#000000", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#9e9e9e", "CapOutT", "true", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#ff0000", "ThumbHoverColorC", "#eeff00", "ThemeFortC", "#ff0000", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "10", "SubOutT", "true", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Sha", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff0000", "PlaylisthoverC", "#ff0000", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#000000", "ThemeSndC", "#000000", "BGO", "85", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "72", "OutShaO", "100", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#1a1a1a", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""]))
-    SetidxTo("PRESETBlack Theme", JSON.stringify(["SubtitleC", "#ff8a8a", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ffffff", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff0000", "FlipT", "false", "BottomGT", "false", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "1", "OutShaC", "#ff0000", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#c4c4c4", "CapOutT", "false", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#ff0000", "ThumbHoverColorC", "#00ffd5", "ThemeFortC", "#ff0000", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "10", "SubOutT", "false", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff0000", "PlaylisthoverC", "#ff0000", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#000000", "BGO", "70", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "80", "OutShaO", "50", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""]))
-    SetidxTo("PRESETMy Waifu ♥", JSON.stringify(["SubtitleC", "#da8aff", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ff0000", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#bf70ff", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "1", "OutShaC", "#cd70ff", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#c4c4c4", "CapOutT", "false", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#dc5cff", "ThumbHoverColorC", "#ff00dd", "ThemeFortC", "#c494ff", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "0", "SubOutT", "false", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#b061ff", "PlaylisthoverC", "#d666ff", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "15", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#000000", "BGO", "70", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "80", "OutShaO", "50", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", "https://i.ibb.co/FYPBxC5/1647030608836.jpg"]))
-    SetidxTo("PRESET(SUPER_SUPER LOW PC) (CSS) Potato machine (none blur)", JSON.stringify(["VDOBGT", "false", "EnaCUSCSST", 'true', "CUSTOM", ":root {\n    --blur-amount: 10px;\n    --theme: red;\n    --playlist-bg: rgba(255, 0, 0, 0.1);\n    --text-color: #FFF;\n    --nd-text-color: #7D7D7D;\n    --border-width: 1px;\n    --player-bg-border-width: 1px;\n    --border-color: rgba(0, 0, 0, 0);\n    --border-hover-color: red;\n    --border-click-color: #0FF;\n    --bg-color: #000;\n    --in-player-bg-color: rgba(0, 0, 0, 0.5);\n    --top-bar-and-search-background: rgba(0, 0, 0, 0.507);\n    --things-end-on-video: rgba(66, 66, 66, 0.507);\n    --hover-time-background: rgba(0, 0, 0, 0.425);\n    --search-background-hover: rgba(255, 0, 0, 0.5);\n    --theme-radius: 10px;\n    --theme-time-radius: 10px;\n    --theme-radius-big: 20px;\n    --border-minus: calc(var(--border-width) * -1);\n    --bg-border-minus: calc(var(--player-bg-border-width) * -1)\n}\n\nhtml:not(.style-scope),\n:not(.style-scope),\nhtml:not(.style-scope) {\n    --yt-spec-brand-background-primary: var(--top-bar-and-search-background) !important;\n    --yt-spec-brand-background-solid: var(--bg-color) !important;\n    --yt-spec-general-background-a: var(--bg-color) !important;\n    --yt-spec-call-to-action: var(--theme) !important;\n    --yt-spec-badge-chip-background: var(--playlist-bg) !important;\n    --yt-spec-text-primary: var(--text-color) !important;\n    --yt-spec-text-secondary: var(--nd-text-color) !important;\n    --yt-spec-brand-button-background: var(--theme) !important;\n    --yt-spec-static-brand-red: var(--theme) !important;\n    --yt-spec-brand-icon-inactive: var(--theme) !important\n}\n\n#tooltip.tp-yt-paper-tooltip {\n    background-color: var(--bg-color) !important\n}\n\nbody::-webkit-scrollbar,\n.playlist-items.ytd-playlist-panel-renderer::-webkit-scrollbar,\n#guide-inner-content.ytd-app:hover::-webkit-scrollbar {\n    width: 11px !important\n}\n\n.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title {\n    display: block !important;\n    background-color: var(--hover-time-background) !important\n}\n\nytd-live-chat-frame {\n    transition: all .2s cubic-bezier(0, 1, 1, 1) !important\n}\n\n.ytp-ce-expanding-overlay-background,\n.ytp-ce-playlist-count {\n    background: var(--things-end-on-video) !important\n}\n\n.sbdd_b,\n#scrim,\ntp-yt-iron-overlay-backdrop {\n    background: var(--top-bar-and-search-background) !important\n}\n\nytd-thumbnail-overlay-hover-text-renderer {\n    background-color: var(--top-bar-and-search-background) !important\n}\n\n.sbfl_b,\n.sbsb_a,\n#container.style-scope.ytd-masthead {\n    background: transparent !important\n}\n\n.sbsb_d,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:hover,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:focus,\n.ytp-menuitem:not([aria-disabled=true]):hover {\n    background: var(--search-background-hover) !important;\n    transition: all .2s cubic-bezier(0.1, 0.7, 1, 1) !important\n}\n\n.gsfs,\n.ytp-ce-channel-metadata,\n.ytp-cards-teaser .ytp-cards-teaser-text,\n.ytp-panel-menu,\n.ytp-ce-website-title,\n.ytp-ce-merchandise-title {\n    color: var(--text-color) !important\n}\n\n#player,\nytd-multi-page-menu-renderer {\n    border-radius: var(--theme-radius-big) !important\n}\n\na.thumbnail>.ytcd-basic-item-large-image,\nytcp-thumbnail-with-title,\nytd-playlist-thumbnail,\nytd-thumbnail,\n#thumbnail,\n.thumbnail-container.ytd-notification-renderer,\n.sbdd_b,\n.ytp-ce-video,\n.ytp-ce-playlist,\n[aria-live=\"polite\"],\n.ytp-tooltip-bg,\n.ytp-tooltip-text.ytp-tooltip-text-no-title,\n.branding-img.iv-click-target,\n.branding-context-container-inner,\nytd-thumbnail-overlay-bottom-panel-renderer,\n.ytp-progress-list,\n.ytp-play-progress.ytp-swatch-background-color,\n.ytp-load-progress,\n.ytp-hover-progress.ytp-hover-progress-light,\n.ytp-gradient-bottom,\n.style-scope.ytd-subscribe-button-renderer,\n#container.ytd-playlist-panel-renderer,\n.header.ytd-playlist-panel-renderer,\nytd-button-renderer.style-suggestive[is-paper-button] tp-yt-paper-button.ytd-button-renderer,\nytd-live-chat-frame,\n.ytp-ce-playlist-count,\n.ytp-ce-expanding-overlay-background,\n.ytp-popup.ytp-settings-menu,\n.ytp-sb-subscribe,\n.ytp-sb-unsubscribe,\n.iv-drawer,\n.iv-card,\n.iv-card a.iv-click-target,\n.ytp-cards-teaser-box,\n.miniplayer.ytd-miniplayer,\n.ytp-popup,\n.badge.ytd-badge-supported-renderer,\n.ytp-ce-website .ytp-ce-expanding-image,\n.ytp-ce-merchandise .ytp-ce-expanding-image,\n.ytp-flyout-cta .ytp-flyout-cta-body,\n#ytp-ad-image,\n.ytp-ad-preview-container,\n.ytp-ad-message-container,\n#guide-content,\n.sbsb_d,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer,\n#masthead,\n#search-icon-legacy,\n.ytp-ad-skip-button.ytp-button,\n.ytp-flyout-cta .ytp-flyout-cta-icon,\n#banner>img,\n#icon>img,\n#action,\n.ytp-cards-teaser,\n.ytp-ce-video-duration,\n.ytp-show-tiles .ytp-videowall-still,\n.ytp-videowall-still-info-content,\n.ytp-videowall-still-listlabel-mix.ytp-videowall-still-listlabel,\n.style-scope.ytd-popup-container,\n.style-scope.ytd-miniplayer,\n#action-companion-ad-info-button.ytd-action-companion-ad-renderer,\n.ytp-flyout-cta .ytp-flyout-cta-action-button,\n.ytp-autonav-endscreen-upnext-thumbnail,\n.ytp-autonav-endscreen-upnext-button,\nytd-playlist-panel-video-renderer,\ntp-yt-paper-item.ytd-menu-service-item-renderer,\nytd-menu-service-item-renderer[use-icons],\n.ytp-ad-overlay-image,\n.ytp-ad-button-icon,\n.ytp-ad-overlay-close-button,\n.ytp-ad-text-overlay,\n.ytp-ad-button-icon,\n.ytp-ad-button-icon,\n.html5-video-player .caption-visual-line .ytp-caption-segment:last-child,\n#media-container.ytd-display-ad-renderer,\nytd-display-ad-renderer[layout=display-ad-layout-top-landscape-image] #media-badge.ytd-display-ad-renderer,\n#chips-wrapper.ytd-feed-filter-chip-bar-renderer,\nytd-mini-guide-entry-renderer {\n    border-radius: var(--theme-radius) !important\n}\n\na.thumbnail>.ytcd-basic-item-large-image,\nytcp-thumbnail-with-title,\nytd-playlist-thumbnail,\nytd-thumbnail,\n#thumbnail,\n.thumbnail-container.ytd-notification-renderer,\n#avatar,\n#author-thumbnail.ytd-comment-simplebox-renderer,\n.style-scope.ytd-comment-renderer.no-transition,\n#player,\n.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title,\n#container.ytd-playlist-panel-renderer,\nytd-live-chat-frame,\nytd-thumbnail-overlay-side-panel-renderer,\nytd-thumbnail-overlay-bottom-panel-renderer,\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n.iv-drawer,\n.ytp-cards-teaser-box,\n.miniplayer.ytd-miniplayer,\n.ytp-flyout-cta .ytp-flyout-cta-body,\n#ytp-ad-image,\n.ytp-ad-preview-container,\n.ytp-ad-message-container,\n#guide-content,\n.ytp-ad-skip-button.ytp-button,\n#banner>img,\n#icon>img,\n#action,\n.ytp-show-tiles .ytp-videowall-still,\nyt-confirm-dialog-renderer[dialog][dialog][dialog],\n.ytp-ce-element.ytp-ce-element-show,\n#contentWrapper.tp-yt-iron-dropdown>* {\n    border-collapse: separate !important;\n    overflow: hidden !important;\n    box-shadow: var(--border-minus) 0 var(--border-color), 0 var(--border-width) var(--border-color), var(--border-width) 0 var(--border-color), 0 var(--border-minus) var(--border-color) !important\n}\n\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n.ytp-tooltip-bg {\n    box-shadow: var(--player-bg-border-width) 0 var(--border-color), 0 var(--bg-border-minus) var(--border-color), var(--bg-border-minus) 0 var(--border-color), 0 var(--player-bg-border-width) var(--border-color) !important\n}\n\n#text.ytd-channel-name,\nyt-button-renderer.yt-formatted-string.yt-button-renderer,\npaper-ripple,\na.yt-simple-endpoint.yt-formatted-string,\n.style-scope.ytd-menu-renderer.force-icon-button.style-default-active,\n.badge-style-type-live-now.ytd-badge-supported-renderer,\n.badge-style-type-starting-soon.ytd-badge-supported-renderer {\n    border-color: var(--theme) !important;\n    color: var(--theme) !important\n}\n\npaper-ripple,\n.ytp-swatch-color,\na.ytp-ce-link,\nyt-icon.ytd-compact-link-renderer,\nyt-icon.ytd-toggle-theme-compact-link-renderer {\n    border-radius: var(--theme-radius) !important;\n    color: var(--theme) !important\n}\n\n.ytp-swatch-background-color,\n.ytp-settings-button.ytp-hd-quality-badge:after,\n.ytp-chrome-controls .ytp-button[aria-pressed]:after,\n.ytp-sb-subscribe,\na.ytp-sb-subscribe {\n    background-color: var(--theme) !important\n}\n\nytd-thumbnail-overlay-time-status-renderer,\nytd-thumbnail-overlay-side-panel-renderer,\nytd-thumbnail-overlay-toggle-button-renderer,\n.iv-branding-active .branding-context-container-inner,\n.ytp-ce-video-duration {\n    border-radius: var(--theme-time-radius) !important;\n    background-color: var(--hover-time-background) !important\n}\n\na.yt-simple-endpoint.yt-formatted-string::selection,\nspan::selection,\nyt-formatted-string::selection,\n.ytp-menuitem[aria-checked=true] .ytp-menuitem-toggle-checkbox,\n.ytp-volume-slider-handle,\n.ytp-volume-slider-handle:before {\n    background: var(--theme) !important\n}\n\n#container.ytd-searchbox,\n.yt-ui-ellipsis,\n.ytp-tooltip.ytp-preview:not(.ytp-text-detail),\n#contentContainer,\n.ytp-videowall-still-info-duration {\n    background-color: transparent !important;\n    border-color: transparent !important\n}\n\nytd-playlist-thumbnail,\nytd-thumbnail,\nytd-compact-playlist-renderer,\nytd-compact-video-renderer,\nytd-compact-radio-renderer,\nytd-compact-playlist-renderer>div>div>div>a,\nytd-compact-video-renderer>div>div>div>a,\nytd-compact-radio-renderer>div>div>div>a,\nytd-thumbnail.ytd-rich-grid-media,\nytd-thumbnail.ytd-rich-grid-media>a,\n#button.ytd-menu-renderer.yt-icon.ytd-menu-renderer {\n    transition: all .2s cubic-bezier(0.1, 0.5, 1, 1) !important\n}\n\nytd-thumbnail-overlay-toggle-button-renderer {\n    background-color: transparent\n}\n\nytd-compact-playlist-renderer:hover>div>ytd-playlist-thumbnail,\nytd-compact-video-renderer:hover>div>ytd-thumbnail,\nytd-compact-radio-renderer:hover>div>ytd-thumbnail {\n    box-shadow: var(--border-minus) 0 var(--border-hover-color), 0 var(--border-width) var(--border-hover-color), var(--border-width) 0 var(--border-hover-color), 0 var(--border-minus) var(--border-hover-color) !important\n}\n\nytd-thumbnail.ytd-rich-grid-media:hover {\n    margin-block-start: -15px !important;\n    margin-block-end: 15px !important;\n    box-shadow: var(--border-minus) 0 var(--border-hover-color), 0 var(--border-width) var(--border-hover-color), var(--border-width) 0 var(--border-hover-color), 0 var(--border-minus) var(--border-hover-color) !important\n}\n\nytd-thumbnail.ytd-rich-grid-media:active {\n    box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important\n}\n\nytd-compact-playlist-renderer:hover,\nytd-compact-video-renderer:hover,\nytd-compact-radio-renderer:hover {\n    margin-inline-start: -15px !important\n}\n\nytd-compact-playlist-renderer:hover>div>div>div>a,\nytd-compact-video-renderer:hover>div>div>div>a,\nytd-compact-radio-renderer:hover>div>div>div>a {\n    margin-inline-end: 15px !important\n}\n\nytd-compact-playlist-renderer:active>div>ytd-playlist-thumbnail,\nytd-compact-video-renderer:active>div>ytd-thumbnail,\nytd-compact-radio-renderer:active>div>ytd-thumbnail {\n    box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important\n}\n\n.ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]):hover>svg>path,\nytd-topbar-logo-renderer>a>div>yt-icon>svg>g>g>path {\n    fill: var(--theme) !important\n}\n\n.ytp-chrome-top,\n.ytp-chrome-bottom,\n.ytp-gradient-bottom,\n.ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true])>svg>path {\n    transition: all .2s cubic-bezier(0, 1, 1, 1) !important\n}\n\n.ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-top,\n.ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-bottom {\n    display: block !important\n}\n\n.ytp-gradient-bottom {\n    height: 30px !important;\n    background-image: none !important\n}\n\n.ytp-popup.ytp-settings-menu,\n.ytp-gradient-bottom,\n.iv-drawer,\n.ytp-cards-teaser-box,\n.ytp-popup,\n.ytp-bezel {\n    background-color: var(--in-player-bg-color) !important\n}\n\n.ytp-gradient-top[aria-hidden=true],\n.ytp-gradient-bottom[aria-hidden=true],\n.ytp-autohide .ytp-gradient-top,\n.ytp-autohide .ytp-gradient-bottom,\n.ytp-autohide .ytp-playlist-menu-button,\n.ytp-autohide .ytp-back-button,\n.ytp-autohide .ytp-title-channel,\n.ytp-autohide .ytp-title,\n.ytp-autohide .ytp-chrome-top .ytp-watch-later-button,\n.ytp-autohide .ytp-chrome-top .ytp-share-button,\n.ytp-autohide .ytp-chrome-top .ytp-copylink-button,\n.ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button,\n.ytp-autohide .ytp-overflow-button,\n.ytp-autohide .ytp-chrome-bottom,\n.ytp-chrome-top[aria-hidden=true],\n.ytp-chrome-bottom[aria-hidden=true] {\n    margin-block-start: 50px !important;\n    margin-block-end: -50px !important;\n    transition: all .1s cubic-bezier(0.1, 0.5, 1, 0) !important\n}"]))
-    SetidxTo("PRESET(SUPER LOW PC) (CSS) Potato machine (less blur)", JSON.stringify(["VDOBGT", "false", "EnaCUSCSST", 'true', "CUSTOM", ":root {\n    --blur-amount: 10px;\n    --theme: red;\n    --playlist-bg: rgba(255, 0, 0, 0.1);\n    --text-color: #FFF;\n    --nd-text-color: #7D7D7D;\n    --border-width: 1px;\n    --player-bg-border-width: 1px;\n    --border-color: rgba(0, 0, 0, 0);\n    --border-hover-color: red;\n    --border-click-color: #0FF;\n    --bg-color: #000;\n    --in-player-bg-color: rgba(0, 0, 0, 0.5);\n    --top-bar-and-search-background: rgba(0, 0, 0, 0.507);\n    --things-end-on-video: rgba(66, 66, 66, 0.507);\n    --hover-time-background: rgba(0, 0, 0, 0.425);\n    --search-background-hover: rgba(255, 0, 0, 0.5);\n    --theme-radius: 10px;\n    --theme-time-radius: 10px;\n    --theme-radius-big: 20px;\n    --border-minus: calc(var(--border-width) * -1);\n    --bg-border-minus: calc(var(--player-bg-border-width) * -1)\n}\n\nhtml:not(.style-scope),\n:not(.style-scope),\nhtml:not(.style-scope) {\n    --yt-spec-brand-background-primary: var(--top-bar-and-search-background) !important;\n    --yt-spec-brand-background-solid: var(--bg-color) !important;\n    --yt-spec-general-background-a: var(--bg-color) !important;\n    --yt-spec-call-to-action: var(--theme) !important;\n    --yt-spec-badge-chip-background: var(--playlist-bg) !important;\n    --yt-spec-text-primary: var(--text-color) !important;\n    --yt-spec-text-secondary: var(--nd-text-color) !important;\n    --yt-spec-brand-button-background: var(--theme) !important;\n    --yt-spec-static-brand-red: var(--theme) !important;\n    --yt-spec-brand-icon-inactive: var(--theme) !important\n}\n\n#tooltip.tp-yt-paper-tooltip {\n    background-color: var(--bg-color) !important\n}\n\nbody::-webkit-scrollbar,\n.playlist-items.ytd-playlist-panel-renderer::-webkit-scrollbar,\n#guide-inner-content.ytd-app:hover::-webkit-scrollbar {\n    width: 11px !important\n}\n\n.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title {\n    display: block !important;\n    background-color: var(--hover-time-background) !important\n}\n\nytd-live-chat-frame {\n    transition: all .2s cubic-bezier(0, 1, 1, 1) !important\n}\n\n.sbdd_b,\n#container.style-scope.ytd-masthead,\nytd-multi-page-menu-renderer,\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n#chips-wrapper.ytd-feed-filter-chip-bar-renderer,\n.iv-drawer,\n#card.ytd-miniplayer,\nytd-miniplayer,\n.ytp-bezel,\n.ytp-caption-segment,\n.ytp-bezel-text {\n    backdrop-filter: blur(var(--blur-amount)) !important\n}\n\n.ytp-ce-expanding-overlay-background,\n.ytp-ce-playlist-count {\n    background: var(--things-end-on-video) !important\n}\n\n.sbdd_b,\n#scrim,\ntp-yt-iron-overlay-backdrop {\n    background: var(--top-bar-and-search-background) !important\n}\n\nytd-thumbnail-overlay-hover-text-renderer {\n    background-color: var(--top-bar-and-search-background) !important\n}\n\n.sbfl_b,\n.sbsb_a,\n#container.style-scope.ytd-masthead {\n    background: transparent !important\n}\n\n.sbsb_d,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:hover,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:focus,\n.ytp-menuitem:not([aria-disabled=true]):hover {\n    background: var(--search-background-hover) !important;\n    transition: all .2s cubic-bezier(0.1, 0.7, 1, 1) !important\n}\n\n.gsfs,\n.ytp-ce-channel-metadata,\n.ytp-cards-teaser .ytp-cards-teaser-text,\n.ytp-panel-menu,\n.ytp-ce-website-title,\n.ytp-ce-merchandise-title {\n    color: var(--text-color) !important\n}\n\n#player,\nytd-multi-page-menu-renderer {\n    border-radius: var(--theme-radius-big) !important\n}\n\na.thumbnail>.ytcd-basic-item-large-image,\nytcp-thumbnail-with-title,\nytd-playlist-thumbnail,\nytd-thumbnail,\n#thumbnail,\n.thumbnail-container.ytd-notification-renderer,\n.sbdd_b,\n.ytp-ce-video,\n.ytp-ce-playlist,\n[aria-live=\"polite\"],\n.ytp-tooltip-bg,\n.ytp-tooltip-text.ytp-tooltip-text-no-title,\n.branding-img.iv-click-target,\n.branding-context-container-inner,\nytd-thumbnail-overlay-bottom-panel-renderer,\n.ytp-progress-list,\n.ytp-play-progress.ytp-swatch-background-color,\n.ytp-load-progress,\n.ytp-hover-progress.ytp-hover-progress-light,\n.ytp-gradient-bottom,\n.style-scope.ytd-subscribe-button-renderer,\n#container.ytd-playlist-panel-renderer,\n.header.ytd-playlist-panel-renderer,\nytd-button-renderer.style-suggestive[is-paper-button] tp-yt-paper-button.ytd-button-renderer,\nytd-live-chat-frame,\n.ytp-ce-playlist-count,\n.ytp-ce-expanding-overlay-background,\n.ytp-popup.ytp-settings-menu,\n.ytp-sb-subscribe,\n.ytp-sb-unsubscribe,\n.iv-drawer,\n.iv-card,\n.iv-card a.iv-click-target,\n.ytp-cards-teaser-box,\n.miniplayer.ytd-miniplayer,\n.ytp-popup,\n.badge.ytd-badge-supported-renderer,\n.ytp-ce-website .ytp-ce-expanding-image,\n.ytp-ce-merchandise .ytp-ce-expanding-image,\n.ytp-flyout-cta .ytp-flyout-cta-body,\n#ytp-ad-image,\n.ytp-ad-preview-container,\n.ytp-ad-message-container,\n#guide-content,\n.sbsb_d,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer,\n#masthead,\n#search-icon-legacy,\n.ytp-ad-skip-button.ytp-button,\n.ytp-flyout-cta .ytp-flyout-cta-icon,\n#banner>img,\n#icon>img,\n#action,\n.ytp-cards-teaser,\n.ytp-ce-video-duration,\n.ytp-show-tiles .ytp-videowall-still,\n.ytp-videowall-still-info-content,\n.ytp-videowall-still-listlabel-mix.ytp-videowall-still-listlabel,\n.style-scope.ytd-popup-container,\n.style-scope.ytd-miniplayer,\n#action-companion-ad-info-button.ytd-action-companion-ad-renderer,\n.ytp-flyout-cta .ytp-flyout-cta-action-button,\n.ytp-autonav-endscreen-upnext-thumbnail,\n.ytp-autonav-endscreen-upnext-button,\nytd-playlist-panel-video-renderer,\ntp-yt-paper-item.ytd-menu-service-item-renderer,\nytd-menu-service-item-renderer[use-icons],\n.ytp-ad-overlay-image,\n.ytp-ad-button-icon,\n.ytp-ad-overlay-close-button,\n.ytp-ad-text-overlay,\n.ytp-ad-button-icon,\n.ytp-ad-button-icon,\n.html5-video-player .caption-visual-line .ytp-caption-segment:last-child,\n#media-container.ytd-display-ad-renderer,\nytd-display-ad-renderer[layout=display-ad-layout-top-landscape-image] #media-badge.ytd-display-ad-renderer,\n#chips-wrapper.ytd-feed-filter-chip-bar-renderer,\nytd-mini-guide-entry-renderer {\n    border-radius: var(--theme-radius) !important\n}\n\na.thumbnail>.ytcd-basic-item-large-image,\nytcp-thumbnail-with-title,\nytd-playlist-thumbnail,\nytd-thumbnail,\n#thumbnail,\n.thumbnail-container.ytd-notification-renderer,\n#avatar,\n#author-thumbnail.ytd-comment-simplebox-renderer,\n.style-scope.ytd-comment-renderer.no-transition,\n#player,\n.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title,\n#container.ytd-playlist-panel-renderer,\nytd-live-chat-frame,\nytd-thumbnail-overlay-side-panel-renderer,\nytd-thumbnail-overlay-bottom-panel-renderer,\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n.iv-drawer,\n.ytp-cards-teaser-box,\n.miniplayer.ytd-miniplayer,\n.ytp-flyout-cta .ytp-flyout-cta-body,\n#ytp-ad-image,\n.ytp-ad-preview-container,\n.ytp-ad-message-container,\n#guide-content,\n.ytp-ad-skip-button.ytp-button,\n#banner>img,\n#icon>img,\n#action,\n.ytp-show-tiles .ytp-videowall-still,\nyt-confirm-dialog-renderer[dialog][dialog][dialog],\n.ytp-ce-element.ytp-ce-element-show,\n#contentWrapper.tp-yt-iron-dropdown>* {\n    border-collapse: separate !important;\n    overflow: hidden !important;\n    box-shadow: var(--border-minus) 0 var(--border-color), 0 var(--border-width) var(--border-color), var(--border-width) 0 var(--border-color), 0 var(--border-minus) var(--border-color) !important\n}\n\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n.ytp-tooltip-bg {\n    box-shadow: var(--player-bg-border-width) 0 var(--border-color), 0 var(--bg-border-minus) var(--border-color), var(--bg-border-minus) 0 var(--border-color), 0 var(--player-bg-border-width) var(--border-color) !important\n}\n\n#text.ytd-channel-name,\nyt-button-renderer.yt-formatted-string.yt-button-renderer,\npaper-ripple,\na.yt-simple-endpoint.yt-formatted-string,\n.style-scope.ytd-menu-renderer.force-icon-button.style-default-active,\n.badge-style-type-live-now.ytd-badge-supported-renderer,\n.badge-style-type-starting-soon.ytd-badge-supported-renderer {\n    border-color: var(--theme) !important;\n    color: var(--theme) !important\n}\n\npaper-ripple,\n.ytp-swatch-color,\na.ytp-ce-link,\nyt-icon.ytd-compact-link-renderer,\nyt-icon.ytd-toggle-theme-compact-link-renderer {\n    border-radius: var(--theme-radius) !important;\n    color: var(--theme) !important\n}\n\n.ytp-swatch-background-color,\n.ytp-settings-button.ytp-hd-quality-badge:after,\n.ytp-chrome-controls .ytp-button[aria-pressed]:after,\n.ytp-sb-subscribe,\na.ytp-sb-subscribe {\n    background-color: var(--theme) !important\n}\n\nytd-thumbnail-overlay-time-status-renderer,\nytd-thumbnail-overlay-side-panel-renderer,\nytd-thumbnail-overlay-toggle-button-renderer,\n.iv-branding-active .branding-context-container-inner,\n.ytp-ce-video-duration {\n    border-radius: var(--theme-time-radius) !important;\n    background-color: var(--hover-time-background) !important\n}\n\na.yt-simple-endpoint.yt-formatted-string::selection,\nspan::selection,\nyt-formatted-string::selection,\n.ytp-menuitem[aria-checked=true] .ytp-menuitem-toggle-checkbox,\n.ytp-volume-slider-handle,\n.ytp-volume-slider-handle:before {\n    background: var(--theme) !important\n}\n\n#container.ytd-searchbox,\n.yt-ui-ellipsis,\n.ytp-tooltip.ytp-preview:not(.ytp-text-detail),\n#contentContainer,\n.ytp-videowall-still-info-duration {\n    background-color: transparent !important;\n    border-color: transparent !important\n}\n\nytd-playlist-thumbnail,\nytd-thumbnail,\nytd-compact-playlist-renderer,\nytd-compact-video-renderer,\nytd-compact-radio-renderer,\nytd-compact-playlist-renderer>div>div>div>a,\nytd-compact-video-renderer>div>div>div>a,\nytd-compact-radio-renderer>div>div>div>a,\nytd-thumbnail.ytd-rich-grid-media,\nytd-thumbnail.ytd-rich-grid-media>a,\n#button.ytd-menu-renderer.yt-icon.ytd-menu-renderer {\n    transition: all .2s cubic-bezier(0.1, 0.5, 1, 1) !important\n}\n\nytd-thumbnail-overlay-toggle-button-renderer {\n    background-color: transparent\n}\n\nytd-compact-playlist-renderer:hover>div>ytd-playlist-thumbnail,\nytd-compact-video-renderer:hover>div>ytd-thumbnail,\nytd-compact-radio-renderer:hover>div>ytd-thumbnail {\n    box-shadow: var(--border-minus) 0 var(--border-hover-color), 0 var(--border-width) var(--border-hover-color), var(--border-width) 0 var(--border-hover-color), 0 var(--border-minus) var(--border-hover-color) !important\n}\n\nytd-thumbnail.ytd-rich-grid-media:hover {\n    margin-block-start: -15px !important;\n    margin-block-end: 15px !important;\n    box-shadow: var(--border-minus) 0 var(--border-hover-color), 0 var(--border-width) var(--border-hover-color), var(--border-width) 0 var(--border-hover-color), 0 var(--border-minus) var(--border-hover-color) !important\n}\n\nytd-thumbnail.ytd-rich-grid-media:active {\n    box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important\n}\n\nytd-compact-playlist-renderer:hover,\nytd-compact-video-renderer:hover,\nytd-compact-radio-renderer:hover {\n    margin-inline-start: -15px !important\n}\n\nytd-compact-playlist-renderer:hover>div>div>div>a,\nytd-compact-video-renderer:hover>div>div>div>a,\nytd-compact-radio-renderer:hover>div>div>div>a {\n    margin-inline-end: 15px !important\n}\n\nytd-compact-playlist-renderer:active>div>ytd-playlist-thumbnail,\nytd-compact-video-renderer:active>div>ytd-thumbnail,\nytd-compact-radio-renderer:active>div>ytd-thumbnail {\n    box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important\n}\n\n.ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]):hover>svg>path,\nytd-topbar-logo-renderer>a>div>yt-icon>svg>g>g>path {\n    fill: var(--theme) !important\n}\n\n.ytp-chrome-top,\n.ytp-chrome-bottom,\n.ytp-gradient-bottom,\n.ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true])>svg>path {\n    transition: all .2s cubic-bezier(0, 1, 1, 1) !important\n}\n\n.ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-top,\n.ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-bottom {\n    display: block !important\n}\n\n.ytp-gradient-bottom {\n    height: 30px !important;\n    background-image: none !important\n}\n\n.ytp-popup.ytp-settings-menu,\n.ytp-gradient-bottom,\n.iv-drawer,\n.ytp-cards-teaser-box,\n.ytp-popup,\n.ytp-bezel {\n    background-color: var(--in-player-bg-color) !important\n}\n\n.ytp-gradient-top[aria-hidden=true],\n.ytp-gradient-bottom[aria-hidden=true],\n.ytp-autohide .ytp-gradient-top,\n.ytp-autohide .ytp-gradient-bottom,\n.ytp-autohide .ytp-playlist-menu-button,\n.ytp-autohide .ytp-back-button,\n.ytp-autohide .ytp-title-channel,\n.ytp-autohide .ytp-title,\n.ytp-autohide .ytp-chrome-top .ytp-watch-later-button,\n.ytp-autohide .ytp-chrome-top .ytp-share-button,\n.ytp-autohide .ytp-chrome-top .ytp-copylink-button,\n.ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button,\n.ytp-autohide .ytp-overflow-button,\n.ytp-autohide .ytp-chrome-bottom,\n.ytp-chrome-top[aria-hidden=true],\n.ytp-chrome-bottom[aria-hidden=true] {\n    margin-block-start: 50px !important;\n    margin-block-end: -50px !important;\n    transition: all .1s cubic-bezier(0.1, 0.5, 1, 0) !important\n}"]))
-    SetidxTo("PRESETPink-Black", JSON.stringify(["SubtitleC", "#ff94f6", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ffffff", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff94f6", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "1", "OutShaC", "#ff94f6", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#c4c4c4", "CapOutT", "false", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#ff94f6", "ThumbHoverColorC", "#ff94f6", "ThemeFortC", "#ff94f6", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "10", "SubOutT", "false", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff94f6", "PlaylisthoverC", "#ff94f6", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#000000", "BGO", "70", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "50", "OutShaO", "50", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""]))
-    SetidxTo("PRESET(Low PC) Purple", JSON.stringify(["SubtitleC", "#da8aff", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "CenterUDT", "true", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ff0000", "TextC", "#ffffff", "HBTO", "100", "SubtitleO", "100", "IMGS", "100", "ThemeFortC", "#c494ff", "CenterMediaT", "true", "ThemeC", "#bf70ff", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "NVDOC", "1", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeAniT", "true", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "PlayerOutT", "true", "VDOSYT", "true", "ThemeThrO", "20", "Border", "1", "OutShaC", "#cd70ff", "ThumbHoverT", "Slide", "Edge", "10", "Zoom", "1.075", "NdTextC", "#c4c4c4", "ScrollT", "false", "CapOutT", "false", "CapBGO", "80", "BlurWhatT", "main", "ThemehoverC", "#dc5cff", "TIMETEXTC", "#ffffff", "CenterMedia", "true", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "0", "TimeBGC", "#000000", "SubOutT", "false", "NVDOT", "2", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "NVDOB", "50", "NdTextO", "100", "ThemeFortO", "100", "ThemeThrC", "#b061ff", "PlaylisthoverC", "#d666ff", "TimeLoadedO", "50", "CenterUDFT", "true", "CenterTimeT", "true", "IMGY", "15", "BlurAm", "5", "PlayerEdge", "20", "ThemeSndC", "#000000", "BGO", "70", "VDOBGT", "false", "EnaCUSCSST", "false", "BlurSubT", "true", "CUSTOM", "", "OutShaO", "0", "VDOTEXTO", "100", "MediaBGO", "50", "NVDOBGT", "0.4", "ThemeO", "100", "TimeBGO", "50", "VBGT", "true", "TextO", "100", "LoadVDOT", "false", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Time-LineBGC", "#ffffff", "TopOutT", "true", "SyncLogoT", "true", "PlaylisthoverO", "50", "ScWidth", "0", "ThumbHoverColorC", "#ff00dd", "BGIMG", ""]))
-    SetidxTo("PRESETI'm Using :D", JSON.stringify({ "LinkColorO": "100", "FlipT": "false", "ThemeChipsO": "50", "TimeBGC": "#000000", "IMGSBOX": "100", "AutoEXPIPT": "true", "ThemeFortC": "#b67aff", "VisualT": "false", "TimeH": "18", "SubtitleO": "100", "TimeAniT": "true", "SubtitleC": "#ffffff", "STUPIDME": "true", "DropFrameT": "true", "Font-Noto_Sans_ThaiT": "true", "Font-Noto_Sans_KRT": "true", "IMGS": "100", "SearchAnimT": "true", "SyncLogoT": "true", "ADDCUSTOM": "@keyframes rotating {\n  from {\n    transform: rotate(0deg);\n  }\n\n  to {\n    transform: rotate(360deg);\n  }\n}\n\n/*span,img,yt-formatted-string,svg,video,yt-attributed-string {\n  animation: rotating 5s linear infinite;\n}*/\n\n.details.ytd-compact-video-renderer{\n    transform: translateX(30px);\n    opacity: 0;\n    transition: all 0.4s ease-out !important;\n}\n\n#dismissible:hover .details.ytd-compact-video-renderer{\n    transform: translateX(0px);\n    opacity: 1;\n}", "TextC": "#ffffff", "ReplaceYTT": "true", "BGO": "70", "ThumbHoverColorC": "#ff00dd", "MediaBlurT": "false", "ThumbHoverColorO": "100", "Time-LineBGO": "20", "NVDOC": "1", "EndBGC": "#000000", "DelBarT": "true", "Border": "1", "ScWidth": "0", "BelowSpace": "0", "CenterUDFT": "true", "BlurBGAM": "0", "MediaBGO": "49", "ThemehoverC": "#dc5cff", "VDOTEXTO": "100", "NdTextO": "100", "IconFillT": "true", "ScrollT": "true", "ThemeSndO": "67", "AutoPIPT": "true", "Font-Noto_Sans JPT": "false", "LoadVDOT": "false", "ThemeThrC": "#b061ff", "PlaylisthoverO": "50", "TimeBGO": "50", "NVDOT": "2.2", "SubOutT": "false", "SwapRowT": "false", "Font-Material IconsT": "false", "TimeLoadedO": "50", "CenterMedia": "true", "OutShaO": "0", "SPSubScribeBGC": "#ff0000", "ThemehoverO": "50", "HBTO": "100", "CenterUDT": "true", "IMGXBOX": "50", "VDOSmooth": "10", "Font-Roboto_MonoT": "false", "PlaylisthoverC": "#d666ff", "TimeOutT": "false", "ThumbClickC": "#ff0000", "SPSubScribeColorC": "#ffffff", "EnaCUSCSST": "false", "PlayerOutT": "true", "IMGY": "30", "ThumbClickO": "100", "transitionT": "true", "ThemeChipsC": "#000000", "TIMETEXTO": "100", "ConUnderVDOT": "false", "BlurWhatT": "none", "PlayerBorder": "1", "ThumbAnimT": "true", "SPSubScribeBGO": "100", "SndOutT": "true", "OutShaC": "#ff57e9", "ThemeC": "#c680ff", "subShaColorC": "#000000", "Font-YouTube_SansT": "false", "CenterTimeT": "true", "EQT": "true", "LeftBarT": "true", "LeftBar": "true", "NewSubT": "true", "EndBGO": "50", "BGC": "#000000", "CanvasQua": "100", "HoverBorder": "1", "IMGX": "50", "Test": "Test", "Font-AngkorT": "false", "CapBGC": "#000000", "TimeLoadedC": "#ffffff", "Enable": "false", "ControlUnderVDOT": "true", "FlyoutT": "true", "NVDOB": "40", "TIMETEXTC": "#ffffff", "FullTheaterT": "true", "ThemeO": "100", "DelBarDebugT": "false", "CapOutT": "false", "CUSTOM": "", "subSpace": "1", "LinkColorC": "#dd61ff", "LeftBarC": "#000000", "CenterMediaT": "true", "CheckStaticT": "true", "ReplaceYTURL": "https://i.gifer.com/17xo.gif", "ThumbHoverT": "Slide", "subWidth": "700", "RepeatT": "false", "OutOrShaT": "Out", "ThemeSndC": "#000000", "SPSubScribeColorO": "100", "MediaH": "30", "subShaWidth": "0", "BottomGT": "true", "LeftBarO": "0", "TextO": "100", "ThemeThrO": "31", "APIT": "true", "subShaColorO": "100", "TopOutT": "true", "VBGT": "true", "YTSize": "100", "Edge": "10", "subShaBlur": "0", "AutohideBarT": "true", "Font-Material_IconsT": "false", "VDOTEXTC": "#ffffff", "PlayerEdge": "20", "CapBGO": "0", "IMGYBOX": "50", "BlurAm": "10", "PtranT": "true", "Font-Bungee_SpiceT": "false", "VDOBGT": "true", "Font-Noto_Sans_JPT": "true", "Zoom": "1.075", "TimeEdge": "10", "VDOSYT": "true", "MediaSpace": "70", "MediaBGC": "#000000", "NewSub": "true", "NewVDOanimaT": "true", "EnaADDCSST": "false", "NdTextC": "#c4c4c4", "InstallFont": "", "Font-InterT": "false", "SPSubScribeT": "false", "VdoAnimT": "true", "HBTC": "#ffffff", "NVDOBGT": "0.4", "Font-RobotoT": "false", "BlurSubT": "false", "ThemeFortO": "41", "Time-LineBGC": "#ffffff", "BGIMG": "https://i.ibb.co/Hp6mZPw/1695638801433.jpg" }))
-    SetidxTo("PRESETCoding", JSON.stringify({ "FlipT": "false", "ThemeChipsO": "59", "TimeBGC": "#000000", "IMGSBOX": "100", "AutoEXPIPT": "true", "ThemeFortC": "#428e94", "VisualT": "false", "TimeH": "18", "SubtitleO": "100", "TimeAniT": "true", "STUPIDME": "true", "SubtitleC": "#ffffff", "Font-Noto_Sans_ThaiT": "true", "Font-Noto_Sans_KRT": "true", "IMGS": "100", "SearchAnimT": "true", "SyncLogoT": "true", "ADDCUSTOM": "", "TextC": "#b3f2ff", "ReplaceYTT": "true", "BGO": "70", "ThumbHoverColorC": "#00fbff", "MediaBlurT": "false", "ThumbHoverColorO": "100", "Time-LineBGO": "20", "NVDOC": "1", "EndBGC": "#000000", "DelBarT": "false", "Border": "1", "CenterUDFT": "true", "MediaBGO": "45", "ScWidth": "0", "BlurBGAM": "0", "ThemehoverC": "#75b8ff", "VDOTEXTO": "100", "NdTextO": "81", "IconFillT": "true", "Font-Noto_Sans JPT": "false", "ScrollT": "true", "AutoPIPT": "true", "ThemeSndO": "75", "LoadVDOT": "false", "ThemeThrC": "#7afff6", "PlaylisthoverO": "50", "Font-Material IconsT": "false", "SubOutT": "false", "SwapRowT": "false", "NVDOT": "2", "TimeBGO": "50", "TimeLoadedO": "50", "CenterMedia": "true", "OutShaO": "0", "SPSubScribeBGC": "#21ca91", "ThemehoverO": "50", "HBTO": "100", "CenterUDT": "true", "IMGXBOX": "50", "Font-Roboto_MonoT": "false", "VDOSmooth": "10", "PlaylisthoverC": "#66c4ff", "SPSubScribeColorC": "#18201f", "ThumbClickC": "#00ffb3", "TimeOutT": "true", "EnaCUSCSST": "false", "PlayerOutT": "true", "IMGY": "50", "ThumbClickO": "100", "transitionT": "true", "ThemeChipsC": "#000000", "TIMETEXTO": "100", "ConUnderVDOT": "false", "BlurWhatT": "all", "PlayerBorder": "1", "ThumbAnimT": "true", "SPSubScribeBGO": "100", "SndOutT": "false", "OutShaC": "#70ffbc", "ThemeC": "#79d6d7", "subShaColorC": "#000000", "Font-YouTube_SansT": "false", "CenterTimeT": "true", "LeftBarT": "true", "LeftBar": "true", "NewSubT": "true", "EndBGO": "50", "BGC": "#18212f", "CanvasQua": "10", "HoverBorder": "1", "IMGX": "50", "Test": "Test", "Font-AngkorT": "false", "CapBGC": "#000000", "TimeLoadedC": "#3d87ff", "Enable": "false", "ControlUnderVDOT": "true", "NVDOB": "50", "TIMETEXTC": "#66ff7f", "ThemeO": "100", "DelBarDebugT": "false", "CapOutT": "false", "CUSTOM": "", "subSpace": "1", "LeftBarC": "#000000", "CenterMediaT": "true", "ReplaceYTURL": "https://th.bing.com/th/id/R.e6cb44c348b25d243ca1e05d291cbcbf?rik=ncCqAqKlpqNIUA&riu=http%3a%2f%2f24.media.tumblr.com%2fc74c26fc85fb6b78cdbba94b00492d58%2ftumblr_n08txah95c1slk289o1_500.gif&ehk=TtQ0KYsuLMIOiIAe3HadRhT2rvnkXMKvV0%2bpxLb4Gds%3d&risl=&pid=ImgRaw&r=0", "ThumbHoverT": "Slide", "RepeatT": "true", "subWidth": "700", "OutOrShaT": "Out", "ThemeSndC": "#000000", "SPSubScribeColorO": "100", "LeftBarO": "0", "BottomGT": "true", "MediaH": "30", "TextO": "85", "subShaWidth": "0", "ThemeThrO": "20", "APIT": "false", "subShaColorO": "100", "TopOutT": "true", "VBGT": "false", "YTSize": "72", "Edge": "10", "AutohideBarT": "true", "Font-Material_IconsT": "false", "subShaBlur": "0", "VDOTEXTC": "#99fff3", "PlayerEdge": "20", "CapBGO": "0", "IMGYBOX": "50", "BlurAm": "5", "PtranT": "true", "Font-Bungee_SpiceT": "false", "VDOBGT": "false", "Font-Noto_Sans_JPT": "true", "Zoom": "1.075", "TimeEdge": "10", "VDOSYT": "true", "MediaBGC": "#000000", "MediaSpace": "70", "NewSub": "true", "NewVDOanimaT": "true", "EnaADDCSST": "false", "NdTextC": "#80ff95", "InstallFont": "", "Font-InterT": "false", "SPSubScribeT": "true", "HBTC": "#00ffe1", "VdoAnimT": "true", "NVDOBGT": "0.4", "Font-RobotoT": "false", "BlurSubT": "false", "ThemeFortO": "56", "Time-LineBGC": "#b8b8b8", "BGIMG": "" }))
+let ForcePre = []
+
+async function SetNormalPreOneByOne(AllPreset) {
+    let GetSavePreset = await GetLoad("PRESET")
+
+    Object.keys(AllPreset).forEach(function (ThisPreset) {
+        GetSavePreset[ThisPreset] = AllPreset[ThisPreset]
+        ForcePre.push(ThisPreset)
+    })
+
+    MainSave({ "PRESET": GetSavePreset })
+}
+
+async function SetNormalPre() {
+    SetNormalPreOneByOne({
+        "(Low PC) Purple": ["SubtitleC", "#da8aff", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "CenterUDT", "true", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ff0000", "TextC", "#ffffff", "HBTO", "100", "SubtitleO", "100", "IMGS", "100", "ThemeFortC", "#c494ff", "CenterMediaT", "true", "ThemeC", "#bf70ff", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "NVDOC", "1", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeAniT", "true", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "PlayerOutT", "true", "VDOSYT", "true", "ThemeThrO", "20", "Border", "1", "OutShaC", "#cd70ff", "ThumbHoverT", "Slide", "Edge", "10", "Zoom", "1.075", "NdTextC", "#c4c4c4", "ScrollT", "false", "CapOutT", "false", "CapBGO", "80", "BlurWhatT", "main", "ThemehoverC", "#dc5cff", "TIMETEXTC", "#ffffff", "CenterMedia", "true", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "0", "TimeBGC", "#000000", "SubOutT", "false", "NVDOT", "2", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "NVDOB", "50", "NdTextO", "100", "ThemeFortO", "100", "ThemeThrC", "#b061ff", "PlaylisthoverC", "#d666ff", "TimeLoadedO", "50", "CenterUDFT", "true", "CenterTimeT", "true", "IMGY", "15", "BlurAm", "5", "PlayerEdge", "20", "ThemeSndC", "#000000", "BGO", "70", "VDOBGT", "false", "EnaCUSCSST", "false", "BlurSubT", "true", "CUSTOM", "", "OutShaO", "0", "VDOTEXTO", "100", "MediaBGO", "50", "NVDOBGT", "0.4", "ThemeO", "100", "TimeBGO", "50", "VBGT", "true", "TextO", "100", "LoadVDOT", "false", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Time-LineBGC", "#ffffff", "TopOutT", "true", "SyncLogoT", "true", "PlaylisthoverO", "50", "ScWidth", "0", "ThumbHoverColorC", "#ff00dd", "BGIMG", ""],
+        "(Low-end PC) Cyan": { "LinkColorO": "100", "FlipT": "false", "ThemeChipsO": "50", "TimeBGC": "#000000", "IMGSBOX": "100", "AutoEXPIPT": "true", "ThemeFortC": "#94fff3", "VisualT": "false", "TimeH": "18", "SubtitleO": "100", "TimeAniT": "true", "STUPIDME": "true", "SubtitleC": "#8adcff", "DropFrameT": "true", "IMGS": "100", "SearchAnimT": "true", "SyncLogoT": "true", "ADDCUSTOM": "", "TextC": "#ffffff", "ReplaceYTT": "true", "BGO": "70", "ThumbHoverColorC": "#009dff", "MediaBlurT": "false", "ThumbHoverColorO": "100", "Time-LineBGO": "20", "NVDOC": "1", "EndBGC": "#000000", "DelBarT": "true", "Border": "1", "BelowSpace": "0", "MediaBGO": "50", "CenterUDFT": "true", "BlurBGAM": "0", "ScWidth": "0", "ThemehoverC": "#5cd6ff", "VDOTEXTO": "100", "NdTextO": "100", "IconFillT": "true", "ScrollT": "false", "AutoPIPT": "true", "ThemeSndO": "50", "LoadVDOT": "false", "ThemeThrC": "#61fcff", "PlaylisthoverO": "50", "Font-Material IconsT": "false", "SubOutT": "false", "SwapRowT": "false", "NVDOT": "2", "TimeBGO": "50", "TimeLoadedO": "50", "CenterMedia": "true", "OutShaO": "0", "SPSubScribeBGC": "#ff0000", "ThemehoverO": "50", "HBTO": "100", "CenterUDT": "true", "IMGXBOX": "50", "VDOSmooth": "10", "PlaylisthoverC": "#66d9ff", "SPSubScribeColorC": "#000000", "ThumbClickC": "#ff0000", "TimeOutT": "true", "EnaCUSCSST": "false", "PlayerOutT": "true", "IMGY": "15", "ThumbClickO": "100", "transitionT": "true", "ThemeChipsC": "#000000", "TIMETEXTO": "100", "ConUnderVDOT": "false", "BlurWhatT": "none", "PlayerBorder": "1", "ThumbAnimT": "true", "SPSubScribeBGO": "100", "SndOutT": "true", "OutShaC": "#cd70ff", "ThemeC": "#70cfff", "subShaColorC": "#000000", "CenterTimeT": "true", "EQT": "true", "LeftBarT": "true", "LeftBar": "true", "NewSubT": "true", "EndBGO": "50", "BGC": "#000000", "CanvasQua": "40", "HoverBorder": "1", "IMGX": "50", "Test": "Test", "Font-AngkorT": "false", "CapBGC": "#000000", "TimeLoadedC": "#ffffff", "Enable": "false", "ControlUnderVDOT": "true", "FlyoutT": "true", "NVDOB": "50", "TIMETEXTC": "#ffffff", "FullTheaterT": "true", "ThemeO": "100", "DelBarDebugT": "false", "CapOutT": "false", "CUSTOM": "", "LinkColorC": "#dd61ff", "subSpace": "1", "LeftBarC": "#000000", "CenterMediaT": "true", "CheckStaticT": "true", "ReplaceYTURL": "https://i.gifer.com/17xo.gif", "ThumbHoverT": "Slide", "RepeatT": "false", "subWidth": "700", "OutOrShaT": "Out", "ThemeSndC": "#000000", "SPSubScribeColorO": "100", "LeftBarO": "39", "BottomGT": "true", "MediaH": "24", "TextO": "100", "subShaWidth": "0", "ThemeThrO": "20", "APIT": "false", "subShaColorO": "100", "TopOutT": "true", "VBGT": "true", "YTSize": "100", "Edge": "10", "AutohideBarT": "true", "Font-Material_IconsT": "false", "subShaBlur": "0", "VDOTEXTC": "#ffffff", "PlayerEdge": "20", "CapBGO": "80", "IMGYBOX": "50", "BlurAm": "5", "PtranT": "true", "Font-Bungee_SpiceT": "false", "VDOBGT": "false", "Font-Noto_Sans_JPT": "true", "Zoom": "1.075", "TimeEdge": "10", "VDOSYT": "true", "MediaBGC": "#000000", "MediaSpace": "70", "NewSub": "true", "NewVDOanimaT": "true", "EnaADDCSST": "false", "NdTextC": "#c4c4c4", "SPSubScribeT": "false", "HBTC": "#ffffff", "VdoAnimT": "true", "NVDOBGT": "0.4", "ThemeFortO": "50", "Time-LineBGC": "#ffffff", "BGIMG": "" },
+        "(SUPER LOW PC) (CSS) Potato machine (less blur)": ["VDOBGT", "false", "EnaCUSCSST", true, "CUSTOM", ":root {\n    --blur-amount: 10px;\n    --theme: red;\n    --playlist-bg: rgba(255, 0, 0, 0.1);\n    --text-color: #FFF;\n    --nd-text-color: #7D7D7D;\n    --border-width: 1px;\n    --player-bg-border-width: 1px;\n    --border-color: rgba(0, 0, 0, 0);\n    --border-hover-color: red;\n    --border-click-color: #0FF;\n    --bg-color: #000;\n    --in-player-bg-color: rgba(0, 0, 0, 0.5);\n    --top-bar-and-search-background: rgba(0, 0, 0, 0.507);\n    --things-end-on-video: rgba(66, 66, 66, 0.507);\n    --hover-time-background: rgba(0, 0, 0, 0.425);\n    --search-background-hover: rgba(255, 0, 0, 0.5);\n    --theme-radius: 10px;\n    --theme-time-radius: 10px;\n    --theme-radius-big: 20px;\n    --border-minus: calc(var(--border-width) * -1);\n    --bg-border-minus: calc(var(--player-bg-border-width) * -1)\n}\n\nhtml:not(.style-scope),\n:not(.style-scope),\nhtml:not(.style-scope) {\n    --yt-spec-brand-background-primary: var(--top-bar-and-search-background) !important;\n    --yt-spec-brand-background-solid: var(--bg-color) !important;\n    --yt-spec-general-background-a: var(--bg-color) !important;\n    --yt-spec-call-to-action: var(--theme) !important;\n    --yt-spec-badge-chip-background: var(--playlist-bg) !important;\n    --yt-spec-text-primary: var(--text-color) !important;\n    --yt-spec-text-secondary: var(--nd-text-color) !important;\n    --yt-spec-brand-button-background: var(--theme) !important;\n    --yt-spec-static-brand-red: var(--theme) !important;\n    --yt-spec-brand-icon-inactive: var(--theme) !important\n}\n\n#tooltip.tp-yt-paper-tooltip {\n    background-color: var(--bg-color) !important\n}\n\nbody::-webkit-scrollbar,\n.playlist-items.ytd-playlist-panel-renderer::-webkit-scrollbar,\n#guide-inner-content.ytd-app:hover::-webkit-scrollbar {\n    width: 11px !important\n}\n\n.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title {\n    display: block !important;\n    background-color: var(--hover-time-background) !important\n}\n\nytd-live-chat-frame {\n    transition: all .2s cubic-bezier(0, 1, 1, 1) !important\n}\n\n.sbdd_b,\n#container.style-scope.ytd-masthead,\nytd-multi-page-menu-renderer,\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n#chips-wrapper.ytd-feed-filter-chip-bar-renderer,\n.iv-drawer,\n#card.ytd-miniplayer,\nytd-miniplayer,\n.ytp-bezel,\n.ytp-caption-segment,\n.ytp-bezel-text {\n    backdrop-filter: blur(var(--blur-amount)) !important\n}\n\n.ytp-ce-expanding-overlay-background,\n.ytp-ce-playlist-count {\n    background: var(--things-end-on-video) !important\n}\n\n.sbdd_b,\n#scrim,\ntp-yt-iron-overlay-backdrop {\n    background: var(--top-bar-and-search-background) !important\n}\n\nytd-thumbnail-overlay-hover-text-renderer {\n    background-color: var(--top-bar-and-search-background) !important\n}\n\n.sbfl_b,\n.sbsb_a,\n#container.style-scope.ytd-masthead {\n    background: transparent !important\n}\n\n.sbsb_d,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:hover,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:focus,\n.ytp-menuitem:not([aria-disabled=true]):hover {\n    background: var(--search-background-hover) !important;\n    transition: all .2s cubic-bezier(0.1, 0.7, 1, 1) !important\n}\n\n.gsfs,\n.ytp-ce-channel-metadata,\n.ytp-cards-teaser .ytp-cards-teaser-text,\n.ytp-panel-menu,\n.ytp-ce-website-title,\n.ytp-ce-merchandise-title {\n    color: var(--text-color) !important\n}\n\n#player,\nytd-multi-page-menu-renderer {\n    border-radius: var(--theme-radius-big) !important\n}\n\na.thumbnail>.ytcd-basic-item-large-image,\nytcp-thumbnail-with-title,\nytd-playlist-thumbnail,\nytd-thumbnail,\n#thumbnail,\n.thumbnail-container.ytd-notification-renderer,\n.sbdd_b,\n.ytp-ce-video,\n.ytp-ce-playlist,\n[aria-live=\"polite\"],\n.ytp-tooltip-bg,\n.ytp-tooltip-text.ytp-tooltip-text-no-title,\n.branding-img.iv-click-target,\n.branding-context-container-inner,\nytd-thumbnail-overlay-bottom-panel-renderer,\n.ytp-progress-list,\n.ytp-play-progress.ytp-swatch-background-color,\n.ytp-load-progress,\n.ytp-hover-progress.ytp-hover-progress-light,\n.ytp-gradient-bottom,\n.style-scope.ytd-subscribe-button-renderer,\n#container.ytd-playlist-panel-renderer,\n.header.ytd-playlist-panel-renderer,\nytd-button-renderer.style-suggestive[is-paper-button] tp-yt-paper-button.ytd-button-renderer,\nytd-live-chat-frame,\n.ytp-ce-playlist-count,\n.ytp-ce-expanding-overlay-background,\n.ytp-popup.ytp-settings-menu,\n.ytp-sb-subscribe,\n.ytp-sb-unsubscribe,\n.iv-drawer,\n.iv-card,\n.iv-card a.iv-click-target,\n.ytp-cards-teaser-box,\n.miniplayer.ytd-miniplayer,\n.ytp-popup,\n.badge.ytd-badge-supported-renderer,\n.ytp-ce-website .ytp-ce-expanding-image,\n.ytp-ce-merchandise .ytp-ce-expanding-image,\n.ytp-flyout-cta .ytp-flyout-cta-body,\n#ytp-ad-image,\n.ytp-ad-preview-container,\n.ytp-ad-message-container,\n#guide-content,\n.sbsb_d,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer,\n#masthead,\n#search-icon-legacy,\n.ytp-ad-skip-button.ytp-button,\n.ytp-flyout-cta .ytp-flyout-cta-icon,\n#banner>img,\n#icon>img,\n#action,\n.ytp-cards-teaser,\n.ytp-ce-video-duration,\n.ytp-show-tiles .ytp-videowall-still,\n.ytp-videowall-still-info-content,\n.ytp-videowall-still-listlabel-mix.ytp-videowall-still-listlabel,\n.style-scope.ytd-popup-container,\n.style-scope.ytd-miniplayer,\n#action-companion-ad-info-button.ytd-action-companion-ad-renderer,\n.ytp-flyout-cta .ytp-flyout-cta-action-button,\n.ytp-autonav-endscreen-upnext-thumbnail,\n.ytp-autonav-endscreen-upnext-button,\nytd-playlist-panel-video-renderer,\ntp-yt-paper-item.ytd-menu-service-item-renderer,\nytd-menu-service-item-renderer[use-icons],\n.ytp-ad-overlay-image,\n.ytp-ad-button-icon,\n.ytp-ad-overlay-close-button,\n.ytp-ad-text-overlay,\n.ytp-ad-button-icon,\n.ytp-ad-button-icon,\n.html5-video-player .caption-visual-line .ytp-caption-segment:last-child,\n#media-container.ytd-display-ad-renderer,\nytd-display-ad-renderer[layout=display-ad-layout-top-landscape-image] #media-badge.ytd-display-ad-renderer,\n#chips-wrapper.ytd-feed-filter-chip-bar-renderer,\nytd-mini-guide-entry-renderer {\n    border-radius: var(--theme-radius) !important\n}\n\na.thumbnail>.ytcd-basic-item-large-image,\nytcp-thumbnail-with-title,\nytd-playlist-thumbnail,\nytd-thumbnail,\n#thumbnail,\n.thumbnail-container.ytd-notification-renderer,\n#avatar,\n#author-thumbnail.ytd-commesimplebox-renderer,\n.style-scope.ytd-commerenderer.no-transition,\n#player,\n.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title,\n#container.ytd-playlist-panel-renderer,\nytd-live-chat-frame,\nytd-thumbnail-overlay-side-panel-renderer,\nytd-thumbnail-overlay-bottom-panel-renderer,\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n.iv-drawer,\n.ytp-cards-teaser-box,\n.miniplayer.ytd-miniplayer,\n.ytp-flyout-cta .ytp-flyout-cta-body,\n#ytp-ad-image,\n.ytp-ad-preview-container,\n.ytp-ad-message-container,\n#guide-content,\n.ytp-ad-skip-button.ytp-button,\n#banner>img,\n#icon>img,\n#action,\n.ytp-show-tiles .ytp-videowall-still,\nyt-confirm-dialog-renderer[dialog][dialog][dialog],\n.ytp-ce-element.ytp-ce-elemeshow,\n#contentWrapper.tp-yt-iron-dropdown>* {\n    border-collapse: separate !important;\n    overflow: hidden !important;\n    box-shadow: var(--border-minus) 0 var(--border-color), 0 var(--border-width) var(--border-color), var(--border-width) 0 var(--border-color), 0 var(--border-minus) var(--border-color) !important\n}\n\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n.ytp-tooltip-bg {\n    box-shadow: var(--player-bg-border-width) 0 var(--border-color), 0 var(--bg-border-minus) var(--border-color), var(--bg-border-minus) 0 var(--border-color), 0 var(--player-bg-border-width) var(--border-color) !important\n}\n\n#text.ytd-channel-name,\nyt-button-renderer.yt-formatted-string.yt-button-renderer,\npaper-ripple,\na.yt-simple-endpoint.yt-formatted-string,\n.style-scope.ytd-menu-renderer.force-icon-button.style-default-active,\n.badge-style-type-live-now.ytd-badge-supported-renderer,\n.badge-style-type-starting-soon.ytd-badge-supported-renderer {\n    border-color: var(--theme) !important;\n    color: var(--theme) !important\n}\n\npaper-ripple,\n.ytp-swatch-color,\na.ytp-ce-link,\nyt-icon.ytd-compact-link-renderer,\nyt-icon.ytd-toggle-theme-compact-link-renderer {\n    border-radius: var(--theme-radius) !important;\n    color: var(--theme) !important\n}\n\n.ytp-swatch-background-color,\n.ytp-settings-button.ytp-hd-quality-badge:after,\n.ytp-chrome-controls .ytp-button[aria-pressed]:after,\n.ytp-sb-subscribe,\na.ytp-sb-subscribe {\n    background-color: var(--theme) !important\n}\n\nytd-thumbnail-overlay-time-status-renderer,\nytd-thumbnail-overlay-side-panel-renderer,\nytd-thumbnail-overlay-toggle-button-renderer,\n.iv-branding-active .branding-context-container-inner,\n.ytp-ce-video-duration {\n    border-radius: var(--theme-time-radius) !important;\n    background-color: var(--hover-time-background) !important\n}\n\na.yt-simple-endpoint.yt-formatted-string::selection,\nspan::selection,\nyt-formatted-string::selection,\n.ytp-menuitem[aria-checked=true] .ytp-menuitem-toggle-checkbox,\n.ytp-volume-slider-handle,\n.ytp-volume-slider-handle:before {\n    background: var(--theme) !important\n}\n\n#container.ytd-searchbox,\n.yt-ui-ellipsis,\n.ytp-tooltip.ytp-preview:not(.ytp-text-detail),\n#contentContainer,\n.ytp-videowall-still-info-duration {\n    background-color: transparent !important;\n    border-color: transparent !important\n}\n\nytd-playlist-thumbnail,\nytd-thumbnail,\nytd-compact-playlist-renderer,\nytd-compact-video-renderer,\nytd-compact-radio-renderer,\nytd-compact-playlist-renderer>div>div>div>a,\nytd-compact-video-renderer>div>div>div>a,\nytd-compact-radio-renderer>div>div>div>a,\nytd-thumbnail.ytd-rich-grid-media,\nytd-thumbnail.ytd-rich-grid-media>a,\n#button.ytd-menu-renderer.yt-icon.ytd-menu-renderer {\n    transition: all .2s cubic-bezier(0.1, 0.5, 1, 1) !important\n}\n\nytd-thumbnail-overlay-toggle-button-renderer {\n    background-color: transparent\n}\n\nytd-compact-playlist-renderer:hover>div>ytd-playlist-thumbnail,\nytd-compact-video-renderer:hover>div>ytd-thumbnail,\nytd-compact-radio-renderer:hover>div>ytd-thumbnail {\n    box-shadow: var(--border-minus) 0 var(--border-hover-color), 0 var(--border-width) var(--border-hover-color), var(--border-width) 0 var(--border-hover-color), 0 var(--border-minus) var(--border-hover-color) !important\n}\n\nytd-thumbnail.ytd-rich-grid-media:hover {\n    margin-block-start: -15px !important;\n    margin-block-end: 15px !important;\n    box-shadow: var(--border-minus) 0 var(--border-hover-color), 0 var(--border-width) var(--border-hover-color), var(--border-width) 0 var(--border-hover-color), 0 var(--border-minus) var(--border-hover-color) !important\n}\n\nytd-thumbnail.ytd-rich-grid-media:active {\n    box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important\n}\n\nytd-compact-playlist-renderer:hover,\nytd-compact-video-renderer:hover,\nytd-compact-radio-renderer:hover {\n    margin-inline-start: -15px !important\n}\n\nytd-compact-playlist-renderer:hover>div>div>div>a,\nytd-compact-video-renderer:hover>div>div>div>a,\nytd-compact-radio-renderer:hover>div>div>div>a {\n    margin-inline-end: 15px !important\n}\n\nytd-compact-playlist-renderer:active>div>ytd-playlist-thumbnail,\nytd-compact-video-renderer:active>div>ytd-thumbnail,\nytd-compact-radio-renderer:active>div>ytd-thumbnail {\n    box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important\n}\n\n.ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]):hover>svg>path,\nytd-topbar-logo-renderer>a>div>yt-icon>svg>g>g>path {\n    fill: var(--theme) !important\n}\n\n.ytp-chrome-top,\n.ytp-chrome-bottom,\n.ytp-gradient-bottom,\n.ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true])>svg>path {\n    transition: all .2s cubic-bezier(0, 1, 1, 1) !important\n}\n\n.ytp-autohide:not(.ytp-autohide-active) .ytp-gradietop,\n.ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-bottom {\n    display: block !important\n}\n\n.ytp-gradient-bottom {\n    height: 30px !important;\n    background-image: none !important\n}\n\n.ytp-popup.ytp-settings-menu,\n.ytp-gradient-bottom,\n.iv-drawer,\n.ytp-cards-teaser-box,\n.ytp-popup,\n.ytp-bezel {\n    background-color: var(--in-player-bg-color) !important\n}\n\n.ytp-gradietop[aria-hidden=true],\n.ytp-gradient-bottom[aria-hidden=true],\n.ytp-autohide .ytp-gradietop,\n.ytp-autohide .ytp-gradient-bottom,\n.ytp-autohide .ytp-playlist-menu-button,\n.ytp-autohide .ytp-back-button,\n.ytp-autohide .ytp-title-channel,\n.ytp-autohide .ytp-title,\n.ytp-autohide .ytp-chrome-top .ytp-watch-later-button,\n.ytp-autohide .ytp-chrome-top .ytp-share-button,\n.ytp-autohide .ytp-chrome-top .ytp-copylink-button,\n.ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button,\n.ytp-autohide .ytp-overflow-button,\n.ytp-autohide .ytp-chrome-bottom,\n.ytp-chrome-top[aria-hidden=true],\n.ytp-chrome-bottom[aria-hidden=true] {\n    margin-block-start: 50px !important;\n    margin-block-end: -50px !important;\n    transition: all .1s cubic-bezier(0.1, 0.5, 1, 0) !important\n}"],
+        "(SUPER_SUPER LOW PC) (CSS) Potato machine (none blur)": ["VDOBGT", "false", "EnaCUSCSST", true, "CUSTOM", ":root {\n    --blur-amount: 10px;\n    --theme: red;\n    --playlist-bg: rgba(255, 0, 0, 0.1);\n    --text-color: #FFF;\n    --nd-text-color: #7D7D7D;\n    --border-width: 1px;\n    --player-bg-border-width: 1px;\n    --border-color: rgba(0, 0, 0, 0);\n    --border-hover-color: red;\n    --border-click-color: #0FF;\n    --bg-color: #000;\n    --in-player-bg-color: rgba(0, 0, 0, 0.5);\n    --top-bar-and-search-background: rgba(0, 0, 0, 0.507);\n    --things-end-on-video: rgba(66, 66, 66, 0.507);\n    --hover-time-background: rgba(0, 0, 0, 0.425);\n    --search-background-hover: rgba(255, 0, 0, 0.5);\n    --theme-radius: 10px;\n    --theme-time-radius: 10px;\n    --theme-radius-big: 20px;\n    --border-minus: calc(var(--border-width) * -1);\n    --bg-border-minus: calc(var(--player-bg-border-width) * -1)\n}\n\nhtml:not(.style-scope),\n:not(.style-scope),\nhtml:not(.style-scope) {\n    --yt-spec-brand-background-primary: var(--top-bar-and-search-background) !important;\n    --yt-spec-brand-background-solid: var(--bg-color) !important;\n    --yt-spec-general-background-a: var(--bg-color) !important;\n    --yt-spec-call-to-action: var(--theme) !important;\n    --yt-spec-badge-chip-background: var(--playlist-bg) !important;\n    --yt-spec-text-primary: var(--text-color) !important;\n    --yt-spec-text-secondary: var(--nd-text-color) !important;\n    --yt-spec-brand-button-background: var(--theme) !important;\n    --yt-spec-static-brand-red: var(--theme) !important;\n    --yt-spec-brand-icon-inactive: var(--theme) !important\n}\n\n#tooltip.tp-yt-paper-tooltip {\n    background-color: var(--bg-color) !important\n}\n\nbody::-webkit-scrollbar,\n.playlist-items.ytd-playlist-panel-renderer::-webkit-scrollbar,\n#guide-inner-content.ytd-app:hover::-webkit-scrollbar {\n    width: 11px !important\n}\n\n.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title {\n    display: block !important;\n    background-color: var(--hover-time-background) !important\n}\n\nytd-live-chat-frame {\n    transition: all .2s cubic-bezier(0, 1, 1, 1) !important\n}\n\n.ytp-ce-expanding-overlay-background,\n.ytp-ce-playlist-count {\n    background: var(--things-end-on-video) !important\n}\n\n.sbdd_b,\n#scrim,\ntp-yt-iron-overlay-backdrop {\n    background: var(--top-bar-and-search-background) !important\n}\n\nytd-thumbnail-overlay-hover-text-renderer {\n    background-color: var(--top-bar-and-search-background) !important\n}\n\n.sbfl_b,\n.sbsb_a,\n#container.style-scope.ytd-masthead {\n    background: transparent !important\n}\n\n.sbsb_d,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:hover,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:focus,\n.ytp-menuitem:not([aria-disabled=true]):hover {\n    background: var(--search-background-hover) !important;\n    transition: all .2s cubic-bezier(0.1, 0.7, 1, 1) !important\n}\n\n.gsfs,\n.ytp-ce-channel-metadata,\n.ytp-cards-teaser .ytp-cards-teaser-text,\n.ytp-panel-menu,\n.ytp-ce-website-title,\n.ytp-ce-merchandise-title {\n    color: var(--text-color) !important\n}\n\n#player,\nytd-multi-page-menu-renderer {\n    border-radius: var(--theme-radius-big) !important\n}\n\na.thumbnail>.ytcd-basic-item-large-image,\nytcp-thumbnail-with-title,\nytd-playlist-thumbnail,\nytd-thumbnail,\n#thumbnail,\n.thumbnail-container.ytd-notification-renderer,\n.sbdd_b,\n.ytp-ce-video,\n.ytp-ce-playlist,\n[aria-live=\"polite\"],\n.ytp-tooltip-bg,\n.ytp-tooltip-text.ytp-tooltip-text-no-title,\n.branding-img.iv-click-target,\n.branding-context-container-inner,\nytd-thumbnail-overlay-bottom-panel-renderer,\n.ytp-progress-list,\n.ytp-play-progress.ytp-swatch-background-color,\n.ytp-load-progress,\n.ytp-hover-progress.ytp-hover-progress-light,\n.ytp-gradient-bottom,\n.style-scope.ytd-subscribe-button-renderer,\n#container.ytd-playlist-panel-renderer,\n.header.ytd-playlist-panel-renderer,\nytd-button-renderer.style-suggestive[is-paper-button] tp-yt-paper-button.ytd-button-renderer,\nytd-live-chat-frame,\n.ytp-ce-playlist-count,\n.ytp-ce-expanding-overlay-background,\n.ytp-popup.ytp-settings-menu,\n.ytp-sb-subscribe,\n.ytp-sb-unsubscribe,\n.iv-drawer,\n.iv-card,\n.iv-card a.iv-click-target,\n.ytp-cards-teaser-box,\n.miniplayer.ytd-miniplayer,\n.ytp-popup,\n.badge.ytd-badge-supported-renderer,\n.ytp-ce-website .ytp-ce-expanding-image,\n.ytp-ce-merchandise .ytp-ce-expanding-image,\n.ytp-flyout-cta .ytp-flyout-cta-body,\n#ytp-ad-image,\n.ytp-ad-preview-container,\n.ytp-ad-message-container,\n#guide-content,\n.sbsb_d,\n#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer,\n#masthead,\n#search-icon-legacy,\n.ytp-ad-skip-button.ytp-button,\n.ytp-flyout-cta .ytp-flyout-cta-icon,\n#banner>img,\n#icon>img,\n#action,\n.ytp-cards-teaser,\n.ytp-ce-video-duration,\n.ytp-show-tiles .ytp-videowall-still,\n.ytp-videowall-still-info-content,\n.ytp-videowall-still-listlabel-mix.ytp-videowall-still-listlabel,\n.style-scope.ytd-popup-container,\n.style-scope.ytd-miniplayer,\n#action-companion-ad-info-button.ytd-action-companion-ad-renderer,\n.ytp-flyout-cta .ytp-flyout-cta-action-button,\n.ytp-autonav-endscreen-upnext-thumbnail,\n.ytp-autonav-endscreen-upnext-button,\nytd-playlist-panel-video-renderer,\ntp-yt-paper-item.ytd-menu-service-item-renderer,\nytd-menu-service-item-renderer[use-icons],\n.ytp-ad-overlay-image,\n.ytp-ad-button-icon,\n.ytp-ad-overlay-close-button,\n.ytp-ad-text-overlay,\n.ytp-ad-button-icon,\n.ytp-ad-button-icon,\n.html5-video-player .caption-visual-line .ytp-caption-segment:last-child,\n#media-container.ytd-display-ad-renderer,\nytd-display-ad-renderer[layout=display-ad-layout-top-landscape-image] #media-badge.ytd-display-ad-renderer,\n#chips-wrapper.ytd-feed-filter-chip-bar-renderer,\nytd-mini-guide-entry-renderer {\n    border-radius: var(--theme-radius) !important\n}\n\na.thumbnail>.ytcd-basic-item-large-image,\nytcp-thumbnail-with-title,\nytd-playlist-thumbnail,\nytd-thumbnail,\n#thumbnail,\n.thumbnail-container.ytd-notification-renderer,\n#avatar,\n#author-thumbnail.ytd-commesimplebox-renderer,\n.style-scope.ytd-commerenderer.no-transition,\n#player,\n.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title,\n#container.ytd-playlist-panel-renderer,\nytd-live-chat-frame,\nytd-thumbnail-overlay-side-panel-renderer,\nytd-thumbnail-overlay-bottom-panel-renderer,\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n.iv-drawer,\n.ytp-cards-teaser-box,\n.miniplayer.ytd-miniplayer,\n.ytp-flyout-cta .ytp-flyout-cta-body,\n#ytp-ad-image,\n.ytp-ad-preview-container,\n.ytp-ad-message-container,\n#guide-content,\n.ytp-ad-skip-button.ytp-button,\n#banner>img,\n#icon>img,\n#action,\n.ytp-show-tiles .ytp-videowall-still,\nyt-confirm-dialog-renderer[dialog][dialog][dialog],\n.ytp-ce-element.ytp-ce-elemeshow,\n#contentWrapper.tp-yt-iron-dropdown>* {\n    border-collapse: separate !important;\n    overflow: hidden !important;\n    box-shadow: var(--border-minus) 0 var(--border-color), 0 var(--border-width) var(--border-color), var(--border-width) 0 var(--border-color), 0 var(--border-minus) var(--border-color) !important\n}\n\n.ytp-gradient-bottom,\n.ytp-popup.ytp-settings-menu,\n.ytp-tooltip-bg {\n    box-shadow: var(--player-bg-border-width) 0 var(--border-color), 0 var(--bg-border-minus) var(--border-color), var(--bg-border-minus) 0 var(--border-color), 0 var(--player-bg-border-width) var(--border-color) !important\n}\n\n#text.ytd-channel-name,\nyt-button-renderer.yt-formatted-string.yt-button-renderer,\npaper-ripple,\na.yt-simple-endpoint.yt-formatted-string,\n.style-scope.ytd-menu-renderer.force-icon-button.style-default-active,\n.badge-style-type-live-now.ytd-badge-supported-renderer,\n.badge-style-type-starting-soon.ytd-badge-supported-renderer {\n    border-color: var(--theme) !important;\n    color: var(--theme) !important\n}\n\npaper-ripple,\n.ytp-swatch-color,\na.ytp-ce-link,\nyt-icon.ytd-compact-link-renderer,\nyt-icon.ytd-toggle-theme-compact-link-renderer {\n    border-radius: var(--theme-radius) !important;\n    color: var(--theme) !important\n}\n\n.ytp-swatch-background-color,\n.ytp-settings-button.ytp-hd-quality-badge:after,\n.ytp-chrome-controls .ytp-button[aria-pressed]:after,\n.ytp-sb-subscribe,\na.ytp-sb-subscribe {\n    background-color: var(--theme) !important\n}\n\nytd-thumbnail-overlay-time-status-renderer,\nytd-thumbnail-overlay-side-panel-renderer,\nytd-thumbnail-overlay-toggle-button-renderer,\n.iv-branding-active .branding-context-container-inner,\n.ytp-ce-video-duration {\n    border-radius: var(--theme-time-radius) !important;\n    background-color: var(--hover-time-background) !important\n}\n\na.yt-simple-endpoint.yt-formatted-string::selection,\nspan::selection,\nyt-formatted-string::selection,\n.ytp-menuitem[aria-checked=true] .ytp-menuitem-toggle-checkbox,\n.ytp-volume-slider-handle,\n.ytp-volume-slider-handle:before {\n    background: var(--theme) !important\n}\n\n#container.ytd-searchbox,\n.yt-ui-ellipsis,\n.ytp-tooltip.ytp-preview:not(.ytp-text-detail),\n#contentContainer,\n.ytp-videowall-still-info-duration {\n    background-color: transparent !important;\n    border-color: transparent !important\n}\n\nytd-playlist-thumbnail,\nytd-thumbnail,\nytd-compact-playlist-renderer,\nytd-compact-video-renderer,\nytd-compact-radio-renderer,\nytd-compact-playlist-renderer>div>div>div>a,\nytd-compact-video-renderer>div>div>div>a,\nytd-compact-radio-renderer>div>div>div>a,\nytd-thumbnail.ytd-rich-grid-media,\nytd-thumbnail.ytd-rich-grid-media>a,\n#button.ytd-menu-renderer.yt-icon.ytd-menu-renderer {\n    transition: all .2s cubic-bezier(0.1, 0.5, 1, 1) !important\n}\n\nytd-thumbnail-overlay-toggle-button-renderer {\n    background-color: transparent\n}\n\nytd-compact-playlist-renderer:hover>div>ytd-playlist-thumbnail,\nytd-compact-video-renderer:hover>div>ytd-thumbnail,\nytd-compact-radio-renderer:hover>div>ytd-thumbnail {\n    box-shadow: var(--border-minus) 0 var(--border-hover-color), 0 var(--border-width) var(--border-hover-color), var(--border-width) 0 var(--border-hover-color), 0 var(--border-minus) var(--border-hover-color) !important\n}\n\nytd-thumbnail.ytd-rich-grid-media:hover {\n    margin-block-start: -15px !important;\n    margin-block-end: 15px !important;\n    box-shadow: var(--border-minus) 0 var(--border-hover-color), 0 var(--border-width) var(--border-hover-color), var(--border-width) 0 var(--border-hover-color), 0 var(--border-minus) var(--border-hover-color) !important\n}\n\nytd-thumbnail.ytd-rich-grid-media:active {\n    box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important\n}\n\nytd-compact-playlist-renderer:hover,\nytd-compact-video-renderer:hover,\nytd-compact-radio-renderer:hover {\n    margin-inline-start: -15px !important\n}\n\nytd-compact-playlist-renderer:hover>div>div>div>a,\nytd-compact-video-renderer:hover>div>div>div>a,\nytd-compact-radio-renderer:hover>div>div>div>a {\n    margin-inline-end: 15px !important\n}\n\nytd-compact-playlist-renderer:active>div>ytd-playlist-thumbnail,\nytd-compact-video-renderer:active>div>ytd-thumbnail,\nytd-compact-radio-renderer:active>div>ytd-thumbnail {\n    box-shadow: var(--border-minus) 0 var(--border-click-color), 0 var(--border-width) var(--border-click-color), var(--border-width) 0 var(--border-click-color), 0 var(--border-minus) var(--border-click-color) !important\n}\n\n.ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]):hover>svg>path,\nytd-topbar-logo-renderer>a>div>yt-icon>svg>g>g>path {\n    fill: var(--theme) !important\n}\n\n.ytp-chrome-top,\n.ytp-chrome-bottom,\n.ytp-gradient-bottom,\n.ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true])>svg>path {\n    transition: all .2s cubic-bezier(0, 1, 1, 1) !important\n}\n\n.ytp-autohide:not(.ytp-autohide-active) .ytp-gradietop,\n.ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-bottom {\n    display: block !important\n}\n\n.ytp-gradient-bottom {\n    height: 30px !important;\n    background-image: none !important\n}\n\n.ytp-popup.ytp-settings-menu,\n.ytp-gradient-bottom,\n.iv-drawer,\n.ytp-cards-teaser-box,\n.ytp-popup,\n.ytp-bezel {\n    background-color: var(--in-player-bg-color) !important\n}\n\n.ytp-gradietop[aria-hidden=true],\n.ytp-gradient-bottom[aria-hidden=true],\n.ytp-autohide .ytp-gradietop,\n.ytp-autohide .ytp-gradient-bottom,\n.ytp-autohide .ytp-playlist-menu-button,\n.ytp-autohide .ytp-back-button,\n.ytp-autohide .ytp-title-channel,\n.ytp-autohide .ytp-title,\n.ytp-autohide .ytp-chrome-top .ytp-watch-later-button,\n.ytp-autohide .ytp-chrome-top .ytp-share-button,\n.ytp-autohide .ytp-chrome-top .ytp-copylink-button,\n.ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button,\n.ytp-autohide .ytp-overflow-button,\n.ytp-autohide .ytp-chrome-bottom,\n.ytp-chrome-top[aria-hidden=true],\n.ytp-chrome-bottom[aria-hidden=true] {\n    margin-block-start: 50px !important;\n    margin-block-end: -50px !important;\n    transition: all .1s cubic-bezier(0.1, 0.5, 1, 0) !important\n}"],
+        "Light Theme": ["SubtitleC", "#000000", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ffffff", "CUSTOM", "", "TextC", "#000000", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff0000", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#000000", "VDOTEXTC", "#000000", "MediaBGC", "#ffffff", "TimeBGC", "#ffffff", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "3", "OutShaC", "#000000", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#383838", "CapOutT", "true", "PlaylisthoverO", "27", "ThemeO", "100", "ThemehoverC", "#ff0000", "ThumbHoverColorC", "#ff94f6", "ThemeFortC", "#ff0000", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#ffffff", "BlurBGAM", "10", "SubOutT", "true", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Sha", "ThumbClickO", "100", "ThemehoverO", "25", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff0000", "PlaylisthoverC", "#ff0000", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#ffffff", "BGO", "100", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "72", "OutShaO", "32", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#ffffff", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""],
+        "Dark Theme": ["SubtitleC", "#ffffff", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#00eeff", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff0000", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "3", "OutShaC", "#000000", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#9e9e9e", "CapOutT", "true", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#ff0000", "ThumbHoverColorC", "#eeff00", "ThemeFortC", "#ff0000", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "10", "SubOutT", "true", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Sha", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff0000", "PlaylisthoverC", "#ff0000", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#000000", "ThemeSndC", "#000000", "BGO", "85", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "72", "OutShaO", "100", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#1a1a1a", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""],
+        "Black Theme": ["SubtitleC", "#ff8a8a", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ffffff", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff0000", "FlipT", "false", "BottomGT", "false", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "1", "OutShaC", "#ff0000", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#c4c4c4", "CapOutT", "false", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#ff0000", "ThumbHoverColorC", "#00ffd5", "ThemeFortC", "#ff0000", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "10", "SubOutT", "false", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff0000", "PlaylisthoverC", "#ff0000", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#000000", "BGO", "70", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "80", "OutShaO", "50", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""],
+        "Pink-Black": ["SubtitleC", "#ff94f6", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ffffff", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#ff94f6", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "1", "OutShaC", "#ff94f6", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#c4c4c4", "CapOutT", "false", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#ff94f6", "ThumbHoverColorC", "#ff94f6", "ThemeFortC", "#ff94f6", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "10", "SubOutT", "false", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#ff94f6", "PlaylisthoverC", "#ff94f6", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "50", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#000000", "BGO", "70", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "50", "OutShaO", "50", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", ""],
+        "My Waifu ♥": ["SubtitleC", "#da8aff", "RepeatT", "false", "TimeEdge", "10", "EndBGO", "50", "NdTextO", "100", "ThemeSndO", "50", "MediaBlurT", "true", "ThumbClickC", "#ff0000", "CUSTOM", "", "TextC", "#ffffff", "CenterMediaT", "true", "SubtitleO", "100", "IMGS", "100", "ThemeC", "#bf70ff", "FlipT", "false", "BottomGT", "true", "transitionT", "true", "IMGX", "50", "Edge", "10", "TIMETEXTC", "#ffffff", "VDOTEXTC", "#ffffff", "MediaBGC", "#000000", "TimeBGC", "#000000", "TimeLoadedC", "#ffffff", "TimeOutT", "true", "HBTC", "#ffffff", "HBTO", "100", "PlayerOutT", "true", "ThemeFortO", "50", "Border", "1", "OutShaC", "#cd70ff", "ThumbHoverT", "Slide", "ThemeThrO", "20", "NdTextC", "#c4c4c4", "CapOutT", "false", "PlaylisthoverO", "50", "ThemeO", "100", "ThemehoverC", "#dc5cff", "ThumbHoverColorC", "#ff00dd", "ThemeFortC", "#c494ff", "EndBGC", "#000000", "HoverBorder", "1", "CapBGC", "#000000", "BlurBGAM", "0", "SubOutT", "false", "BlurWhatT", "none", "ThumbHoverColorO", "100", "PlayerBorder", "1", "TIMETEXTO", "100", "OutOrShaT", "Out", "ThumbClickO", "100", "ThemehoverO", "50", "MediaH", "24", "TopOutT", "true", "ThemeThrC", "#b061ff", "PlaylisthoverC", "#d666ff", "TimeLoadedO", "50", "CenterTimeT", "true", "IMGY", "15", "BlurAm", "5", "PlayerEdge", "20", "Time-LineBGC", "#ffffff", "ThemeSndC", "#000000", "BGO", "70", "EnaCUSCSST", "false", "BlurSubT", "true", "CapBGO", "80", "OutShaO", "50", "VDOTEXTO", "100", "MediaBGO", "50", "TimeBGO", "50", "CenterMedia", "true", "VBGT", "true", "TextO", "100", "BGC", "#000000", "TimeH", "18", "Time-LineBGO", "20", "Zoom", "1.075", "SyncLogoT", "true", "ScWidth", "11", "BGIMG", "https://i.ibb.co/FYPBxC5/1647030608836.jpg"],
+        "I'm Using :D": { "LinkColorO": "100", "FlipT": "false", "ThemeChipsO": "50", "TimeBGC": "#000000", "IMGSBOX": "100", "AutoEXPIPT": "true", "ThemeFortC": "#b67aff", "VisualT": "false", "TimeH": "18", "SubtitleO": "100", "TimeAniT": "true", "SubtitleC": "#ffffff", "STUPIDME": "true", "DropFrameT": "true", "FoNoto_Sans_ThaiT": "true", "FoNoto_Sans_KRT": "true", "IMGS": "100", "SearchAnimT": "true", "SyncLogoT": "true", "ADDCUSTOM": "@keyframes rotating {\n  from {\n    transform: rotate(0deg);\n  }\n\n  to {\n    transform: rotate(360deg);\n  }\n}\n\n/*span,img,yt-formatted-string,svg,video,yt-attributed-string {\n  animation: rotating 5s linear infinite;\n}*/\n\n.details.ytd-compact-video-renderer{\n    transform: translateX(30px);\n    opacity: 0;\n    transition: all 0.4s ease-out !important;\n}\n\n#dismissible:hover .details.ytd-compact-video-renderer{\n    transform: translateX(0px);\n    opacity: 1;\n}", "TextC": "#ffffff", "ReplaceYTT": "true", "BGO": "70", "ThumbHoverColorC": "#ff00dd", "MediaBlurT": "false", "ThumbHoverColorO": "100", "Time-LineBGO": "20", "NVDOC": "1", "EndBGC": "#000000", "DelBarT": "true", "Border": "1", "ScWidth": "0", "BelowSpace": "0", "CenterUDFT": "true", "BlurBGAM": "0", "MediaBGO": "49", "ThemehoverC": "#dc5cff", "VDOTEXTO": "100", "NdTextO": "100", "IconFillT": "true", "ScrollT": "true", "ThemeSndO": "67", "AutoPIPT": "true", "FoNoto_Sans JPT": "false", "LoadVDOT": "false", "ThemeThrC": "#b061ff", "PlaylisthoverO": "50", "TimeBGO": "50", "NVDOT": "2.2", "SubOutT": "false", "SwapRowT": "false", "FoMaterial IconsT": "false", "TimeLoadedO": "50", "CenterMedia": "true", "OutShaO": "0", "SPSubScribeBGC": "#ff0000", "ThemehoverO": "50", "HBTO": "100", "CenterUDT": "true", "IMGXBOX": "50", "VDOSmooth": "10", "FoRoboto_MonoT": "false", "PlaylisthoverC": "#d666ff", "TimeOutT": "false", "ThumbClickC": "#ff0000", "SPSubScribeColorC": "#ffffff", "EnaCUSCSST": "false", "PlayerOutT": "true", "IMGY": "30", "ThumbClickO": "100", "transitionT": "true", "ThemeChipsC": "#000000", "TIMETEXTO": "100", "ConUnderVDOT": "false", "BlurWhatT": "none", "PlayerBorder": "1", "ThumbAnimT": "true", "SPSubScribeBGO": "100", "SndOutT": "true", "OutShaC": "#ff57e9", "ThemeC": "#c680ff", "subShaColorC": "#000000", "FoYouTube_SansT": "false", "CenterTimeT": "true", "EQT": "true", "LeftBarT": "true", "LeftBar": "true", "NewSubT": "true", "EndBGO": "50", "BGC": "#000000", "CanvasQua": "100", "HoverBorder": "1", "IMGX": "50", "Test": "Test", "FoAngkorT": "false", "CapBGC": "#000000", "TimeLoadedC": "#ffffff", "Enable": "false", "ControlUnderVDOT": "true", "FlyoutT": "true", "NVDOB": "40", "TIMETEXTC": "#ffffff", "FullTheaterT": "true", "ThemeO": "100", "DelBarDebugT": "false", "CapOutT": "false", "CUSTOM": "", "subSpace": "1", "LinkColorC": "#dd61ff", "LeftBarC": "#000000", "CenterMediaT": "true", "CheckStaticT": "true", "ReplaceYTURL": "https://i.gifer.com/17xo.gif", "ThumbHoverT": "Slide", "subWidth": "700", "RepeatT": "false", "OutOrShaT": "Out", "ThemeSndC": "#000000", "SPSubScribeColorO": "100", "MediaH": "30", "subShaWidth": "0", "BottomGT": "true", "LeftBarO": "0", "TextO": "100", "ThemeThrO": "31", "APIT": "false", "subShaColorO": "100", "TopOutT": "true", "VBGT": "true", "YTSize": "100", "Edge": "10", "subShaBlur": "0", "AutohideBarT": "true", "FoMaterial_IconsT": "false", "VDOTEXTC": "#ffffff", "PlayerEdge": "20", "CapBGO": "0", "IMGYBOX": "50", "BlurAm": "10", "PtranT": "true", "FoBungee_SpiceT": "false", "VDOBGT": "true", "FoNoto_Sans_JPT": "true", "Zoom": "1.075", "TimeEdge": "10", "VDOSYT": "true", "MediaSpace": "70", "MediaBGC": "#000000", "NewSub": "true", "NewVDOanimaT": "true", "EnaADDCSST": "false", "NdTextC": "#c4c4c4", "InstallFont": "", "FoInterT": "false", "SPSubScribeT": "false", "VdoAnimT": "true", "HBTC": "#ffffff", "NVDOBGT": "0.4", "FoRobotoT": "false", "BlurSubT": "false", "ThemeFortO": "41", "Time-LineBGC": "#ffffff", "BGIMG": "https://i.ibb.co/Hp6mZPw/1695638801433.jpg" },
+        "Coding": { "FlipT": "false", "ThemeChipsO": "59", "TimeBGC": "#000000", "IMGSBOX": "100", "AutoEXPIPT": "true", "ThemeFortC": "#428e94", "VisualT": "false", "TimeH": "18", "SubtitleO": "100", "TimeAniT": "true", "STUPIDME": "true", "SubtitleC": "#ffffff", "FoNoto_Sans_ThaiT": "true", "FoNoto_Sans_KRT": "true", "IMGS": "100", "SearchAnimT": "true", "SyncLogoT": "true", "ADDCUSTOM": "", "TextC": "#b3f2ff", "ReplaceYTT": "true", "BGO": "70", "ThumbHoverColorC": "#00fbff", "MediaBlurT": "false", "ThumbHoverColorO": "100", "Time-LineBGO": "20", "NVDOC": "1", "EndBGC": "#000000", "DelBarT": "false", "Border": "1", "CenterUDFT": "true", "MediaBGO": "45", "ScWidth": "0", "BlurBGAM": "0", "ThemehoverC": "#75b8ff", "VDOTEXTO": "100", "NdTextO": "81", "IconFillT": "true", "FoNoto_Sans JPT": "false", "ScrollT": "true", "AutoPIPT": "true", "ThemeSndO": "75", "LoadVDOT": "false", "ThemeThrC": "#7afff6", "PlaylisthoverO": "50", "FoMaterial IconsT": "false", "SubOutT": "false", "SwapRowT": "false", "NVDOT": "2", "TimeBGO": "50", "TimeLoadedO": "50", "CenterMedia": "true", "OutShaO": "0", "SPSubScribeBGC": "#21ca91", "ThemehoverO": "50", "HBTO": "100", "CenterUDT": "true", "IMGXBOX": "50", "FoRoboto_MonoT": "false", "VDOSmooth": "10", "PlaylisthoverC": "#66c4ff", "SPSubScribeColorC": "#18201f", "ThumbClickC": "#00ffb3", "TimeOutT": "true", "EnaCUSCSST": "false", "PlayerOutT": "true", "IMGY": "50", "ThumbClickO": "100", "transitionT": "true", "ThemeChipsC": "#000000", "TIMETEXTO": "100", "ConUnderVDOT": "false", "BlurWhatT": "all", "PlayerBorder": "1", "ThumbAnimT": "true", "SPSubScribeBGO": "100", "SndOutT": "false", "OutShaC": "#70ffbc", "ThemeC": "#79d6d7", "subShaColorC": "#000000", "FoYouTube_SansT": "false", "CenterTimeT": "true", "LeftBarT": "true", "LeftBar": "true", "NewSubT": "true", "EndBGO": "50", "BGC": "#18212f", "CanvasQua": "10", "HoverBorder": "1", "IMGX": "50", "Test": "Test", "FoAngkorT": "false", "CapBGC": "#000000", "TimeLoadedC": "#3d87ff", "Enable": "false", "ControlUnderVDOT": "true", "NVDOB": "50", "TIMETEXTC": "#66ff7f", "ThemeO": "100", "DelBarDebugT": "false", "CapOutT": "false", "CUSTOM": "", "subSpace": "1", "LeftBarC": "#000000", "CenterMediaT": "true", "ReplaceYTURL": "https://th.bing.com/th/id/R.e6cb44c348b25d243ca1e05d291cbcbf?rik=ncCqAqKlpqNIUA&riu=http%3a%2f%2f24.media.tumblr.com%2fc74c26fc85fb6b78cdbba94b00492d58%2ftumblr_n08txah95c1slk289o1_500.gif&ehk=TtQ0KYsuLMIOiIAe3HadRhT2rvnkXMKvV0%2bpxLb4Gds%3d&risl=&pid=ImgRaw&r=0", "ThumbHoverT": "Slide", "RepeatT": "true", "subWidth": "700", "OutOrShaT": "Out", "ThemeSndC": "#000000", "SPSubScribeColorO": "100", "LeftBarO": "0", "BottomGT": "true", "MediaH": "30", "TextO": "85", "subShaWidth": "0", "ThemeThrO": "20", "APIT": "false", "subShaColorO": "100", "TopOutT": "true", "VBGT": "false", "YTSize": "72", "Edge": "10", "AutohideBarT": "true", "FoMaterial_IconsT": "false", "subShaBlur": "0", "VDOTEXTC": "#99fff3", "PlayerEdge": "20", "CapBGO": "0", "IMGYBOX": "50", "BlurAm": "5", "PtranT": "true", "FoBungee_SpiceT": "false", "VDOBGT": "false", "FoNoto_Sans_JPT": "true", "Zoom": "1.075", "TimeEdge": "10", "VDOSYT": "true", "MediaBGC": "#000000", "MediaSpace": "70", "NewSub": "true", "NewVDOanimaT": "true", "EnaADDCSST": "false", "NdTextC": "#80ff95", "InstallFont": "", "FoInterT": "false", "SPSubScribeT": "true", "HBTC": "#00ffe1", "VdoAnimT": "true", "NVDOBGT": "0.4", "FoRobotoT": "false", "BlurSubT": "false", "ThemeFortO": "56", "Time-LineBGC": "#b8b8b8", "BGIMG": "" },
+
+    })
 }
 
 var Set = document.createElement("button"),
@@ -151,38 +217,40 @@ FontElement.id = "Newtube-CustomFont"
 var FontStart = `family=`
 var FontResult = []
 
-function FindFontFamily(FontLink) {
+async function FindFontFamily(FontLink) {
     Startidx = FontLink.indexOf(FontStart)
     FontLink = FontLink.substring(Startidx, FontLink.length)
     Endidx = FontLink.indexOf(":")
     if (Endidx == -1) {
         Endidx = FontLink.indexOf("&")
     }
-    console.log(Endidx)
+    //console.log(Endidx)
     FontName = FontLink.substring(FontStart.length, Endidx)
     FontName = FontName.replaceAll("+", " ")
-    console.log(FontName)
+    //console.log(FontName)
     FontResult.push(FontName)
     FontLink = FontLink.substring(Endidx, FontLink.length)
-    console.log(FontLink)
+    //console.log(FontLink)
     return FontLink
 }
 
-function GetAllFont(FontLink) {
+async function GetAllFont(FontLink) {
+    //console.log(FontLink)
     if (FontLink.includes(FontStart)) {
-        GetAllFont(FindFontFamily(FontLink))
+        await GetAllFont(await FindFontFamily(FontLink))
     } else {
         return FontLink
     }
 }
 
-function GetFontName(FontLink) {
+async function GetFontName(FontLink) {
     FontResult = []
-    GetAllFont(FontLink)
+    //console.log(FontLink)
+    await GetAllFont(FontLink)
     return FontResult
 }
 
-function AddFontToWeb(FontID, FontLink, ThisFontLinkName) {
+async function AddFontToWeb(FontID, FontLink, ThisFontLinkName) {
     ThisLink = document.createElement('link')
     ThisLink.id = FontID
     ThisLink.innerHTML = FontLink
@@ -191,27 +259,26 @@ function AddFontToWeb(FontID, FontLink, ThisFontLinkName) {
     AllFont = AllFont.concat(ThisFontLinkName)
 }
 
-function AddListFont(FontLink) {
-    AddedFont = UnCompressAddedFont()
-    ThisFontLinkName = GetFontName(FontLink)
+async function AddListFont(FontLink) {
+    //console.log("AddFont", FontLink)
+    AddedFont = await UnCompressAddedFont()
+    ThisFontLinkName = await GetFontName(FontLink)
     FontID = JSON.stringify(ThisFontLinkName)
-    FontID = FontID.replaceAll('"', "Quote")
-    AddFontToWeb(FontID, FontLink, ThisFontLinkName)
+    await AddFontToWeb(FontID, FontLink, ThisFontLinkName)
     SaveAddedFont(AddedFont)
 }
 
-function RemoveListFont(FontID) {
-    AddedFont = UnCompressAddedFont()
+async function RemoveListFont(FontID) {
+    AddedFont = await UnCompressAddedFont()
     delete AddedFont[FontID]
-    console.log(document.getElementById(FontID))
+    //console.log(document.getElementById(FontID))
     document.getElementById(FontID).remove()
-    FontID = FontID.replaceAll('Quote', '"')
     GetFontArray = JSON.parse(FontID)
     AllFont = AllFont.filter(val => !GetFontArray.includes(val));
     SaveAddedFont(AddedFont)
 }
 
-function styleloop() {
+async function styleloop() {
     if (document.head == null) {
         setTimeout(() => {
             styleloop()
@@ -221,17 +288,17 @@ function styleloop() {
         document.head.append(FlyoutStyle)
         document.head.append(FontElement)
 
-        AddedFont = UnCompressAddedFont()
-        Object.keys(AddedFont).forEach(function (TheseFontName) {
+        AddedFont = await UnCompressAddedFont()
+        Object.keys(AddedFont).forEach(async function (TheseFontName) {
             GetFont = AddedFont[TheseFontName]
-            AddFontToWeb(GetFont[0], GetFont[1], GetFontName(GetFont[1]))
+            AddFontToWeb(GetFont[0], GetFont[1], await GetFontName(GetFont[1]))
         })
     }
 }
 
 styleloop()
 
-function waitForElmByID(selector) {
+async function waitForElmByID(selector) {
     return new Promise(resolve => {
         if (document.getElementById(selector)) {
             return resolve(document.getElementById(selector));
@@ -251,7 +318,7 @@ function waitForElmByID(selector) {
     });
 }
 
-function waitForElm(selector) {
+async function waitForElm(selector) {
     return new Promise(resolve => {
         if (document.querySelector(selector)) {
             return resolve(document.querySelector(selector));
@@ -280,17 +347,12 @@ function inIframe() {
 }
 
 
-function UpdateIcon() {
-    DOwithindexed(function () {
-        get = store.get('IconURL')
-        get.onsuccess = function (got) {
-            icon = document.getElementsByTagName('link')
-
-            Array.from(icon).forEach(e => {
-                if (e.getAttribute('rel') == "icon" || e.getAttribute('rel') == "shortcut icon") {
-                    e.href = got.target.result
-                }
-            })
+async function UpdateIcon() {
+    let GetIcon = await GetLoad("IconURL")
+    icon = document.getElementsByTagName('link')
+    Array.from(icon).forEach(e => {
+        if (e.getAttribute('rel') == "icon" || e.getAttribute('rel') == "shortcut icon") {
+            e.href = GetIcon
         }
     })
 }
@@ -299,7 +361,7 @@ window.addEventListener('DOMContentLoaded', () => {
     UpdateIcon()
 })
 
-function CheckPar(ThisE) {
+async function CheckPar(ThisE) {
     if (LoopCheck != 0 && ThisE != null) {
         if (ThisE.id == "dismissible" || ThisE.id == "wc-endpoint") {
             EPar = ThisE
@@ -324,49 +386,21 @@ transition: all 0.5s;
 margin: 5px;
 width: 50px;`
 
-async function DOwithindexed(Successdo) {
-    let reqdb = window.indexedDB.open("Newtube", 1)
+async function NUllColor(THIS, Color, Opa) {
+    await SetTo(THIS + 'C', Color)
+    await SetTo(THIS + 'O', Opa)
+}
 
-    reqdb.onupgradeneeded = () => {
-        reqdb.result.createObjectStore("User_saved")
-    }
-
-    reqdb.onsuccess = function () {
-        let db
-        try {
-            db = reqdb.result
-        } catch (e) {
-
-        }
-        let transaction = db.transaction("User_saved", "readwrite")
-        store = transaction.objectStore("User_saved")
-
-        Successdo()
-
-        transaction.oncomplete = function () {
-            db.close()
-        }
+async function SetTo(THIS, DE) {
+    let ThisLoad = await GetLoad(THIS)
+    if (ThisLoad == null || (ThisLoad.constructor === Object && Object.keys(ThisLoad).length == 0)) {
+        await MainSave({ [THIS]: DE })
     }
 }
 
-function NUllColor(THIS, Color, Opa) {
-    SetTo(THIS + 'C', Color)
-    SetTo(THIS + 'O', Opa)
-}
-
-function SetTo(THIS, DE) {
-    if (localStorage["nt-" + THIS] == null) {
-        localStorage["nt-" + THIS] = DE
-    }
-    if (localStorage[THIS] != null) {
-        localStorage["nt-" + THIS] = localStorage[THIS]
-        localStorage.removeItem(THIS)
-    }
-}
-
-function SetValueCheck2(Match, IFTRUE, IFFLASE) {
+async function SetValueCheck2(Match, IFTRUE, IFFLASE) {
     if (IWantTOset[1] == Match) {
-        if (IWantTOset[0] == 'true') {
+        if (IWantTOset[0] == true) {
             ReturnCode = IFTRUE
         }
         else {
@@ -375,7 +409,7 @@ function SetValueCheck2(Match, IFTRUE, IFFLASE) {
     }
 }
 
-function SetValueCheck() {
+async function SetValueCheck() {
 
     SetValueCheck2("IconFill", ``, `:not([d="M27.9727 3.12324C27.6435 1.89323 26.6768 0.926623 25.4468 0.597366C23.2197 2.24288e-07 14.285 0 14.285 0C14.285 0 5.35042 2.24288e-07 3.12323 0.597366C1.89323 0.926623 0.926623 1.89323 0.597366 3.12324C2.24288e-07 5.35042 0 10 0 10C0 10 2.24288e-07 14.6496 0.597366 16.8768C0.926623 18.1068 1.89323 19.0734 3.12323 19.4026C5.35042 20 14.285 20 14.285 20C14.285 20 23.2197 20 25.4468 19.4026C26.6768 19.0734 27.6435 18.1068 27.9727 16.8768C28.5701 14.6496 28.5701 10 28.5701 10C28.5701 10 28.5677 5.35042 27.9727 3.12324Z"])`)
 
@@ -530,7 +564,7 @@ function SetValueCheck() {
 
         filter: drop-shadow(0px 0px 1px var(--sub-sha-color)) drop-shadow(0px 0px var(--sub-ShaBlur) var(--sub-sha-color)) drop-shadow(0px 0px 1px var(--sub-sha-color));
 
-        font-weight: var(--sub-Width);
+        foweight: var(--sub-Width);
 
         letter-spacing: var(--sub-Space);
         color: var(--sub-color) !important;
@@ -591,15 +625,14 @@ function SetValueCheck() {
     }`)
 
     SetValueCheck2("ControlUnderVDO", `
-#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not([nt-flyout]){
+#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not([flyout]){
     padding-bottom: var(--Media-Space);
 }
 
-div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not([nt-flyout]) .ytp-chrome-bottom{
+div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not([flyout]) .ytp-chrome-bottom{
     padding-top: 50px !important;
 }
 
-div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) .ytp-gradient-bottom,
 div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) .ytp-chrome-bottom{
     overflow: hidden !important;
 }
@@ -647,9 +680,9 @@ div.html5-video-player.ytp-embed{
     overflow:hidden !important;
 }
 
-#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([nt-flyout]) .ytp-caption-window-container,
-#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([nt-flyout]) .ytp-player-content,
-#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([nt-flyout]) .ytp-cued-thumbnail-overlay{
+#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([flyout]) .ytp-caption-window-container,
+#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([flyout]) .ytp-player-content,
+#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([flyout]) .ytp-cued-thumbnail-overlay{
       height: calc(100% - var(--Media-Space)) !important;
 }
 
@@ -696,7 +729,7 @@ ytd-player {
                     background-color: var(--in-player-bg-color) !important;
                 }
                 
-                .ytp-gradient-top[aria-hidden=true], .ytp-gradient-bottom[aria-hidden=true], .ytp-autohide .ytp-gradient-top, .ytp-autohide .ytp-gradient-bottom,.ytp-autohide .ytp-playlist-menu-button, .ytp-autohide .ytp-back-button, .ytp-autohide .ytp-title-channel, .ytp-autohide .ytp-title, .ytp-autohide .ytp-chrome-top .ytp-watch-later-button, .ytp-autohide .ytp-chrome-top .ytp-share-button, .ytp-autohide .ytp-chrome-top .ytp-copylink-button, .ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button, .ytp-autohide .ytp-overflow-button, .ytp-autohide .ytp-chrome-bottom, .ytp-chrome-top[aria-hidden=true], .ytp-chrome-bottom[aria-hidden=true]
+                .ytp-gradietop[aria-hidden=true], .ytp-gradient-bottom[aria-hidden=true], .ytp-autohide .ytp-gradietop, .ytp-autohide .ytp-gradient-bottom,.ytp-autohide .ytp-playlist-menu-button, .ytp-autohide .ytp-back-button, .ytp-autohide .ytp-title-channel, .ytp-autohide .ytp-title, .ytp-autohide .ytp-chrome-top .ytp-watch-later-button, .ytp-autohide .ytp-chrome-top .ytp-share-button, .ytp-autohide .ytp-chrome-top .ytp-copylink-button, .ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button, .ytp-autohide .ytp-overflow-button, .ytp-autohide .ytp-chrome-bottom, .ytp-chrome-top[aria-hidden=true], .ytp-chrome-bottom[aria-hidden=true]
                 {
                     margin-block-start: 50px !important;
                     margin-block-end: -50px !important;
@@ -715,14 +748,14 @@ ytd-player {
 
 
 
-function SetValueSelect2(Match, IFCHOOSETHIS, DOTHIS) {
+async function SetValueSelect2(Match, IFCHOOSETHIS, DOTHIS) {
     if (IWantTOset[1] == Match && IWantTOset[0] == IFCHOOSETHIS) {
         ReturnCode = DOTHIS
     }
 }
 
 
-function SetValueSelect() {
+async function SetValueSelect() {
     SetValueSelect2("BlurWhat", "all", `
     .sbdd_b,
     #masthead,
@@ -892,8 +925,8 @@ function SetValueSelect() {
     SetValueSelect2("OutOrSha", "None", JSON.stringify([`outline-color: transparent !important;`, `outline-color: transparent !important;`]))
 }
 
-function GetCodeC(Id) {
-    IWantTOset = [localStorage["nt-" + Id + "T"], Id]
+async function GetCodeC(Id) {
+    IWantTOset = [await GetLoad(Id + "T"), Id]
     SetValueCheck()
     SetValueSelect()
     return ReturnCode
@@ -901,181 +934,184 @@ function GetCodeC(Id) {
 
 //-----------------------------------------------------------------
 
-function SetNull() {
-    SetTo("NUMPRESET", JSON.stringify(ForcePre))
+async function SetNull() {
+    await SetTo("PRESET", {})
+    SetNormalPre()
     //Text-------------------------
-    SetTo("BlurAm", `5`)
-    SetTo("BlurBGAM", '10')
+    await SetTo("BlurAm", 5)
+    await SetTo("BlurBGAM", 10)
 
-    SetTo("Border", '1')
-    SetTo("PlayerBorder", '1')
+    await SetTo("Border", 1)
+    await SetTo("PlayerBorder", 1)
 
-    SetTo("MediaH", '24')
+    await SetTo("MediaH", 24)
 
-    SetTo("IMGX", '50')
-    SetTo("IMGY", '50')
-    SetTo("IMGS", '100')
+    await SetTo("IMGX", 50)
+    await SetTo("IMGY", 50)
+    await SetTo("IMGS", 100)
 
-    SetTo("Edge", '10')
-    SetTo("TimeEdge", '10')
-    SetTo("PlayerEdge", '20')
+    await SetTo("Edge", 10)
+    await SetTo("TimeEdge", 10)
+    await SetTo("PlayerEdge", 20)
 
-    SetTo("Zoom", '1.075')
-    SetTo("ScWidth", '11')
+    await SetTo("Zoom", 1.075)
+    await SetTo("ScWidth", 11)
 
-    SetTo("HoverBorder", '1')
-    SetTo("TimeH", `18`)
+    await SetTo("HoverBorder", 1)
+    await SetTo("TimeH", 18)
 
-    SetTo("SHOWPRESET", true)
+    await SetTo("SHOWPRESET", true)
 
-    SetTo("CUSTOM", ``)
-    SetTo("ADDCUSTOM", ``)
-    SetTo("ADDFONT", `{}`)
-    SetTo("EnaFont", `[]`)
+    await SetTo("CUSTOM", ``)
+    await SetTo("ADDCUSTOM", ``)
+    await SetTo("ADDFONT", {})
+    await SetTo("EnaFonT", [])
 
-    SetTo("NVDOB", `40`)
-    SetTo("NVDOC", `1`)
-    SetTo("NVDOBGT", `0.4`)
-    SetTo("NVDOT", `2.2`)
+    await SetTo("NVDOB", 40)
+    await SetTo("NVDOC", 1)
+    await SetTo("NVDOBGT", 0.4)
+    await SetTo("NVDOT", 2.2)
 
-    SetTo("subWidth", `700`)
-    SetTo("subSpace", `2`)
+    await SetTo("subWidth", 700)
+    await SetTo("subSpace", 2)
 
-    SetTo("subShaWidth", `0`)
-    SetTo("subShaBlur", `2`)
+    await SetTo("subShaWidth", 0)
+    await SetTo("subShaBlur", 2)
 
-    SetTo("MediaSpace", `70`)
+    await SetTo("MediaSpace", 70)
 
-    SetTo("CanvasQua", `40`)
+    await SetTo("CanvasQua", 40)
 
-    SetTo("ReplaceYTURL", ``)
+    await SetTo("ReplaceYTURL", "")
 
-    SetTo("VDOSmooth", `10`)
+    await SetTo("VDOSmooth", 10)
 
-    SetTo("YTSize", `100`)
+    await SetTo("YTSize", 100)
 
-    SetTo("BelowSpace", `0`)
+    await SetTo("BelowSpace", 0)
 
     //Check------------------------
 
-    SetTo("ErrorCollectT", false)
+    await SetTo("ErrorCollectT", false)
 
-    SetTo("EnaCUSCSST", false)
-    SetTo("EnaADDCSST", false)
+    await SetTo("EnaCUSCSST", false)
+    await SetTo("EnaADDCSST", false)
 
-    SetTo("APIT", false)
-    SetTo("RealtimeT", false)
-    SetTo("FlipT", false)
-    SetTo("EnableButtonT", true)
-    SetTo("TopOutT", true)
-    SetTo("TimeOutT", true)
-    SetTo("PlayerOutT", true)
-    SetTo("SubOutT", false)
-    SetTo("CapOutT", false)
-    SetTo("BlurSubT", false)
-    SetTo("RepeatT", false)
-    SetTo("CenterTimeT", true)
-    SetTo("BottomGT", true)
-    SetTo("VBGT", true)
-    SetTo("CenterMediaT", true)
-    SetTo("MediaBlurT", false)
-    SetTo("CenterUDT", true)
-    SetTo("CenterUDFT", true)
-    SetTo("TimeAniT", true)
-    SetTo("ScrollT", true)
-    SetTo("VDOBGT", false)
-    SetTo("PtranT", false)
-    SetTo("SwapRowT", false)
-    SetTo("ThumbAnimT", true)
+    await SetTo("APIT", false)
+    await SetTo("RealtimeT", false)
+    await SetTo("FlipT", false)
+    await SetTo("EnableButtonT", true)
+    await SetTo("TopOutT", true)
+    await SetTo("TimeOutT", true)
+    await SetTo("PlayerOutT", true)
+    await SetTo("SubOutT", false)
+    await SetTo("CapOutT", false)
+    await SetTo("BlurSubT", false)
+    await SetTo("RepeatT", false)
+    await SetTo("CenterTimeT", true)
+    await SetTo("BottomGT", true)
+    await SetTo("VBGT", true)
+    await SetTo("CenterMediaT", true)
+    await SetTo("MediaBlurT", false)
+    await SetTo("CenterUDT", true)
+    await SetTo("CenterUDFT", true)
+    await SetTo("TimeAniT", true)
+    await SetTo("ScrollT", true)
+    await SetTo("VDOBGT", false)
+    await SetTo("PtranT", false)
+    await SetTo("SwapRowT", false)
+    await SetTo("ThumbAnimT", true)
 
-    SetTo("VDOSYT", true)
+    await SetTo("VDOSYT", true)
 
-    SetTo("NewSubT", true)
+    await SetTo("NewSubT", true)
 
-    SetTo("VisualT", false)
-    SetTo("NewVDOanimaT", false)
+    await SetTo("VisualT", false)
+    await SetTo("NewVDOanimaT", false)
 
-    SetTo("ControlUnderVDOT", true)
+    await SetTo("ControlUnderVDOT", true)
 
-    SetTo("AutoPIPT", true)
-    SetTo("AutoEXPIPT", true)
+    await SetTo("AutoPIPT", true)
+    await SetTo("AutoEXPIPT", true)
 
-    SetTo("IconFillT", true)
-    SetTo("SPSubScribeT", false)
+    await SetTo("IconFillT", true)
+    await SetTo("SPSubScribeT", false)
 
-    SetTo("DelBarT", false)
-    SetTo("DelBarDebugT", false)
+    await SetTo("DelBarT", false)
+    await SetTo("DelBarDebugT", false)
 
-    SetTo("AutohideBarT", true)
-    SetTo("SearchAnimT", true)
+    await SetTo("AutohideBarT", true)
+    await SetTo("SearchAnimT", true)
 
-    SetTo("ReplaceYTT", false)
+    await SetTo("ReplaceYTT", false)
 
-    SetTo("VdoAnimT", true)
-    SetTo("SndOutT", false)
+    await SetTo("VdoAnimT", true)
+    await SetTo("SndOutT", false)
 
-    SetTo("EQT", false)
+    await SetTo("EQT", false)
 
-    SetTo("FullTheaterT", false)
+    await SetTo("FullTheaterT", false)
 
-    SetTo("DropFrameT", true)
-    SetTo("CheckStaticT", true)
+    await SetTo("DropFrameT", true)
+    await SetTo("CheckStaticT", true)
 
-    SetTo("FlyoutT", true)
+    await SetTo("FlyoutT", true)
+
+    await SetTo("EnableCachedT", true)
 
     //Select------------------------
 
-    SetTo("BlurWhatT", "none")
-    SetTo("ThumbHoverT", "Slide")
-    SetTo("OutOrShaT", "Sha")
+    await SetTo("BlurWhatT", "none")
+    await SetTo("ThumbHoverT", "Slide")
+    await SetTo("OutOrShaT", "Sha")
 
     //Color------------------------
 
-    NUllColor("Theme", `#659aff`, `100`)
-    NUllColor("ThemeSnd", `#000000`, `50`)
-    NUllColor("ThemeThr", `#659aff`, `20`)
-    NUllColor("ThemeFort", `#659aff`, `20`)
-    NUllColor("ThemeChips", `#000000`, `50`)
+    NUllColor("Theme", `#659aff`, 100)
+    NUllColor("ThemeSnd", `#000000`, 50)
+    NUllColor("ThemeThr", `#659aff`, 20)
+    NUllColor("ThemeFort", `#659aff`, 20)
+    NUllColor("ThemeChips", `#000000`, 50)
 
-    NUllColor("OutSha", `#000000`, `50`)
-    NUllColor("BG", `#000000`, `70`)
-    NUllColor("Themehover", `#659aff`, `50`)
-    NUllColor("Playlisthover", `#659aff`, `50`)
-    NUllColor("Subtitle", `#ffffff`, `100`)
+    NUllColor("OutSha", `#000000`, 50)
+    NUllColor("BG", `#000000`, 70)
+    NUllColor("Themehover", `#659aff`, 50)
+    NUllColor("Playlisthover", `#659aff`, 50)
+    NUllColor("Subtitle", `#ffffff`, 100)
 
-    NUllColor("Time-LineBG", `#ffffff`, `20`)
-    NUllColor("TimeLoaded", `#ffffff`, `50`)
+    NUllColor("Time-LineBG", `#ffffff`, 20)
+    NUllColor("TimeLoaded", `#ffffff`, 50)
 
-    NUllColor("MediaBG", `#000000`, `50`)
+    NUllColor("MediaBG", `#000000`, 50)
 
-    NUllColor("TimeBG", `#000000`, `50`)
+    NUllColor("TimeBG", `#000000`, 50)
 
-    NUllColor("ThumbHoverColor", `#659aff`, `100`)
+    NUllColor("ThumbHoverColor", `#659aff`, 100)
 
-    NUllColor("ThumbClick", `#ffffff`, `100`)
+    NUllColor("ThumbClick", `#ffffff`, 100)
 
-    NUllColor("Text", `#ffffff`, `100`)
+    NUllColor("Text", `#ffffff`, 100)
 
-    NUllColor("NdText", `#c4c4c4`, `100`)
+    NUllColor("NdText", `#c4c4c4`, 100)
 
-    NUllColor("EndBG", `#000000`, `50`)
+    NUllColor("EndBG", `#000000`, 50)
 
-    NUllColor("CapBG", `#000000`, `0`)
+    NUllColor("CapBG", `#000000`, 0)
 
-    NUllColor("VDOTEXT", `#ffffff`, `100`)
+    NUllColor("VDOTEXT", `#ffffff`, 100)
 
-    NUllColor("TIMETEXT", `#ffffff`, `100`)
+    NUllColor("TIMETEXT", `#ffffff`, 100)
 
-    NUllColor("HBT", `#ffffff`, `100`)
+    NUllColor("HBT", `#ffffff`, 100)
 
-    NUllColor("LeftBar", "#000000", `0`)
+    NUllColor("LeftBar", `#000000`, 0)
 
-    NUllColor("subShaColor", "#000000", `100`)
+    NUllColor("subShaColor", `#000000`, 100)
 
-    NUllColor("SPSubScribeColor", `#ffffff`, `100`)
-    NUllColor("SPSubScribeBG", `#ff0000`, `100`)
+    NUllColor("SPSubScribeColor", `#ffffff`, 100)
+    NUllColor("SPSubScribeBG", `#ff0000`, 100)
 
-    NUllColor("LinkColor", `#fe0000`, `100`)
+    NUllColor("LinkColor", `#fe0000`, 100)
 }
 
 let NORMAL = `
@@ -1360,7 +1396,7 @@ let NORMAL = `
         position: absolute;
         display: flex;
         content: "❖";
-        font-weight: 1000;
+        foweight: 1000;
         width: 1.5em;
         height: 1.5em;
         border-radius: 50%;
@@ -1466,7 +1502,7 @@ let NORMAL = `
         color: var(--text-color) !important;
     }`
 
-function LOADANIMATION(e) {
+async function LOADANIMATION(e) {
     LoopCheck = 7
     CheckPar(e.target)
     if (EPar) {
@@ -1529,13 +1565,13 @@ var ADDFlyout = false
 var player
 var VdoPlayer
 
-function StartFlyout() {
+async function StartFlyout() {
     ADDFlyout = !ADDFlyout
 
     player.style.transition = "unset"
     player.style.opacity = 0
     player.style.transform = "translateX(100px)"
-    VdoPlayer.setAttribute('nt-flyout', '')
+    VdoPlayer.setAttribute('flyout', '')
 
     setTimeout(() => {
         below = document.getElementById("below")
@@ -1617,10 +1653,10 @@ function StartFlyout() {
     }, 0);
 }
 
-function StopFlyout() {
+async function StopFlyout() {
     ADDFlyout = !ADDFlyout
 
-    VdoPlayer.removeAttribute('nt-flyout')
+    VdoPlayer.removeAttribute('flyout')
 
     player.style.transition = "unset"
     // player.style.transform = "translateX(-100px)"
@@ -1636,12 +1672,12 @@ function StopFlyout() {
     }, 0);
 }
 
-function ScrollEv() {
+async function ScrollEv() {
 
     toppo = document.documentElement.scrollTop
     WindowH = window.innerHeight
 
-    if (localStorage["nt-ScrollT"] == "true") {
+    if (await GetLoad("ScrollT") == true) {
         if (Masterhead == null || MasterheadBG == null) {
             Masterhead = document.querySelector("#masthead")
             MasterheadBG = document.querySelector("#masthead > #background")
@@ -1670,7 +1706,7 @@ function ScrollEv() {
         }
     }
 
-    if (localStorage["nt-FlyoutT"] == "true") {
+    if (await GetLoad("FlyoutT") == true) {
         // console.log(toppo, WindowH)
         if (player == null) {
             player = document.querySelector(`#player-container.ytd-watch-flexy`)
@@ -1693,13 +1729,13 @@ function ScrollEv() {
     }
 }
 
-function SetGlobalBGImage(ImgValue) {
+async function SetGlobalBGImage(ImgValue) {
     if (document.getElementById("BGIMG")) {
         RenderPreImg(ImgValue)
     }
 }
 
-function AddScrollEv() {
+async function AddScrollEv() {
     if (ADDScrollEVENT == false) {
         ADDScrollEVENT = true
         window.addEventListener("scroll", ScrollEv, { passive: true })
@@ -1707,55 +1743,62 @@ function AddScrollEv() {
     }
 }
 
-function RemoveScrollEv() {
+async function RemoveScrollEv() {
     if (ADDScrollEVENT == true) {
         ADDScrollEVENT = false
         window.removeEventListener('scroll', ScrollEv, { passive: true })
     }
 }
 
-function update() {
+let BGBlur = 0
+let CanvasNewQua = 1
+async function update() {
 
     // console.log("UPDATE");
-    BGSmooth = 1 / parseInt(localStorage["nt-VDOSmooth"])
+    BGSmooth = 1 / await GetLoad("VDOSmooth")
     if (BGSmooth > 1) {
         BGSmooth = 1
     }
     if (BGSmooth == 1) {
         LastFrame = null
     }
+
+    BGBlur = AzCached["NVDOB"]
+
+    CanvasNewQua = await GetLoad("CanvasQua") / 100
+
     Collect_Style = ``
     ADDCSS = ``
     ADDReplaceLOGO = ``
 
-    if (localStorage["nt-ReplaceYTT"] == 'true') {
-        if (localStorage["nt-ReplaceYTURL"] != "") {
+    if (await GetLoad("ReplaceYTT") == true) {
+        if (await GetLoad("ReplaceYTURL") != "") {
             ADDReplaceLOGO = `
             yt-icon.ytd-logo g,#country-code{
                 opacity:0;
             }
             
             #logo.ytd-topbar-logo-renderer{
-                background:url("${localStorage["nt-ReplaceYTURL"]}");
-                background-size: ${localStorage["nt-YTSize"]}%;
+                background:url("${await GetLoad("ReplaceYTURL")}");
+                background-size: ${await GetLoad("YTSize")}%;
                 background-repeat: no-repeat;
                 background-position: center;
             }`
         }
     }
 
-    if (localStorage["nt-VDOBGT"] != 'true' || localStorage["nt-EnableButtonT"] != 'true') {
+    if (await GetLoad("VDOBGT") != true || await GetLoad("EnableButtonT") != true) {
         if (VDOBG == true) {
             VDOBG = false
             DisableBGBlur(true)
         }
     }
 
-    if (localStorage["nt-EnaADDCSST"] == 'true') {
-        ADDCSS = localStorage["nt-ADDCUSTOM"]
+    if (await GetLoad("EnaADDCSST") == true) {
+        ADDCSS = await GetLoad("ADDCUSTOM")
     }
 
-    if (localStorage["nt-EnableButtonT"] == 'false') {
+    if (await GetLoad("EnableButtonT") == false) {
         if (ADDFlyout) {
             StopFlyout()
         }
@@ -1764,21 +1807,21 @@ function update() {
 
         NTstyle.textContent = NORMAL;
     }
-    else if (localStorage["nt-EnaCUSCSST"] == 'true') {
-        NTstyle.textContent = NORMAL + localStorage["nt-CUSTOM"] + ADDCSS + AfterNEWTUBE
+    else if (await GetLoad("EnaCUSCSST") == true) {
+        NTstyle.textContent = NORMAL + await GetLoad("CUSTOM") + ADDCSS + AfterNEWTUBE
     } else {
 
-        if ((localStorage["nt-ScrollT"] == 'true' || localStorage["nt-FlyoutT"] == 'true') && localStorage["nt-EnableButtonT"] == 'true') {
+        if ((await GetLoad("ScrollT") == true || await GetLoad("FlyoutT") == true) && await GetLoad("EnableButtonT") == true) {
             AddScrollEv()
         } else {
             RemoveScrollEv()
         }
 
-        if (localStorage["nt-FlyoutT"] == 'false' && ADDFlyout) {
+        if (await GetLoad("FlyoutT") == false && ADDFlyout) {
             StopFlyout()
         }
 
-        if (localStorage["nt-ScrollT"] == 'false' && TranHead) {
+        if (await GetLoad("ScrollT") == false && TranHead) {
             if (Masterhead == null || MasterheadBG == null) {
                 Masterhead = document.querySelector("#masthead")
                 MasterheadBG = document.querySelector("#masthead > #background")
@@ -1788,33 +1831,31 @@ function update() {
             }
         }
 
-        DOwithindexed(function () {
-            let get = store.get("BGIMG")
-            get.onsuccess = function (e) {
-                let BGIMGCODE = ``,
-                    BGBLURCODE = ``,
-                    Flip = ``
+        let BGIMGCODE = ``,
+            BGBLURCODE = ``,
+            Flip = ``,
+            BGIMG = await GetLoad("BGIMG")
 
-                if (localStorage["nt-BlurBGAM"] > 0 && e.target.result != null) {
-                    BGBLURCODE = `#BGFRAME
+        if (await GetLoad("BlurBGAM") > 0 && BGIMG != null) {
+            BGBLURCODE = `#BGFRAME
                 {
                     filter: blur(var(--Bg-blur)) !important;
                 }`
-                }
+        }
 
-                if (localStorage["nt-FlipT"] == `true`) {
-                    Flip = `transform: scaleX(-1);`
-                }
+        if (await GetLoad("FlipT") == `true`) {
+            Flip = `transform: scaleX(-1);`
+        }
 
-                if (e.target.result != null && e.target.result != "") {
-                    BGIMGCODE = `#BGFRAME
+        if (BGIMG != null && BGIMG != "") {
+            BGIMGCODE = `#BGFRAME
                     {
                         width:100%;
                         height:100%;
-                        background-image : url("` + e.target.result + `");
-                        `+ GetCodeC("Repeat") + `
-                        background-position: `+ localStorage["nt-IMGX"] + `% ` + localStorage["nt-IMGY"] + `% !important;
-                        background-size: `+ localStorage["nt-IMGS"] + `% !important;
+                        background-image : url("` + BGIMG + `");
+                        `+ await GetCodeC("Repeat") + `
+                        background-position: `+ await GetLoad("IMGX") + `% ` + await GetLoad("IMGY") + `% !important;
+                        background-size: `+ await GetLoad("IMGS") + `% !important;
                         top:0;
                         position:fixed;
                         z-index: -10000;
@@ -1822,24 +1863,22 @@ function update() {
                         transition : opacity 2s;
                     }`
 
-                }
+        }
 
-                PreloadImg.src = e.target.result
+        PreloadImg.src = BGIMG
 
-                if (e.target.result == "") {
-                    SetGlobalBGImage(e.target.result)
-                }
+        if (BGIMG == "") {
+            SetGlobalBGImage(BGIMG)
+        }
 
-                setTimeout(() => {
-                    if (localStorage["nt-VDOBGT"] == 'true' && localStorage["nt-EnableButtonT"] == 'true') {
-                        if (VDOBG == false) {
-                            VDOBG = true
-                            EnableBGBlur()
-                        }
-                    }
-                }, 10);
+        if (await GetLoad("VDOBGT") == true) {
+            if (VDOBG == false) {
+                VDOBG = true
+                EnableBGBlur()
+            }
+        }
 
-                Collect_Style = `html:not(.style-scope)[system-icons]:not(.style-scope)
+        Collect_Style = `html:not(.style-scope)[system-icons]:not(.style-scope)
                 {
                     background: black !important;
                 }
@@ -1849,53 +1888,53 @@ function update() {
                 }
 
                 :root {
-                    --blur-amount: `+ localStorage["nt-BlurAm"] + `px;
-                    --Bg-blur: `+ localStorage["nt-BlurBGAM"] + `px;
-                    --theme: `+ 'Theme'.GetSaveRgba() + `;
-                    --theme-fort: ${"ThemeFort".GetSaveRgba()};
-                    --playlist-bg: `+ 'Playlisthover'.GetSaveRgba() + `;
-                    --text-color: `+ 'Text'.GetSaveRgba() + `;
-                    --nd-text-color: `+ 'NdText'.GetSaveRgba() + `;
-                    --border-width: `+ localStorage["nt-Border"] + `px;
-                    --player-bg-border-width: `+ localStorage["nt-PlayerBorder"] + `px;
-                    --border-color: `+ 'OutSha'.GetSaveRgba() + `;
-                    --border-hover-color: `+ 'ThumbHoverColor'.GetSaveRgba() + `;
-                    --border-click-color: `+ 'ThumbClick'.GetSaveRgba() + `;
-                    --bg-color: `+ 'BG'.GetSaveRgba() + `;
-                    --in-player-bg-color: `+ 'MediaBG'.GetSaveRgba() + `;
-                    --top-bar-and-search-background: `+ 'ThemeSnd'.GetSaveRgba() + `;
-                    --things-end-on-video: `+ 'EndBG'.GetSaveRgba() + `;
-                    --hover-time-background: `+ 'TimeBG'.GetSaveRgba() + `;
-                    --search-background-hover: `+ 'Themehover'.GetSaveRgba() + `;
-                    --theme-radius: `+ localStorage["nt-Edge"] + `px;
-                    --theme-time-radius: `+ localStorage["nt-TimeEdge"] + `px;
-                    --theme-radius-big: `+ localStorage["nt-PlayerEdge"] + `px;
+                    --blur-amount: `+ await GetLoad("BlurAm") + `px;
+                    --Bg-blur: `+ await GetLoad("BlurBGAM") + `px;
+                    --theme: `+ await GetSaveRgba('Theme') + `;
+                    --theme-fort: ${await GetSaveRgba("ThemeFort")};
+                    --playlist-bg: `+ await GetSaveRgba('Playlisthover') + `;
+                    --text-color: `+ await GetSaveRgba('Text') + `;
+                    --nd-text-color: `+ await GetSaveRgba('NdText') + `;
+                    --border-width: `+ await GetLoad("Border") + `px;
+                    --player-bg-border-width: `+ await GetLoad("PlayerBorder") + `px;
+                    --border-color: `+ await GetSaveRgba('OutSha') + `;
+                    --border-hover-color: `+ await GetSaveRgba('ThumbHoverColor') + `;
+                    --border-click-color: `+ await GetSaveRgba('ThumbClick') + `;
+                    --bg-color: `+ await GetSaveRgba('BG') + `;
+                    --in-player-bg-color: `+ await GetSaveRgba('MediaBG') + `;
+                    --top-bar-and-search-background: `+ await GetSaveRgba('ThemeSnd') + `;
+                    --things-end-on-video: `+ await GetSaveRgba('EndBG') + `;
+                    --hover-time-background: `+ await GetSaveRgba('TimeBG') + `;
+                    --search-background-hover: `+ await GetSaveRgba('Themehover') + `;
+                    --theme-radius: `+ await GetLoad("Edge") + `px;
+                    --theme-time-radius: `+ await GetLoad("TimeEdge") + `px;
+                    --theme-radius-big: `+ await GetLoad("PlayerEdge") + `px;
                     --border-minus: calc(var(--border-width) * -1);
                     --bg-border-minus: calc(var(--player-bg-border-width) * -1);
                     
-                    --border-width-hover: `+ localStorage["nt-HoverBorder"] + `px;
+                    --border-width-hover: `+ await GetLoad("HoverBorder") + `px;
                     --border-minus-hover: calc(var(--border-width-hover) * -1);
                     
-                    --theme-third: `+ 'ThemeThr'.GetSaveRgba() + `;
-                    --Zoom: `+ localStorage["nt-Zoom"] + `;
+                    --theme-third: `+ await GetSaveRgba('ThemeThr') + `;
+                    --Zoom: `+ await GetLoad("Zoom") + `;
 
-                    --sub-ShaWidth: `+ localStorage["nt-subShaWidth"] + `px;
-                    --sub-ShaBlur: `+ localStorage["nt-subShaBlur"] + `px;
+                    --sub-ShaWidth: `+ await GetLoad("subShaWidth") + `px;
+                    --sub-ShaBlur: `+ await GetLoad("subShaBlur") + `px;
 
-                    --sub-Width: `+ localStorage["nt-subWidth"] + `;
-                    --sub-Space: `+ localStorage["nt-subSpace"] + `px;
-                    --sub-color: ` + 'Subtitle'.GetSaveRgba() + `;
-                    --sub-bg: ` + 'CapBG'.GetSaveRgba() + `;
-                    --sub-sha-color: `+ 'subShaColor'.GetSaveRgba() + `;
+                    --sub-Width: `+ await GetLoad("subWidth") + `;
+                    --sub-Space: `+ await GetLoad("subSpace") + `px;
+                    --sub-color: ` + await GetSaveRgba('Subtitle') + `;
+                    --sub-bg: ` + await GetSaveRgba('CapBG') + `;
+                    --sub-sha-color: `+ await GetSaveRgba('subShaColor') + `;
 
-                    --Media-Space: `+ localStorage["nt-MediaSpace"] + `px;
+                    --Media-Space: `+ await GetLoad("MediaSpace") + `px;
 
-                    --SubSc-BG : ${'SPSubScribeBG'.GetSaveRgba()};
-                    --SubSc-Tx : ${'SPSubScribeColor'.GetSaveRgba()};
+                    --SubSc-BG : ${await GetSaveRgba('SPSubScribeBG')};
+                    --SubSc-Tx : ${await GetSaveRgba('SPSubScribeColor')};
                 }
 
                 ytd-text-inline-expander yt-attributed-string a{
-                    color: ${'LinkColor'.GetSaveRgba()} !important;
+                    color: ${await GetSaveRgba('LinkColor')} !important;
                 }
 
                 ytd-menu-renderer .ytd-menu-renderer[style-target=button] {
@@ -1913,7 +1952,7 @@ function update() {
                     display: flex;
                 }
 
-                .ytp-gradient-top{
+                .ytp-gradietop{
                     border-radius: var(--theme-radius-big) var(--theme-radius-big) 0px 0px;
                 }
                   
@@ -1955,7 +1994,7 @@ function update() {
                 }
 
                 #chips-wrapper{
-                    background: ${'ThemeChips'.GetSaveRgba()} !important;
+                    background: ${await GetSaveRgba('ThemeChips')} !important;
                 }
 
                 ytd-app::-webkit-scrollbar {
@@ -1964,7 +2003,7 @@ function update() {
                 
                 *::-webkit-scrollbar
                 {
-                width: `+ localStorage["nt-ScWidth"] + `px  !important;
+                width: `+ await GetLoad("ScWidth") + `px  !important;
                 }
                 
                 *::-webkit-scrollbar-thumb
@@ -1982,17 +2021,17 @@ function update() {
                 
                 body::-webkit-scrollbar-track
                 {
-                    background: `+ localStorage["nt-BGC"] + ` !important;
+                    background: `+ await GetLoad("BGC") + ` !important;
                 }
                 
                 ytd-thumbnail-overlay-time-status-renderer
                 {
-                    height: `+ localStorage["nt-TimeH"] + `px !important;
+                    height: `+ await GetLoad("TimeH") + `px !important;
                 }
 
                 .ytp-time-current, .ytp-time-separator, .ytp-time-duration
                 {
-                    color: `+ 'VDOTEXT'.GetSaveRgba() + `!important;
+                    color: `+ await GetSaveRgba('VDOTEXT') + `!important;
                 }
                 
                 a.thumbnail > .ytcd-basic-item-large-image,
@@ -2002,13 +2041,13 @@ function update() {
                 #thumbnail,
                 .thumbnail-container.ytd-notification-renderer,
                 yt-img-shadow.ytd-channel-renderer,
-                #author-thumbnail.ytd-comment-simplebox-renderer,
-                .style-scope.ytd-comment-renderer.no-transition,
+                #author-thumbnail.ytd-commesimplebox-renderer,
+                .style-scope.ytd-commerenderer.no-transition,
                 div.html5-video-player:not(.ytp-fullscreen) .html5-video-container,
                 .ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title,
                 ytd-thumbnail-overlay-side-panel-renderer,
                 ytd-thumbnail-overlay-bottom-panel-renderer,
-                `+ GetCodeC("PlayerOut") + `
+                `+ await GetCodeC("PlayerOut") + `
                 .ytp-popup.ytp-settings-menu,
                 .iv-drawer,
                 .ytp-cards-teaser-box,
@@ -2023,21 +2062,21 @@ function update() {
                 #icon > img,
                 #action,
                 ytd-video-preview,
-                `+ GetCodeC("TopOut") + `
-                `+ GetCodeC("CapOut") + `
-                `+ GetCodeC("SubOut") + `
-                `+ GetCodeC("TimeOut") + `
-                `+ GetCodeC("SndOut") + `
+                `+ await GetCodeC("TopOut") + `
+                `+ await GetCodeC("CapOut") + `
+                `+ await GetCodeC("SubOut") + `
+                `+ await GetCodeC("TimeOut") + `
+                `+ await GetCodeC("SndOut") + `
                 .ytp-show-tiles .ytp-videowall-still,
                 #tabs-container,
                 yt-confirm-dialog-renderer[dialog][dialog][dialog],
-                .ytp-ce-element.ytp-ce-element-show,
+                .ytp-ce-element.ytp-ce-elemeshow,
                 #contentWrapper.tp-yt-iron-dropdown > *,
                 .ytp-tooltip-bg,
                 .skeleton-bg-color.ytd-ghost-grid-renderer
                 {
                     border-collapse: separate;
-                    `+ JSON.parse(GetCodeC("OutOrSha"))[0] + `
+                    `+ JSON.parse(await GetCodeC("OutOrSha"))[0] + `
                 }
 
                 div.html5-video-player:not(.ytp-small-mode){
@@ -2049,13 +2088,13 @@ function update() {
                     position: relative !important;
                 }
                 
-                `+ GetCodeC("PlayerOut") + `
+                `+ await GetCodeC("PlayerOut") + `
                 .ytp-popup.ytp-settings-menu,
                 #NEWTUBEBG,
                 .NEWTUBEMAIN
                 {
                     border-collapse: separate;
-                    `+ JSON.parse(GetCodeC("OutOrSha"))[1] + `
+                    `+ JSON.parse(await GetCodeC("OutOrSha"))[1] + `
                 }
                 
                 #hearted-border.ytd-creator-heart-renderer
@@ -2091,20 +2130,26 @@ function update() {
                     --yt-spec-brand-button-background: var(--theme) !important;
                     --yt-spec-static-brand-red: var(--theme) !important;
                     --yt-spec-brand-icon-inactive: var(--theme) !important;
-                    --yt-spec-10-percent-layer: var(--theme-third) !important;
+                    --yt-spec-10-percelayer: var(--theme-third) !important;
                     --yt-spec-general-background-b: transparent !important;
                     --yt-spec-wordmark-text: var(--text-color) !important;
                     --yt-spec-button-chip-background-hover: var(--search-background-hover) !important;
                     --yt-spec-text-primary-inverse: var(--top-bar-and-search-background) !important;
-                    --yt-spec-static-brand-white: `+ 'TIMETEXT'.GetSaveRgba() + ` !important;
+                    --yt-spec-static-brand-white: `+ await GetSaveRgba('TIMETEXT') + ` !important;
                     --yt-spec-base-background: var(--top-bar-and-search-background) !important;
                     --yt-spec-raised-background: var(--top-bar-and-search-background) !important;
                     --yt-spec-menu-background: var(--top-bar-and-search-background) !important;
                     --yt-spec-static-overlay-text-primary: var(--text-color) !important;
+                    --ytd-author-comment-badge-background-color: var(--theme-third) !important;
                 }
 
-                .watch-skeleton .skeleton-bg-color{
+                .watch-skeleton .skeleton-bg-color,
+                ytd-author-comment-badge-renderer{
                     background: var(--theme-third) !important;
+                }
+
+                yt-icon.ytd-badge-supported-renderer{
+                    color: var(--theme) !important;
                 }
 
                 ytd-playlist-panel-video-renderer:hover {
@@ -2113,7 +2158,7 @@ function update() {
 
                 ytd-app{
                     background: var(--bg-color) !important;
-                    --app-drawer-content-container-background-color: var(--bg-color) !important;
+                    --app-drawer-contecontainer-background-color: var(--bg-color) !important;
                 }
 
                 .ytp-tooltip-text-no-title
@@ -2121,7 +2166,7 @@ function update() {
                     color: var(--yt-spec-static-brand-white) !important;
                 }
 
-                .ytp-tooltip-text.ytp-tooltip-text-no-title{
+                .ytp-tooltip-text-no-title{
                     background: var(--hover-time-background) !important;
                 }
                 
@@ -2132,13 +2177,13 @@ function update() {
 
                 #NewtubeBlurBG{
                     transition: opacity 2s , margin-top 0.1s , margin-left 0.1s;
-                    filter: contrast(` + localStorage["nt-NVDOC"] + `) brightness(` + localStorage["nt-NVDOBGT"] + `);
+                    filter: contrast(` + await GetLoad("NVDOC") + `) brightness(` + await GetLoad("NVDOBGT") + `);
                 }
 
                 #NewtubeBlurBG,
-                #nt-black-overlay
+                #black-overlay
                 {
-                    transform: scale(` + localStorage["nt-NVDOT"] + `);
+                    transform: scale(` + await GetLoad("NVDOT") + `);
                 }
 
                 #NewtubeVDOCanvas{
@@ -2186,7 +2231,7 @@ function update() {
                 }
                 
                 tp-yt-paper-button.ytd-subscribe-button-renderer[subscribed]{
-                    border-bottom: var(--yt-spec-10-percent-layer) !important;
+                    border-bottom: var(--yt-spec-10-percelayer) !important;
                 }
                 
                 .ytp-ce-expanding-overlay-background,
@@ -2219,7 +2264,7 @@ function update() {
                 ytd-mini-guide-renderer,
                 ytd-mini-guide-entry-renderer,
                 ytd-page-manager>*.ytd-page-manager,
-                `+ GetCodeC("VBG") + `
+                `+ await GetCodeC("VBG") + `
                 #channel-container,
                 #channel-header,
                 #tabs-inner-container,
@@ -2347,7 +2392,7 @@ function update() {
                 .captions-text,
                 #container,
                 [round],
-                ytd-engagement-panel-section-list-renderer,
+                ytd-engagemepanel-section-list-renderer,
                 #tooltip,
                 ytd-compact-link-renderer,
                 ytd-notification-renderer,
@@ -2358,7 +2403,7 @@ function update() {
                     border-radius: var(--theme-radius) !important;
                 }
 
-                ytd-engagement-panel-section-list-renderer
+                ytd-engagemepanel-section-list-renderer
                 {
                     overflow:hidden;
                 }
@@ -2389,13 +2434,13 @@ function update() {
                     overflow: visible;
                 }
                 
-                .ytp-menuitem-icon path:not([fill="none"]),.ytd-thumbnail-overlay-hover-text-renderer path,.ytd-thumbnail-overlay-bottom-panel-renderer path,#search-icon.ytd-searchbox path,svg path[fill="#FF0000"]${GetCodeC("IconFill")} , svg [fill="#FF0000"]${GetCodeC("IconFill")}, svg [fill="red"], svg [fill="#F00"] , button:not(.yt-share-target-renderer) path:not([fill="none"]), [role="button"] path, [role="option"]:not(.yt-third-party-share-target-section-renderer) path,
+                .ytp-menuitem-icon path:not([fill="none"]),.ytd-thumbnail-overlay-hover-text-renderer path,.ytd-thumbnail-overlay-bottom-panel-renderer path,#search-icon.ytd-searchbox path,svg path[fill="#FF0000"]${await GetCodeC("IconFill")} , svg [fill="#FF0000"]${await GetCodeC("IconFill")}, svg [fill="red"], svg [fill="#F00"] , button:not(.yt-share-target-renderer) path:not([fill="none"]), [role="button"] path, [role="option"]:not(.yt-third-party-share-target-section-renderer) path,
                 .ytp-heat-map-graph
                 {
                     fill: var(--theme) !important;
                 }
 
-                ytd-author-comment-badge-renderer{
+                ytd-author-commebadge-renderer{
                     background: var(--theme-fort) !important;
                 }
 
@@ -2490,7 +2535,7 @@ function update() {
                 
                 .ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]):hover > svg path
                 {
-                    fill: `+ "HBT".GetSaveRgba() + ` !important;
+                    fill: `+ await GetSaveRgba("HBT") + ` !important;
                 }
                 
                 .ytp-chrome-top,
@@ -2503,7 +2548,7 @@ function update() {
                     transition: all .2s !important;
                 }
                 
-                .ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-top, .ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-bottom
+                .ytp-autohide:not(.ytp-autohide-active) .ytp-gradietop, .ytp-autohide:not(.ytp-autohide-active) .ytp-gradient-bottom
                 {
                     display: block !important;
                 }
@@ -2567,12 +2612,12 @@ function update() {
                 
                 .ytp-progress-list
                 {
-                    background: `+ "Time-LineBG".GetSaveRgba() + ` !important;
+                    background: `+ await GetSaveRgba("Time-LineBG") + ` !important;
                 }
                 
                 .ytp-load-progress
                 {
-                    background: `+ "TimeLoaded".GetSaveRgba() + ` !important;
+                    background: `+ await GetSaveRgba("TimeLoaded") + ` !important;
                 }
                 
                 #play
@@ -2660,7 +2705,7 @@ function update() {
                 }
 
                 #guide-content{
-                    background: `+ "LeftBar".GetSaveRgba() + ` !important;
+                    background: `+ await GetSaveRgba("LeftBar") + ` !important;
                 }
 
                 ytd-action-companion-ad-renderer,
@@ -2672,9 +2717,9 @@ function update() {
 
                 .ytp-gradient-bottom
                 {
-                    height: `+ localStorage["nt-MediaH"] + `px !important;
+                    height: `+ await GetLoad("MediaH") + `px !important;
                     border-radius: var(--theme-radius-big) !important;
-                    `+ GetCodeC("BottomG") + `
+                    `+ await GetCodeC("BottomG") + `
                 }
 
                 
@@ -2789,10 +2834,13 @@ function update() {
                 #text.ytd-channel-name{
                     transition: all 0.2s;
                     background: transparent;
-                 }
-                 
+                }
+
                 #text.ytd-channel-name:hover {
-                     background: var(--theme-third);
+                    background: var(--theme-third);
+               }
+                 
+                #text.ytd-channel-name:not(.complex-string):hover {
                      padding-inline: 10px;
                 }
 
@@ -2813,54 +2861,61 @@ function update() {
                 }
 
                 #below {
-                    margin-top:`+ localStorage["nt-BelowSpace"] + `px;
+                    margin-top:`+ await GetLoad("BelowSpace") + `px;
                 }
+
+                .playlist-items.ytd-playlist-panel-renderer{
+                    transform: translateZ(0);
+                    -webkit-transform: translateZ(0);
+                }
+
+
                     
                 `+ BGBLURCODE + `
                 
                 `+ BGIMGCODE + `
 
-                `+ GetCodeC("CenterMedia") + `
+                `+ await GetCodeC("CenterMedia") + `
 
-                `+ GetCodeC("MediaBlur") + `
+                `+ await GetCodeC("MediaBlur") + `
                 
-                `+ GetCodeC("BlurWhat") + `
+                `+ await GetCodeC("BlurWhat") + `
                 
-                `+ GetCodeC("ThumbHover") + `
+                `+ await GetCodeC("ThumbHover") + `
                 
-                `+ GetCodeC("BlurSub") + `
+                `+ await GetCodeC("BlurSub") + `
                 
-                `+ GetCodeC("CenterTime") + `
+                `+ await GetCodeC("CenterTime") + `
 
-                `+ GetCodeC("CenterUD") + `
+                `+ await GetCodeC("CenterUD") + `
 
-                `+ GetCodeC("CenterUDF") + `
+                `+ await GetCodeC("CenterUDF") + `
 
-                `+ GetCodeC("TimeAni") + `
+                `+ await GetCodeC("TimeAni") + `
 
-                `+ GetCodeC("Scroll") + `
+                `+ await GetCodeC("Scroll") + `
 
-                `+ GetCodeC("LeftBar") + `
+                `+ await GetCodeC("LeftBar") + `
 
-                `+ GetCodeC("Ptran") + `
+                `+ await GetCodeC("Ptran") + `
 
-                `+ GetCodeC("NewSub") + `
+                `+ await GetCodeC("NewSub") + `
 
-                `+ GetCodeC("SwapRow") + `
+                `+ await GetCodeC("SwapRow") + `
 
-                `+ GetCodeC("ThumbAnim") + `
+                `+ await GetCodeC("ThumbAnim") + `
 
-                `+ GetCodeC("ControlUnderVDO") + `
+                `+ await GetCodeC("ControlUnderVDO") + `
 
-                `+ GetCodeC("SPSubScribe") + `
+                `+ await GetCodeC("SPSubScribe") + `
                 
-                `+ GetCodeC("AutohideBar") + `
+                `+ await GetCodeC("AutohideBar") + `
 
-                `+ GetCodeC("SearchAnim") + `
+                `+ await GetCodeC("SearchAnim") + `
 
-                `+ GetCodeC("VdoAnim") + `
+                `+ await GetCodeC("VdoAnim") + `
 
-                `+ GetCodeC("FullTheater") + `
+                `+ await GetCodeC("FullTheater") + `
                 
                 `+ ADDCSS + `
 
@@ -2868,10 +2923,10 @@ function update() {
 
                 `
 
-                var thisStyle = NORMAL + Collect_Style + AfterNEWTUBE
+        var thisStyle = NORMAL + Collect_Style + AfterNEWTUBE
 
-                if (localStorage["nt-PtranT"] == "true") {
-                    thisStyle = thisStyle + `html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary,
+        if (await GetLoad("PtranT") == true) {
+            thisStyle = thisStyle + `html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary,
                     html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #below,
                     html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) div.ytp-gradient-bottom,
                     html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) div.ytp-chrome-bottom
@@ -2888,44 +2943,44 @@ function update() {
                     #below{
                         transition: margin-top 1.5s, opacity 1.5s;
                     }`
-                    if (localStorage["nt-SwapRowT"] == "true") {
-                        thisStyle = thisStyle + `
+            if (await GetLoad("SwapRowT") == true) {
+                thisStyle = thisStyle + `
                         html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary{
                             transform: translate(-100px,0);
                         }`
-                    } else {
-                        thisStyle = thisStyle + `
+            } else {
+                thisStyle = thisStyle + `
                         html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary{
                             transform: translate(100px,0);
                         }`
-                    }
-                }
+            }
+        }
 
-                // NTstyle.textContent = thisStyle
+        // NTstyle.textContent = thisStyle
 
-                let ADDFont = ``
+        let ADDFont = ``
 
-                UnCompressEnaFont().forEach(font => {
-                    if (ADDFont != ``) {
-                        ADDFont += `,`
-                    }
-                    ADDFont += `'${font}'`
-                })
+        let ThisEnaFont = await UnCompressEnaFont()
 
-                if (ADDFont != ``) {
-                    ADDFont = `
-                        *{
-                            font-family: ${ADDFont} !important;
-                        }`
-                }
-
-                NTstyle.textContent = thisStyle + ADDFont
-            };
+        ThisEnaFont.forEach(font => {
+            if (ADDFont != ``) {
+                ADDFont += `,`
+            }
+            ADDFont += `'${font}'`
         })
-    }
+
+        if (ADDFont != ``) {
+            ADDFont = `
+            *{
+                font-family: ${ADDFont} !important;
+            }`
+        }
+
+        NTstyle.textContent = thisStyle + ADDFont
+    };
 }
 
-function WaitAvatar() {
+async function WaitAvatar() {
     return new Promise(resolve => {
         if (document.getElementById("avatar-btn")) {
             return resolve(document.getElementById("avatar-btn"));
@@ -2953,36 +3008,40 @@ function WaitAvatar() {
     });
 }
 
-if (inIframe() == true) {
-    update()
-} else {
-    if (document.documentElement.getAttribute("dark") == null) {
-        document.addEventListener("DOMContentLoaded", async function () {
-            await WaitAvatar()
+async function FirstRun() {
+    await SetNull()
+    if (inIframe() != true) {
+        if (document.documentElement.getAttribute("dark") == null) {
+            document.addEventListener("DOMContentLoaded", async function () {
+                await WaitAvatar()
 
-            try {
-                document.getElementById("avatar-btn").click()
-            } catch (e) {
-                document.getElementsByTagName("ytd-topbar-menu-button-renderer")[0].click()
-            }
+                try {
+                    document.getElementById("avatar-btn").click()
+                } catch (e) {
+                    document.getElementsByTagName("ytd-topbar-menu-button-renderer")[0].click()
+                }
 
-            await waitForElm("ytd-toggle-theme-compact-link-renderer")
-            document.getElementsByTagName("ytd-toggle-theme-compact-link-renderer")[0].click()
-            await waitForElmByID("submenu")
-            await waitForElm("ytd-compact-link-renderer")
-            document.getElementById("submenu").getElementsByTagName("ytd-compact-link-renderer")[2].click()
-        })
-    } else {
-        update()
-        SettoEnd()
+                await waitForElm("ytd-toggle-theme-compact-link-renderer")
+                document.getElementsByTagName("ytd-toggle-theme-compact-link-renderer")[0].click()
+                await waitForElmByID("submenu")
+                await waitForElm("ytd-compact-link-renderer")
+                document.getElementById("submenu").getElementsByTagName("ytd-compact-link-renderer")[2].click()
+            })
+        } else {
+            update()
+            SettoEnd()
+        }
     }
 }
 
-function RESETTUBE() {
+FirstRun()
+
+
+async function RESETTUBE() {
     if (document.getElementById("NEWTUBEBG")) {
         let remem = document.getElementById("NEWTUBE").scrollTop
         document.getElementById("NEWTUBEBG").remove()
-        CreateMENU()
+        await CreateMENU()
         document.getElementById("NEWTUBE").scrollTop = remem
     }
 }
@@ -3014,12 +3073,9 @@ function RESETTUBE() {
 
 //IDK----------------------------------------------------------------------------
 
-function createList(Name, num) {
+async function createList(Name) {
     ThisList = document.createElement("body")
 
-    if (num != null) {
-        ThisList.id = `NEWTUBEPRESET` + num
-    }
     ThisList.className = "ListBox";
     ThisList.setAttribute("hover", "")
     ThisList.style = `display: flex;
@@ -3081,15 +3137,13 @@ function createList(Name, num) {
 
     USEING = `(Current)`
 
-    ThisList.onclick = function (v) {
+    ThisList.onclick = async function (v) {
         Tar = v.target
         if (Tar.className == "NDel") {
             let Par = Tar.parentNode,
-                arr = JSON.parse(localStorage["nt-NUMPRESET"]),
-                ThisName = "PRESET" + Par.getElementsByTagName("lable")[0].textContent
-            DOwithindexed(function () {
-                store.delete(ThisName)
-            })
+                arr = await GetLoad("PRESET"),
+                ThisName = Par.getElementsByTagName("lable")[0].textContent
+
             Par.style.setProperty("height", "0px")
             Par.style.setProperty("padding", "0px")
             Par.style.setProperty("opacity", "0")
@@ -3098,26 +3152,23 @@ function createList(Name, num) {
                     arr.splice(i, 1);
                 }
             }
-            localStorage["nt-NUMPRESET"] = JSON.stringify(arr)
+            delete arr[ThisName]
+            await MainSave({ "PRESET": arr })
             setTimeout(() => {
                 Par.remove()
             }, 200);
         }
         else if (Tar.className == "NUp") {
             ParName = Tar.parentNode.getElementsByTagName("lable")[0].textContent
-            DOwithindexed(function () {
-                var get = store.get("PRESET" + ParName)
-                get.onsuccess = function (e) {
-                    download(e.target.result, ParName + '.NPreset')
-                }
-            })
+            arr = await GetLoad("PRESET")
+            download(JSON.stringify(arr[ParName]), ParName + '.NPreset')
         }
         else {
             if (Tar.className == "DES") {
                 Tar = v.target.parentNode
             }
             let TarID = Tar.getElementsByTagName("lable")[0].textContent
-            if ((busy == false) && (TarID != USEING)) {
+            if (busy == false) {
                 busy = true
                 CHOOSE.style.setProperty("background", "")
                 CHOOSE = Tar
@@ -3128,16 +3179,12 @@ function createList(Name, num) {
                     DisableBGBlur(true)
                 }
 
-                DOwithindexed(function () {
-                    let get = store.get("PRESET" + TarID)
-                    get.onsuccess = function (e) {
-                        e.target.result.LoadNTubeCode()
-                        Tar.style.setProperty("background", "#747474")
-                        setTimeout(() => {
-                            busy = false
-                        }, 1000);
-                    }
-                })
+                arr = await GetLoad("PRESET")
+                LoadNTubeCode(arr[TarID])
+                Tar.style.setProperty("background", "#747474")
+                setTimeout(() => {
+                    busy = false
+                }, 1000)
             }
         }
     }
@@ -3194,14 +3241,14 @@ transition: opacity 0.2s ease 0s;`
 
 //Preset--------------------------------------------------------------------------------------
 
-function setnewtubebg(opacity) {
+async function setnewtubebg(opacity) {
     newtubebg = document.getElementById('NEWTUBEBG')
     if (newtubebg) {
         newtubebg.style.opacity = opacity
     }
 }
 
-function PRESET() {
+async function PRESET() {
 
     var hover = false
 
@@ -3256,7 +3303,7 @@ function PRESET() {
         Main.style.left = '55%'
         Main.style.opacity = ''
     }, 0);
-    function ShowPre() {
+    async function ShowPre() {
         Main.style.opacity = "1"
         Main.style.left = "55%"
         BG.style = debg
@@ -3264,7 +3311,7 @@ function PRESET() {
         leftbar.style.opacity = ''
     }
 
-    function HidePre() {
+    async function HidePre() {
         Main.style.opacity = "0"
         Main.style.left = "60%"
         BG.style = debg + `backdrop-filter: blur(0px) !important;
@@ -3278,13 +3325,13 @@ function PRESET() {
 
 
 
-    leftbar.addEventListener('mouseover', function () {
+    leftbar.addEventListener('mouseover', async function () {
         if (Clicked == false) {
             HidePre()
         }
     })
 
-    leftbar.addEventListener('mouseout', function () {
+    leftbar.addEventListener('mouseout', async function () {
         if (Clicked == false) {
             ShowPre()
         }
@@ -3293,13 +3340,13 @@ function PRESET() {
 
 
 
-    Main.addEventListener('mouseover', function () {
+    Main.addEventListener('mouseover', async function () {
         if (Clicked == false) {
             hover = true
         }
     })
 
-    Main.addEventListener('mouseout', function () {
+    Main.addEventListener('mouseout', async function () {
         if (Clicked == false) {
             hover = false
         }
@@ -3308,7 +3355,7 @@ function PRESET() {
 
 
 
-    leftbar.addEventListener('dragover', function (e) {
+    leftbar.addEventListener('dragover', async function (e) {
         e.stopPropagation()
         e.preventDefault()
         e.dataTransfer.dropEffect = 'copy'
@@ -3318,6 +3365,7 @@ function PRESET() {
 
 
     leftbar.addEventListener('drop', async function (e) {
+        console.log("Drop")
         e.stopPropagation();
         e.preventDefault();
         var files = e.dataTransfer.files; // Array of all files
@@ -3329,57 +3377,56 @@ function PRESET() {
             var reader = new FileReader();
             var FileName = file.name
             if ('.NPreset' == FileName.substring(FileName.length - 8, FileName.length)) {
-                F_NameArr.push(FileName)
-                reader.onload = function (e) {
-                    F_ReaderArr.push(e.target.result)
+                F_NameArr.push(FileName.substring(0, FileName.length - 8))
+                reader.onload = async function (e) {
+                    await F_ReaderArr.push(e.target.result)
                 };
                 reader.readAsText(file);
             }
         }
 
-        function SetFile() {
+        arr = await GetLoad("PRESET")
+
+        async function SetFile() {
+            console.log(arr)
             if (F_NameArr.length == F_ReaderArr.length) {
 
-                DOwithindexed(async function () {
-                    for (var i = 0; i < F_NameArr.length; i++) {
+                for (var i = 0; i < F_NameArr.length; i++) {
 
-                        var filename = F_NameArr[i],
-                            Name = filename.substring(0, filename.length - 8),
-                            arr = JSON.parse(localStorage["nt-NUMPRESET"]),
-                            f = 0
+                    var Name = F_NameArr[i],
+                        f = 0
 
-
-                        for (let i = 0; i < arr.length; i++) {
-                            if (arr[i] == Name) {
-                                f++
-                            }
-                        }
-
-                        var Par
-
-                        if (f == 0) {
-                            Par = createList(Name)
-                            Par.style.height = "0px"
-                            Par.style.padding = "0px"
-                            Par.style.opacity = "0"
-                        }
-
-                        await store.put(F_ReaderArr[i], "PRESET" + Name)
-
-                        if (f == 0) {
-                            localStorage["nt-NUMPRESET"] = JSON.stringify([...arr, Name])
-                        }
-
-                        if (Par) {
-                            Par.style.height = null
-                            Par.style.padding = null
-                            Par.style.opacity = null
-                        }
+                    if (arr[Name] != null) {
+                        f++
                     }
-                })
+
+                    console.log(arr)
+
+                    var Par
+
+                    if (f == 0) {
+                        Par = await createList(Name)
+                        Par.style.height = "0px"
+                        Par.style.padding = "0px"
+                        Par.style.opacity = "0"
+                    }
+
+                    arr[Name] = JSON.parse(F_ReaderArr[i])
+
+                    console.log(arr)
+
+                    await MainSave({ "PRESET": arr })
+
+                    if (Par) {
+                        Par.style.height = null
+                        Par.style.padding = null
+                        Par.style.opacity = null
+                    }
+                }
+
             } else {
-                setTimeout(() => {
-                    SetFile()
+                setTimeout(async () => {
+                    await SetFile()
                 }, 100);
             }
         }
@@ -3412,17 +3459,17 @@ function PRESET() {
         margin-block: 15px;
         border:transparent;`
 
-    OK.onclick = function () {
+    OK.onclick = async function () {
         if (Clicked == false) {
             Clicked = true
             HidePre()
             leftbar.style.marginLeft = '-15%'
             setnewtubebg('')
             BG.style.setProperty('opacity', 0)
-            setTimeout(() => {
-                DOwithindexed(function () {
-                    store.delete("PRESET(Current)")
-                })
+            setTimeout(async () => {
+                arr = await GetLoad("PRESET")
+                delete arr["(Current)"]
+                await MainSave({ "PRESET": arr })
                 BG.remove()
             }, 500);
             setTimeout(() => {
@@ -3448,43 +3495,39 @@ function PRESET() {
         border:transparent;`
 
 
-    function CancelCode() {
+    async function CancelCode() {
         if (Clicked == false) {
             Clicked = true
             HidePre()
             leftbar.style.marginLeft = '-15%'
             setnewtubebg('')
             BG.style.setProperty('opacity', 0)
+            let arr
             if (USEING != `(Current)`) {
-                DOwithindexed(function () {
-                    let get = store.get("PRESET(Current)")
-                    get.onsuccess = function (e) {
-                        e.target.result.LoadNTubeCode()
-                        store.delete("PRESET(Current)")
-                    }
-                    store.delete("PRESET(Current)")
-                })
+                arr = await GetLoad("PRESET")
+                LoadNTubeCode(arr["(Current)"])
             }
-            setTimeout(() => {
-                DOwithindexed(function () {
-                    store.delete("PRESET(Current)")
-                })
+            setTimeout(async () => {
                 BG.remove()
+                console.log("Del Current")
+                delete arr["(Current)"]
+                await MainSave({ "PRESET": arr })
             }, 500);
         }
     }
 
-    Cancel.onclick = function () {
+    Cancel.onclick = async function () {
         CancelCode()
     }
 
-    THISDES = createDes("✨ Select preset ✨", Main).style = `font-size: 25px; padding:10px; font-width:700;`
+    THISDES = await createDes("✨ Select preset ✨", Main)
+    THISDES.style = `font-size: 25px; padding:10px; fowidth:700;`
 
     THISDES.style = 'font-size:20px'
 
     Clicked = false
 
-    BG.onclick = function () {
+    BG.onclick = async function () {
         if (hover == false) {
             CancelCode()
         }
@@ -3504,23 +3547,15 @@ function PRESET() {
     Main.appendChild(LIST)
     Main.append(sndmain)
 
+    let ALLPRE = await GetLoad("PRESET")
+    ALLPRE = { "(Current)": await GenNTubeCode(), ...ALLPRE }
+    await MainSave({ "PRESET": ALLPRE })
 
-    DOwithindexed(function () {
-        let get = store.get("BGIMG")
-        get.onsuccess = function (e) {
-            let arr = GenNTubeCode()
-            arr["BGIMG"] = e.target.result
-            store.put(JSON.stringify(arr), "PRESET(Current)")
-        }
+    //console.log(ALLPRE)
+
+    Object.keys(ALLPRE).forEach(function (ThisPreset) {
+        createList(ThisPreset)
     })
-
-    let ALLPRE = JSON.parse(localStorage["nt-NUMPRESET"]),
-        num
-
-
-    for (num = 0; num < ALLPRE.length; num++) {
-        createList(ALLPRE[num])
-    }
 
     BoxSave = document.createElement("div")
     BoxSave.innerHTML = `<input type="text" id="TextPreset" placeholder="Enter preset name.">
@@ -3574,19 +3609,11 @@ function PRESET() {
 
     var OverName
 
-    OKOver.onclick = function () {
-        DOwithindexed(function () {
-            let get = store.get("BGIMG")
-            get.onsuccess = function (e) {
-                let arr = GenNTubeCode()
-                arr["BGIMG"] = e.target.result
-                store.put(JSON.stringify(arr), "PRESET" + OverName)
-                hideOkOver()
-            }
-        })
+    OKOver.onclick = async function () {
+        hideOkOver()
     }
 
-    function hideOkOver() {
+    async function hideOkOver() {
         SavePRe.innerHTML = "Save"
         OKOver.style.opacity = "0"
         OKOver.style.width = "0px"
@@ -3597,7 +3624,7 @@ function PRESET() {
         TextPre.value = OverName
     }
 
-    SavePRe.onclick = function () {
+    SavePRe.onclick = async function () {
         if (CanSave == "Over") {
             hideOkOver()
         } else {
@@ -3605,7 +3632,7 @@ function PRESET() {
                 if (TextPre.value != null && TextPre.value != "") {
                     CanSave = false
                     let f = 0,
-                        arr = JSON.parse(localStorage["nt-NUMPRESET"])
+                        arr = await GetLoad("PRESET")
 
                     OverName = TextPre.value
 
@@ -3626,25 +3653,18 @@ function PRESET() {
                         OKOver.style.marginLeft = "10px"
                         OKOver.style.paddingInline = "5px"
                     } else {
-                        let Par = createList(OverName)
+                        let Par = await createList(OverName)
                         Par.style.height = "0px"
                         Par.style.padding = "0px"
                         Par.style.opacity = "0"
 
-                        DOwithindexed(function () {
-                            let get = store.get("BGIMG")
-                            get.onsuccess = function (e) {
-                                let arr2 = GenNTubeCode(),
-                                    Name = OverName
-                                arr2["BGIMG"] = e.target.result
-                                store.put(JSON.stringify(arr2), "PRESET" + Name)
-                                localStorage["nt-NUMPRESET"] = JSON.stringify([...arr, Name])
-                                Par.style.height = null
-                                Par.style.padding = null
-                                Par.style.opacity = null
-                                CanSave = true
-                            }
-                        })
+                        arr[OverName] = await GenNTubeCode()
+                        await MainSave({ "PRESET": arr })
+
+                        Par.style.height = null
+                        Par.style.padding = null
+                        Par.style.opacity = null
+                        CanSave = true
 
                         setTimeout(() => {
                             Par.scrollIntoView()
@@ -3699,13 +3719,13 @@ function PRESET() {
 
 
 
-//Function----------------------------------------------------------------------------
+//async function----------------------------------------------------------------------------
 
 var THISPar = "NEWTUBE",
     LeftCount,
     LeftList
 
-function createMainframe() {
+async function createMainframe() {
     var List = document.createElement("p");
     List.className = "MainBox";
     List.id = THISPar
@@ -3738,7 +3758,7 @@ function createMainframe() {
     LeftCount++
     // document.getElementById("NEWTUBEBG").style.maxHeight = (LeftCount * 41) + "px"
 
-    LeftList.onclick = function () {
+    LeftList.onclick = async function () {
         List.scrollIntoView({ behavior: 'smooth' });
     }
 
@@ -3748,7 +3768,7 @@ function createMainframe() {
     return List
 };
 
-function CreateNew(E) {
+async function CreateNew(E) {
     var New = document.createElement("p")
     E.append(New)
     New.className = "New"
@@ -3763,7 +3783,7 @@ function CreateNew(E) {
         height: 20px;
         background: #ff1308;
         border-radius: 3px;
-        font-weight: 700;
+        foweight: 700;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -3771,7 +3791,7 @@ function CreateNew(E) {
         font-size: 14px;`
 }
 
-function createframe(inner, NEW) {
+async function createframe(inner, NEW) {
     var List = document.createElement("p");
     List.className = "SndBox";
     List.innerHTML = inner;
@@ -3779,7 +3799,7 @@ function createframe(inner, NEW) {
     var ParFrame = document.getElementById(THISPar)
 
     if (ParFrame == null) {
-        createMainframe()
+        await createMainframe()
     }
 
     document.getElementById(THISPar).appendChild(List)
@@ -3794,7 +3814,7 @@ function createframe(inner, NEW) {
     return List
 };
 
-function createDes(Des, Box) {
+async function createDes(Des, Box) {
     var Descrip = document.createElement('label');
     Descrip.className = "DES";
     Descrip.innerHTML = Des;
@@ -3803,20 +3823,19 @@ function createDes(Des, Box) {
     return Descrip
 };
 
-function createCheck(id, Des, NEW, Value, IfTrue, IfFlase) {
-    var Box = createframe('<input type="checkbox" id=' + id + ' class="CheckBox" >', NEW);
-    createDes(Des, Box);
+async function createCheck(id, Des, NEW, Value, IfTrue, IfFlase) {
+    var Box = await createframe('<input type="checkbox" id=' + id + ' class="CheckBox" >', NEW);
+    await createDes(Des, Box);
 
     ThisCheck = Box.getElementsByTagName("input")[0];
 
     if (Value != null) {
         ThisCheck.checked = Value
     } else {
-        ThisCheck.checked = JSON.parse(localStorage["nt-" + id + "T"])
+        ThisCheck.checked = await GetLoad(id + "T")
     }
 
-
-    ThisCheck.addEventListener('input', function (WHAT) {
+    ThisCheck.addEventListener('input', async function (WHAT) {
         var Tar = WHAT.target
 
         if (IfTrue || IfFlase) {
@@ -3827,8 +3846,7 @@ function createCheck(id, Des, NEW, Value, IfTrue, IfFlase) {
             }
         } else {
             var Tarid = Tar.id
-
-            localStorage["nt-" + Tarid + "T"] = Tar.checked
+            await MainSave({ [Tarid + "T"]: Tar.checked })
 
             if (Tarid == "Realtime") {
                 RESETTUBE()
@@ -3843,17 +3861,21 @@ function createCheck(id, Des, NEW, Value, IfTrue, IfFlase) {
 };
 
 
-function createTextBox(id, Des, NEW) {
-    var Box = createframe('<input type="number" id=' + id + ' class="TextBox" >', NEW);
-    createDes(Des, Box);
+async function createTextBox(id, Des, NEW, Value) {
+    var Box = await createframe('<input type="number" id=' + id + ' class="TextBox" >', NEW);
+    await createDes(Des, Box);
 
     ThisText = document.getElementById(id);
 
-    ThisText.value = localStorage["nt-" + id]
+    if (Value != null) {
+        ThisText.value = Value
+    } else {
+        ThisText.value = await GetLoad(id)
+    }
 
-    ThisText.addEventListener(MODE, function (WHAT) {
+    ThisText.addEventListener(MODE, async function (WHAT) {
         var Tar = WHAT.target
-        localStorage["nt-" + Tar.id] = Tar.value
+        await MainSave({ [Tar.id]: Tar.value })
         update()
     });
 
@@ -3861,12 +3883,12 @@ function createTextBox(id, Des, NEW) {
 };
 
 
-function PickerAndSlide(thiscolor) {
-    localStorage["nt-" + thiscolor.id] = thiscolor.value
+async function PickerAndSlide(thiscolor) {
+    await MainSave({ [thiscolor.id]: thiscolor.value })
 }
 
-function createColor(id, Des, NEW) {
-    var Box = createframe('<input type="color" id=' + id + 'C class="ColorPick" > <p> <label class="DES" >Opacity : </label> <input type="range" id=' + id + 'O class="slidebar" min="0" max="100" > </p>', NEW);
+async function createColor(id, Des, NEW) {
+    var Box = await createframe('<input type="color" id=' + id + 'C class="ColorPick" > <p> <label class="DES" >Opacity : </label> <input type="range" id=' + id + 'O class="slidebar" min="0" max="100" > </p>', NEW);
 
     Box.className = "DoY";
 
@@ -3877,7 +3899,7 @@ function createColor(id, Des, NEW) {
 
     Box2.appendChild(Box)
 
-    var THISDES = createDes(Des, Box2);
+    var THISDES = await createDes(Des, Box2);
 
     THISDES.style = "padding:10px;"
 
@@ -3885,15 +3907,15 @@ function createColor(id, Des, NEW) {
     var thisopa = document.getElementById(id + 'O');
 
 
-    thiscolor.value = localStorage["nt-" + id + 'C']
-    thisopa.value = localStorage["nt-" + id + 'O']
+    thiscolor.value = await GetLoad(id + 'C')
+    thisopa.value = await GetLoad(id + 'O')
 
-    thiscolor.addEventListener(MODE, function (WHAT) {
+    thiscolor.addEventListener(MODE, async function (WHAT) {
         PickerAndSlide(WHAT.target)
         update();
     });
 
-    thisopa.addEventListener(MODE, function (WHAT) {
+    thisopa.addEventListener(MODE, async function (WHAT) {
         PickerAndSlide(WHAT.target)
         update();
     });
@@ -3903,30 +3925,31 @@ function createColor(id, Des, NEW) {
 
 
 
-function createselect(id, option, Des) {
-    var Box = createframe('<select id=' + id + ' class="select" > ' + option + ' </select>');
-    createDes(Des, Box);
+async function createselect(id, option, Des) {
+    var Box = await createframe('<select id=' + id + ' class="select" > ' + option + ' </select>');
+    await createDes(Des, Box);
 
     var thisSelect = document.getElementById(id);
-    thisSelect.value = localStorage["nt-" + id + 'T']
+    thisSelect.value = await GetLoad(id + 'T')
 
-    thisSelect.addEventListener("change", function (WHAT) {
-        localStorage["nt-" + WHAT.target.id + 'T'] = WHAT.target.value
+    thisSelect.addEventListener("change", async function (WHAT) {
+        await MainSave({ [WHAT.target.id + 'T']: WHAT.target.value })
         update();
     });
 };
 
-String.prototype.GetSaveRgba = function () {
-    var HEX = localStorage["nt-" + this + "C"].replace('#', '')
+GetSaveRgba = async function (Text) {
+    var HEX = await GetLoad(Text + "C")
+    HEX = HEX.replace('#', '')
     var aRgbHex = HEX.match(/.{1,2}/g);
     var aRgb = [
         parseInt(aRgbHex[0], 16) + ',' + parseInt(aRgbHex[1], 16) + ',' + parseInt(aRgbHex[2], 16)
     ]
 
-    return `rgba(` + aRgb + `,` + (localStorage["nt-" + this + "O"] / 100) + `)`
+    return `rgba(` + aRgb + `,` + (await GetLoad(Text + "O") / 100) + `)`
 }
 
-function RenderPreImg(GettedImg) {
+async function RenderPreImg(GettedImg) {
 
     var Preimg = document.getElementById("BGIMG")
 
@@ -3936,7 +3959,7 @@ function RenderPreImg(GettedImg) {
         Preimg.style.opacity = 1
         Preimg.style.aspectRatio = `${PreloadImg.width}/${PreloadImg.height}`
 
-        requestAnimationFrame(function () {
+        requestAnimationFrame(async function () {
             var imgcw = Preimg.clientWidth
             var imgch = Preimg.clientHeight
 
@@ -3951,110 +3974,121 @@ function RenderPreImg(GettedImg) {
     }
 }
 
-function applyIcon() {
-    DOwithindexed(function () {
-        let get = store.get("IconURL")
-        get.onsuccess = function (e) {
-            document.getElementById("IconUrlSHOW").style.setProperty("background-image", 'url("' + e.target.result + '")')
-            document.getElementById("Iconid").href = e.target.result
-            document.getElementById("Iconid").innerHTML = e.target.result
-        };
-    })
+async function applyIcon() {
+    let GetIcon = await GetLoad("IconURL")
+
+    document.getElementById("IconUrlSHOW").style.setProperty("background-image", 'url("' + GetIcon + '")')
+    document.getElementById("Iconid").href = GetIcon
+    document.getElementById("Iconid").innerHTML = GetIcon
 }
 
 
-function ShowTexForIMG(Text) {
+async function ShowTexForIMG(Text) {
     document.getElementById("STATUS").innerHTML = Text
 }
 
-function ShowTexForICON(Text) {
+async function ShowTexForICON(Text) {
     document.getElementById("IconSTATUS").innerHTML = Text
 }
 
-function IMGXY(Tar, S) {
+async function IMGXY(Tar, S) {
     if (S == "S") {
         document.getElementById(Tar.id + "BOX").value = Tar.value
         update()
     } else {
         document.getElementById(Tar.id.substring(0, 4)).value = Tar.value
     }
-    localStorage["nt-" + Tar.id.substring(0, 4)] = Tar.value
+    await MainSave({ [Tar.id.substring(0, 4)]: Tar.value })
     update()
 }
 
-function CreateXY(XorY) {
+async function CreateXY(XorY) {
     PoOrSize = ["position ", ""]
     Max = "100"
     if (XorY == "S") {
         PoOrSize = ["", "ize"]
         Max = "300"
     }
-    createframe(`<lable class="DES">Image ` + PoOrSize[0] + XorY + PoOrSize[1] + ` : </lable>
-    <input id="IMG`+ XorY + `" type="range" min=0 max=` + Max + `>`).appendChild(createTextBox("IMG" + XorY + "BOX", "%"))
 
-    ThisSlide = document.getElementById("IMG" + XorY)
-    ThisText = document.getElementById("IMG" + XorY + "BOX")
+    let ThisFrame = await createframe(`<lable class="DES">Image ` + PoOrSize[0] + XorY + PoOrSize[1] + ` : </lable>
+    <input id="IMG`+ XorY + `" type="range" min=0 max=` + Max + `>`)
 
-    ThisSlide.value = localStorage["nt-IMG" + XorY]
-    ThisText.value = localStorage["nt-IMG" + XorY]
+    let ThisTextBox = await createTextBox("IMG" + XorY + "BOX", "%", null, await GetLoad("IMG" + XorY))
+    ThisTextBox.style.marginTop = `0px`
+    ThisTextBox.style.marginLeft = `10px`
 
-    if (localStorage["nt-RealtimeT"] == "true") {
-        ThisSlide.addEventListener('input', function (WHAT) {
+    ThisFrame.appendChild(ThisTextBox)
+
+    let ThisSlide = document.getElementById("IMG" + XorY)
+    let ThisText = document.getElementById("IMG" + XorY + "BOX")
+
+    ThisSlide.value = await GetLoad("IMG" + XorY)
+    ThisText.value = await GetLoad("IMG" + XorY)
+
+    if (await GetLoad("RealtimeT") == true) {
+        ThisSlide.addEventListener('input', async function (WHAT) {
             IMGXY(WHAT.target, "S")
         })
-        ThisText.addEventListener('input', function (WHAT) {
+        ThisText.addEventListener('input', async function (WHAT) {
             IMGXY(WHAT.target)
         })
     } else {
-        ThisSlide.addEventListener('change', function (WHAT) {
+        ThisSlide.addEventListener('change', async function (WHAT) {
             IMGXY(WHAT.target, "S")
         })
-        ThisText.addEventListener('change', function (WHAT) {
+        ThisText.addEventListener('change', async function (WHAT) {
             IMGXY(WHAT.target)
         })
     }
 }
 
-String.prototype.LoadNTubeCode = function () {
-    let array = JSON.parse(this),
-        BG
+LoadNTubeCode = async function (Preset) {
+    let array = Preset
 
     if (Object.prototype.toString.call(array) == '[object Object]') {
-        Object.entries(array).forEach(entry => {
-            const [key, value] = entry;
-            // SkipLoadNTubeCode
-            if (key != "ADDFONT" && key != "EnaFont") {
-                if (key == "BGIMG") {
-                    BG = value
-                } else {
-                    localStorage["nt-" + key] = value
-                }
+        Object.entries(array).forEach(async (entry) => {
+            let [key, value] = entry;
+            let TryToParse
+            try {
+                TryToParse = JSON.parse(value)
+            } catch (error) {
+
             }
+            if (TryToParse != null) {
+                value = TryToParse
+            }
+            await MainSave({ [key]: value })
         })
     } else {
-        for (let i = 0; i < array.length; i = i + 2) {
-            if (array[i] == "BGIMG") {
-                BG = array[i + 1]
-            } else {
-                localStorage["nt-" + array[i]] = array[i + 1]
+        for (let i = 0; i < array.length; i += 2) {
+            let value = array[i + 1]
+            let TryToParse
+            try {
+                TryToParse = JSON.parse(value)
+            } catch (error) {
+
             }
+            if (TryToParse != null) {
+                value = TryToParse
+            }
+            await MainSave({ [array[i]]: array[i + 1] })
         }
     }
 
-    DOwithindexed(function () {
-        store.put(BG, "BGIMG")
-        update()
-        RESETTUBE()
-    })
+    update()
+    RESETTUBE()
 }
 
-function GenNTubeCode() {
+async function GenNTubeCode() {
     arrdata = {}
-    for (z in localStorage) {
-        if (z.substring(0, 3) == "nt-" && z != "nt-NUMPRESET" && z != 'nt-SHOWPRESET' && z != 'nt-EnableButtonT' && z != 'nt-RealtimeT' && z != 'nt-ErrorCollectT' && z != 'nt-ADDFONT' && z != 'nt-EnaFont') {
-            arrdata[z.substring(3, z.length)] = localStorage[z]
+
+    let ThisSave = await MainLoad(null)
+    Object.keys(ThisSave).forEach(function (z) {
+        if (z != "PRESET" && z != 'SHOWPRESET' && z != 'EnableButtonT' && z != 'RealtimeT' && z != 'ErrorCollectT' && z != "CachedSave") {
+            arrdata[z] = ThisSave[z]
         }
-    }
+    })
+
     return arrdata
 }
 
@@ -4080,7 +4114,7 @@ function FindVideo() {
 
 var CreatedFontsCheck = []
 
-function CreateFontsList() {
+async function CreateFontsList() {
 
     CreatedFontsCheck.forEach(element => {
         element.remove()
@@ -4089,18 +4123,20 @@ function CreateFontsList() {
     CreatedFontsCheck = []
 
 
-    AllFont.forEach(Thisfont => {
-        FontCheck = createCheck(Thisfont, Thisfont, false, UnCompressEnaFont().includes(Thisfont),
-            function () {
-                EnaFont = UnCompressEnaFont()
+    let UncompressedFont = await UnCompressEnaFont()
+
+    AllFont.forEach(async Thisfont => {
+        FontCheck = await createCheck(Thisfont, Thisfont, false, UncompressedFont.includes(Thisfont),
+            async function () {
+                EnaFont = await UnCompressEnaFont()
                 EnaFont.push(Thisfont)
-                SaveEnaFont(EnaFont)
+                await SaveEnaFont(EnaFont)
                 update()
             },
-            function () {
-                EnaFont = UnCompressEnaFont()
+            async function () {
+                EnaFont = await UnCompressEnaFont()
                 EnaFont.splice(EnaFont.indexOf(Thisfont), 1)
-                SaveEnaFont(EnaFont)
+                await SaveEnaFont(EnaFont)
                 update()
             })
         FontLocatePar.append(FontCheck)
@@ -4111,13 +4147,13 @@ function CreateFontsList() {
 var AddedFontFrame
 var CreatedAddedFontFrame = []
 
-function CreateAddedFont() {
+async function CreateAddedFont() {
     CreatedAddedFontFrame.forEach(element => {
         element.remove()
     });
 
-    AddedFont = UnCompressAddedFont()
-    Object.keys(AddedFont).forEach(function (TheseFontName) {
+    AddedFont = await UnCompressAddedFont()
+    Object.keys(AddedFont).forEach(async function (TheseFontName) {
         var GetTheseFont = AddedFont[TheseFontName]
 
         var TheseFontFrame = document.createElement("p")
@@ -4158,9 +4194,9 @@ function CreateAddedFont() {
         DeleteTheseFont = document.createElement("div")
         DeleteTheseFont.textContent = "X"
         TheseFontFrame.append(DeleteTheseFont)
-        DeleteTheseFont.onclick = function () {
-            console.log(GetTheseFont[0])
-            RemoveListFont(GetTheseFont[0])
+        DeleteTheseFont.onclick = async function () {
+            //console.log(GetTheseFont[0])
+            await RemoveListFont(GetTheseFont[0])
             TheseFontFrame.style.height = "0px"
             TheseFontFrame.style.paddingBottom = "0px"
             TheseFontFrame.style.marginBottom = "0px"
@@ -4200,7 +4236,7 @@ function CreateAddedFont() {
 
 //Create MENU----------------------------------------------------------------------------
 let SetBg, ThisCheckMainSetting
-function CreateMENU() {
+async function CreateMENU() {
     LeftCount = 0
 
     let DeBu = `width: -webkit-fill-available;
@@ -4216,7 +4252,7 @@ function CreateMENU() {
     border-bottom: 1px solid #ffffff6b;
     box-shadow: 0px 0px 3px;`
 
-    if (localStorage["nt-RealtimeT"] == 'true') {
+    if (await GetLoad("RealtimeT") == true) {
         MODE = 'input'
     } else {
         MODE = 'change'
@@ -4249,20 +4285,20 @@ function CreateMENU() {
 
     let CalMousePo = null
 
-    function MoveToMouse(Mouse) {
+    async function MoveToMouse(Mouse) {
         Mouse.preventDefault();
         BG.style.left = Mouse.clientX - CalMousePo[0] + "px"
         BG.style.top = Mouse.clientY - CalMousePo[1] + "px"
     }
 
-    MoveBar.onmousedown = function (Mouse) {
+    MoveBar.onmousedown = async function (Mouse) {
         WidnowW = window.innerWidth
         CalMousePo = [Mouse.clientX - BG.offsetLeft, Mouse.clientY - BG.offsetTop]
         BG.style.transition = null
         addEventListener("mousemove", MoveToMouse)
     }
 
-    document.onmouseup = function () {
+    document.onmouseup = async function () {
         BG.style.transition = "opacity 0.5s, left 0.5s"
         removeEventListener("mousemove", MoveToMouse)
     }
@@ -4283,14 +4319,8 @@ function CreateMENU() {
     Reset.innerHTML = "Reset Extention (Remove saved)"
     Reset.className = "Reset"
     Reset.style = DeBu
-    Reset.onclick = function () {
-        localStorage.clear()
-        DOwithindexed(function () {
-            store.clear()
-            SetNull()
-            update()
-            RESETTUBE()
-        })
+    Reset.onclick = async function () {
+        await ClearSave()
         location.reload()
     }
     SetBg.appendChild(Reset)
@@ -4299,7 +4329,7 @@ function CreateMENU() {
 
     THISPar = "☕ Buy me a coffee!"
 
-    DonateFrame = createframe(`<p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://i.ibb.co/269h23M/2020021209494988264-logo-truemoneywallet-300x300.jpg" class="DONATEIMG"><lable class="DES">Wallet ID : AzDonate</lable></p>
+    DonateFrame = await createframe(`<p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://i.ibb.co/269h23M/2020021209494988264-logo-truemoneywallet-300x300.jpg" class="DONATEIMG"><lable class="DES">Wallet ID : AzDonate</lable></p>
     <p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://i.ibb.co/4sCYzXK/index.jpg" class="DONATEIMG"><a id="HOVERLINK" href="https://www.paypal.com/signin?returnUri=https%3A%2F%2Fwww.paypal.com%2Fmyaccount%2Ftransfer%2Fhomepage%2Fexternal%2Fprofile%3FflowContextData%3DTmV7sH9Ip5x6ax_bhu-4ib7mr3qtJYLUST5ILgPTUCV-aPS5wiTHYReTyrjZUrzo6RnqrG_IGcMdzZxRSNMClpiXW_YUozCtGT_myuY-Iz482jS6LkbxXl-gkNRo--RFIFS5jtg954mBPuxa3P8N6dBFNsBMVJEOLK1-ZP-PxAwS6mdpbwpVFeEEuJwof9Nl2PE-NgFySGvPQWI_rjkTbugXS-O6HuRR3SRqTTe1SuhE25IMdYvBvUBK2y4zpVk2KbEVhQg63WzznD1emOkCq2orEG1bCTi0M4Txky3iSId11K7Xg8e_qpf4rjOaXEPDsIlw1IbKw3WAJRLdIHx0MJFLL0yfGjE7GzR42C0GeYLnods79sPkPJCqo2GjLZzLJ07epiRk2bv33AnwcLEwp4_eVm8TMwNFK-5JX_RZOd8AiOzq3_Q9hY_A19S&onboardData=%7B%22country.x%22%3A%22US%22%2C%22locale.x%22%3A%22en_US%22%2C%22intent%22%3A%22paypalme%22%2C%22redirect_url%22%3A%22https%253A%252F%252Fwww.paypal.com%252Fmyaccount%252Ftransfer%252Fhomepage%252Fexternal%252Fprofile%253FflowContextData%253DTmV7sH9Ip5x6ax_bhu-4ib7mr3qtJYLUST5ILgPTUCV-aPS5wiTHYReTyrjZUrzo6RnqrG_IGcMdzZxRSNMClpiXW_YUozCtGT_myuY-Iz482jS6LkbxXl-gkNRo--RFIFS5jtg954mBPuxa3P8N6dBFNsBMVJEOLK1-ZP-PxAwS6mdpbwpVFeEEuJwof9Nl2PE-NgFySGvPQWI_rjkTbugXS-O6HuRR3SRqTTe1SuhE25IMdYvBvUBK2y4zpVk2KbEVhQg63WzznD1emOkCq2orEG1bCTi0M4Txky3iSId11K7Xg8e_qpf4rjOaXEPDsIlw1IbKw3WAJRLdIHx0MJFLL0yfGjE7GzR42C0GeYLnods79sPkPJCqo2GjLZzLJ07epiRk2bv33AnwcLEwp4_eVm8TMwNFK-5JX_RZOd8AiOzq3_Q9hY_A19S%22%2C%22sendMoneyText%22%3A%22You%2520are%2520sending%2520Jakkrit%2520Kaewtong%22%7D" target="_blank" class="DES" >jakkrit_portraitist@hotmail.com</a></p>
     <p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://theme.zdassets.com/theme_assets/948919/d80b722da9edc37805def78a512b90c5772434a6.png" class="DONATEIMG"><a id="HOVERLINK" href="https://streamlabs.com/gfirstg/tip" target="_blank" class="DES" >streamlabs (PayPal / VISA / mastercard / AMEX / DISCOVER)</a></p>`);
 
@@ -4325,15 +4355,15 @@ function CreateMENU() {
 
     THISPar = "🎉 Join my Discord 🎉"
 
-    createframe(`<p style="display: flex; align-items: center;"><img src="https://brandlogos.net/wp-content/uploads/2021/11/discord-logo.png" class="DONATEIMG"><a id="HOVERLINK" href="https://discord.gg/BgxvVqap4G" target="_blank" class="DES" >NEWTUBE</a></p>`)
+    await createframe(`<p style="display: flex; align-items: center;"><img src="https://brandlogos.net/wp-content/uploads/2021/11/discord-logo.png" class="DONATEIMG"><a id="HOVERLINK" href="https://discord.gg/BgxvVqap4G" target="_blank" class="DES" >NEWTUBE</a></p>`)
 
     //----------------------------------------------------------------------------------------------
 
     THISPar = "⚙️ Extention's settings"
 
-    Frame = createMainframe()
+    Frame = await createMainframe()
 
-    createframe(`<label class="DES">Version : ` + Ver + `</label>`)
+    await createframe(`<label class="DES">Version : ` + Ver + `</label>`)
 
     var Preset = document.createElement('button')
     Preset.innerHTML = "✨ Select Preset ✨"
@@ -4343,24 +4373,26 @@ function CreateMENU() {
     margin-block-start: 20px !important;
     box-shadow: rgb(255 223 0) 0px 0px 3px;
     background: rgb(63 57 14);`
-    Preset.onclick = function () {
+    Preset.onclick = async function () {
         PRESET()
     }
     Frame.appendChild(Preset)
 
-    createCheck("EnableButton", "Enable");
+    await createCheck("EnableButton", "Enable");
 
-    createCheck("Realtime", "Realtime Changing (lag when changing!)");
+    await createCheck("EnableCached", `Enable Cached<br>(Make extension load faster<br>but use more ram around 2MB with no image data)`, true)
 
-    createCheck("ErrorCollect", "Error Detector");
+    await createCheck("Realtime", "Realtime Changing (lag when changing!)");
+
+    await createCheck("ErrorCollect", "Error Detector");
 
     var Chlog = document.createElement('button')
     Chlog.innerHTML = "✳️ Changes log ✳️"
     Chlog.className = "Reset"
     Chlog.style = DeBu + `box-shadow: rgb(0 255 33) 0px 0px 3px;
     background: rgb(14 63 14);
-}`
-    Chlog.onclick = function () {
+    }`
+    Chlog.onclick = async function () {
         window.open(
             'https://github.com/AzPepoze/Newtube',
             '_blank'
@@ -4373,7 +4405,7 @@ function CreateMENU() {
     Rebug.innerHTML = "❗Report bugs/Issue❗"
     Rebug.className = "Reset"
     Rebug.style = DeBu + `background: rgb(135 51 51 / 76%);`
-    Rebug.onclick = function () {
+    Rebug.onclick = async function () {
         window.open(
             'https://discord.gg/seDYEmvPbP',
             '_blank'
@@ -4387,7 +4419,7 @@ function CreateMENU() {
     FHotFix.innerHTML = "❗Firefox Hotfix❗<br>(Disable features that unstable)"
     FHotFix.className = "Reset"
     FHotFix.style = DeBu + `background: rgb(135 51 51 / 76%);`
-    FHotFix.onclick = function () {
+    FHotFix.onclick = async function () {
 
         DisableForFireFox()
 
@@ -4400,110 +4432,110 @@ function CreateMENU() {
 
     THISPar = "📺 Video"
 
-    createTextBox("PlayerEdge", "Round edges amount")
+    await createTextBox("PlayerEdge", "Round edges amount")
 
-    createCheck("VdoAnim", "Enable Chaning Video transition")
+    await createCheck("VdoAnim", "Enable Chaning Video transition")
 
-    createColor("Time-LineBG", "Time-line background color")
+    await createColor("Time-LineBG", "Time-line background color")
 
-    createColor("TimeLoaded", "Time-line loaded color")
+    await createColor("TimeLoaded", "Time-line loaded color")
 
-    createColor("EndBG", "End of video chanel hover background color")
+    await createColor("EndBG", "End of video chanel hover background color")
 
-    createCheck("CenterUD", "(Under Video) Move tittle to the center")
+    await createCheck("CenterUD", "(Under Video) Move tittle to the center")
 
-    createCheck("CenterUDF", "(Fullscreen) Move tittle to the center")
+    await createCheck("CenterUDF", "(Fullscreen) Move tittle to the center")
 
-    createCheck("FullTheater", "Enable Full Theater")
+    await createCheck("FullTheater", "Enable Full Theater")
 
-    createCheck("AutoPIP", "Auto Pictue In Pictue mode<br>(Pls click anywhere In page after you back to page)<br>(Security problem) (I do my best T_T)")
-    createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode")
+    await createCheck("AutoPIP", "Auto Pictue In Pictue mode<br>(Pls click anywhere In page after you back to page)<br>(Security problem) (I do my best T_T)")
+    await createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode")
 
-    createCheck("Flyout", "Enable Flyout Video (Show video after scroll down)", true)
+    await createCheck("Flyout", "Enable Flyout Video (Show video after scroll down)")
 
-    createTextBox("BelowSpace", "Space at Under of video", true)
+    await createTextBox("BelowSpace", "Space at Under of video")
 
     //-------------------------------------------------------------------------------
 
     THISPar = "🎆 Background Video"
 
-    createCheck("VDOBG", "Enable<br>(NOT RECOMMEND FOR LOW END PC!)")
+    await createCheck("VDOBG", "Enable<br>(NOT RECOMMEND FOR LOW END PC!)")
 
-    createTextBox("CanvasQua", "% Quality")
-    createTextBox("NVDOB", `Blur amount`)
-    createTextBox("VDOSmooth", 'Smooth frame (Minimum & None is 1)')
-    createTextBox("NVDOC", `Contrast`)
-    createTextBox("NVDOBGT", `Brightness`)
-    createTextBox("NVDOT", `Size`)
+    await createTextBox("CanvasQua", "% Quality")
+    await createTextBox("NVDOB", `Blur amount`)
+    await createTextBox("VDOSmooth", 'Smooth frame (Minimum & None is 1)')
+    await createTextBox("NVDOC", `Contrast`)
+    await createTextBox("NVDOBGT", `Brightness`)
+    await createTextBox("NVDOT", `Size`)
 
     //-------------------------------------------------------------------------------
 
     THISPar = "🎚️ Video control panel"
 
-    createColor("VDOTEXT", "Text color")
-    createColor("HBT", "Button hover color")
+    await createColor("VDOTEXT", "Text color")
+    await createColor("HBT", "Button hover color")
 
-    createCheck("ControlUnderVDO", `Move to under of video`)
-    createTextBox("MediaSpace", `Under video distance`)
-    createCheck("AutohideBar", `Autohide (If you enabled Under VDO)`)
-    createCheck("CenterMedia", "Move to center")
-    createColor("MediaBG", "Background color")
-    createCheck("BottomG", "Remove default background gradient")
-    createTextBox("MediaH", "Background height")
+    await createCheck("ControlUnderVDO", `Move to under of video`)
+    await createTextBox("MediaSpace", `Under video distance`)
+    await createCheck("AutohideBar", `Autohide (If you enabled Under VDO)`)
+    await createCheck("CenterMedia", "Move to center")
+    await createColor("MediaBG", "Background color")
+    await createCheck("BottomG", "Remove default background gradient")
+    await createTextBox("MediaH", "Background height")
 
-    createCheck("PlayerOut", "Enable Borders/Shadows");
-    createTextBox("PlayerBorder", "Borders/Shadows width")
+    await createCheck("PlayerOut", "Enable Borders/Shadows");
+    await createTextBox("PlayerBorder", "Borders/Shadows width")
 
-    createCheck("MediaBlur", "Blur background")
+    await createCheck("MediaBlur", "Blur background")
 
     //-------------------------------------------------------------------------------
 
     THISPar = "🔤 Subtitles/Captions"
 
-    createCheck("NewSub", `New Subtitles/Captions`)
+    await createCheck("NewSub", `New Subtitles/Captions`)
 
-    createColor("Subtitle", "Subtitles/Captions color")
-    createColor("CapBG", "Subtitles/Captions background color")
+    await createColor("Subtitle", "Subtitles/Captions color")
+    await createColor("CapBG", "Subtitles/Captions background color")
 
-    createTextBox("subWidth", `(Text) Width`)
-    createTextBox("subSpace", `(Text) Space by letters`)
+    await createTextBox("subWidth", `(Text) Width`)
+    await createTextBox("subSpace", `(Text) Space by letters`)
 
-    createColor("subShaColor", `(Shadow) Color`)
-    createTextBox("subShaBlur", `(Shadow) Blur amount`)
+    await createColor("subShaColor", `(Shadow) Color`)
+    await createTextBox("subShaBlur", `(Shadow) Blur amount`)
 
-    createCheck("BlurSub", "Blur background")
+    await createCheck("BlurSub", "Blur background")
 
-    createCheck("CapOut", "Enable Borders/Shadows")
+    await createCheck("CapOut", "Enable Borders/Shadows")
 
     //----------------------------------------------------------------------------------------------
 
     THISPar = "🔎 Topbar & Search"
 
-    createCheck("Scroll", "(Topbar) Auto transparent")
+    await createCheck("Scroll", "(Topbar) Auto transparent")
 
-    createColor("ThemeSnd", "(Topbar) Color")
-    createCheck("TopOut", "(Topbar) Enable Borders/Shadows")
+    await createColor("ThemeSnd", "(Topbar) Color")
+    await createCheck("TopOut", "(Topbar) Enable Borders/Shadows")
 
-    createColor("ThemeChips", "(Second topbar) Topbar color")
-    createCheck("SndOut", "(Second topbar) Enable Borders/Shadows")
+    await createColor("ThemeChips", "(Second topbar) Topbar color")
+    await createCheck("SndOut", "(Second topbar) Enable Borders/Shadows")
 
-    createCheck("SearchAnim", "Enable Search animation")
+    await createCheck("SearchAnim", "Enable Search animation")
 
     //-------------------------------------------------------------------------------
 
     THISPar = "📰 Thumbnail/Clip cover"
 
-    createTextBox("TimeEdge", "(UI in Thumbnail) Round edges amount")
+    await createTextBox("TimeEdge", "(UI in Thumbnail) Round edges amount")
 
-    createColor("TIMETEXT", "Time text color")
+    await createColor("TIMETEXT", "Time text color")
 
-    createColor("TimeBG", "Video preview time background color")
+    await createColor("TimeBG", "Video preview time background color")
 
-    createCheck("TimeOut", "Enable time Borders/Shadows")
+    await createCheck("TimeOut", "Enable time Borders/Shadows")
 
-    createTextBox("HoverBorder", "Hover Borders width")
-    createColor("ThumbHoverColor", "Borders/Shadows on hover color")
-    createColor("ThumbClick", "Borders/Shadows on click color")
+    await createTextBox("HoverBorder", "Hover Borders width")
+    await createColor("ThumbHoverColor", "Borders/Shadows on hover color")
+    await createColor("ThumbClick", "Borders/Shadows on click color")
 
     createselect("ThumbHover",
         `<option value="Slide">Slide</option>
@@ -4512,61 +4544,61 @@ function CreateMENU() {
 	<option value="none">None</option>`,
         "Hover animation style")
 
-    createTextBox("Zoom", 'Zoom amount (If you choose "Zoom")')
+    await createTextBox("Zoom", 'Zoom amount (If you choose "Zoom")')
 
-    createCheck("TimeAni", "Enable hide time when hover")
+    await createCheck("TimeAni", "Enable hide time when hover")
 
-    createCheck("ThumbAnim", "Enable loaded animation")
+    await createCheck("ThumbAnim", "Enable loaded animation")
 
-    createCheck("CenterTime", "Move the time position to the center")
+    await createCheck("CenterTime", "Move the time position to the center")
 
-    createTextBox("TimeH", "Time height")
+    await createTextBox("TimeH", "Time height")
 
     //-------------------------------------------------------------------------------
 
     THISPar = "🎇 Enhancement"
 
-    createTextBox("Edge", "Round edges amount (Most UI)")
+    await createTextBox("Edge", "Round edges amount (Most UI)")
 
-    createCheck("SwapRow", "Swap left-right row (In watching mode)")
+    await createCheck("SwapRow", "Swap left-right row (In watching mode)")
 
     //theme-------------------------------------------------------------------------------
 
     THISPar = "🌈 Color/Theme"
 
-    createColor("Theme", "Main Theme color")
+    await createColor("Theme", "Main Theme color")
 
-    createColor("ThemeThr", "Transparent-things theme color")
+    await createColor("ThemeThr", "Transparethings theme color")
 
-    createColor("ThemeFort", "Other theme color")
+    await createColor("ThemeFort", "Other theme color")
 
-    createColor("LeftBar", "Left sidebar color")
+    await createColor("LeftBar", "Left sidebar color")
 
-    createColor("Text", "Main text color")
+    await createColor("Text", "Main text color")
 
-    createColor("NdText", "Second text color")
+    await createColor("NdText", "Second text color")
 
-    createColor("LinkColor", "(Link) Text color")
+    await createColor("LinkColor", "(Link) Text color")
 
     //theme-------------------------------------------------------------------------------
 
     THISPar = "▶️ Subscribe Button"
 
-    createCheck("SPSubScribe", "Enable Separate Subscribe Button Color")
+    await createCheck("SPSubScribe", "Enable Separate Subscribe Button Color")
 
-    createColor("SPSubScribeBG", "(Separate) Background color")
+    await createColor("SPSubScribeBG", "(Separate) Background color")
 
-    createColor("SPSubScribeColor", "(Separate) Text color")
+    await createColor("SPSubScribeColor", "(Separate) Text color")
 
-    createCheck("SubOut", "Enable Borders/Shadows")
+    await createCheck("SubOut", "Enable Borders/Shadows")
 
     //-------------------------------------------------------------------------------
 
     THISPar = "💠 Logo"
 
-    createCheck("IconFill", `Logo theme sync with Theme 1<br>Work when disable *Custom Top-Left Icon Image*`)
+    await createCheck("IconFill", `Logo theme sync with Theme 1<br>Work when disable *Custom Top-Left Icon Image*`)
 
-    var IconFrame = createframe(`<lable class="DES">Tab Icon Image (Recommend to use URL)</lable>
+    var IconFrame = await createframe(`<lable class="DES">Tab Icon Image (Recommend to use URL)</lable>
     <p><input id="IconFrame" type="file" accept="image/*" > </p>
     <p class="DES">Enter URL :  </label><input id="IconURL" class="TextBox" type="text" style="display: flex;"></p>
     <p><lable class="DES" style="display: flex; text-align: center;" id="IconSTATUS"></label></p>`)
@@ -4576,15 +4608,13 @@ function CreateMENU() {
     var IconURL = document.getElementById("IconURL")
     IconURL.style = `width:200px;  margin-bottom: 10px;`
 
-    IconURL.addEventListener('change', function () {
+    IconURL.addEventListener('change', async function () {
         ShowTexForICON("Please wait...")
-        DOwithindexed(function () {
-            store.put(IconURL.value, "IconURL")
-            UpdateIcon()
-            applyIcon()
-            ShowTexForICON("Successful.</br>(If an image didn't show up.Then the URL can't access.)")
-            IconURL.value = ``
-        })
+        await MainSave({ "IconURL": IconURL.value })
+        await UpdateIcon()
+        await applyIcon()
+        ShowTexForICON("Successful.</br>(If an image didn't show up.Then the URL can't access.)")
+        IconURL.value = ``
     })
 
     var Par = document.createElement('p')
@@ -4599,17 +4629,16 @@ function CreateMENU() {
     var Iconinput = document.getElementById('IconFrame');
     Iconinput.setAttribute('Newtube', '')
     Iconinput.style = "margin-block: 10px; padding:10px; color:white; border-radius:10px; background:rgb(37, 37, 37);"
-    Iconinput.onchange = function (evt) {
+    Iconinput.onchange = async function (evt) {
         var file = evt.target.files[0]
         const reader = new FileReader();
-        reader.addEventListener('loadend', () => {
+        reader.addEventListener('loadend', async () => {
             ShowTexForICON("Please wait...")
-            DOwithindexed(function () {
-                store.put(reader.result, "IconURL")
-                applyIcon()
-                UpdateIcon()
-                ShowTexForICON("Successful.</br>(If an image not show yet,Your image might too large!)")
-            })
+            await MainSave({ "IconURL": reader.result })
+
+            applyIcon()
+            UpdateIcon()
+            ShowTexForICON("Successful.</br>(If an image not show yet,Your image might too large!)")
         });
         try {
             reader.readAsDataURL(file);
@@ -4641,20 +4670,18 @@ function CreateMENU() {
     border: transparent;
     padding: 5px;
     padding-inline: 10px;`
-    ResetBu.onclick = function () {
-        DOwithindexed(function () {
-            store.put('https://www.youtube.com/s/desktop/6588612c/img/favicon.ico', "IconURL")
-            applyIcon()
-            UpdateIcon()
-        })
+    ResetBu.onclick = async function () {
+        await MainSave({ "IconURL": 'https://www.youtube.com/s/desktop/6588612c/img/favicon.ico' })
+        applyIcon()
+        UpdateIcon()
     }
     IconFrame.appendChild(ResetBu)
 
     applyIcon()
 
-    createCheck("ReplaceYT", "Enable Custom Top-Left Icon Image")
+    await createCheck("ReplaceYT", "Enable Custom Top-Left Icon Image")
 
-    let ReplaceYTFrame = createframe(`<lable class="DES">Top-Left Icon Image</lable>
+    let ReplaceYTFrame = await createframe(`<lable class="DES">Top-Left Icon Image</lable>
     <p class="DES" style="display: flex; align-items: center; width:-webkit-fill-available;">Enter URL :  </label><input id="ReplaceYTLOGO" style="width:380px; margin-left: 10px; margin-bottom: 10px;" class="TextBox" type="text" style="display: flex;"></p>
     <a class="yt-simple-endpoint style-scope ytd-topbar-logo-renderer" id="logo" aria-label="" href="/" title="หน้าแรกของ YouTube">
     <div class="style-scope ytd-topbar-logo-renderer">
@@ -4708,8 +4735,8 @@ function CreateMENU() {
 
     let ReplaceYTLOGO = document.getElementById("ReplaceYTLOGO")
 
-    ReplaceYTLOGO.addEventListener('change', function () {
-        localStorage["nt-ReplaceYTURL"] = ReplaceYTLOGO.value
+    ReplaceYTLOGO.addEventListener('change', async function () {
+        await MainSave({ ["ReplaceYTURL"]: ReplaceYTLOGO.value })
         ReplaceYTLOGO.value = ""
         update()
     })
@@ -4728,13 +4755,13 @@ function CreateMENU() {
 
     ReplaceYTFrame.append(ReplaceResetBu)
 
-    ReplaceResetBu.onclick = function () {
-        localStorage["nt-ReplaceYTURL"] = ""
+    ReplaceResetBu.onclick = async function () {
+        await MainSave({ ["ReplaceYTURL"]: "" })
         ReplaceYTLOGO.value = ""
         update()
     }
 
-    createTextBox("YTSize", "% Logo image size")
+    await createTextBox("YTSize", "% Logo image size")
 
 
     //Outline-------------------------------------------------------------------------------
@@ -4747,21 +4774,21 @@ function CreateMENU() {
 	<option value="None">None</option>`,
         "Borders or Shadows")
 
-    createTextBox("Border", "Borders/Shadows width")
+    await createTextBox("Border", "Borders/Shadows width")
 
-    createColor("OutSha", "Borders/Shadows Color")
+    await createColor("OutSha", "Borders/Shadows Color")
 
     //BG-------------------------------------------------------------------------------
 
     THISPar = "🎴 Background"
 
-    createColor("BG", " Change background/tint color")
+    await createColor("BG", " Change background/tint color")
 
-    createTextBox("BlurBGAM", "Background blur amount (0 = None)")
+    await createTextBox("BlurBGAM", "Background blur amount (0 = None)")
 
-    createCheck("API", "Use upload api (imgbb.com)")
+    await createCheck("API", "Use upload api (imgbb.com)")
 
-    var ChooseBG = createframe(`<lable class="DES">Background Image (Recommend to use URL)</lable>
+    var ChooseBG = await createframe(`<lable class="DES">Background Image (Recommend to use URL)</lable>
     <p><input id="ChooseBG" type="file" accept="image/*" > </p>
     <p><label class="DES" style="display: block; text-align: center; margin-block: 15px; flex-direction: column;">If your computer is slow. You should enable</br>"Use upload api" button for saving your computer. ♥♥♥</br>(If not please disable it to save your internet. ♥♥♥)</label> </p>
     <p><label class="DES" style="display: flex; text-align: center; margin-bottom: 30px;">(Thanks you imgbb.com for free api image upload! ♥)</label> </p>
@@ -4773,14 +4800,12 @@ function CreateMENU() {
     var IMGURL = document.getElementById("IMGFORBG")
     IMGURL.style = `width:200px;  margin-bottom: 10px;`
 
-    IMGURL.addEventListener('change', function () {
+    IMGURL.addEventListener('change', async function () {
         ShowTexForIMG("Please wait...")
-        DOwithindexed(function () {
-            store.put(IMGURL.value, "BGIMG")
-            update()
-            ShowTexForIMG("Successful.</br>(If an image didn't show up.Then the URL can't access.)")
-            IMGURL.value = ``
-        })
+        await MainSave({ "BGIMG": IMGURL.value })
+        update()
+        ShowTexForIMG("Successful.</br>(If an image didn't show up.Then the URL can't access.)")
+        IMGURL.value = ``
     })
 
     var Par = document.createElement('p')
@@ -4795,10 +4820,10 @@ function CreateMENU() {
     var input = document.getElementById('ChooseBG');
     input.style = "margin-block: 10px; padding:10px; color:white; border-radius:10px; background:rgb(37, 37, 37);"
     input.setAttribute('Newtube', '')
-    input.onchange = function (evt) {
+    input.onchange = async function (evt) {
         ShowTexForIMG("Please wait...")
         var file = evt.target.files[0]
-        if (localStorage["nt-APIT"] == "true") {
+        if (await GetLoad("APIT") == true) {
             if (request) {
                 request.abort();
             }
@@ -4813,12 +4838,12 @@ function CreateMENU() {
             request = new XMLHttpRequest();
             request.open('POST', 'https://api.imgbb.com/1/upload?key=7a66c339da2a9aefedd8ad5e6c62e89f');
 
-            request.upload.addEventListener('progress', function (e) {
+            request.upload.addEventListener('progress', async function (e) {
                 percent_completed = (e.loaded / e.total) * 100;
                 ShowTexForIMG("Uploading...(" + percent_completed.toFixed(2) + "%)");
             });
 
-            request.addEventListener('load', function (e) {
+            request.addEventListener('load', async function (e) {
                 serverSent = null
                 try {
                     serverSent = JSON.parse(request.response)
@@ -4828,11 +4853,9 @@ function CreateMENU() {
 
                 if (serverSent["success"] == true) {
                     // console.log(serverSent)
-                    DOwithindexed(function () {
-                        store.put(serverSent["data"]["url"], "BGIMG")
-                        update()
-                        ShowTexForIMG("Successful.</br>(If an image not show yet please wait.)")
-                    })
+                    await MainSave({ "BGIMG": serverSent["data"]["url"] })
+                    update()
+                    ShowTexForIMG("Successful.</br>(If an image not show yet please wait.)")
                 } else {
                     ShowTexForIMG("Eror!</br>Make sure your image not over 32MB then try again")
                 }
@@ -4842,12 +4865,10 @@ function CreateMENU() {
             request.send(body);
         } else {
             const reader = new FileReader();
-            reader.addEventListener('loadend', () => {
-                DOwithindexed(function () {
-                    store.put(reader.result, "BGIMG")
-                    update()
-                    ShowTexForIMG("Successful.</br>(If an image not show yet please wait.)")
-                })
+            reader.addEventListener('loadend', async () => {
+                await MainSave({ "BGIMG": reader.result })
+                update()
+                ShowTexForIMG("Successful.</br>(If an image not show yet please wait.)")
             });
             try {
                 reader.readAsDataURL(file);
@@ -4880,14 +4901,12 @@ function CreateMENU() {
     border: transparent;
     padding: 5px;
     padding-inline: 10px;`
-    RemoveBu.onclick = function () {
+    RemoveBu.onclick = async function () {
         if (request) {
             request.abort();
         }
-        DOwithindexed(function () {
-            store.put("", "BGIMG")
-            update()
-        })
+        await MainSave({ "BGIMG": "" })
+        update()
     }
     ChooseBG.appendChild(RemoveBu)
 
@@ -4895,16 +4914,16 @@ function CreateMENU() {
     CreateXY("Y")
     CreateXY("S")
 
-    createCheck("Flip", "Enable flip image")
+    await createCheck("Flip", "Enable flip image")
 
-    createCheck("Repeat", "Enable repeat image")
+    await createCheck("Repeat", "Enable repeat image")
 
 
     //blur-------------------------------------------------------------------------------
 
     THISPar = "🪟 Blur"
 
-    createTextBox("BlurAm", "Blur amount")
+    await createTextBox("BlurAm", "Blur amount")
 
     createselect("BlurWhat",
         `<option value="all">All (Lag!)</option>
@@ -4916,65 +4935,59 @@ function CreateMENU() {
 
     THISPar = "🚶 Animations"
 
-    createCheck("Ptran", "Enable Page transition")
+    await createCheck("Ptran", "Enable Page transition")
 
     //Hover-------------------------------------------------------------------------------
 
     THISPar = "🖱️ Hover/Click color"
 
-    createColor("Themehover", "Most hover background color")
+    await createColor("Themehover", "Most hover background color")
 
-    createColor("Playlisthover", "(Playlist) hover background color")
+    await createColor("Playlisthover", "(Playlist) hover background color")
 
     //-------------------------------------------------------------------------------
 
     THISPar = "⚛️ Other settings"
 
-    createTextBox("ScWidth", "(Scrollbar) width")
+    await createTextBox("ScWidth", "(Scrollbar) width")
 
-    createCheck("VBG", "(Video) remove background solid color (Theater mode)")
+    await createCheck("VBG", "(Video) remove background solid color (Theater mode)")
 
-    DOwithindexed(function () {
-        let get = store.get("BGIMG")
-        get.onsuccess = function (e) {
-            RenderPreImg(e.target.result)
-        }
-    })
+    RenderPreImg(await GetLoad("BGIMG"))
 
 
     //-------------------------------------------------------------------------------
 
     THISPar = "🔠 Fonts"
 
-    FontLocatePar = createMainframe()
+    FontLocatePar = await createMainframe()
 
     //Add Added Font
 
-    AddedFontFrame = createframe(`<div class="DES" style="text-align: center;width: 100%; margin-bottom:30px;">Added Fonts</div>`, true)
+    AddedFontFrame = await createframe(`<div class="DES" style="text-align: center;width: 100%; margin-bottom:30px;">Added Fonts</div>`)
     AddedFontFrame.style = `display: flex;
     flex-direction: column;`
 
     CreateAddedFont()
 
-    AddFontFrame = createframe(`<a id="HOVERLINK" style="margin-bottom: 20px;font-size: 18px;background: #4b4b4b;padding: 10px;border-radius: 10px;" href="https://youtu.be/Lk145lrTIcU" target="_blank" class="DES" >See how to add fonts!</a>
+    AddFontFrame = await createframe(`<a id="HOVERLINK" style="margin-bottom: 20px;font-size: 18px;background: #4b4b4b;padding: 10px;border-radius: 10px;" href="https://youtu.be/Lk145lrTIcU" target="_blank" class="DES" >See how to add fonts!</a>
     <textarea id="NTInstallFont" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 200px; font-size: 18px;" placeholder="Paste Fonts here."></textarea>
-    <div id="ntAddFont" class="DES" style="background: #005100; border: #72ff72 solid 1px; border-radius: 10px; padding: 10px; margin-top: 20px;">✳️ Add fonts ✳️</div>`, true)
+    <div id="ntAddFont" class="DES" style="background: #005100; border: #72ff72 solid 1px; border-radius: 10px; padding: 10px; margin-top: 20px;">✳️ Add fonts ✳️</div>`)
 
     AddFontFrame.style = `display: flex;flex-direction: column;align-content: center;align-items: center; width: 100%;`
 
     let InstallFont = document.getElementById("NTInstallFont")
 
-    document.getElementById("ntAddFont").onclick = function () {
-        AddedFont = UnCompressAddedFont()
-        ThisFontLinkName = GetFontName(InstallFont.value)
+    document.getElementById("ntAddFont").onclick = async function () {
+        AddedFont = await UnCompressAddedFont()
+        ThisFontLinkName = await GetFontName(InstallFont.value)
         FontID = JSON.stringify(ThisFontLinkName)
-        FontID = FontID.replaceAll('"', "Quote")
 
         if (AddedFont[FontID] == null) {
-            AddListFont(InstallFont.value)
+            await AddListFont(InstallFont.value)
             update()
-            CreateFontsList()
-            CreateAddedFont()
+            await CreateFontsList()
+            await CreateAddedFont()
         } else {
             alert("This font has already Added")
         }
@@ -4982,22 +4995,22 @@ function CreateMENU() {
         InstallFont.value = ""
     }
 
-    CreateFontsList()
+    await CreateFontsList()
 
     //-------------------------------------------------------------------------------
 
     THISPar = "⏫ Additional CSS"
 
-    createCheck("EnaADDCSS", "Enable Additional CSS")
+    await createCheck("EnaADDCSS", "Enable Additional CSS")
 
-    createframe(`<textarea id="Additional_CSS" placeholder="Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
+    await createframe(`<textarea id="Additional_CSS" placeholder="Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
 
     ADDTEXT = document.getElementById("Additional_CSS")
 
-    ADDTEXT.value = localStorage["nt-ADDCUSTOM"]
+    ADDTEXT.value = await GetLoad("ADDCUSTOM")
 
-    ADDTEXT.addEventListener('change', function () {
-        localStorage["nt-ADDCUSTOM"] = ADDTEXT.value
+    ADDTEXT.addEventListener('change', async function () {
+        await MainSave({ ["ADDCUSTOM"]: ADDTEXT.value })
         update()
     })
 
@@ -5016,82 +5029,90 @@ function CreateMENU() {
     transition: all 0.5s ease 0s;
     border: transparent;`
 
-    LocatePar = createMainframe()
+    LocatePar = await createMainframe()
 
 
-    createframe(`<textarea id="Export" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste NTubeCode here."></textarea>`)
+    await createframe(`<textarea id="Export" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste NTubeCode here."></textarea>`)
 
     var ExportTEXT = document.getElementById("Export")
 
 
     var Import = document.createElement('button')
-    Import.innerHTML = "Import NTubeCode"
+    Import.innerHTML = "Import NTubeCode (Text)"
     Import.className = "Reset"
     Import.style = imexstyle
 
     LocatePar.appendChild(Import)
 
     var Export = document.createElement('button')
-    Export.innerHTML = "Export NTubeCode"
+    Export.innerHTML = "Export NTubeCode (Text)"
     Export.className = "Reset"
     Export.style = imexstyle
 
     LocatePar.appendChild(Export)
 
     var Export2 = document.createElement('button')
-    Export2.innerHTML = "Export Style as CSS"
+    Export2.innerHTML = "Export Style as CSS (Text)"
     Export2.className = "Reset"
     Export2.style = imexstyle
 
     LocatePar.appendChild(Export2)
 
+    var Export3 = document.createElement('button')
+    Export3.innerHTML = "Export to NPreset (File)"
+    Export3.className = "Reset"
+    Export3.style = imexstyle
 
-    Import.onclick = function () {
+    LocatePar.appendChild(Export3)
+
+
+    Import.onclick = async function () {
         let save = ExportTEXT.value
         ExportTEXT.value = "Please wait...(If it's take too long it might eror!)"
-        save.LoadNTubeCode()
-        ExportTEXT.value = "Successful."
+        save = JSON.parse(save)
+        LoadNTubeCode(save)
+        RESETTUBE()
+        ExportTEXT.value = "Successful. (Reload website for display Fonts)"
     }
 
-    Export.onclick = function () {
+    Export.onclick = async function () {
         ExportTEXT.value = "Please wait..."
-        DOwithindexed(function () {
-            let get = store.get("BGIMG")
-            get.onsuccess = function (e) {
-                let arr = GenNTubeCode()
-                if (e.target.result == null) {
-                    arr["BGIMG"] = ""
-                } else {
-                    arr["BGIMG"] = e.target.result
-                }
-                gentext = JSON.stringify(arr).replace(/",/g, '",\n')
-                gentext = gentext.substring(0, 1) + '\n' + gentext.substring(1)
-                gentextL = gentext.length
-                gentext = gentext.substring(0, gentextL - 1) + '\n' + gentext.substring(gentextL - 1)
-                ExportTEXT.value = gentext
-            }
-        })
+        let arr = await GenNTubeCode()
+        gentext = JSON.stringify(arr).replace(/,"/g, ',\n"')
+        gentext = gentext.substring(0, 1) + '\n' + gentext.substring(1)
+        gentextL = gentext.length
+        gentext = gentext.substring(0, gentextL - 1) + '\n' + gentext.substring(gentextL - 1)
+        ExportTEXT.value = gentext
     }
 
-    Export2.onclick = function () {
+    Export2.onclick = async function () {
         ExportTEXT.value = "Please wait..."
         ExportTEXT.value = Collect_Style
+    }
+
+    Export3.onclick = async function () {
+        ExportTEXT.value = "Exporting..."
+        download(JSON.stringify(await GenNTubeCode()), 'Export.NPreset')
+        ExportTEXT.value = "Successful."
+        setTimeout(() => {
+            ExportTEXT.value = ""
+        }, 1000);
     }
 
     //-------------------------------------------------------------------------------
 
     THISPar = "📝 Custom CSS"
 
-    createCheck("EnaCUSCSS", "Enable Custom CSS")
+    await createCheck("EnaCUSCSS", "Enable Custom CSS")
 
-    createframe(`<textarea id="Custom_CSS" placeholder="Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
+    await createframe(`<textarea id="Custom_CSS" placeholder="Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
 
     CusText = document.getElementById("Custom_CSS")
 
-    CusText.value = localStorage["nt-CUSTOM"]
+    CusText.value = await GetLoad("CUSTOM")
 
-    CusText.addEventListener('change', function () {
-        localStorage["nt-CUSTOM"] = CusText.value
+    CusText.addEventListener('change', async function () {
+        await MainSave({ ["CUSTOM"]: CusText.value })
         update()
     })
 
@@ -5099,16 +5120,16 @@ function CreateMENU() {
 
     THISPar = "🌠 Beta features!"
 
-    createframe(`<label class="DES">Maybe need to reload website</label>`)
+    await createframe(`<label class="DES">Maybe need to reload website</label>`)
 
-    createCheck("Visual", "Audio Visualizer")
+    await createCheck("Visual", "Audio Visualizer")
 
-    createCheck("NewVDOanima", "New video animation (Volume up/down,Pause,Play)")
+    await createCheck("NewVDOanima", "New video animation (Volume up/down,Pause,Play)")
 
-    createCheck("DelBar", "Remove black bar top-bottom (Background VDO Should Enabled)")
-    createCheck("DropFrame", "Remove black bar Lazy Check (Drop frame)")
-    createCheck("DelBarDebug", "Remove black bar Debug")
-    createCheck("CheckStatic", "Check Static video (for Background VDO & Remove black bar)")
+    await createCheck("DelBar", "Remove black bar top-bottom (Background VDO Should Enabled)")
+    await createCheck("DropFrame", "Remove black bar Lazy Check (Drop frame)")
+    await createCheck("DelBarDebug", "Remove black bar Debug")
+    await createCheck("CheckStatic", "Check Static video (for Background VDO & Remove black bar)")
 
 
 
@@ -5134,7 +5155,7 @@ function CreateMENU() {
     NewtubeSearch.placeholder = "Search"
     SetBg.appendChild(NewtubeSearch)
 
-    function StartSearch() {
+    async function StartSearch() {
         var SearchText = NewtubeSearch.value
         var RegExpText = new RegExp(SearchText, "gi")
         var All = SetBg.getElementsByClassName("DES")
@@ -5166,7 +5187,7 @@ function CreateMENU() {
                 //     ThisCheckMainSetting.style.display = ""
                 // }
 
-                inner = inner.replace(RegExpText, function name(match) {
+                inner = inner.replace(RegExpText, async function name(match) {
                     ThisCheckMainSetting.style.display = ""
                     return `<mark>${match}</mark>`
                 })
@@ -5178,7 +5199,7 @@ function CreateMENU() {
     }
 
     var changing = 0
-    NewtubeSearch.addEventListener("input", function () {
+    NewtubeSearch.addEventListener("input", async function () {
         changing += 1
         setTimeout(() => {
             changing -= 1
@@ -5189,7 +5210,7 @@ function CreateMENU() {
     })
 }
 
-function GetMainSetting(thisElement) {
+async function GetMainSetting(thisElement) {
     var ParElement = thisElement.parentNode
     if (ParElement == SetBg) {
         ThisCheckMainSetting = thisElement
@@ -5222,24 +5243,24 @@ function GetMainSetting(thisElement) {
 
 
 //----------------------------------------------------------------------------------
-function Show() {
+async function Show() {
     document.getElementById("NEWTUBEBG").style.setProperty('left', "calc(100% - 755px)");
     document.getElementById("NEWTUBEBG").style.setProperty('opacity', "1");
 }
 
-function Hide() {
+async function Hide() {
     document.getElementById("NEWTUBEBG").style.setProperty('left', "95%");
     document.getElementById("NEWTUBEBG").style.setProperty('opacity', "0");
 }
 
 var Can = false
-function clickSetting() {
+async function clickSetting() {
     // console.log(Can)
     if (Can == true) {
         if (document.getElementById("NEWTUBEBG") == null) {
             Can = false
-            CreateMENU()
-            Hide()
+            await CreateMENU()
+            await Hide()
             setTimeout(() => {
                 Show()
             }, 1);
@@ -5262,7 +5283,7 @@ function clickSetting() {
 
         } else {
             Can = false
-            Hide()
+            await Hide()
             setTimeout(() => {
                 document.getElementById("NEWTUBEBG").remove()
             }, 505)
@@ -5277,7 +5298,7 @@ function clickSetting() {
 
 let volchange = 0
 
-function UpdateVol() {
+async function UpdateVol() {
     volchange++
     voldata = document.getElementsByClassName("ytp-volume-panel")[0]
     volvalue = voldata.getAttribute('aria-valuenow')
@@ -5298,7 +5319,7 @@ function UpdateVol() {
 }
 
 
-function ShowUpdated() {
+async function ShowUpdated() {
     // console.log("ShowUp")
     upbg = document.createElement('div')
     upbg.style = `
@@ -5336,8 +5357,8 @@ function ShowUpdated() {
     font-size: 28px;
     padding: 10px;
     color: white;
-    font-weight: 700;
-    font-family: cursive !important;
+    foweight: 700;
+    fofamily: cursive !important;
     ">🎉</p>
     <img src=`+ chrome.runtime.getURL('icon/64.png') + `
     style="
@@ -5347,8 +5368,8 @@ function ShowUpdated() {
     font-size: 28px;
     padding: 10px;
     color: white;
-    font-weight: 700;
-    font-family: cursive !important;
+    foweight: 700;
+    fofamily: cursive !important;
     "> Newtube `+ Ver + ` has updated! 🎉</p>
     <img src=https://media.tenor.com/gNcXkIbCvpsAAAAj/tsurumaki-kokoro.gif"
     style="height:60%;
@@ -5383,12 +5404,12 @@ function ShowUpdated() {
     align-items: center;
     justify-content: center;
     font-size: 24px;
-    font-weight: 700;
+    foweight: 700;
     cursor: pointer;
     transition: all 0.2s ease 0s;
     padding: 5px;
     color: rgb(87, 255, 188);
-    font-family: cursive !important;
+    fofamily: cursive !important;
     `
     okbut.innerHTML = "Ok !"
 
@@ -5403,12 +5424,10 @@ function ShowUpdated() {
         }, 1000)
     }, 200);
 
-    okbut.onclick = function () {
+    okbut.onclick = async function () {
         upbg.style.opacity = '0'
         upbg.style.bottom = '-130px'
-        DOwithindexed(function () {
-            store.put(Ver, "Oldver")
-        })
+        await MainSave({ "OldVer": Ver })
         setTimeout(() => {
             upbg.remove()
         }, 500)
@@ -5426,17 +5445,17 @@ function ShowUpdated() {
     align-items: center;
     justify-content: center;
     font-size: 24px;
-    font-weight: 700;
+    foweight: 700;
     cursor: pointer;
     transition: all 0.2s ease 0s;
     padding: 5px;
     margin-left: 10px;
     color: rgb(255 201 87);
-    font-family: cursive !important;
+    fofamily: cursive !important;
     `
     changelogbt.innerHTML = "Changes log"
 
-    changelogbt.onclick = function () {
+    changelogbt.onclick = async function () {
         window.open(
             'https://github.com/AzPepoze/Newtube',
             '_blank'
@@ -5448,8 +5467,8 @@ function ShowUpdated() {
 
 SeeRemove = 1
 
-function SettoEnd() {
-    setTimeout(() => {
+async function SettoEnd() {
+    setTimeout(async () => {
         if (document.getElementById("end") == null) {
             SettoEnd()
         }
@@ -5460,20 +5479,16 @@ function SettoEnd() {
                 // window.addEventListener('yt-page-data-updated', FindBelow)
                 // FindBelow()
                 if (SeeRemove == 1) {
-                    if (localStorage["nt-SHOWPRESET"] == "true") {
+                    if (await GetLoad("SHOWPRESET") == true) {
                         //-----------DEFAULT PRESET------------------
-                        DOwithindexed(function () {
-                            store.put(Ver, "Oldver")
-
-                            store.put("https://i.ibb.co/WpFdcc2/128.png", "IconURL")
-                            UpdateIcon()
-                            SetidxTo("BGIMG", "https://i.ibb.co/FYPBxC5/1647030608836.jpg")
-                            SetNormalPre()
-
-                            update()
-                            PRESET()
+                        await MainSave({
+                            "Oldver": Ver,
+                            "IconURL": "https://i.ibb.co/WpFdcc2/128.png",
+                            "BGIMG": "https://i.ibb.co/FYPBxC5/1647030608836.jpg"
                         })
-                        localStorage["nt-SHOWPRESET"] = "STOP"
+                        update()
+                        PRESET()
+                        await MainSave({ ["SHOWPRESET"]: "STOP" })
 
                         setTimeout(() => {
                             window.alert(`*Warning*
@@ -5489,23 +5504,12 @@ function SettoEnd() {
                     Done!`)
                         }, 200);
                     } else {
-                        DOwithindexed(function () {
+                        let GetOldVersion = await GetLoad("OldVer")
 
-                            get = store.get("Oldver")
-                            get.onsuccess = function (e) {
-
-                                if (e.target.result != Ver) {
-                                    ShowUpdated()
-                                    DOwithindexed(function () {
-                                        SetNormalPre()
-                                    })
-
-                                    SetWhenUpdate()
-                                }
-
-                            }
-
-                        })
+                        if (GetOldVersion != Ver) {
+                            ShowUpdated()
+                            SetWhenUpdate()
+                        }
                     }
 
                     var YTAPP
@@ -5528,8 +5532,8 @@ function SettoEnd() {
 
 
 
-                    if (localStorage["nt-" + 'NewVDOanimaT'] == 'true') {
-                        function ThisFunc() {
+                    if (await GetLoad('NewVDOanimaT') == true) {
+                        async function ThisFunc() {
                             if (FindVideo()) {
                                 thisStyle = document.createElement('style')
                                 thisStyle.textContent = `
@@ -5543,6 +5547,7 @@ function SettoEnd() {
                                 border-radius: var(--theme-radius-big) !important;
                                 height: 0% !important;
                                 margin: auto;
+                                overflow:visible;
                             }
                             
                             .ytp-doubletap-ui-legacy.ytp-time-seeking{
@@ -5561,13 +5566,14 @@ function SettoEnd() {
                                 width: 100% !important;
                                 top: 50% !important;
                                 border-radius: var(--theme-radius-big) !important;
+                                overflow: visible;
                             }
                             
                             .ytp-doubletap-seek-info-container{
                                 text-align: center;
                                 left: 0px !important;
                                 top: 0px !important;
-                                font-weight: 700;
+                                foweight: 700;
                                 display: flex;
                                 flex-direction: column;
                                 align-items: center;
@@ -5624,7 +5630,7 @@ function SettoEnd() {
                                 justify-content: center;
                                 font-size: 30px;
                                 backdrop-filter: blur(10px);
-                                font-weight: 600;
+                                foweight: 600;
                                 transition: all 0.5s ease;
                                 box-shadow: 0px 0px 10px white;
                                 left: calc(50% - 50px);`
@@ -5633,7 +5639,7 @@ function SettoEnd() {
 
                                 vdpar.append(volpanel)
 
-                                FindVideo().addEventListener('volumechange', function () {
+                                FindVideo().addEventListener('volumechange', async function () {
                                     UpdateVol()
                                 })
                             }
@@ -5661,7 +5667,7 @@ function SettoEnd() {
                     // var analyser = audioCtx.createAnalyser()
 
 
-                    // if (localStorage["nt-EQT"] == 'true') {
+                    // if (await GetLoad("EQT") == true) {
                     //     console.log("RunEQ")
 
                     //     var AudioFilter = audioCtx.createBiquadFilter()
@@ -5680,8 +5686,7 @@ function SettoEnd() {
 
 
 
-
-                    if (localStorage["nt-VisualT"] == 'true') {
+                    if (await GetLoad("VisualT") == true) {
 
                         setTimeout(() => {
                             // we have to connect the MediaElementSource with the analyser
@@ -5724,7 +5729,7 @@ function SettoEnd() {
                             gradient.addColorStop(0.5, '#ffffff');
                             gradient.addColorStop(0, '#ffffff');
                             // loop
-                            function renderFrame() {
+                            async function renderFrame() {
                                 var array = new Uint8Array(analyser.frequencyBinCount);
                                 analyser.getByteFrequencyData(array);
                                 var step = 1; //sample limited data from the total array
@@ -5762,8 +5767,8 @@ function SettoEnd() {
 
 
 
-                    if (localStorage["nt-EnableButtonT"] == 'true') {
-                        function RemoveCinema() {
+                    if (await GetLoad("EnableButtonT") == true) {
+                        async function RemoveCinema() {
                             if (document.getElementById("cinematics")) {
                                 // console.log("Removed")
                                 document.getElementById("cinematics").remove()
@@ -5780,9 +5785,9 @@ function SettoEnd() {
             if (SeeRemove == 1) {
                 SeeRemove = 0
 
-                ENDobserver = new MutationObserver(function (mutations_list) {
-                    mutations_list.forEach(function (mutation) {
-                        mutation.removedNodes.forEach(function (removed_node) {
+                ENDobserver = new MutationObserver(async function (mutations_list) {
+                    mutations_list.forEach(async function (mutation) {
+                        mutation.removedNodes.forEach(async function (removed_node) {
                             if (removed_node.id == 'child') {
                                 // console.log('#child has been removed');
                                 SettoEnd()
@@ -5799,8 +5804,6 @@ function SettoEnd() {
         }
     }, 1000);
 }
-
-SetNull()
 
 
 
@@ -5832,8 +5835,16 @@ SetNull()
 
 //---------------------------------------------------------------------------
 
-var CanDropFrame = JSON.parse(localStorage["nt-DropFrameT"]),
-    CanCheckStatic = JSON.parse(localStorage["nt-CheckStaticT"])
+var CanDropFrame,
+    CanCheckStatic
+
+GetLoad("DropFrameT").then((ThisLoad) => {
+    CanDropFrame = ThisLoad
+})
+
+GetLoad("CheckStaticT").then((ThisLoad) => {
+    CanCheckStatic = ThisLoad
+})
 
 //--EX-----
 
@@ -5862,16 +5873,17 @@ var UPSEQ = 33,
     BGFRAME
 
 var CanvasQua,
-    CanvasNewQua,
     VDOBOUND
 
 function ChangeCanvasQua() {
-    cw = Math.floor(Math.floor(VDOBOUND.width) * CanvasNewQua)
-    ch = Math.floor(Math.floor(VDOBOUND.height) * CanvasNewQua)
+    if (VDOBOUND) {
+        cw = Math.floor(Math.floor(VDOBOUND.width) * CanvasNewQua)
+        ch = Math.floor(Math.floor(VDOBOUND.height) * CanvasNewQua)
 
-    CanvasQua = CanvasNewQua
-    canvas.width = cw
-    canvas.height = ch
+        CanvasQua = CanvasNewQua
+        canvas.width = cw
+        canvas.height = ch
+    }
 }
 
 function SetCanvas() {
@@ -5886,8 +5898,6 @@ function SetCanvas() {
         if (Distance < 0) {
             Distance = Distance * -1
         }
-
-        CanvasNewQua = localStorage["nt-CanvasQua"] / 100
 
         if (CanvasQua != CanvasNewQua) {
             ChangeCanvasQua()
@@ -5912,8 +5922,10 @@ function SetCanvas() {
 
             VdoHeight = VDOBOUND.height + "px"
 
+            let cwNotNaN = !isNaN(cw)
+
             var tempCanvas
-            if (KeeplastFrame == true) {
+            if (KeeplastFrame == true && cwNotNaN) {
                 tempCanvas = context.getImageData(0, 0, cw, ch);
             }
 
@@ -5922,7 +5934,7 @@ function SetCanvas() {
 
             ChangeCanvasQua()
 
-            if (KeeplastFrame == true) {
+            if (KeeplastFrame == true && cwNotNaN) {
                 context.putImageData(tempCanvas, 0, 0)
                 tempCanvas = null
             }
@@ -5986,6 +5998,7 @@ function SetBGTran(Status) {
 LastMode = null
 
 function CheckVDO() {
+    //console.log("CheckVDO")
     if (FindVideo().parentNode) {
 
         VDOPARCLASS = FindVideo().parentNode.parentNode.className
@@ -6037,7 +6050,7 @@ function CheckVDO() {
 function CheckVDOSTATUS() {
     if (!inIframe()) {
         setTimeout(() => {
-            // console.log("CheckStatus")
+            //console.log("CheckStatus")
             YTAPP = document.getElementsByTagName('ytd-app')[0]
             BGFRAME = document.getElementById("BGFRAME")
             if (FindVideo() == null || YTAPP == null || BGFRAME == null) {
@@ -6054,8 +6067,16 @@ function CheckVDOSTATUS() {
 
 
 BlackMode = false
-BlackBar = JSON.parse(localStorage["nt-DelBarT"])
-EnaCanvas2 = JSON.parse(localStorage["nt-DelBarT"])
+
+let BlackBar,
+    EnaCanvas2
+
+GetLoad("DelBarT").then((ThisLoad) => {
+    BlackBar = ThisLoad
+})
+GetLoad("DelBarT").then((ThisLoad) => {
+    EnaCanvas2 = ThisLoad
+})
 
 let drawing = false,
     CheckBlackQua = 300
@@ -6065,7 +6086,15 @@ CheckBlackThreshold = 20,
     ThisG = null,
     ThisB = null
 
-BlackDebug = JSON.parse(localStorage["nt-DelBarDebugT"])
+
+
+let BlackDebug
+
+GetLoad("DelBarDebugT").then((ThisLoad) => {
+    BlackDebug = ThisLoad
+})
+
+
 
 addMultiply = 1.2
 
@@ -6418,7 +6447,8 @@ function drawOnePic() {
             }
 
             // context.globalCompositeOperation = "source-over"
-            context.filter = `blur(${localStorage["nt-NVDOB"]}px)`
+            context.filter = `blur(${BGBlur}px)`
+
 
             // createImageBitmap(v, { resizeWidth: cw, resizeHeight: ch })
             //     .then((img) => {
@@ -6461,7 +6491,7 @@ function drawOnePic() {
         }, 0)
 
     } else {
-        console.log("Drop frame")
+        // console.log("Drop frame")
     }
 }
 
@@ -6482,6 +6512,7 @@ function drawpic() {
             } else {
                 drawOnePic()
                 if (!StaticVDO) {
+                    canvas
                     if (Support == true) {
                         v.requestVideoFrameCallback(DrawApic)
                     } else {
@@ -6539,7 +6570,7 @@ function LeavePip() {
 function CreateCanvas() {
     CanvasSpawned = true
     drawing = 0
-    // console.log("CreateCanvas")
+    //console.log("CreateCanvas")
 
     Cloning = true
 
@@ -6561,7 +6592,7 @@ function CreateCanvas() {
         NotOverFlow.style.opacity = 0
 
         BlackOverlay = document.createElement('div')
-        BlackOverlay.id = "nt-black-overlay"
+        BlackOverlay.id = "black-overlay"
         NotOverFlow.append(BlackOverlay)
         NotOverFlow.append(canvas)
     }
@@ -6610,6 +6641,8 @@ function CreateCanvas() {
             canvas2.style.setProperty("display", "none")
         }
     }
+
+    ChangeCanvasQua()
 }
 
 function RemoveCanvas(Force) {
@@ -6617,7 +6650,7 @@ function RemoveCanvas(Force) {
     Cloning = false
 
     if (CanvasSpawned == true) {
-        if (localStorage["nt-VDOBGT"] == 'true' && localStorage["nt-EnableButtonT"] == 'true' && !Force) {
+        if (GetLoad("VDOBGT") == true && GetLoad("EnableButtonT") == true && !Force) {
             NotOverFlow.style.opacity = 0
         } else {
             NotOverFlow.remove()
@@ -6702,7 +6735,7 @@ function CheckStaticVDO(attp) {
 
 
 function EnableBGBlur() {
-    // console.log("EnaVDOBG")
+    //console.log("EnaVDOBG")
     Cloning = false
 
     CheckVDOSTATUS()
@@ -6735,13 +6768,13 @@ function download(data, filename, type) {
     }, 0)
 }
 
-chrome.runtime.onMessage.addListener(function (recived) {
-    // console.log("revice " + recived)
+chrome.runtime.onMessage.addListener(async function (recived) {
+    console.log("revice " + recived)
     if (recived == 'Enable') {
-        if (localStorage["nt-EnableButtonT"] == "true") {
-            localStorage["nt-EnableButtonT"] = "false"
+        if (await GetLoad("EnableButtonT") == true) {
+            await MainSave({ "EnableButtonT": false })
         } else {
-            localStorage["nt-EnableButtonT"] = "true"
+            await MainSave({ "EnableButtonT": true })
         }
         update()
     }
@@ -6754,7 +6787,7 @@ chrome.runtime.onMessage.addListener(function (recived) {
 var rqpip = false
 
 document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState == 'hidden' && rqpip == true && localStorage["nt-AutoPIPT"] == "true") {
+    if (document.visibilityState == 'hidden' && rqpip == true && GetLoad("AutoPIPT") == true) {
         rqpip = false
         if (document.pictureInPictureElement == null) {
             FindVideo().requestPictureInPicture()
@@ -6763,7 +6796,7 @@ document.addEventListener('visibilitychange', function () {
 })
 
 window.addEventListener('focus', function () {
-    if (localStorage["nt-AutoEXPIPT"] == "true") {
+    if (GetLoad("AutoEXPIPT") == true) {
         // console.log("Focus")
         // console.log(document.pictureInPictureElement)
         if (document.pictureInPictureElement) {

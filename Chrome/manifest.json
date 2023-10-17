@@ -1,12 +1,11 @@
-{
-    "manifest_version": 3,
-    "name": "Newtube ( Youtube Customizer & Enhancement )",
+{"manifest_version": 3,
+    "name": "NewTube (YouTube Customizer & Enhancement)",
     "author": "AzPepoze",
-    "version": "4.2.8",
-    "description": "Customize your Youtube website with a lot customizable.",
+    "version": "4.3.1",
+    "description": "Customize your YouTube website with a lot customizable.",
     "homepage_url": "https://github.com/AzPepoze/Newtube",
     "default_locale": "en",
-    "minimum_chrome_version": "80",
+    "minimum_chrome_version": "88",
 	"icons":{
 		"128":"icon/128.png",
 		"64":"icon/64.png",
@@ -42,7 +41,10 @@
             "description": "Toggle Setting"
         }
     },
-    "host_permissions": ["*://www.youtube.com/*"],
+    "permissions": [
+        "storage",
+        "unlimitedStorage"
+    ],
     "browser_specific_settings": {
         "gecko": {
             "id": "Newtube@AzPepoze"
