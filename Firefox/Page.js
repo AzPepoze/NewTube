@@ -6786,8 +6786,8 @@ chrome.runtime.onMessage.addListener(async function (recived) {
 
 var rqpip = false
 
-document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState == 'hidden' && rqpip == true && GetLoad("AutoPIPT") == true) {
+document.addEventListener('visibilitychange', async function () {
+    if (document.visibilityState == 'hidden' && rqpip == true && await GetLoad("AutoPIPT") == true) {
         rqpip = false
         if (document.pictureInPictureElement == null) {
             FindVideo().requestPictureInPicture()
@@ -6795,8 +6795,8 @@ document.addEventListener('visibilitychange', function () {
     }
 })
 
-window.addEventListener('focus', function () {
-    if (GetLoad("AutoEXPIPT") == true) {
+window.addEventListener('focus', async function () {
+    if (await GetLoad("AutoEXPIPT") == true) {
         // console.log("Focus")
         // console.log(document.pictureInPictureElement)
         if (document.pictureInPictureElement) {
