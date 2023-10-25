@@ -47,7 +47,7 @@ LoadCached()
 
 async function MainSave(TheSave) {
     let OriginTheSave = TheSave
-    console.log("Save", TheSave)
+    //console.log("Save", TheSave)
     if (await GetLoad("EnableCachedT") == true) {
         Object.keys(TheSave).forEach(function (ThisKey) {
             AzCached[ThisKey] = TheSave[ThisKey]
@@ -80,14 +80,12 @@ window.addEventListener("beforeunload", async function () {
 ForceShowError = true
 
 window.onerror = async function (msg, source, lineNo, columnNo, error) {
-    if (await GetLoad("ErrorCollectT") == true || ForceShowError) {
-        console.log("--------------")
-        console.log("NEWTUBE_ERROR")
-        console.log(msg)
-        console.log(lineNo)
-        console.log("--------------")
-        return true;
-    }
+    console.log("--------------")
+    console.log("NEWTUBE_ERROR")
+    console.log(msg)
+    console.log(lineNo)
+    console.log("--------------")
+    return true;
 }
 
 
@@ -287,12 +285,6 @@ async function styleloop() {
         document.head.append(NTstyle)
         document.head.append(FlyoutStyle)
         document.head.append(FontElement)
-
-        AddedFont = await UnCompressAddedFont()
-        Object.keys(AddedFont).forEach(async function (TheseFontName) {
-            GetFont = AddedFont[TheseFontName]
-            AddFontToWeb(GetFont[0], GetFont[1], await GetFontName(GetFont[1]))
-        })
     }
 }
 
@@ -991,8 +983,6 @@ async function SetNull() {
     await SetTo("BelowSpace", 0)
 
     //Check------------------------
-
-    await SetTo("ErrorCollectT", false)
 
     await SetTo("EnaCUSCSST", false)
     await SetTo("EnaADDCSST", false)
@@ -1933,6 +1923,14 @@ async function update() {
                     --SubSc-Tx : ${await GetSaveRgba('SPSubScribeColor')};
                 }
 
+                #search::placeholder {
+                    color: var(--nd-text-color) !important;
+                }
+
+                .yt-spec-button-shape-next--mono.yt-spec-button-shape-next--outline{
+                    background: var(--top-bar-and-search-background);
+                }
+
                 ytd-text-inline-expander yt-attributed-string a{
                     color: ${await GetSaveRgba('LinkColor')} !important;
                 }
@@ -2141,15 +2139,29 @@ async function update() {
                     --yt-spec-menu-background: var(--top-bar-and-search-background) !important;
                     --yt-spec-static-overlay-text-primary: var(--text-color) !important;
                     --ytd-author-comment-badge-background-color: var(--theme-third) !important;
+                    --yt-spec-10-percent-layer: var(--theme-third) !important;
+                    --yt-spec-static-brand-black: var(--text-color) !important;
+                    --yt-spec-additive-background: var(--theme-third) !important;
+                    --yt-spec-static-overlay-background-brand: var(--theme-fort) !important;
+                    --yt-spec-text-primary-inverse: var(--text-color) !important;
+                }
+
+                #search-icon-legacy{
+                    background: var(--theme-third) !important;
+                    border-color: transparent !important;
+                    transition: all 0.1s;
+                }
+
+                #search-icon-legacy:hover{
+                    border-color: var(--theme) !important;
                 }
 
                 .watch-skeleton .skeleton-bg-color,
-                ytd-author-comment-badge-renderer{
+                ytd-author-comment-badge-renderer,
+                .yt-spec-button-shape-next--mono.yt-spec-button-shape-next--filled,
+                .yt-spec-button-shape-next--overlay.yt-spec-button-shape-next--filled,
+                .masthead-skeleton-icon{
                     background: var(--theme-third) !important;
-                }
-
-                yt-icon.ytd-badge-supported-renderer{
-                    color: var(--theme) !important;
                 }
 
                 ytd-playlist-panel-video-renderer:hover {
@@ -2243,7 +2255,6 @@ async function update() {
                 .sbdd_b,
                 #scrim,
                 tp-yt-iron-overlay-backdrop,
-                ytd-video-preview[active],
                 #tabs-container
                 {
                     background: var(--top-bar-and-search-background) !important;
@@ -2274,7 +2285,9 @@ async function update() {
                 .yt-spec-button-shape-next--mono.yt-spec-button-shape-next--tonal,
                 #description,
                 #player,
-                ytd-thumbnail-overlay-resume-playback-renderer
+                ytd-thumbnail-overlay-resume-playback-renderer,
+                .button-container.ytd-rich-shelf-renderer,
+                ytd-video-preview
                 {
                     background: transparent !important;
                 }
@@ -2672,7 +2685,6 @@ async function update() {
                     margin-left: 10px;
                 }
 
-                .yt-spec-button-shape-next--mono.yt-spec-button-shape-next--filled,
                 yt-chip-cloud-chip-renderer[selected]{
                     color: var(--yt-spec-text-primary) !important;
                     background: var(--theme) !important;
@@ -2978,6 +2990,12 @@ async function update() {
 
         NTstyle.textContent = thisStyle + ADDFont
     };
+
+    if (await GetLoad("EnableCachedT") == true) {
+        MainSave({ "CachedSave": AzCached })
+    } else {
+        MainSave({ "CachedSave": {} })
+    }
 }
 
 async function WaitAvatar() {
@@ -3020,7 +3038,7 @@ async function FirstRun() {
                 } catch (e) {
                     document.getElementsByTagName("ytd-topbar-menu-button-renderer")[0].click()
                 }
-
+                
                 await waitForElm("ytd-toggle-theme-compact-link-renderer")
                 document.getElementsByTagName("ytd-toggle-theme-compact-link-renderer")[0].click()
                 await waitForElmByID("submenu")
@@ -3030,6 +3048,11 @@ async function FirstRun() {
         } else {
             update()
             SettoEnd()
+            AddedFont = await UnCompressAddedFont()
+            Object.keys(AddedFont).forEach(async function (TheseFontName) {
+                GetFont = AddedFont[TheseFontName]
+                AddFontToWeb(GetFont[0], GetFont[1], await GetFontName(GetFont[1]))
+            })
         }
     }
 }
@@ -4384,8 +4407,6 @@ async function CreateMENU() {
 
     await createCheck("Realtime", "Realtime Changing (lag when changing!)");
 
-    await createCheck("ErrorCollect", "Error Detector");
-
     var Chlog = document.createElement('button')
     Chlog.innerHTML = "✳️ Changes log ✳️"
     Chlog.className = "Reset"
@@ -4568,7 +4589,7 @@ async function CreateMENU() {
 
     await createColor("Theme", "Main Theme color")
 
-    await createColor("ThemeThr", "Transparethings theme color")
+    await createColor("ThemeThr", "Transparent things theme color")
 
     await createColor("ThemeFort", "Other theme color")
 
