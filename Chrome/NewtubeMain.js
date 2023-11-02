@@ -1,29 +1,37 @@
 /* Yeaaaaaah :3 AzPepoze https://www.youtube.com/channel/UCJ2C0UTfxQo6iGTfudPfoRQ */
 
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 let AzCached = {}
+let Loaded = false
 
 async function MainLoad(GetLoadArray) {
     let GetLoad
 
-    if (GetLoadArray != null && AzCached[GetLoadArray] != null) {
-        GetLoad = AzCached[GetLoadArray]
+    if (GetLoadArray == null) {
+        return AzCached
         // console.log("Load", GetLoadArray, AzCached[GetLoadArray])
+    } else {
+        if (Loaded == false) {
+            console.log("Not loaded")
+            await sleep(100)
+            return await MainLoad(GetLoadArray)
+        } else {
+            GetLoad = AzCached[GetLoadArray]
+            return GetLoad
+        }
     }
 
-
-    if (GetLoad == null) {
-        await chrome.storage.local.get(GetLoadArray).then((Loaded) => {
-            if (GetLoadArray == null) {
-                GetLoad = Loaded
-            } else {
-                GetLoad = Loaded[GetLoadArray]
-                AzCached[GetLoadArray] = GetLoad
-                // console.log("FirstLoad", GetLoadArray, AzCached[GetLoadArray])
-            }
-        })
-    }
-
-    return GetLoad
+    // if (GetLoad == null) {
+    //     await chrome.storage.local.get(GetLoadArray).then((Loaded) => {
+    //         if (GetLoadArray == null) {
+    //             GetLoad = Loaded
+    //         } else {
+    //             GetLoad = Loaded[GetLoadArray]
+    //             AzCached[GetLoadArray] = GetLoad
+    //             // console.log("FirstLoad", GetLoadArray, AzCached[GetLoadArray])
+    //         }
+    //     })
+    // }
 }
 
 async function GetLoad(GetLoad) {
@@ -33,13 +41,23 @@ async function GetLoad(GetLoad) {
 }
 
 async function LoadCached() {
-    if (await GetLoad("EnableCachedT") == true) {
-        AzCached = await GetLoad("CachedSave")
+    if (true) {
+        await chrome.storage.local.get("CachedSave").then((Loaded) => {
+            AzCached = Loaded["CachedSave"]
+        })
+
+        console.log(AzCached)
+
         if (AzCached == null) {
             AzCached = {}
         } else {
+            if (AzCached["CachedSave"]) {
+                delete AzCached["CachedSave"]
+            }
             console.log("Loaded Cached")
         }
+
+        Loaded = true
     }
 }
 
@@ -48,13 +66,15 @@ LoadCached()
 async function MainSave(TheSave) {
     let OriginTheSave = TheSave
     //console.log("Save", TheSave)
-    if (await GetLoad("EnableCachedT") == true) {
+    if (true) {
         Object.keys(TheSave).forEach(function (ThisKey) {
             AzCached[ThisKey] = TheSave[ThisKey]
             //console.log("SaveToCached", ThisKey, TheSave[ThisKey])
         })
     }
-    await chrome.storage.local.set(OriginTheSave)
+
+    // console.log()
+    await chrome.storage.local.set({ "CachedSave": AzCached })
 }
 
 async function LoadToConsole(GetLoadArray) {
@@ -62,20 +82,14 @@ async function LoadToConsole(GetLoadArray) {
     console.log(Get)
 }
 
-LoadToConsole(null)
-
 async function ClearSave() {
     await chrome.storage.local.clear()
     AzCached = {}
 }
 
-window.addEventListener("beforeunload", async function () {
-    if (await GetLoad("EnableCachedT") == true) {
-        MainSave({ "CachedSave": AzCached })
-    } else {
-        MainSave({ "CachedSave": {} })
-    }
-})
+// window.addEventListener("beforeunload", async function () {
+//     await chrome.storage.local.set({ "CachedSave": AzCached })
+// })
 
 ForceShowError = true
 
@@ -430,12 +444,14 @@ async function SetValueCheck() {
     SetValueCheck2("SndOut", `#chips-wrapper,`, ``)
 
     SetValueCheck2("CenterTime", `
-    ytd-thumbnail-overlay-time-status-renderer
+    ytd-thumbnail-overlay-time-status-renderer,
+    ytd-thumbnail-overlay-bottom-panel-renderer
     {
         width: 100% !important;
         margin: 0px !important;
         padding: 0px !important;
         bottom: 0px;
+        justify-content: center !important;
     }
     
     #time-status #text
@@ -928,7 +944,7 @@ async function GetCodeC(Id) {
 
 async function SetNull() {
     await SetTo("PRESET", {})
-    SetNormalPre()
+    await SetNormalPre()
     //Text-------------------------
     await SetTo("BlurAm", 5)
     await SetTo("BlurBGAM", 10)
@@ -1927,7 +1943,7 @@ async function update() {
                     color: var(--nd-text-color) !important;
                 }
 
-                .yt-spec-button-shape-next--mono.yt-spec-button-shape-next--outline{
+                .yt-spec-button-shape-next--mono.yt-spec-button-shape-next--outline,{
                     background: var(--top-bar-and-search-background);
                 }
 
@@ -2022,7 +2038,8 @@ async function update() {
                     background: `+ await GetLoad("BGC") + ` !important;
                 }
                 
-                ytd-thumbnail-overlay-time-status-renderer
+                ytd-thumbnail-overlay-time-status-renderer,
+                ytd-thumbnail-overlay-bottom-panel-renderer
                 {
                     height: `+ await GetLoad("TimeH") + `px !important;
                 }
@@ -2144,6 +2161,19 @@ async function update() {
                     --yt-spec-additive-background: var(--theme-third) !important;
                     --yt-spec-static-overlay-background-brand: var(--theme-fort) !important;
                     --yt-spec-text-primary-inverse: var(--text-color) !important;
+                    --yt-spec-inverted-background: var(--top-bar-and-search-background) !important;
+                }
+
+                tp-yt-paper-button.ytd-expander span,
+                .yt-spec-button-shape-next--outline,
+                tp-yt-paper-button.ytd-text-inline-expander,
+                .yt-spec-button-shape-next--filled,
+                #reply-button-end button{
+                    color: var(--text-color) !important;
+                }
+
+                .ytd-comment-renderer:hover{
+                    text-decoration: none !important;
                 }
 
                 #search-icon-legacy{
@@ -2152,7 +2182,30 @@ async function update() {
                     transition: all 0.1s;
                 }
 
-                #search-icon-legacy:hover{
+                tp-yt-paper-button.ytd-expander,
+                tp-yt-paper-button.ytd-text-inline-expander,
+                .yt-spec-button-shape-next--outline,
+                #reply-button-end button,
+                .yt-spec-button-shape-next--filled{
+                    border: 1px solid transparent;
+                    transition: all 0.1s;
+                }
+
+                tp-yt-paper-button.ytd-expander,
+                tp-yt-paper-button.ytd-text-inline-expander{
+                    padding-inline: 10px !important;
+                }
+
+                #text-container.yt-notification-action-renderer{
+                    border: 1px solid var(--theme-third);
+                }
+
+                #search-icon-legacy:hover,
+                tp-yt-paper-button.ytd-expander:hover,
+                tp-yt-paper-button.ytd-text-inline-expander:hover,
+                .yt-spec-button-shape-next--outline:hover,
+                #reply-button-end button:hover,
+                .yt-spec-button-shape-next--filled:hover{
                     border-color: var(--theme) !important;
                 }
 
@@ -2160,7 +2213,12 @@ async function update() {
                 ytd-author-comment-badge-renderer,
                 .yt-spec-button-shape-next--mono.yt-spec-button-shape-next--filled,
                 .yt-spec-button-shape-next--overlay.yt-spec-button-shape-next--filled,
-                .masthead-skeleton-icon{
+                .masthead-skeleton-icon,
+                tp-yt-paper-button.ytd-expander,
+                tp-yt-paper-button.ytd-text-inline-expander,
+                .yt-spec-button-shape-next--outline,
+                #reply-button-end button,
+                .yt-spec-button-shape-next--filled{
                     background: var(--theme-third) !important;
                 }
 
@@ -2411,7 +2469,10 @@ async function update() {
                 ytd-notification-renderer,
                 #time.ytd-macro-markers-list-item-renderer,
                 ytd-macro-markers-list-item-renderer,
-                .ytp-menuitem
+                .ytp-menuitem,
+                tp-yt-paper-button.ytd-expander,
+                #text-container.yt-notification-action-renderer,
+                tp-yt-paper-button.ytd-text-inline-expander
                 {
                     border-radius: var(--theme-radius) !important;
                 }
@@ -2444,7 +2505,7 @@ async function update() {
                 }
 
                 .ytp-large-play-button.ytp-button *{
-                    overflow: visible;
+                    overflow: visible !important;
                 }
                 
                 .ytp-menuitem-icon path:not([fill="none"]),.ytd-thumbnail-overlay-hover-text-renderer path,.ytd-thumbnail-overlay-bottom-panel-renderer path,#search-icon.ytd-searchbox path,svg path[fill="#FF0000"]${await GetCodeC("IconFill")} , svg [fill="#FF0000"]${await GetCodeC("IconFill")}, svg [fill="red"], svg [fill="#F00"] , button:not(.yt-share-target-renderer) path:not([fill="none"]), [role="button"] path, [role="option"]:not(.yt-third-party-share-target-section-renderer) path,
@@ -2486,6 +2547,7 @@ async function update() {
                 }
                 
                 ytd-thumbnail-overlay-time-status-renderer,
+                ytd-thumbnail-overlay-bottom-panel-renderer,
                 ytd-thumbnail-overlay-side-panel-renderer,
                 ytd-thumbnail-overlay-toggle-button-renderer,
                 .iv-branding-active .branding-context-container-inner,
@@ -2504,7 +2566,8 @@ async function update() {
                     color: var(--text-color) !important;
                 }
 
-                #container.ytd-searchbox input.ytd-searchbox{
+                #container.ytd-searchbox input.ytd-searchbox,
+                .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text{
                     color: var(--theme) !important;
                 }
                 
@@ -2515,6 +2578,18 @@ async function update() {
                     background-color: transparent !important;
                     border-color: transparent !important;
                 }
+
+                .ytp-tooltip.ytp-preview {
+                    display: flex;
+                    align-items: center;
+                    flex-direction: column-reverse;
+                    width:245px !important;
+                }
+
+                .ytp-tooltip-bg{
+                    aspect-ratio: 16 / 9;
+                }
+                
                 
                 ytd-playlist-sidebar-renderer,
                 ytd-two-column-browse-results-renderer,
@@ -2990,12 +3065,6 @@ async function update() {
 
         NTstyle.textContent = thisStyle + ADDFont
     };
-
-    if (await GetLoad("EnableCachedT") == true) {
-        MainSave({ "CachedSave": AzCached })
-    } else {
-        MainSave({ "CachedSave": {} })
-    }
 }
 
 async function WaitAvatar() {
@@ -3028,6 +3097,7 @@ async function WaitAvatar() {
 
 async function FirstRun() {
     await SetNull()
+    console.log(inIframe())
     if (inIframe() != true) {
         if (document.documentElement.getAttribute("dark") == null) {
             document.addEventListener("DOMContentLoaded", async function () {
@@ -3038,7 +3108,7 @@ async function FirstRun() {
                 } catch (e) {
                     document.getElementsByTagName("ytd-topbar-menu-button-renderer")[0].click()
                 }
-                
+
                 await waitForElm("ytd-toggle-theme-compact-link-renderer")
                 document.getElementsByTagName("ytd-toggle-theme-compact-link-renderer")[0].click()
                 await waitForElmByID("submenu")
@@ -3054,6 +3124,13 @@ async function FirstRun() {
                 AddFontToWeb(GetFont[0], GetFont[1], await GetFontName(GetFont[1]))
             })
         }
+    } else {
+        update()
+        AddedFont = await UnCompressAddedFont()
+        Object.keys(AddedFont).forEach(async function (TheseFontName) {
+            GetFont = AddedFont[TheseFontName]
+            AddFontToWeb(GetFont[0], GetFont[1], await GetFontName(GetFont[1]))
+        })
     }
 }
 
@@ -5507,6 +5584,7 @@ async function SettoEnd() {
                             "IconURL": "https://i.ibb.co/WpFdcc2/128.png",
                             "BGIMG": "https://i.ibb.co/FYPBxC5/1647030608836.jpg"
                         })
+                        await SetNull()
                         update()
                         PRESET()
                         await MainSave({ ["SHOWPRESET"]: "STOP" })
@@ -6017,11 +6095,12 @@ function SetBGTran(Status) {
 }
 
 LastMode = null
+let VDOPAR
 
 function CheckVDO() {
     //console.log("CheckVDO")
     if (FindVideo().parentNode) {
-
+        VDOPAR = FindVideo().parentNode.parentNode
         VDOPARCLASS = FindVideo().parentNode.parentNode.className
 
         pg = document.getElementById("page-manager")
@@ -6043,6 +6122,7 @@ function CheckVDO() {
             VDOPARCLASS.search('ytp-small-mode') == -1
             && VDOPARCLASS.search("ytp-fullscreen") == -1
             && (VDOPARCLASS.search("unstarted-mode") == -1 || VDOPARCLASS.search("playing-mode") > 0)
+            && VDOPAR.id != "shorts-player"
 
         ) {
             if (Cloning == false) {
