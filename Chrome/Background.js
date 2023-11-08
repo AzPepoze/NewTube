@@ -25,3 +25,19 @@ chrome.commands.onCommand.addListener(async (command) => {
     console.log(command)
     chrome.tabs.sendMessage(tab.id, command);
 });
+
+chrome.runtime.onMessage.addListener(async (message) => {
+    console.log(message)
+    chrome.tabs.query({}, function (tabs) {
+        console.log(tabs)
+        tabs.forEach(async tab => {
+            try {
+                if (tab.active) {
+                    chrome.tabs.sendMessage(tab.id, message);
+                }
+            } catch (e) {
+                
+            }
+        });
+    });
+})

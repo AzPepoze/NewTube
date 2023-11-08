@@ -1383,7 +1383,7 @@ let NORMAL = `
 		-webkit-appearance: none;
 		   -moz-appearance: none;
 				appearance: none;
-		width: 4em;
+		min-width: 4em;
 		height: 1.5em;
 		background: rgb(33, 33, 33);
 		border-radius: 3em;
@@ -2186,7 +2186,8 @@ async function update() {
                 tp-yt-paper-button.ytd-text-inline-expander,
                 .yt-spec-button-shape-next--outline,
                 #reply-button-end button,
-                .yt-spec-button-shape-next--filled{
+                .yt-spec-button-shape-next--filled,
+                .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text{
                     border: 1px solid transparent;
                     transition: all 0.1s;
                 }
@@ -2205,7 +2206,8 @@ async function update() {
                 tp-yt-paper-button.ytd-text-inline-expander:hover,
                 .yt-spec-button-shape-next--outline:hover,
                 #reply-button-end button:hover,
-                .yt-spec-button-shape-next--filled:hover{
+                .yt-spec-button-shape-next--filled:hover,
+                .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text:hover{
                     border-color: var(--theme) !important;
                 }
 
@@ -2218,7 +2220,8 @@ async function update() {
                 tp-yt-paper-button.ytd-text-inline-expander,
                 .yt-spec-button-shape-next--outline,
                 #reply-button-end button,
-                .yt-spec-button-shape-next--filled{
+                .yt-spec-button-shape-next--filled,
+                .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text:hover{
                     background: var(--theme-third) !important;
                 }
 
@@ -4157,6 +4160,8 @@ LoadNTubeCode = async function (Preset) {
             if (TryToParse != null) {
                 value = TryToParse
             }
+
+            if (key != "PRESET" && key != "JS" && key != "OldVer")
             await MainSave({ [key]: value })
         })
     } else {
@@ -4330,9 +4335,15 @@ async function CreateAddedFont() {
 
 
 
+//Create Theme selector----------------------------------------------------------------------------
 
+function SelectTheme(){
+    window.open("https://giscus.app/en/widget?callbyNewtube&repo=AzPepoze%2FNewtube&backLink=https%3A%2F%2Fazpepoze.github.io%2FNewtube-Web%2F&number=6")
+}
 
-
+function SelectThemeFloat(){
+    window.open("https://giscus.app/en/widget?callbyNewtube&repo=AzPepoze%2FNewtube&backLink=https%3A%2F%2Fazpepoze.github.io%2FNewtube-Web%2F&number=6","Newtube Themes Store","directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=500")
+}
 
 //Create MENU----------------------------------------------------------------------------
 let SetBg, ThisCheckMainSetting
@@ -4425,6 +4436,7 @@ async function CreateMENU() {
     }
     SetBg.appendChild(Reset)
 
+
     //----------------------------------------------------------------------------------------------
 
     THISPar = "☕ Buy me a coffee!"
@@ -4465,22 +4477,7 @@ async function CreateMENU() {
 
     await createframe(`<label class="DES">Version : ` + Ver + `</label>`)
 
-    var Preset = document.createElement('button')
-    Preset.innerHTML = "✨ Select Preset ✨"
-    Preset.className = "Reset"
-    Preset.style = DeBu + `width: 100% !important;
-    margin-inline: 0px !important;
-    margin-block-start: 20px !important;
-    box-shadow: rgb(255 223 0) 0px 0px 3px;
-    background: rgb(63 57 14);`
-    Preset.onclick = async function () {
-        PRESET()
-    }
-    Frame.appendChild(Preset)
-
     await createCheck("EnableButton", "Enable");
-
-    await createCheck("EnableCached", `Enable Cached<br>(Make extension load faster<br>but use more ram around 2MB with no image data)`, true)
 
     await createCheck("Realtime", "Realtime Changing (lag when changing!)");
 
@@ -4525,6 +4522,73 @@ async function CreateMENU() {
     }
 
     SetBg.appendChild(FHotFix)
+
+    //----------------------------------------------------------------------------------------------
+
+    THISPar = "🛍️ Themes 🛍️"
+
+    Frame = await createMainframe()
+
+    var Preset = document.createElement('button')
+    Preset.innerHTML = "✨ Select Preset ✨"
+    Preset.className = "Reset"
+    Preset.style = DeBu + `width: 100% !important;
+    margin-inline: 0px !important;
+    margin-block-start: 20px !important;
+    box-shadow: rgb(255 223 0) 0px 0px 3px;
+    background: rgb(63 57 14);
+    font-size: large;`
+    Preset.onclick = async function () {
+        PRESET()
+    }
+    Frame.appendChild(Preset)
+
+    var Theme = document.createElement('button')
+    Theme.innerHTML = "🛍️ Themes store 🛍️"
+    Theme.className = "Reset"
+    Theme.style = DeBu + `width: 100% !important;
+    margin-inline: 0px !important;
+    margin-block-start: 20px !important;
+    box-shadow: rgb(163 229 255) 0px 0px 3px;
+    background: rgb(23 89 89);
+    font-size: large;`
+    Theme.onclick = async function () {
+        SelectTheme()
+    }
+    Frame.appendChild(Theme)
+
+    var ThemeFloat = document.createElement('button')
+    ThemeFloat.innerHTML = "🛍️ Themes store 🛍️<br>(floating window)"
+    ThemeFloat.className = "Reset"
+    ThemeFloat.style = DeBu + `width: 100% !important;
+    margin-inline: 0px !important;
+    margin-block-start: 20px !important;
+    box-shadow: rgb(163 229 255) 0px 0px 3px;
+    background: rgb(23 89 89);
+    font-size: large;`
+    ThemeFloat.onclick = async function () {
+        SelectThemeFloat()
+    }
+    Frame.appendChild(ThemeFloat)
+
+    var Share = document.createElement('button')
+    Share.innerHTML = "✳️ Share themes ✳️"
+    Share.className = "Reset"
+    Share.style = DeBu + `width: 100% !important;
+    margin-inline: 0px !important;
+    margin-block-start: 20px !important;
+    box-shadow: rgb(0 255 33) 0px 0px 3px;
+    background: rgb(14 63 14);
+    font-size: large;
+    }`
+    Share.onclick = async function () {
+        window.open(
+            'https://github.com/AzPepoze/Newtube/discussions/6',
+            '_blank'
+        )
+    }
+
+    Frame.appendChild(Share)
 
     //-------------------------------------------------------------------------------
 
@@ -5114,6 +5178,23 @@ async function CreateMENU() {
 
     //-------------------------------------------------------------------------------
 
+    THISPar = "📝 Custom CSS"
+
+    await createCheck("EnaCUSCSS", "Enable Custom CSS")
+
+    await createframe(`<textarea id="Custom_CSS" placeholder="Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
+
+    CusText = document.getElementById("Custom_CSS")
+
+    CusText.value = await GetLoad("CUSTOM")
+
+    CusText.addEventListener('change', async function () {
+        await MainSave({ ["CUSTOM"]: CusText.value })
+        update()
+    })
+
+    //-------------------------------------------------------------------------------
+
     THISPar = "📜 Import / Export Style"
 
     imexstyle = `width: 100%;
@@ -5199,23 +5280,6 @@ async function CreateMENU() {
 
     //-------------------------------------------------------------------------------
 
-    THISPar = "📝 Custom CSS"
-
-    await createCheck("EnaCUSCSS", "Enable Custom CSS")
-
-    await createframe(`<textarea id="Custom_CSS" placeholder="Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
-
-    CusText = document.getElementById("Custom_CSS")
-
-    CusText.value = await GetLoad("CUSTOM")
-
-    CusText.addEventListener('change', async function () {
-        await MainSave({ ["CUSTOM"]: CusText.value })
-        update()
-    })
-
-    //-------------------------------------------------------------------------------
-
     THISPar = "🌠 Beta features!"
 
     await createframe(`<label class="DES">Maybe need to reload website</label>`)
@@ -5285,7 +5349,7 @@ async function CreateMENU() {
                 //     ThisCheckMainSetting.style.display = ""
                 // }
 
-                inner = inner.replace(RegExpText, async function name(match) {
+                inner = inner.replace(RegExpText, function name(match) {
                     ThisCheckMainSetting.style.display = ""
                     return `<mark>${match}</mark>`
                 })
@@ -6869,6 +6933,11 @@ function download(data, filename, type) {
     }, 0)
 }
 
+async function ReloadSave(){
+    await LoadCached()
+    update()
+}
+
 chrome.runtime.onMessage.addListener(async function (recived) {
     console.log("revice " + recived)
     if (recived == 'Enable') {
@@ -6882,6 +6951,10 @@ chrome.runtime.onMessage.addListener(async function (recived) {
 
     if (recived == 'Setting') {
         clickSetting()
+    }
+
+    if (recived == 'ReloadSave') {
+        ReloadSave()
     }
 })
 
@@ -6904,6 +6977,8 @@ window.addEventListener('focus', async function () {
             document.exitPictureInPicture();
         }
     }
+
+    ReloadSave()
 })
 
 window.addEventListener('blur', function () {
