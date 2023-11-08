@@ -4162,7 +4162,7 @@ LoadNTubeCode = async function (Preset) {
             }
 
             if (key != "PRESET" && key != "JS" && key != "OldVer")
-            await MainSave({ [key]: value })
+                await MainSave({ [key]: value })
         })
     } else {
         for (let i = 0; i < array.length; i += 2) {
@@ -4337,12 +4337,13 @@ async function CreateAddedFont() {
 
 //Create Theme selector----------------------------------------------------------------------------
 
-function SelectTheme(){
+function SelectTheme() {
     window.open("https://giscus.app/en/widget?callbyNewtube&repo=AzPepoze%2FNewtube&backLink=https%3A%2F%2Fazpepoze.github.io%2FNewtube-Web%2F&number=6")
 }
 
-function SelectThemeFloat(){
-    window.open("https://giscus.app/en/widget?callbyNewtube&repo=AzPepoze%2FNewtube&backLink=https%3A%2F%2Fazpepoze.github.io%2FNewtube-Web%2F&number=6","Newtube Themes Store","directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=500")
+function SelectThemeFloat() {
+    chrome.runtime.sendMessage("OpenTheme")
+    //window.open("https://giscus.app/en/widget?callbyNewtube&repo=AzPepoze%2FNewtube&backLink=https%3A%2F%2Fazpepoze.github.io%2FNewtube-Web%2F&number=6","Newtube Themes Store","directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,height=600,width=500")
 }
 
 //Create MENU----------------------------------------------------------------------------
@@ -4572,7 +4573,7 @@ async function CreateMENU() {
     Frame.appendChild(ThemeFloat)
 
     var Share = document.createElement('button')
-    Share.innerHTML = "✳️ Share themes ✳️"
+    Share.innerHTML = "✳️ Share your themes ✳️"
     Share.className = "Reset"
     Share.style = DeBu + `width: 100% !important;
     margin-inline: 0px !important;
@@ -6933,7 +6934,7 @@ function download(data, filename, type) {
     }, 0)
 }
 
-async function ReloadSave(){
+async function ReloadSave() {
     await LoadCached()
     update()
 }
