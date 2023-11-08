@@ -1,6 +1,7 @@
 let GetURL = window.location.href
 
 if (GetURL.includes("callbyNewtube")) {
+
     console.log("Run Theme")
 
     document.documentElement.style.background = "transparent"
@@ -35,6 +36,16 @@ if (GetURL.includes("callbyNewtube")) {
     let MainElement
 
     function FindMainElement() {
+        document.title = "Newtube - Themes store"
+
+        let GetIcon = chrome.runtime.getURL('icon/128.png')
+        icon = document.getElementsByTagName('link')
+        Array.from(icon).forEach(e => {
+            if (e.getAttribute('rel') == "icon" || e.getAttribute('rel') == "shortcut icon") {
+                e.href = GetIcon
+            }
+        })
+
         MainElement = document.getElementById("__next")
         if (MainElement == null) {
             setTimeout(() => {
@@ -51,7 +62,9 @@ if (GetURL.includes("callbyNewtube")) {
                         GetTimeLine()
                     }, 100);
                 } else {
-                    
+
+                    document.title = "Newtube - Themes store"
+
                     Loading.style.opacity = 0
                     Loading.style.pointerEvents = "none"
                     setTimeout(() => {
@@ -63,6 +76,7 @@ if (GetURL.includes("callbyNewtube")) {
                     .Button{
                         border: solid 1px transparent;
                         transition: all 0.2s;
+                        cursor: context-menu;
                     }
 
                     .ntframe:hover{
@@ -70,7 +84,7 @@ if (GetURL.includes("callbyNewtube")) {
                     }
 
                     .Button:hover{
-                        border-color: white;
+                        border-color: white !important;
                     }
 
                     /* width */
@@ -133,6 +147,7 @@ if (GetURL.includes("callbyNewtube")) {
 
                         console.log(CommentContent)
 
+                        let GetUpVote = Comment.getElementsByClassName("gsc-social-reaction-summary-item-count")[0].textContent
                         let GetAuthor = Comment.getElementsByClassName("gsc-comment-author-avatar")[0].getElementsByTagName("span")[0].textContent
                         let GetAvatar = Comment.getElementsByClassName("gsc-comment-author-avatar")[0].getElementsByTagName("img")[0].src
                         let GetLink = Comment.getElementsByClassName("link-secondary")[0].href
@@ -248,6 +263,31 @@ if (GetURL.includes("callbyNewtube")) {
 
                         //----------------------------------------------------------------------
 
+                        let Vote = document.createElement("div")
+                        Vote.className = "Button"
+                        Vote.style = `
+                        text-wrap: nowrap;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        font-family: monospace;
+                        margin-top:10px;
+                        background: #1c1c1c;
+                        border: 1px solid;
+                        border-color: rgb(255 255 255 / 51%);
+                        width: fit-content;
+                        padding-inline: 10px;
+                        border-radius: 10px;
+                        font-size: large;
+                        `
+                        Vote.innerText = "⏫ " + GetUpVote
+                        Frame.append(Vote)
+
+                        Vote.onclick = async function () {
+                            window.open(GetLink)
+                        }
+
+                        //----------------------------------------------------------------------
+
                         let AuthorContainer = document.createElement("div")
                         AuthorContainer.style = `
                         display: flex;
@@ -322,6 +362,7 @@ if (GetURL.includes("callbyNewtube")) {
                         Frame.append(Install)
 
                         Install.onclick = async function () {
+                            Install.innerText = "Installing..."
                             let AzCached
                             await chrome.storage.local.get("CachedSave").then((Loaded) => {
                                 AzCached = Loaded["CachedSave"]
@@ -334,6 +375,11 @@ if (GetURL.includes("callbyNewtube")) {
                             await chrome.storage.local.set({ "CachedSave": AzCached })
 
                             chrome.runtime.sendMessage("ReloadSave")
+                            Install.innerText = "❇️ Installed! ❇️"
+
+                            setTimeout(() => {
+                                Install.innerText = "❇️ Install ❇️ (Replace Your theme)"
+                            }, 1000);
                         }
 
                         //----------------------------------------------------------------------
@@ -403,6 +449,7 @@ if (GetURL.includes("callbyNewtube")) {
                             ThemeAuthor.style.color = ThemeColor
                             Frame.style.background = BGColor
                             Frame.style.borderColor = ThemeColor
+                            Vote.style.borderColor = ThemeColor
                             ThemeName.style.color = ThemeColor
                         }
 
