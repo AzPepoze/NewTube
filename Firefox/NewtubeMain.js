@@ -572,7 +572,7 @@ async function SetValueCheck() {
 
         filter: drop-shadow(0px 0px 1px var(--sub-sha-color)) drop-shadow(0px 0px var(--sub-ShaBlur) var(--sub-sha-color)) drop-shadow(0px 0px 1px var(--sub-sha-color));
 
-        foweight: var(--sub-Width);
+        font-weight: var(--sub-Width);
 
         letter-spacing: var(--sub-Space);
         color: var(--sub-color) !important;
@@ -1939,6 +1939,12 @@ async function update() {
                     --SubSc-Tx : ${await GetSaveRgba('SPSubScribeColor')};
                 }
 
+                .ytp-menuitem {
+                    display: flex !important;
+                    align-items: center;
+                    flex-direction: row;
+                }
+
                 #search::placeholder {
                     color: var(--nd-text-color) !important;
                 }
@@ -2162,6 +2168,7 @@ async function update() {
                     --yt-spec-static-overlay-background-brand: var(--theme-fort) !important;
                     --yt-spec-text-primary-inverse: var(--text-color) !important;
                     --yt-spec-inverted-background: var(--top-bar-and-search-background) !important;
+                    --yt-spec-themed-blue: var(--theme) !important;
                 }
 
                 tp-yt-paper-button.ytd-expander span,
@@ -2475,7 +2482,9 @@ async function update() {
                 .ytp-menuitem,
                 tp-yt-paper-button.ytd-expander,
                 #text-container.yt-notification-action-renderer,
-                tp-yt-paper-button.ytd-text-inline-expander
+                tp-yt-paper-button.ytd-text-inline-expander,
+                ytd-menu-service-item-renderer tp-yt-paper-item,
+                .ytp-menuitem
                 {
                     border-radius: var(--theme-radius) !important;
                 }
@@ -2634,7 +2643,8 @@ async function update() {
                 .ytp-gradient-bottom,
                 .ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]) > svg > path,
                 ytd-playlist-panel-video-renderer,
-                ytd-menu-renderer
+                ytd-menu-renderer,
+                ytd-menu-service-item-renderer tp-yt-paper-item
                 {
                     transition: all .2s !important;
                 }
@@ -4205,13 +4215,9 @@ function setV() {
 
 function FindVideo() {
     try {
-        v.tagName
-        if (v.tagName != "VIDEO") {
-            // // console.log("FindVDOE")
-            setV()
-        }
+        v.parentNode.parentNode
     } catch (e) {
-        // // console.log("FindVDOE")
+        // console.log("FindVDOE")
         setV()
     }
     return v
@@ -6090,7 +6096,11 @@ function SetCanvas() {
 
             var tempCanvas
             if (KeeplastFrame == true && cwNotNaN) {
-                tempCanvas = context.getImageData(0, 0, cw, ch);
+                try {
+                    tempCanvas = context.getImageData(0, 0, cw, ch);
+                } catch (error) {
+
+                }
             }
 
             canvas.style.width = VdoWith
@@ -6098,7 +6108,7 @@ function SetCanvas() {
 
             ChangeCanvasQua()
 
-            if (KeeplastFrame == true && cwNotNaN) {
+            if (tempCanvas && KeeplastFrame == true && cwNotNaN) {
                 context.putImageData(tempCanvas, 0, 0)
                 tempCanvas = null
             }
@@ -6457,7 +6467,12 @@ function CheckPxLine(x) {
     var ThisB = FistGetRGB[2]
 
     Find = null
-    ThisActualPX = context2.getImageData(ThisFind, 0, 1, halfVDO)
+    try {
+        ThisActualPX = context2.getImageData(ThisFind, 0, 1, halfVDO)
+    } catch (error) {
+        CompleteCal = true
+        return
+    }
     ThisPX = ThisActualPX.data
 
     for (i = 5; i < halfVDO; i++) {
@@ -6507,7 +6522,12 @@ function CheckBottom(x) {
     var ThisB = FistGetRGB[2]
 
     Find = null
-    ThisActualPX = context2.getImageData(ThisFind, halfVDO, 1, halfVDO)
+    try {
+        ThisActualPX = context2.getImageData(ThisFind, halfVDO, 1, halfVDO)
+    } catch (error) {
+        CompleteCal = true
+        return
+    }
     ThisPX = ThisActualPX.data
 
     for (i = halfVDO - 5; i > 0; i--) {
@@ -6572,7 +6592,13 @@ function CheckBlackBar() {
 
     context2.drawImage(v, 0, 0, 5, VDOBOUND.height);
 
-    ThisActualPX = context2.getImageData(1, 3, 1, 1)
+    try {
+        ThisActualPX = context2.getImageData(1, 3, 1, 1)
+    } catch (error) {
+        CompleteCal = true
+        return
+    }
+
     ThisPX = ThisActualPX.data
 
     FistGetRGB = CheckAddMultiply(ThisPX[0], ThisPX[1], ThisPX[2])
@@ -6752,6 +6778,7 @@ function CreateCanvas() {
                 overflow: hidden;
                 z-index: -1;
                 image-rendering: pixelated;
+                transition: opacity 1s;
                 }`
         canvas.id = "NewtubeBlurBG"
         canvas.style.position = "static"
@@ -6819,7 +6846,12 @@ function RemoveCanvas(Force) {
         if (GetLoad("VDOBGT") == true && GetLoad("EnableButtonT") == true && !Force) {
             NotOverFlow.style.opacity = 0
         } else {
-            NotOverFlow.remove()
+            NotOverFlow.style.opacity = 0
+            let OldNotOverFlow = NotOverFlow
+            setTimeout(() => {
+                OldNotOverFlow.remove()
+            }, 1000);
+
             NotOverFlow = null
         }
         if (canvas2) {
