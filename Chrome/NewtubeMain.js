@@ -593,52 +593,52 @@ async function SetValueCheck() {
         flex-direction: row-reverse !important;
     }
 
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #secondary{
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #secondary{
         margin-left: 0px !important;
         direction: rtl;
     }
 
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #secondary-inner{
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #secondary-inner{
         direction: ltr;
     }
     `, `
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #primary{
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #primary{
         direction: rtl;
     }
 
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #primary-inner{
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #primary-inner{
         direction: ltr;
     }
     `)
 
     SetValueCheck2("SrollRow", `
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #secondary,
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #primary{
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #secondary,
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #primary{
         height: 92vh;
         overflow-y: scroll;
         overflow-x: visible;
         transform: translateZ(0px);
     }
 
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #secondary{
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #secondary{
         margin-left: -20px;
         padding-left: 20px;
         -webkit-mask-image: linear-gradient(to bottom, transparent, black 30px, black 95%, transparent);
     }
 
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #primary{
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #primary{
         overflow-x: hidden;
         padding-left: 10px;
         margin-left: 0px;
         -webkit-mask-image: linear-gradient(to bottom, transparent, black 20px, black 95%, transparent);
     }
 
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #primary-inner{
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #primary-inner{
         direction: ltr;
     }
 
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) ytd-app,
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #content.ytd-app{
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) ytd-app,
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #content.ytd-app{
         height: 100vh;
         overflow:hidden;
     }
