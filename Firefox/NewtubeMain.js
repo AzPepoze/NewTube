@@ -592,6 +592,56 @@ async function SetValueCheck() {
         display:flex !important;
         flex-direction: row-reverse !important;
     }
+
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #secondary{
+        margin-left: 0px !important;
+        direction: rtl;
+    }
+
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #secondary-inner{
+        direction: ltr;
+    }
+    `, `
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #primary{
+        direction: rtl;
+    }
+
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #primary-inner{
+        direction: ltr;
+    }
+    `)
+
+    SetValueCheck2("SrollRow", `
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #secondary,
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #primary{
+        height: 92vh;
+        overflow-y: scroll;
+        overflow-x: visible;
+        transform: translateZ(0px);
+    }
+
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #secondary{
+        margin-left: -20px;
+        padding-left: 20px;
+        -webkit-mask-image: linear-gradient(to bottom, transparent, black 30px, black 95%, transparent);
+    }
+
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #primary{
+        overflow-x: hidden;
+        padding-left: 10px;
+        margin-left: 0px;
+        -webkit-mask-image: linear-gradient(to bottom, transparent, black 20px, black 95%, transparent);
+    }
+
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #primary-inner{
+        direction: ltr;
+    }
+
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) ytd-app,
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)) #content.ytd-app{
+        height: 100vh;
+        overflow:hidden;
+    }
     `, ``)
 
     SetValueCheck2("ThumbAnim", `
@@ -863,12 +913,19 @@ async function SetValueSelect() {
         margin-inline-end: 15px !important;
     }
     
-    ytd-playlist-panel-video-renderer:hover > .yt-simple-endpoint.ytd-playlist-panel-video-renderer,
+    ytd-playlist-panel-video-renderer:hover > .yt-simple-endpoint.ytd-playlist-panel-video-renderer
+    {
+        margin-inline-start: 10px !important;
+        margin-inline-end: -10px !important;
+    }
+
     ytd-guide-entry-renderer:hover
     {
         margin-inline-start: -10px !important;
         margin-inline-end: 10px !important;
-    }`)
+    }
+    
+    `)
 
     SetValueSelect2("ThumbHover", "Zoom", `ytd-thumbnail:hover,
     ytd-playlist-thumbnail:hover
@@ -1063,7 +1120,7 @@ async function SetNull() {
 
     await SetTo("FlyoutT", true)
 
-    await SetTo("EnableCachedT", true)
+    await SetTo("SrollRowT", true)
 
     //Select------------------------
 
@@ -1182,6 +1239,11 @@ let NORMAL = `
 	{
 		margin-bottom:10px;
 	}
+
+    #NEWTUBESET * {
+        transform: translateZ(0px);
+    }
+    
 	#NEWTUBESET span {
         cursor: pointer;
         display: inline-block;
@@ -1570,6 +1632,7 @@ var ADDFlyout = false
 
 var player
 var VdoPlayer
+var VdoActualPlayer
 
 async function StartFlyout() {
     ADDFlyout = !ADDFlyout
@@ -1717,11 +1780,14 @@ async function ScrollEv() {
         if (player == null) {
             player = document.querySelector(`#player-container.ytd-watch-flexy`)
         } else {
-            if (VdoPlayer == null) {
-                VdoPlayer = player.getElementsByClassName("html5-video-player")[0]
+            FindVideo()
+            if (VdoPlayer == null || VdoActualPlayer == null) {
+                VdoPlayer = v.parentNode
+                VdoActualPlayer = v.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
             } else {
-                FindVideo()
-                if (toppo > WindowH && !v.parentNode.parentNode.className.includes("ytp-small-mode")) {
+                var VideoBound = VdoActualPlayer.getBoundingClientRect()
+                CalPo = VideoBound.height + VideoBound.top
+                if (CalPo < 0 && !v.parentNode.parentNode.className.includes("ytp-small-mode")) {
                     if (!ADDFlyout) {
                         StartFlyout()
                     }
@@ -1939,7 +2005,7 @@ async function update() {
                     --SubSc-Tx : ${await GetSaveRgba('SPSubScribeColor')};
                 }
 
-                .ytp-menuitem {
+                .ytp-contextmenu .ytp-menuitem {
                     display: flex !important;
                     align-items: center;
                     flex-direction: row;
@@ -1957,7 +2023,7 @@ async function update() {
                     color: ${await GetSaveRgba('LinkColor')} !important;
                 }
 
-                ytd-menu-renderer .ytd-menu-renderer[style-target=button] {
+                ytd-menu-renderer .ytd-menu-renderer[style-target=button] yt-icon{
                     transition: background 0.2s, transform 0.1s;
                     background: transparent;
                     border-radius: var(--theme-radius);
@@ -1976,7 +2042,7 @@ async function update() {
                     border-radius: var(--theme-radius-big) var(--theme-radius-big) 0px 0px;
                 }
                   
-                ytd-menu-renderer .ytd-menu-renderer[style-target=button]:hover {
+                ytd-menu-renderer .ytd-menu-renderer[style-target=button]:hover yt-icon{
                     background: var(--theme-fort);
                     transform: scale(1.3);
                 }
@@ -2018,12 +2084,12 @@ async function update() {
                 }
 
                 ytd-app::-webkit-scrollbar {
-                    width: 0px !important;
+                    width: 0px  !important;
                 }
                 
                 *::-webkit-scrollbar
                 {
-                width: `+ await GetLoad("ScWidth") + `px  !important;
+                    width: `+ await GetLoad("ScWidth") + `px  !important;
                 }
                 
                 *::-webkit-scrollbar-thumb
@@ -2169,6 +2235,7 @@ async function update() {
                     --yt-spec-text-primary-inverse: var(--text-color) !important;
                     --yt-spec-inverted-background: var(--top-bar-and-search-background) !important;
                     --yt-spec-themed-blue: var(--theme) !important;
+                    --yt-live-chat-vem-background-color: var(--top-bar-and-search-background) !important;
                 }
 
                 tp-yt-paper-button.ytd-expander span,
@@ -2260,8 +2327,7 @@ async function update() {
                     filter: contrast(` + await GetLoad("NVDOC") + `) brightness(` + await GetLoad("NVDOBGT") + `);
                 }
 
-                #NewtubeBlurBG,
-                #black-overlay
+                #NewtubeCanvasWraper
                 {
                     transform: scale(` + await GetLoad("NVDOT") + `);
                 }
@@ -2484,7 +2550,8 @@ async function update() {
                 #text-container.yt-notification-action-renderer,
                 tp-yt-paper-button.ytd-text-inline-expander,
                 ytd-menu-service-item-renderer tp-yt-paper-item,
-                .ytp-menuitem
+                .ytp-menuitem,
+                yt-live-chat-text-message-renderer
                 {
                     border-radius: var(--theme-radius) !important;
                 }
@@ -2553,7 +2620,8 @@ async function update() {
                 .ytp-swatch-background-color,
                 .ytp-settings-button.ytp-hd-quality-badge:after,
                 .ytp-chrome-controls .ytp-button[aria-pressed]:after,
-                .ytp-sb-subscribe, a.ytp-sb-subscribe
+                .ytp-sb-subscribe, a.ytp-sb-subscribe,
+                yt-icon-button.yt-live-chat-item-list-renderer
                 {
                     background-color: var(--theme) !important;
                 }
@@ -2644,7 +2712,8 @@ async function update() {
                 .ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]) > svg > path,
                 ytd-playlist-panel-video-renderer,
                 ytd-menu-renderer,
-                ytd-menu-service-item-renderer tp-yt-paper-item
+                ytd-menu-service-item-renderer tp-yt-paper-item,
+                yt-live-chat-text-message-renderer
                 {
                     transition: all .2s !important;
                 }
@@ -2969,6 +3038,15 @@ async function update() {
                     -webkit-transform: translateZ(0);
                 }
 
+                html > body{
+                    display: initial;
+                    overflow-x: hidden;
+                }
+
+                body > ytd-player{
+                    opacity:0;
+                }
+
 
                     
                 `+ BGBLURCODE + `
@@ -3016,6 +3094,8 @@ async function update() {
                 `+ await GetCodeC("VdoAnim") + `
 
                 `+ await GetCodeC("FullTheater") + `
+
+                `+ await GetCodeC("SrollRow") + `
                 
                 `+ ADDCSS + `
 
@@ -4731,6 +4811,8 @@ async function CreateMENU() {
 
     await createCheck("SwapRow", "Swap left-right row (In watching mode)")
 
+    await createCheck("SrollRow", "Srollable row (In normal watching mode only)<br>Flyout will not working", true)
+
     //theme-------------------------------------------------------------------------------
 
     THISPar = "🌈 Color/Theme"
@@ -6037,13 +6119,15 @@ var UPSEQ = 33,
     // ReBlackch,
 
     BlackOverlay,
+    CanvasWraper,
 
     Cloning,
     YTAPP,
     BGFRAME
 
 var CanvasQua,
-    VDOBOUND
+    VDOBOUND,
+    CanvasWraperbound
 
 function ChangeCanvasQua() {
     if (VDOBOUND) {
@@ -6061,9 +6145,9 @@ function SetCanvas() {
         VDOBOUND = FindVideo().getBoundingClientRect()
 
         VcenY = VDOBOUND.top + VDOBOUND.height / 2
-        canvasbound = canvas.getBoundingClientRect()
+        CanvasWraperbound = CanvasWraper.getBoundingClientRect()
 
-        var Distance = (VcenY) - (canvasbound.top + canvasbound.height / 2)
+        var Distance = (VcenY) - (CanvasWraperbound.top + CanvasWraperbound.height / 2)
 
         if (Distance < 0) {
             Distance = Distance * -1
@@ -6074,16 +6158,16 @@ function SetCanvas() {
         }
 
         if (Distance > 1) {
-            // console.log("SetCanvasPo")
+            console.log("SetCanvasPo")
 
-            canvas.style.setProperty('margin-top', VDOBOUND.top + window.pageYOffset + 'px')
-            canvas.style.setProperty('margin-left', VDOBOUND.left + window.pageXOffset + 'px')
+            CanvasWraper.style.setProperty('margin-top', VDOBOUND.top + window.pageYOffset + 'px')
+            CanvasWraper.style.setProperty('margin-left', VDOBOUND.left + window.pageXOffset + 'px')
         }
 
         VdoWith = VDOBOUND.width + "px"
 
         if (canvas.style.width != VdoWith) {
-            // console.log("SetCanvasSize")
+            console.log("SetCanvasSize")
 
             let KeeplastFrame = true
             if (canvas.style.width == "0px") {
@@ -6103,6 +6187,9 @@ function SetCanvas() {
                 }
             }
 
+            CanvasWraper.style.width = VdoWith
+            CanvasWraper.style.height = VdoHeight
+
             canvas.style.width = VdoWith
             canvas.style.height = VdoHeight
 
@@ -6117,6 +6204,15 @@ function SetCanvas() {
             //     ReBlack.style.width = VdoWith
             //     ReBlack.style.height = VdoHeight
             // }
+
+            var CalOverlay
+            if (VDOBOUND.height <= VDOBOUND.width) {
+                CalOverlay = VDOBOUND.height * 0.2
+            } else {
+                CalOverlay = VDOBOUND.width * 0.2
+            }
+
+            BlackOverlay.style.boxShadow = `inset black 0px 0px ${CalOverlay}px ${CalOverlay}px`
         }
 
         if (EnaCanvas2 == true) {
@@ -6125,21 +6221,6 @@ function SetCanvas() {
                 canvas2.height = VDOBOUND.height
             }
         }
-
-        var CalOverlay
-        if (VDOBOUND.height <= VDOBOUND.width) {
-            CalOverlay = VDOBOUND.height * 0.2
-        } else {
-            CalOverlay = VDOBOUND.width * 0.2
-        }
-
-        BlackOverlay.style = canvas.getAttribute("style") + `
-        box-shadow: inset black 0px 0px ${CalOverlay}px ${CalOverlay}px;
-        position:absolute;
-        padding:1px;`
-        BlackOverlay.style.zIndex = 1
-
-        canvas.style.zIndex = 0
     }
     // else {
     //     setTimeout(() => {
@@ -6769,25 +6850,36 @@ function CreateCanvas() {
     if (!NotOverFlow) {
         canvas = document.createElement('canvas');
         NotOverFlow = document.createElement('div')
+        CanvasWraper = document.createElement('div')
+        CanvasWraper.style = `position:relative;
+        background:black;`
+        CanvasWraper.id = `NewtubeCanvasWraper`
         YTAPP.append(NotOverFlow)
         NotOverFlow.style = `width: 100%;
                 height: 100%;
                 top: 0px;
                 position: absolute;
-                object-position: center;
                 overflow: hidden;
                 z-index: -1;
-                image-rendering: pixelated;
                 transition: opacity 1s;
                 }`
         canvas.id = "NewtubeBlurBG"
-        canvas.style.position = "static"
+        canvas.style = `
+        position:absolute;
+        z-index:0;`
         NotOverFlow.style.opacity = 0
 
         BlackOverlay = document.createElement('div')
         BlackOverlay.id = "black-overlay"
-        NotOverFlow.append(BlackOverlay)
-        NotOverFlow.append(canvas)
+        BlackOverlay.style = `
+        position:absolute;
+        padding: 1px;
+        width:100%;
+        height:100%;
+        z-index:1;`
+        NotOverFlow.append(CanvasWraper)
+        CanvasWraper.append(BlackOverlay)
+        CanvasWraper.append(canvas)
     }
     setTimeout(() => {
         NotOverFlow.style.opacity = 1
