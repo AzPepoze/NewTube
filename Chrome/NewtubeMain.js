@@ -216,7 +216,8 @@ var Set = document.createElement("button"),
     EPar,
     LoopCheck,
     ADDCSS,
-    BGSmooth
+    BGSmooth,
+    ADDScript = document.createElement('script')
 
 NTstyle = document.createElement("style");
 NTstyle.id = "NEWTUBESTYLE";
@@ -566,6 +567,16 @@ async function SetValueCheck() {
             opacity:1 !important;
     }`, ``)
 
+    SetValueCheck2("HideYourChannel", `
+    #section-items > ytd-guide-entry-renderer:nth-child(1){
+        display:none!important;
+    }`, ``)
+
+    SetValueCheck2("HideYourVID", `
+    #section-items > ytd-guide-entry-renderer:nth-child(3){
+        display:none!important;
+    }`, ``)
+
     SetValueCheck2("NewSub", `
     .ytp-caption-segment {
         background: transparent !important;
@@ -612,33 +623,33 @@ async function SetValueCheck() {
     `)
 
     SetValueCheck2("SrollRow", `
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #secondary,
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #primary{
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)):has(#engagement-panel-scrim[hidden]) #secondary,
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)):has(#engagement-panel-scrim[hidden]) #primary{
         height: 92vh;
         overflow-y: scroll;
         overflow-x: visible;
         transform: translateZ(0px);
     }
 
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #secondary{
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)):has(#engagement-panel-scrim[hidden]) #secondary{
         margin-left: -20px;
         padding-left: 20px;
         -webkit-mask-image: linear-gradient(to bottom, transparent, black 30px, black 95%, transparent);
     }
 
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #primary{
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)):has(#engagement-panel-scrim[hidden]) #primary{
         overflow-x: hidden;
         padding-left: 10px;
         margin-left: 0px;
         -webkit-mask-image: linear-gradient(to bottom, transparent, black 20px, black 95%, transparent);
     }
 
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #primary-inner{
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)):has(#engagement-panel-scrim[hidden]) #primary-inner{
         direction: ltr;
     }
 
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) ytd-app,
-    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)) #content.ytd-app{
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)):has(#engagement-panel-scrim[hidden]) ytd-app,
+    html:has(#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not(.unstarted-mode)):has(#engagement-panel-scrim[hidden]) #content.ytd-app{
         height: 100vh;
         overflow:hidden;
     }
@@ -891,12 +902,17 @@ async function SetValueSelect() {
 		margin-block-start: -15px !important;
 		margin-block-end: 15px !important;;
 	}
+
+    ytmusic-player-queue > .ytmusic-player-queue {
+        padding-left: 15px;
+    }
 	
 	ytd-compact-playlist-renderer:hover,
     ytd-compact-video-renderer:hover,
     ytd-compact-radio-renderer:hover,
     ytd-video-renderer:hover,
-    ytd-playlist-renderer:hover
+    ytd-playlist-renderer:hover,
+    ytmusic-player-queue-item:hover
     {    
         margin-inline-start: -15px !important;
     }
@@ -1032,6 +1048,8 @@ async function SetNull() {
     await SetTo("ADDFONT", {})
     await SetTo("EnaFonT", [])
 
+    await SetTo("ADDScript", ``)
+
     await SetTo("NVDOB", 40)
     await SetTo("NVDOC", 1)
     await SetTo("NVDOBGT", 0.4)
@@ -1121,6 +1139,11 @@ async function SetNull() {
     await SetTo("FlyoutT", true)
 
     await SetTo("SrollRowT", true)
+
+    await SetTo("HideYourChannelT", false)
+    await SetTo("HideYourVIDT", false)
+
+    await SetTo("JSAutoT", false)
 
     //Select------------------------
 
@@ -2222,7 +2245,7 @@ async function update() {
                     --yt-spec-wordmark-text: var(--text-color) !important;
                     --yt-spec-button-chip-background-hover: var(--search-background-hover) !important;
                     --yt-spec-text-primary-inverse: var(--top-bar-and-search-background) !important;
-                    --yt-spec-static-brand-white: `+ await GetSaveRgba('TIMETEXT') + ` !important;
+                    --yt-spec-static-brand-white: var(--text-color) !important;
                     --yt-spec-base-background: var(--top-bar-and-search-background) !important;
                     --yt-spec-raised-background: var(--top-bar-and-search-background) !important;
                     --yt-spec-menu-background: var(--top-bar-and-search-background) !important;
@@ -2238,11 +2261,27 @@ async function update() {
                     --yt-live-chat-vem-background-color: var(--top-bar-and-search-background) !important;
                 }
 
+                .ytp-preview .ytp-tooltip-text-no-title,
+                .ytd-thumbnail-overlay-bottom-panel-renderer,
+                .ytp-time-display *,
+                #time-status{
+                    color: `+ await GetSaveRgba('TIMETEXT') + ` !important;
+                }
+
+                #progress-bar.ytmusic-player-bar{
+
+                }
+
+                tp-yt-paper-slider{
+                    --paper-progress-active-color: var(--theme) !important;
+                }
+
                 tp-yt-paper-button.ytd-expander span,
                 .yt-spec-button-shape-next--outline,
                 tp-yt-paper-button.ytd-text-inline-expander,
                 .yt-spec-button-shape-next--filled,
-                #reply-button-end button{
+                #reply-button-end button,
+                .ytp-tooltip-text{
                     color: var(--text-color) !important;
                 }
 
@@ -2607,6 +2646,10 @@ async function update() {
                     border-color : var(--theme) !important;
                     color: var(--theme) !important;
                 }
+
+                .badge-style-type-live-now-alternate.ytd-badge-supported-renderer{
+                    color: var(--theme) !important;
+                }
                 
                 paper-ripple,
                 .ytp-swatch-color,
@@ -2773,11 +2816,19 @@ async function update() {
                     margin-block: 0px;
                 }
                 
-                .ytp-button:not(.ytp-chapter-title):not(.ytp-ad-skip-button):not(.ytp-fullerscreen-edu-button):hover,
+                .ytp-button:not(.ytp-chapter-title):not(.ytp-ad-skip-button):not(.ytp-fullerscreen-edu-button):not(.iv-branding *):hover,
                 .ytp-replay-button:hover,
                 .ytp-cards-button-icon:hover
                 {
                     transform: scale(1.5) !important;
+                }
+
+                .iv-branding{
+                    z-index: 60 !important;
+                }
+
+                .iv-branding .ytp-button:hover{
+                    transform: scale(1.1) !important;
                 }
                 
                 .ytp-progress-list
@@ -2807,7 +2858,9 @@ async function update() {
                 
                 ytd-compact-radio-renderer > #dismissible > ytd-thumbnail > a > yt-img-shadow > img,
                 ytd-playlist-thumbnail > a > #playlist-thumbnails > ytd-playlist-video-thumbnail-renderer > yt-img-shadow > img,
-                ytd-playlist-thumbnail > a > div > ytd-playlist-custom-thumbnail-renderer > yt-img-shadow > img
+                ytd-playlist-thumbnail > a > div > ytd-playlist-custom-thumbnail-renderer > yt-img-shadow > img,
+                .thumbnail-overlay.ytmusic-player-queue-item,
+                ytmusic-player-queue-item
                 {
                     transition: all .2s ;
                 }
@@ -3047,7 +3100,31 @@ async function update() {
                     opacity:0;
                 }
 
+                .left-items.ytmusic-player-queue-item{
+                    transform: scale(1.5);
+                }
 
+                ytmusic-player-queue-item img{
+                    object-fit: cover !important;
+                }
+
+                .ytp-autonav-toggle-button,
+                .ytp-autonav-toggle-button[aria-checked="true"]::after{
+                    background-image: none !important;
+                }
+
+                .ytp-autonav-toggle-button{
+                    background-color: var(--theme-fort) !important;
+                }
+
+                .ytp-autonav-toggle-button[aria-checked="true"]::after{
+                    background-color: var(--theme) !important;
+                    -webkit-mask-box-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxNyAxNyIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNyA4LjVhOC41IDguNSAwIDExLTE3IDAgOC41IDguNSAwIDAxMTcgMHptLTUgMEw2LjUgNXY3TDEyIDguNXptLTEuODYgMEw3LjUgNi44MnYzLjM2bDIuNjQtMS42OHpNOC41IDE2YTcuNSA3LjUgMCAxMDAtMTUgNy41IDcuNSAwIDAwMCAxNXoiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjE1IiAvPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTYgOC41YTcuNSA3LjUgMCAxMS0xNSAwIDcuNSA3LjUgMCAwMTE1IDB6bS00IDBMNi41IDEyVjVMMTIgOC41eiIgZmlsbD0iI2ZmZiIgLz48L3N2Zz4=')
+                }
+
+                .ytp-autonav-toggle-button[aria-checked="false"]::after{
+                    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxNyAxNyIgZmlsbD0ibm9uZSI+PGRlZnMgLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTguNSAxNmE3LjUgNy41IDAgMTAwLTE1IDcuNSA3LjUgMCAwMDAgMTV6IiBmaWxsPSIjNzE3MTcxIiAvPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTcgOC41YTguNSA4LjUgMCAxMS0xNyAwIDguNSA4LjUgMCAwMTE3IDB6bS0xIDBhNy41IDcuNSAwIDExLTE1IDAgNy41IDcuNSAwIDAxMTUgMHoiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjE1IiAvPjxwYXRoIGQ9Ik01LjUgMTJoMlY1aC0ydjd6TTkuNSA1djdoMlY1aC0yeiIgZmlsbD0iI2ZmZiIgLz48L3N2Zz4=')
+                }
                     
                 `+ BGBLURCODE + `
                 
@@ -3096,6 +3173,9 @@ async function update() {
                 `+ await GetCodeC("FullTheater") + `
 
                 `+ await GetCodeC("SrollRow") + `
+
+                `+ await GetCodeC("HideYourChannel") + `
+                `+ await GetCodeC("HideYourVID") + `
                 
                 `+ ADDCSS + `
 
@@ -3109,7 +3189,7 @@ async function update() {
             thisStyle = thisStyle + `html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary,
                     html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #below,
                     html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) div.ytp-gradient-bottom,
-                    html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) div.ytp-chrome-bottom
+                    html:not(:has(div.ytp-offline-slate)) div.html5-video-player.unstarted-mode:not(.ytp-small-mode) div.ytp-chrome-bottom
                     {
                         transition: all 0.5s !important;
                         opacity:0 !important;
@@ -3151,7 +3231,7 @@ async function update() {
 
         if (ADDFont != ``) {
             ADDFont = `
-            *{
+            *:not(.ace_line){
                 font-family: ${ADDFont} !important;
             }`
         }
@@ -3209,6 +3289,7 @@ async function FirstRun() {
                 document.getElementById("submenu").getElementsByTagName("ytd-compact-link-renderer")[2].click()
             })
         } else {
+
             update()
             SettoEnd()
             AddedFont = await UnCompressAddedFont()
@@ -3216,6 +3297,10 @@ async function FirstRun() {
                 GetFont = AddedFont[TheseFontName]
                 AddFontToWeb(GetFont[0], GetFont[1], await GetFontName(GetFont[1]))
             })
+
+            if (await GetLoad("JSAutoT") == true) {
+                chrome.runtime.sendMessage("RunScript")
+            }
         }
     } else {
         update()
@@ -4033,9 +4118,13 @@ async function createCheck(id, Des, NEW, Value, IfTrue, IfFlase) {
 
         if (IfTrue || IfFlase) {
             if (Tar.checked == true) {
-                IfTrue()
+                if (IfTrue){
+                    IfTrue()
+                }
             } else {
-                IfFlase()
+                if (IfFlase){
+                    IfFlase()
+                }
             }
         } else {
             var Tarid = Tar.id
@@ -4251,8 +4340,16 @@ LoadNTubeCode = async function (Preset) {
                 value = TryToParse
             }
 
-            if (key != "PRESET" && key != "JS" && key != "OldVer")
+            if (key != "PRESET" && key != "ADDScript" && key != "JSAuto" && key != "OldVer")
                 await MainSave({ [key]: value })
+            
+            if (key == "ADDScript" && value.replaceAll("\n","").replaceAll(" ","") != "") {
+                if(confirm(`⚠️*WARINING*⚠️\nThis Preset/Theme contain JS code.\nYou can be hacked if you continue.\n(Please make sure this code is from who you trust!)\n\nAre you want to load JS code?`)) {
+                    await MainSave({ [key]: value })
+                } else {
+                    await MainSave({ [key]: "" })
+                }
+            }
         })
     } else {
         for (let i = 0; i < array.length; i += 2) {
@@ -4279,7 +4376,7 @@ async function GenNTubeCode() {
 
     let ThisSave = await MainLoad(null)
     Object.keys(ThisSave).forEach(function (z) {
-        if (z != "PRESET" && z != 'SHOWPRESET' && z != 'EnableButtonT' && z != 'RealtimeT' && z != 'ErrorCollectT' && z != "CachedSave") {
+        if (z != "PRESET" && z != 'SHOWPRESET' && z != 'EnableButtonT' && z != 'RealtimeT' && z != 'ErrorCollectT' && z != "CachedSave" && z != "JSAutoT") {
             arrdata[z] = ThisSave[z]
         }
     })
@@ -4291,6 +4388,7 @@ let v
 
 function setV() {
     v = document.getElementsByClassName('video-stream html5-main-video')[0]
+    console.log(v)
 }
 
 function FindVideo() {
@@ -4435,6 +4533,8 @@ function SelectThemeFloat() {
 //Create MENU----------------------------------------------------------------------------
 let SetBg, ThisCheckMainSetting
 async function CreateMENU() {
+    console.log("Create MENU")
+
     LeftCount = 0
 
     let DeBu = `width: -webkit-fill-available;
@@ -4679,6 +4779,91 @@ async function CreateMENU() {
 
     //-------------------------------------------------------------------------------
 
+    THISPar = "📜 Import / Export Style"
+
+    imexstyle = `width: 100%;
+    padding: 10px;
+    margin-block: 5px;
+    right: 0px;
+    top: 560px;
+    background: rgb(56 56 56);
+    color: white;
+    border-radius: 10px;
+    transition: all 0.5s ease 0s;
+    border: transparent;`
+
+    LocatePar = await createMainframe()
+
+
+    await createframe(`<textarea id="Export" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste NTubeCode here."></textarea>`)
+
+    var ExportTEXT = document.getElementById("Export")
+
+
+    var Import = document.createElement('button')
+    Import.innerHTML = "Import NTubeCode (Text)"
+    Import.className = "Reset"
+    Import.style = imexstyle
+
+    LocatePar.appendChild(Import)
+
+    var Export = document.createElement('button')
+    Export.innerHTML = "Export NTubeCode (Text)"
+    Export.className = "Reset"
+    Export.style = imexstyle
+
+    LocatePar.appendChild(Export)
+
+    var Export2 = document.createElement('button')
+    Export2.innerHTML = "Export Style as CSS (Text)"
+    Export2.className = "Reset"
+    Export2.style = imexstyle
+
+    LocatePar.appendChild(Export2)
+
+    var Export3 = document.createElement('button')
+    Export3.innerHTML = "Export to NPreset (File)"
+    Export3.className = "Reset"
+    Export3.style = imexstyle
+
+    LocatePar.appendChild(Export3)
+
+
+    Import.onclick = async function () {
+        let save = ExportTEXT.value
+        ExportTEXT.value = "Please wait...(If it's take too long it might eror!)"
+        save = JSON.parse(save)
+        LoadNTubeCode(save)
+        RESETTUBE()
+        ExportTEXT.value = "Successful. (Reload website for display Fonts)"
+    }
+
+    Export.onclick = async function () {
+        ExportTEXT.value = "Please wait..."
+        let arr = await GenNTubeCode()
+        gentext = JSON.stringify(arr).replace(/,"/g, ',\n"')
+        gentext = gentext.substring(0, 1) + '\n' + gentext.substring(1)
+        gentextL = gentext.length
+        gentext = gentext.substring(0, gentextL - 1) + '\n' + gentext.substring(gentextL - 1)
+        ExportTEXT.value = gentext
+    }
+
+    Export2.onclick = async function () {
+        ExportTEXT.value = "Please wait..."
+        ExportTEXT.value = Collect_Style
+    }
+
+    Export3.onclick = async function () {
+        ExportTEXT.value = "Exporting..."
+        download(JSON.stringify(await GenNTubeCode()), 'Export.NPreset')
+        ExportTEXT.value = "Successful."
+        setTimeout(() => {
+            ExportTEXT.value = ""
+        }, 1000);
+    }
+
+    //-------------------------------------------------------------------------------
+
     THISPar = "📺 Video"
 
     await createTextBox("PlayerEdge", "Round edges amount")
@@ -4776,8 +4961,6 @@ async function CreateMENU() {
 
     await createTextBox("TimeEdge", "(UI in Thumbnail) Round edges amount")
 
-    await createColor("TIMETEXT", "Time text color")
-
     await createColor("TimeBG", "Video preview time background color")
 
     await createCheck("TimeOut", "Enable time Borders/Shadows")
@@ -4811,7 +4994,7 @@ async function CreateMENU() {
 
     await createCheck("SwapRow", "Swap left-right row (In watching mode)")
 
-    await createCheck("SrollRow", "Srollable row (In normal watching mode only)<br>Flyout will not working", true)
+    await createCheck("SrollRow", "Srollable row (In normal watching mode only)<br>Flyout will not working")
 
     //theme-------------------------------------------------------------------------------
 
@@ -4830,6 +5013,8 @@ async function CreateMENU() {
     await createColor("NdText", "Second text color")
 
     await createColor("LinkColor", "(Link) Text color")
+
+    await createColor("TIMETEXT", "Time text color", true)
 
     //theme-------------------------------------------------------------------------------
 
@@ -5204,6 +5389,10 @@ async function CreateMENU() {
 
     await createCheck("VBG", "(Video) remove background solid color (Theater mode)")
 
+    await createCheck("HideYourChannel", '(Home page) Hide "Your channel"', true)
+
+    await createCheck("HideYourVID", '(Home page) Hide "Your videos"', true)
+
     RenderPreImg(await GetLoad("BGIMG"))
 
 
@@ -5254,7 +5443,7 @@ async function CreateMENU() {
 
     await createCheck("EnaADDCSS", "Enable Additional CSS")
 
-    await createframe(`<textarea id="Additional_CSS" placeholder="Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
+    await createframe(`<textarea id="Additional_CSS" placeholder="Write/Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
 
     ADDTEXT = document.getElementById("Additional_CSS")
 
@@ -5271,7 +5460,7 @@ async function CreateMENU() {
 
     await createCheck("EnaCUSCSS", "Enable Custom CSS")
 
-    await createframe(`<textarea id="Custom_CSS" placeholder="Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
+    await createframe(`<textarea id="Custom_CSS" placeholder="Write/Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
 
     CusText = document.getElementById("Custom_CSS")
 
@@ -5284,88 +5473,33 @@ async function CreateMENU() {
 
     //-------------------------------------------------------------------------------
 
-    THISPar = "📜 Import / Export Style"
+    THISPar = "🌟 Additional JS"
 
-    imexstyle = `width: 100%;
-    padding: 10px;
-    margin-block: 5px;
-    right: 0px;
-    top: 560px;
-    background: rgb(56 56 56);
-    color: white;
-    border-radius: 10px;
-    transition: all 0.5s ease 0s;
-    border: transparent;`
+    await createCheck("JSAuto", "Enable Auto run JavaScript", true, null, async function(){
+        alert(`⚠️*WARNING*⚠️\nYou are enabling Auto run JS\n\nPlease keep in mind that if somethings wrong by that code.\nYou can reset it by reinstall the extension only!\n(I'll make unload JS shortcut later)`)
+        await MainSave({ "JSAutoT" : true })
+    }, async function(){
+        await MainSave({ ["JSAutoT"]: false })
+    })
 
-    LocatePar = await createMainframe()
+    await createframe(`<textarea id="Additional_JS" placeholder="Write/Paste JS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
 
+    ADDJS = document.getElementById("Additional_JS")
 
-    await createframe(`<textarea id="Export" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste NTubeCode here."></textarea>`)
+    ADDJS.value = await GetLoad("ADDScript")
 
-    var ExportTEXT = document.getElementById("Export")
+    ADDJS.addEventListener('change', async function () {
+        await MainSave({ ["ADDScript"]: ADDJS.value })
+    })
 
-
-    var Import = document.createElement('button')
-    Import.innerHTML = "Import NTubeCode (Text)"
-    Import.className = "Reset"
-    Import.style = imexstyle
-
-    LocatePar.appendChild(Import)
-
-    var Export = document.createElement('button')
-    Export.innerHTML = "Export NTubeCode (Text)"
-    Export.className = "Reset"
-    Export.style = imexstyle
-
-    LocatePar.appendChild(Export)
-
-    var Export2 = document.createElement('button')
-    Export2.innerHTML = "Export Style as CSS (Text)"
-    Export2.className = "Reset"
-    Export2.style = imexstyle
-
-    LocatePar.appendChild(Export2)
-
-    var Export3 = document.createElement('button')
-    Export3.innerHTML = "Export to NPreset (File)"
-    Export3.className = "Reset"
-    Export3.style = imexstyle
-
-    LocatePar.appendChild(Export3)
-
-
-    Import.onclick = async function () {
-        let save = ExportTEXT.value
-        ExportTEXT.value = "Please wait...(If it's take too long it might eror!)"
-        save = JSON.parse(save)
-        LoadNTubeCode(save)
-        RESETTUBE()
-        ExportTEXT.value = "Successful. (Reload website for display Fonts)"
+    var RunScript = document.createElement('button')
+    RunScript.innerHTML = "Run Script"
+    RunScript.className = "Reset"
+    RunScript.style = DeBu
+    RunScript.onclick = async function () {
+        chrome.runtime.sendMessage("RunScript")
     }
-
-    Export.onclick = async function () {
-        ExportTEXT.value = "Please wait..."
-        let arr = await GenNTubeCode()
-        gentext = JSON.stringify(arr).replace(/,"/g, ',\n"')
-        gentext = gentext.substring(0, 1) + '\n' + gentext.substring(1)
-        gentextL = gentext.length
-        gentext = gentext.substring(0, gentextL - 1) + '\n' + gentext.substring(gentextL - 1)
-        ExportTEXT.value = gentext
-    }
-
-    Export2.onclick = async function () {
-        ExportTEXT.value = "Please wait..."
-        ExportTEXT.value = Collect_Style
-    }
-
-    Export3.onclick = async function () {
-        ExportTEXT.value = "Exporting..."
-        download(JSON.stringify(await GenNTubeCode()), 'Export.NPreset')
-        ExportTEXT.value = "Successful."
-        setTimeout(() => {
-            ExportTEXT.value = ""
-        }, 1000);
-    }
+    SetBg.appendChild(RunScript)
 
     //-------------------------------------------------------------------------------
 
@@ -5718,14 +5852,17 @@ async function ShowUpdated() {
 
 SeeRemove = 1
 
+let topbarend
+
 async function SettoEnd() {
     setTimeout(async () => {
-        if (document.getElementById("end") == null) {
+        topbarend = document.getElementById("end") || document.getElementById("right-content") || null
+        if (topbarend == null) {
             SettoEnd()
         }
         else {
             if (document.getElementById("NEWTUBESET") == null) {
-                document.getElementById("end").appendChild(Set);
+                topbarend.appendChild(Set)
 
                 // window.addEventListener('yt-page-data-updated', FindBelow)
                 // FindBelow()
@@ -5769,7 +5906,7 @@ async function SettoEnd() {
                     if (document.getElementById('BGFRAME') == null) {
                         BGFRAME = document.createElement('div')
                         BGFRAME.id = "BGFRAME"
-                        YTAPP = document.getElementsByTagName('ytd-app')[0]
+                        YTAPP = document.getElementsByTagName('ytd-app')[0] || document.getElementsByTagName('ytmusic-app')[0]
                         YTAPP.appendChild(BGFRAME)
                     }
 
@@ -6049,7 +6186,7 @@ async function SettoEnd() {
                     });
                 });
 
-                ENDobserver.observe(document.getElementById("end"), { subtree: false, childList: true });
+                ENDobserver.observe(topbarend, { subtree: false, childList: true });
             }
 
             ForceShowError = false
@@ -6237,15 +6374,17 @@ function StartDraw() {
     // WaitForFrame()
 }
 
+let YTAPPBG
+
 function SetBGTran(Status) {
-    if (YTAPP == null) {
-        YTAPP = document.getElementsByTagName('ytd-app')[0]
+    if (YTAPPBG == null) {
+        YTAPPBG = document.getElementsByTagName('ytd-app')[0] || document.getElementById("player-page")
     }
     if (Status == true) {
-        YTAPP.style = `background: transparent !important;
+        YTAPPBG.style = `background: transparent !important;
         width: 100%;`
     } else {
-        YTAPP.style = `background:var(--bg-color) !important;
+        YTAPPBG.style = `background:var(--bg-color) !important;
         width: 100%;`
     }
 }
@@ -6262,7 +6401,9 @@ function CheckVDO() {
         pg = document.getElementById("page-manager")
 
         if (VDOPARCLASS.search("ytp-fullscreen") == -1) {
-            pg.style = ``
+            if (pg) {
+                pg.style = ``
+            }
         } else {
             pg.style = `margin-top:0px;`
             v.style.marginTop = "unset"
@@ -6308,7 +6449,7 @@ function CheckVDOSTATUS() {
     if (!inIframe()) {
         setTimeout(() => {
             //console.log("CheckStatus")
-            YTAPP = document.getElementsByTagName('ytd-app')[0]
+            YTAPP = document.getElementsByTagName('ytd-app')[0] || document.getElementById("player-page")
             BGFRAME = document.getElementById("BGFRAME")
             if (FindVideo() == null || YTAPP == null || BGFRAME == null) {
                 setTimeout(() => {
@@ -6841,6 +6982,7 @@ function LeavePip() {
 
 
 function CreateCanvas() {
+    YTAPP = document.getElementsByTagName('ytd-app')[0] || document.getElementsByTagName('ytmusic-app')[0]
     CanvasSpawned = true
     drawing = 0
     //console.log("CreateCanvas")
@@ -7060,6 +7202,7 @@ function download(data, filename, type) {
 
 async function ReloadSave() {
     await LoadCached()
+    RESETTUBE()
     update()
 }
 

@@ -26,23 +26,45 @@ chrome.commands.onCommand.addListener(async (command) => {
     chrome.tabs.sendMessage(tab.id, command);
 });
 
+async function getNowtab() {
+    let queryOptions = { active: true };
+    let tabsArray = await chrome.tabs.query(queryOptions)
+
+    return tabsArray
+}
+
+async function Test() {
+    let AzCached
+    await chrome.storage.local.get("CachedSave").then((Loaded) => {
+        AzCached = Loaded["CachedSave"]
+    })
+
+    const code = AzCached["ADDScript"];
+    setTimeout(code, 1);
+}
+
 chrome.runtime.onMessage.addListener(async (message) => {
     console.log(message)
     if (message == "OpenTheme") {
         OpenThemeStore()
         return
     }
-    chrome.tabs.query({}, function (tabs) {
-        console.log(tabs)
-        tabs.forEach(async tab => {
-            try {
-                if (tab.active) {
-                    chrome.tabs.sendMessage(tab.id, message);
-                }
-            } catch (e) {
+    if (message == "RunScript") {
 
-            }
+        console.log(await getNowtab())
+
+        Array.from(await getNowtab()).forEach(async tab => {
+            chrome.scripting
+                .executeScript({
+                    target: { tabId: tab.id },
+                    func: Test,
+                })
         });
+        return
+    }
+
+    Array.from(await getNowtab()).forEach(tab => {
+        chrome.tabs.sendMessage(tab.id, message);
     });
 })
 

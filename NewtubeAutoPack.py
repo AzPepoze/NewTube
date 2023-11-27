@@ -53,4 +53,4 @@ def replace_line(filename, line_number, text):
 
 replace_line(FireFox_dir+'/manifest.json', 4, GetVersion)
     
-archived = shutil.make_archive('NT_FireFox', 'zip', FireFox_dir)
+# archived = shutil.make_archive('NT_FireFox', 'zip', FireFox_dir)

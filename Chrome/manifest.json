@@ -1,7 +1,7 @@
 {"manifest_version": 3,
     "name": "NewTube (YouTube Customizer & Enhancement)",
     "author": "AzPepoze",
-    "version": "4.5.0",
+    "version": "4.7.0",
     "description": "Customize your YouTube website with a lot customizable.",
     "homepage_url": "https://github.com/AzPepoze/Newtube",
     "default_locale": "en",
@@ -17,13 +17,13 @@
             "resources": [ "icon/*",
                             "asset/*"
                          ],
-            "matches": [ "*://www.youtube.com/*", "*://giscus.app/*" ]
+            "matches": [ "*://www.youtube.com/*", "*://giscus.app/*", "*://music.youtube.com/*" ]
         }
     ],
     "content_scripts": [
       {
 		"all_frames": true,
-        "matches": ["*://www.youtube.com/*"],
+        "matches": ["*://www.youtube.com/*", "*://music.youtube.com/*" ],
         "js": ["NewtubeMain.js"],
 		"run_at": "document_start"
       },
@@ -48,7 +48,12 @@
     },
     "permissions": [
         "storage",
-        "unlimitedStorage"
+        "unlimitedStorage",
+        "scripting"
+    ],
+    "host_permissions": [
+        "*://www.youtube.com/*",
+        "*://music.youtube.com/*" 
     ],
     "browser_specific_settings": {
         "gecko": {
