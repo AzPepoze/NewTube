@@ -1073,6 +1073,8 @@ async function SetNull() {
 
     await SetTo("BelowSpace", 0)
 
+    await SetTo("LazyAmount", 50)
+
     //Check------------------------
 
     await SetTo("EnaCUSCSST", false)
@@ -1150,6 +1152,8 @@ async function SetNull() {
     await SetTo("BlurWhatT", "none")
     await SetTo("ThumbHoverT", "Slide")
     await SetTo("OutOrShaT", "Sha")
+
+    await SetTo("RenderEngineT", "GPU")
 
     //Color------------------------
 
@@ -1847,9 +1851,16 @@ async function RemoveScrollEv() {
 
 let BGBlur = 0
 let CanvasNewQua = 1
+let RenderEngine = null
+
 async function update() {
 
     // console.log("UPDATE");
+
+    BlackBarWaitPx = await GetLoad("LazyAmount")
+
+    CanDropFrame = await GetLoad("DropFrameT")
+
     BGSmooth = 1 / await GetLoad("VDOSmooth")
     if (BGSmooth > 1) {
         BGSmooth = 1
@@ -1878,6 +1889,10 @@ async function update() {
                 background-size: ${await GetLoad("YTSize")}%;
                 background-repeat: no-repeat;
                 background-position: center;
+            }
+            
+            ytd-yoodle-renderer {
+                opacity: 0 !important;
             }`
         }
     }
@@ -1967,9 +1982,31 @@ async function update() {
         }
 
         if (await GetLoad("VDOBGT") == true) {
+            var GetRenderEngine = await GetLoad("RenderEngineT")
             if (VDOBG == false) {
                 VDOBG = true
+                if (RenderEngine == null) {
+                    RenderEngine = GetRenderEngine
+                    if (GetRenderEngine == "CPU") {
+                        GPURender = false
+                    } else {
+                        GPURender = true
+                    }
+                }
                 EnableBGBlur()
+            } else {
+                if (RenderEngine != GetRenderEngine) {
+                    RenderEngine = GetRenderEngine
+                    DisableBGBlur(true)
+                    if (GetRenderEngine == "CPU") {
+                        GPURender = false
+                    } else {
+                        GPURender = true
+                    }
+                    setTimeout(() => {
+                        EnableBGBlur()
+                    }, 100);
+                }
             }
         }
 
@@ -2113,6 +2150,7 @@ async function update() {
                 *::-webkit-scrollbar
                 {
                     width: `+ await GetLoad("ScWidth") + `px  !important;
+                    height: `+ await GetLoad("ScWidth") + `px  !important;
                 }
                 
                 *::-webkit-scrollbar-thumb
@@ -2259,6 +2297,7 @@ async function update() {
                     --yt-spec-inverted-background: var(--top-bar-and-search-background) !important;
                     --yt-spec-themed-blue: var(--theme) !important;
                     --yt-live-chat-vem-background-color: var(--top-bar-and-search-background) !important;
+                    --ytmusic-background: transparent !important;
                 }
 
                 .ytp-preview .ytp-tooltip-text-no-title,
@@ -2301,7 +2340,7 @@ async function update() {
                 #reply-button-end button,
                 .yt-spec-button-shape-next--filled,
                 .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text{
-                    border: 1px solid transparent;
+                    border: 1px solid transparent !important;
                     transition: all 0.1s;
                 }
 
@@ -2342,7 +2381,9 @@ async function update() {
                     background-color: var(--playlist-bg) !important;
                 }
 
-                ytd-app{
+                ytd-app,
+                .background-gradient,
+                ytmusic-app-layout:has(ytmusic-nav-bar[is-search-page]){
                     background: var(--bg-color) !important;
                     --app-drawer-contecontainer-background-color: var(--bg-color) !important;
                 }
@@ -2375,7 +2416,8 @@ async function update() {
                     transition: margin-top 0.1s , margin-left 0.1s;
                 }
 
-                html:has(div.html5-video-player.ytp-fullscreen) #NewtubeBlurBG {
+                html:has(div.html5-video-player.ytp-fullscreen) #NewtubeBlurBG,
+                ytmusic-app #background {
                     display: none;
                 }
                 
@@ -2590,7 +2632,9 @@ async function update() {
                 tp-yt-paper-button.ytd-text-inline-expander,
                 ytd-menu-service-item-renderer tp-yt-paper-item,
                 .ytp-menuitem,
-                yt-live-chat-text-message-renderer
+                yt-live-chat-text-message-renderer,
+                yt-img-shadow img,
+                ytmusic-player-queue-item
                 {
                     border-radius: var(--theme-radius) !important;
                 }
@@ -2859,8 +2903,7 @@ async function update() {
                 ytd-compact-radio-renderer > #dismissible > ytd-thumbnail > a > yt-img-shadow > img,
                 ytd-playlist-thumbnail > a > #playlist-thumbnails > ytd-playlist-video-thumbnail-renderer > yt-img-shadow > img,
                 ytd-playlist-thumbnail > a > div > ytd-playlist-custom-thumbnail-renderer > yt-img-shadow > img,
-                .thumbnail-overlay.ytmusic-player-queue-item,
-                ytmusic-player-queue-item
+                .thumbnail-overlay.ytmusic-player-queue-item
                 {
                     transition: all .2s ;
                 }
@@ -2926,8 +2969,10 @@ async function update() {
                     filter: invert(0.5);
                 }
 
-                #guide-content{
+                #guide-content,
+                #mini-guide-background{
                     background: `+ await GetSaveRgba("LeftBar") + ` !important;
+                    border-color: transparent !important;
                 }
 
                 ytd-action-companion-ad-renderer,
@@ -2945,7 +2990,8 @@ async function update() {
                 }
 
                 
-                #NewtubeVDOCanvas{
+                #NewtubeVDOCanvas,
+                .song-media-controls{
                     border-radius: var(--theme-radius-big) !important;
                 }
 
@@ -3026,8 +3072,13 @@ async function update() {
                     overflow-x: hidden;
                 }
 
-                #progress.ytd-thumbnail-overlay-resume-playback-renderer {
+                #progress.ytd-thumbnail-overlay-resume-playback-renderer{
                     background: linear-gradient(-70deg, var(--theme), var(--theme-third) ) !important;
+                }
+
+                ytmusic-player-queue-item[play-button-state=playing],
+                ytmusic-player-queue-item[play-button-state=paused]{
+                    background: linear-gradient(70deg, var(--theme-third) , transparent ) !important;
                 }
 
                 #thumbnail > #hover-overlays {
@@ -3124,6 +3175,11 @@ async function update() {
 
                 .ytp-autonav-toggle-button[aria-checked="false"]::after{
                     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxNyAxNyIgZmlsbD0ibm9uZSI+PGRlZnMgLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTguNSAxNmE3LjUgNy41IDAgMTAwLTE1IDcuNSA3LjUgMCAwMDAgMTV6IiBmaWxsPSIjNzE3MTcxIiAvPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTcgOC41YTguNSA4LjUgMCAxMS0xNyAwIDguNSA4LjUgMCAwMTE3IDB6bS0xIDBhNy41IDcuNSAwIDExLTE1IDAgNy41IDcuNSAwIDAxMTUgMHoiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjE1IiAvPjxwYXRoIGQ9Ik01LjUgMTJoMlY1aC0ydjd6TTkuNSA1djdoMlY1aC0yeiIgZmlsbD0iI2ZmZiIgLz48L3N2Zz4=')
+                }
+
+                ytmusic-player-queue-item{
+                    padding-inline: 20px !important;
+                    transition: margin .2s ;
                 }
                     
                 `+ BGBLURCODE + `
@@ -3289,7 +3345,6 @@ async function FirstRun() {
                 document.getElementById("submenu").getElementsByTagName("ytd-compact-link-renderer")[2].click()
             })
         } else {
-
             update()
             SettoEnd()
             AddedFont = await UnCompressAddedFont()
@@ -3301,6 +3356,8 @@ async function FirstRun() {
             if (await GetLoad("JSAutoT") == true) {
                 chrome.runtime.sendMessage("RunScript")
             }
+
+            CheckStaticVDO()
         }
     } else {
         update()
@@ -4118,11 +4175,11 @@ async function createCheck(id, Des, NEW, Value, IfTrue, IfFlase) {
 
         if (IfTrue || IfFlase) {
             if (Tar.checked == true) {
-                if (IfTrue){
+                if (IfTrue) {
                     IfTrue()
                 }
             } else {
-                if (IfFlase){
+                if (IfFlase) {
                     IfFlase()
                 }
             }
@@ -4207,8 +4264,8 @@ async function createColor(id, Des, NEW) {
 
 
 
-async function createselect(id, option, Des) {
-    var Box = await createframe('<select id=' + id + ' class="select" > ' + option + ' </select>');
+async function createselect(id, option, Des, NEW) {
+    var Box = await createframe('<select id=' + id + ' class="select" > ' + option + ' </select>',NEW);
     await createDes(Des, Box);
 
     var thisSelect = document.getElementById(id);
@@ -4342,9 +4399,9 @@ LoadNTubeCode = async function (Preset) {
 
             if (key != "PRESET" && key != "ADDScript" && key != "JSAuto" && key != "OldVer")
                 await MainSave({ [key]: value })
-            
-            if (key == "ADDScript" && value.replaceAll("\n","").replaceAll(" ","") != "") {
-                if(confirm(`⚠️*WARINING*⚠️\nThis Preset/Theme contain JS code.\nYou can be hacked if you continue.\n(Please make sure this code is from who you trust!)\n\nAre you want to load JS code?`)) {
+
+            if (key == "ADDScript" && value.replaceAll("\n", "").replaceAll(" ", "") != "") {
+                if (confirm(`⚠️*WARINING*⚠️\nThis Preset/Theme contain JS code.\nYou can be hacked if you continue.\n(Please make sure this code is from who you trust!)\n\nAre you want to load JS code?`)) {
                     await MainSave({ [key]: value })
                 } else {
                     await MainSave({ [key]: "" })
@@ -4894,7 +4951,10 @@ async function CreateMENU() {
     THISPar = "🎆 Background Video"
 
     await createCheck("VDOBG", "Enable<br>(NOT RECOMMEND FOR LOW END PC!)")
-
+    await createselect("RenderEngine",
+        `<option value="CPU">CPU (2D Canvas)</option>
+        <option value="GPU">GPU (Webgl 2)</option>`,
+        "Render by CPU or GPU (if your Graphic card is powerful I recommend to use GPU)", true)
     await createTextBox("CanvasQua", "% Quality")
     await createTextBox("NVDOB", `Blur amount`)
     await createTextBox("VDOSmooth", 'Smooth frame (Minimum & None is 1)')
@@ -4969,7 +5029,7 @@ async function CreateMENU() {
     await createColor("ThumbHoverColor", "Borders/Shadows on hover color")
     await createColor("ThumbClick", "Borders/Shadows on click color")
 
-    createselect("ThumbHover",
+    await createselect("ThumbHover",
         `<option value="Slide">Slide</option>
 	<option value="Zoom">Zoom</option>
     <option value="Slide&Zoom">Slide&Zoom</option>
@@ -5014,7 +5074,7 @@ async function CreateMENU() {
 
     await createColor("LinkColor", "(Link) Text color")
 
-    await createColor("TIMETEXT", "Time text color", true)
+    await createColor("TIMETEXT", "Time text color")
 
     //theme-------------------------------------------------------------------------------
 
@@ -5204,7 +5264,7 @@ async function CreateMENU() {
 
     THISPar = "🔳 Borders / Shadows"
 
-    createselect("OutOrSha",
+    await createselect("OutOrSha",
         `<option value="Out">Borders</option>
 	<option value="Sha">Shadows</option>
 	<option value="None">None</option>`,
@@ -5361,7 +5421,7 @@ async function CreateMENU() {
 
     await createTextBox("BlurAm", "Blur amount")
 
-    createselect("BlurWhat",
+    await createselect("BlurWhat",
         `<option value="all">All (Lag!)</option>
 	<option value="main">Main-things</option>
 	<option value="none">None</option>`,
@@ -5389,9 +5449,9 @@ async function CreateMENU() {
 
     await createCheck("VBG", "(Video) remove background solid color (Theater mode)")
 
-    await createCheck("HideYourChannel", '(Home page) Hide "Your channel"', true)
+    await createCheck("HideYourChannel", '(Home page) Hide "Your channel"')
 
-    await createCheck("HideYourVID", '(Home page) Hide "Your videos"', true)
+    await createCheck("HideYourVID", '(Home page) Hide "Your videos"')
 
     RenderPreImg(await GetLoad("BGIMG"))
 
@@ -5475,10 +5535,10 @@ async function CreateMENU() {
 
     THISPar = "🌟 Additional JS"
 
-    await createCheck("JSAuto", "Enable Auto run JavaScript", true, null, async function(){
+    await createCheck("JSAuto", "Enable Auto run JavaScript", null, null, async function () {
         alert(`⚠️*WARNING*⚠️\nYou are enabling Auto run JS\n\nPlease keep in mind that if somethings wrong by that code.\nYou can reset it by reinstall the extension only!\n(I'll make unload JS shortcut later)`)
-        await MainSave({ "JSAutoT" : true })
-    }, async function(){
+        await MainSave({ "JSAutoT": true })
+    }, async function () {
         await MainSave({ ["JSAutoT"]: false })
     })
 
@@ -5513,6 +5573,7 @@ async function CreateMENU() {
 
     await createCheck("DelBar", "Remove black bar top-bottom (Background VDO Should Enabled)")
     await createCheck("DropFrame", "Remove black bar Lazy Check (Drop frame)")
+    await createTextBox("LazyAmount", `Pixel per cooldown (Check black bar)<br>(Less is check slower for more performance also more drop frame)<br>(-1 is none)`)
     await createCheck("DelBarDebug", "Remove black bar Debug")
     await createCheck("CheckStatic", "Check Static video (for Background VDO & Remove black bar)")
 
@@ -6224,16 +6285,7 @@ async function SettoEnd() {
 
 //---------------------------------------------------------------------------
 
-var CanDropFrame,
-    CanCheckStatic
-
-GetLoad("DropFrameT").then((ThisLoad) => {
-    CanDropFrame = ThisLoad
-})
-
-GetLoad("CheckStaticT").then((ThisLoad) => {
-    CanCheckStatic = ThisLoad
-})
+var CanDropFrame
 
 //--EX-----
 
@@ -6244,6 +6296,10 @@ var UPSEQ = 33,
     context,
     cw,
     ch,
+
+    Precanvas,
+    Precontext,
+    Pregl,
 
     canvas2,
     context2,
@@ -6260,20 +6316,33 @@ var UPSEQ = 33,
 
     Cloning,
     YTAPP,
-    BGFRAME
+    BGFRAME,
+
+    gl
 
 var CanvasQua,
     VDOBOUND,
-    CanvasWraperbound
+    CanvasWraperbound,
+    VdoHeight
 
 function ChangeCanvasQua() {
     if (VDOBOUND) {
         cw = Math.floor(Math.floor(VDOBOUND.width) * CanvasNewQua)
         ch = Math.floor(Math.floor(VDOBOUND.height) * CanvasNewQua)
 
+        Precanvas.width = cw
+        Precanvas.height = ch
+
         CanvasQua = CanvasNewQua
         canvas.width = cw
         canvas.height = ch
+
+        if (GPURender) {
+            gl.viewport(0, 0, cw, ch);
+            gl.uniform2f(gl_Resolution, cw, ch);
+
+            Pregl.viewport(0, 0, cw, ch);
+        }
     }
 }
 
@@ -6295,7 +6364,7 @@ function SetCanvas() {
         }
 
         if (Distance > 1) {
-            console.log("SetCanvasPo")
+            // console.log("SetCanvasPo")
 
             CanvasWraper.style.setProperty('margin-top', VDOBOUND.top + window.pageYOffset + 'px')
             CanvasWraper.style.setProperty('margin-left', VDOBOUND.left + window.pageXOffset + 'px')
@@ -6304,7 +6373,7 @@ function SetCanvas() {
         VdoWith = VDOBOUND.width + "px"
 
         if (canvas.style.width != VdoWith) {
-            console.log("SetCanvasSize")
+            // console.log("SetCanvasSize")
 
             let KeeplastFrame = true
             if (canvas.style.width == "0px") {
@@ -6315,10 +6384,13 @@ function SetCanvas() {
 
             let cwNotNaN = !isNaN(cw)
 
-            var tempCanvas
-            if (KeeplastFrame == true && cwNotNaN) {
+            var tempCanvas = null,
+                tempCanvas2 = null
+
+            if (KeeplastFrame == true && cwNotNaN && GPURender == false) {
                 try {
-                    tempCanvas = context.getImageData(0, 0, cw, ch);
+                    tempCanvas = Precontext.getImageData(0, 0, cw, ch);
+                    tempCanvas2 = context.getImageData(0, 0, cw, ch);
                 } catch (error) {
 
                 }
@@ -6333,8 +6405,10 @@ function SetCanvas() {
             ChangeCanvasQua()
 
             if (tempCanvas && KeeplastFrame == true && cwNotNaN) {
-                context.putImageData(tempCanvas, 0, 0)
+                Precontext.putImageData(tempCanvas, 0, 0)
+                context.putImageData(tempCanvas2, 0, 0)
                 tempCanvas = null
+                tempCanvas2 = null
             }
 
             // if (BlackMode == true) {
@@ -6378,7 +6452,7 @@ let YTAPPBG
 
 function SetBGTran(Status) {
     if (YTAPPBG == null) {
-        YTAPPBG = document.getElementsByTagName('ytd-app')[0] || document.getElementById("player-page")
+        YTAPPBG = document.getElementsByTagName('ytd-app')[0] || document.getElementsByClassName("background-gradient")[0]
     }
     if (Status == true) {
         YTAPPBG.style = `background: transparent !important;
@@ -6463,6 +6537,154 @@ function CheckVDOSTATUS() {
     }
 }
 
+
+
+
+
+
+
+
+
+
+// Vertex shader program
+const vsSource = `
+attribute vec2 a_position;
+varying vec2 v_texCoord;
+
+void main() {
+    gl_Position = vec4(a_position, 0.0, 1.0);
+    v_texCoord = a_position*.5+.5;
+    v_texCoord.y = 1.-v_texCoord.y;
+}
+`;
+
+// Fragment shader program
+const fsSource = `
+precision mediump float;
+
+uniform sampler2D u_image;
+varying vec2 v_texCoord;
+
+const float BlurQua = 30.0;
+const float Pi = 6.28318530718;//pi * 2
+uniform vec2 u_BlurAm;
+uniform float u_Smooth;
+uniform vec2 canvasRes;
+
+vec4 applyBlur(sampler2D image,vec2 BlurDirection) {
+    if (u_BlurAm == vec2(0,0)) {
+        return texture2D(image, v_texCoord);
+    }
+    vec2 CalBlur = BlurDirection/canvasRes;
+    vec4 color = vec4(0.0);
+    float total = 0.0;
+
+    for (float i = -BlurQua; i <= BlurQua; i++) {
+        float percent = (i - 0.5) / BlurQua;
+        float weight = 1.0 - abs(percent);
+        vec4 sample = texture2D(image, v_texCoord + CalBlur * percent);
+            
+        sample.rgb *= sample.a;
+            
+        color += sample * weight;
+        total += weight;
+    }
+
+    return color/total;
+}
+
+void main() {
+    gl_FragColor = applyBlur(u_image,u_BlurAm) * u_Smooth;
+}`;
+
+const fsSource2 = `
+precision mediump float;
+
+uniform sampler2D u_image;
+varying vec2 v_texCoord;
+
+void main() {
+    gl_FragColor = texture2D(u_image, v_texCoord) * vec4(1,1,1,0.5);
+}
+`;
+
+const positionData = new Float32Array([
+    -1.0, -1.0,
+    1.0, -1.0,
+    -1.0, 1.0,
+    1.0, -1.0,
+    1.0, 1.0,
+    -1.0, 1.0
+]);
+
+const colorData = [
+    0, 0, 1.0,
+    0, 0, 1.0,
+    0, 0, 1.0,
+    0, 0, 1.0,
+    0, 0, 1.0,
+    0, 0, 1.0
+];
+
+
+// Initialize a shader program, so WebGL knows how to draw our data
+function initShaderProgram(ThisGL, vsSource, fsSource) {
+    var ThisshaderProgram = ThisGL.createProgram();
+    ThisGL.attachShader(ThisshaderProgram, loadShader(ThisGL, ThisGL.VERTEX_SHADER, vsSource));
+    ThisGL.attachShader(ThisshaderProgram, loadShader(ThisGL, ThisGL.FRAGMENT_SHADER, fsSource));
+    ThisGL.linkProgram(ThisshaderProgram);
+
+    // If creating the shader program failed, alert
+    if (!ThisGL.getProgramParameter(ThisshaderProgram, ThisGL.LINK_STATUS)) {
+        console.error('Unable to initialize the shader program: ' + ThisGL.getProgramInfoLog(ThisshaderProgram));
+        return null;
+    }
+
+    return ThisshaderProgram;
+}
+
+// creates a shader of the given type, uploads the source and compiles it.
+function loadShader(gl, type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+
+    // See if it compiled successfully
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+    }
+
+    return shader;
+}
+
+// Initialize shader program
+var shaderProgram
+var PreshaderProgram
+
+// look up where the vertex data needs to go.
+var positionLocation
+var Pre_positionLocation
+
+var u_BlurAm
+var u_Smooth
+
+var Pre_u_BlurAm
+var Pre_u_Smooth
+
+var textureLoc
+var Pre_textureLoc
+
+// Create a vertex buffer
+var positionBuffer
+var Pre_positionBuffer
+
+var Pre_colorBuffer
+
+// Create texture
+var texture
+var Pre_texture
 
 BlackMode = false
 
@@ -6682,7 +6904,20 @@ function CalVdoHeight() {
     // console.log("Complete",Date.now() - GetThisTime)
 }
 
-function CheckPxLine(x) {
+let Checking = 0
+let BlackBarWaitPx = 50
+
+async function WaitCheckCoolDown() {
+    if (BlackBarWaitPx > -1) {
+        Checking++
+        if (Checking >= BlackBarWaitPx) {
+            Checking = 0
+            await sleep(0)
+        }
+    }
+}
+
+async function CheckPxLine(x) {
     var ThisFind = x
     var ThisR = FistGetRGB[0]
     var ThisG = FistGetRGB[1]
@@ -6697,7 +6932,9 @@ function CheckPxLine(x) {
     }
     ThisPX = ThisActualPX.data
 
+    Checking = 0
     for (i = 5; i < halfVDO; i++) {
+        await WaitCheckCoolDown()
         if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
             i += 10
             if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
@@ -6727,16 +6964,15 @@ function CheckPxLine(x) {
 
     //-----------------------------------------------------------------
     if (CanDropFrame) {
-        setTimeout(() => {
-            CheckBottom(x)
-        }, 0);
+        await sleep(0)
+        CheckBottom(x)
     } else {
         CheckBottom(x)
     }
 
 }
 
-function CheckBottom(x) {
+async function CheckBottom(x) {
     var ThisFind = x
 
     var ThisR = FistGetRGB[0]
@@ -6752,7 +6988,9 @@ function CheckBottom(x) {
     }
     ThisPX = ThisActualPX.data
 
+    Checking = 0
     for (i = halfVDO - 5; i > 0; i--) {
+        await WaitCheckCoolDown()
         if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
             i -= 10
             if (CheckThisPX(ThisPX[i * 4], ThisPX[i * 4 + 1], ThisPX[i * 4 + 2])) {
@@ -6788,9 +7026,8 @@ function CheckBottom(x) {
         CalVdoHeight()
     } else {
         if (CanDropFrame) {
-            setTimeout(() => {
-                CheckPxLine(x + 1)
-            }, 0);
+            await sleep(0)
+            CheckPxLine(x + 1)
         } else {
             CheckPxLine(x + 1)
         }
@@ -6803,7 +7040,7 @@ function CheckNumLine(from, to) {
     }
 }
 
-function CheckBlackBar() {
+async function CheckBlackBar() {
     CompleteCal = false
 
     redPX = context2.createImageData(1, 1)
@@ -6834,9 +7071,8 @@ function CheckBlackBar() {
     halfVDO = Math.floor(VDOBOUND.height / 2)
 
     if (CanDropFrame) {
-        setTimeout(() => {
-            CheckPxLine(0)
-        }, 0);
+        await sleep(0)
+        CheckPxLine(0)
     } else {
         CheckPxLine(0)
     }
@@ -6845,23 +7081,96 @@ function CheckBlackBar() {
     // WaitFrame(1,CheckPxLine,0)
 }
 
+
+let StartTime
+let NewTime
+let globalAlpha = 1
+let GPURender = true
+
+let DebugPerformace = false
+
 function drawOnePic() {
     if (NoWaitFrame) {
         NoWaitFrame = false
         setTimeout(() => {
-            // console.log("Check")
-            // console.log("Draw")
+            if (DebugPerformace) {
+                console.log("----------------------------------------")
+                console.log("Draw")
+
+                StartTime = performance.now()
+            }
+
             SetCanvas()
+
+            if (DebugPerformace) {
+                NewTime = performance.now()
+                console.log("SetCanvas", NewTime - StartTime)
+            }
+
             Scale = 1
 
             if (StaticVDO) {
-                context.globalAlpha = 1
+                globalAlpha = 1
             } else {
-                context.globalAlpha = BGSmooth
+                globalAlpha = BGSmooth
             }
 
-            // context.globalCompositeOperation = "source-over"
-            context.filter = `blur(${BGBlur}px)`
+            if (GPURender) {
+                // Pregl.vertexAttribPointer(Pre_colorBuffer, 2, Pregl.UNSIGNED_BYTE, false, 4, 0);
+                Pregl.vertexAttribPointer(Pre_positionLocation, 2, Pregl.FLOAT, false, 0, 0);
+
+                Pregl.uniform1f(Pre_u_Smooth, globalAlpha);
+
+                Pregl.texImage2D(Pregl.TEXTURE_2D, 0, Pregl.RGB, Pregl.RGB, Pregl.UNSIGNED_BYTE, v);
+                Pregl.drawArrays(Pregl.TRIANGLES, 0, 6);
+
+                //-----------------------------------------------------------------------------------
+
+                gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+                gl.uniform2f(u_BlurAm, BGBlur, 0);
+
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, Precanvas);
+                gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+
+                gl.uniform2f(u_BlurAm, 0, BGBlur);
+
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, canvas);
+                gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+                // gl.uniform2f(u_BlurAm, BGBlur/1000, 0);
+                // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, canvas);
+                // drawScene(shaderProgram);
+            } else {
+
+                Precontext.globalAlpha = globalAlpha
+
+                try {
+                    context.filter = `blur(${BGBlur}px)`
+                } catch (error) {
+
+                }
+
+
+                if (globalAlpha == 1) {
+                    try {
+                        context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
+                    } catch (error) {
+                        NoWaitFrame = true
+                        return
+                    }
+                } else {
+                    Precontext.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
+                    try {
+                        context.drawImage(Precanvas, 0, 0, cw, ch);
+                    } catch (error) {
+                        NoWaitFrame = true
+                        return
+                    }
+                }
+            }
+
 
 
             // createImageBitmap(v, { resizeWidth: cw, resizeHeight: ch })
@@ -6870,7 +7179,10 @@ function drawOnePic() {
             //         context.drawImage(img, 0, 0)
             //     })
 
-            context.drawImage(v, (cw * (1 - Scale) / 2), (ch * (1 - Scale) / 2), cw * Scale, ch * Scale);
+            if (DebugPerformace) {
+                NewTime = performance.now()
+                console.log("Drawed", NewTime - StartTime)
+            }
 
             if (BlackMode == true) {
                 ReBlackctx.drawImage(v, 0, 0, VDOBOUND.width, VDOBOUND.height);
@@ -6901,6 +7213,13 @@ function drawOnePic() {
                 // ThisFrame++
             }
 
+            if (DebugPerformace) {
+
+                NewTime = performance.now()
+                console.log("Removed Black Bars", NewTime - StartTime)
+
+            }
+
             NoWaitFrame = true
         }, 0)
 
@@ -6914,32 +7233,41 @@ let fps = 30,
     Support = ('requestVideoFrameCallback' in HTMLVideoElement.prototype),
     StaticVDO = false
 
+
+function SetCanvasEveryFrame() {
+    SetCanvas()
+    if (drawing == true) requestAnimationFrame(SetCanvasEveryFrame)
+}
+
+
 function drawpic() {
     if (drawing == false) {
         drawing = true
-
-        function DrawApic() {
-            FindVideo()
-            if (v.paused || v.ended || Cloning == false || StaticVDO == true || PipMode == true || document.visibilityState == 'hidden') {
-                drawing = false
-                // console.log("CancelDraw")
-            } else {
-                drawOnePic()
-                if (!StaticVDO) {
-                    canvas
-                    if (Support == true) {
-                        v.requestVideoFrameCallback(DrawApic)
-                    } else {
-                        setTimeout(() => {
-                            DrawApic()
-                        }, calPerFrameTime);
-                    }
-                }
-            }
-        }
+        // SetCanvasEveryFrame()
         DrawApic()
     }
 }
+
+function DrawApic() {
+    FindVideo()
+    if ((v.paused || v.ended || Cloning == false || StaticVDO == true || PipMode == true || document.visibilityState == 'hidden') && !GPURender) {
+        drawing = false
+        // console.log("CancelDraw")
+    } else {
+        drawOnePic()
+        if (!StaticVDO) {
+            if (Support == true) {
+                v.requestVideoFrameCallback(DrawApic)
+            } else {
+                setTimeout(() => {
+                    DrawApic()
+                }, calPerFrameTime);
+            }
+        }
+    }
+}
+
+
 
 function getBase64Image(img) {
     var canvas = document.createElement("canvas");
@@ -6989,7 +7317,8 @@ function CreateCanvas() {
 
     Cloning = true
 
-    if (!NotOverFlow) {
+    if (NotOverFlow == null) {
+        Precanvas = new OffscreenCanvas(10, 10)
         canvas = document.createElement('canvas');
         NotOverFlow = document.createElement('div')
         CanvasWraper = document.createElement('div')
@@ -7027,8 +7356,93 @@ function CreateCanvas() {
         NotOverFlow.style.opacity = 1
     }, 0);
 
-    context = canvas.getContext('2d', { alpha: false })
-    context.imageSmoothingEnabled = false
+    if (GPURender) {
+
+        Pregl = Precanvas.getContext("webgl2", { preserveDrawingBuffer: true });
+
+        PreshaderProgram = initShaderProgram(Pregl, vsSource, fsSource);
+
+        Pregl.blendFunc(Pregl.ONE, Pregl.ONE_MINUS_SRC_ALPHA);
+        Pregl.enable(Pregl.BLEND);
+
+        Pre_positionLocation = Pregl.getAttribLocation(PreshaderProgram, "a_position");
+        Pre_textureLoc = Pregl.getUniformLocation(PreshaderProgram, "u_image");
+
+        Pre_u_BlurAm = Pregl.getUniformLocation(PreshaderProgram, "u_BlurAm");
+        Pre_u_Smooth = Pregl.getUniformLocation(PreshaderProgram, "u_Smooth");
+
+        Pre_positionBuffer = Pregl.createBuffer();
+        Pregl.bindBuffer(Pregl.ARRAY_BUFFER, Pre_positionBuffer);
+        Pregl.bufferData(Pregl.ARRAY_BUFFER, positionData, Pregl.STATIC_DRAW);
+
+        // Pre_colorBuffer = Pregl.createBuffer();
+        // Pregl.bindBuffer(Pregl.ARRAY_BUFFER, Pre_colorBuffer);
+        // Pregl.bufferData(Pregl.ARRAY_BUFFER, new Float32Array(colorData), Pregl.STATIC_DRAW);
+
+        Pregl.enableVertexAttribArray(Pre_positionLocation);
+        Pregl.vertexAttribPointer(Pre_positionLocation, 2, Pregl.FLOAT, false, 0, 0);
+
+        Pre_texture = Pregl.createTexture();
+        Pregl.bindTexture(Pregl.TEXTURE_2D, Pre_texture);
+        Pregl.texImage2D(Pregl.TEXTURE_2D, 0, Pregl.RGB, 1, 1, 0, Pregl.RGB, Pregl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0]));
+        Pregl.texParameteri(Pregl.TEXTURE_2D, Pregl.TEXTURE_WRAP_S, Pregl.CLAMP_TO_EDGE);
+        Pregl.texParameteri(Pregl.TEXTURE_2D, Pregl.TEXTURE_WRAP_T, Pregl.CLAMP_TO_EDGE);
+        Pregl.texParameteri(Pregl.TEXTURE_2D, Pregl.TEXTURE_MIN_FILTER, Pregl.LINEAR);
+        // Initialize rendering
+        Pregl.viewport(0, 0, Pregl.canvas.width, Pregl.canvas.height);
+        Pregl.clearColor(1.0, 0.0, 0.0, 1.0);
+
+        Pregl.useProgram(PreshaderProgram);
+
+        Pregl.uniform2f(Pre_u_BlurAm, 0, 0);
+
+        //-------------------------------------------------------------------
+
+        gl = canvas.getContext("webgl2");
+
+        // Initialize shader program
+        shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+        // shaderProgram2 = initShaderProgram(gl, vsSource, fsSource2);
+
+        // look up where the vertex data needs to go.
+        positionLocation = gl.getAttribLocation(shaderProgram, "a_position");
+        textureLoc = gl.getUniformLocation(shaderProgram, "u_image");
+
+        u_BlurAm = gl.getUniformLocation(shaderProgram, "u_BlurAm");
+        u_Smooth = gl.getUniformLocation(shaderProgram, "u_Smooth");
+        gl_Resolution = gl.getUniformLocation(shaderProgram, "canvasRes");
+
+        // Create a vertex buffer
+        positionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, positionData, gl.STATIC_DRAW);
+
+        gl.enableVertexAttribArray(positionLocation);
+        gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+        // Create texture
+        texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0]));
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        // Initialize rendering
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+        gl.clearColor(1.0, 0.0, 0.0, 1.0);
+
+        gl.useProgram(shaderProgram);
+
+        gl.uniform1f(u_Smooth, 1);
+
+        //-------------------------------------------------------------------
+    } else {
+        context = canvas.getContext('2d', { alpha: false })
+        context.imageSmoothingEnabled = false
+        Precontext = Precanvas.getContext('2d', { alpha: false })
+    }
+
+
 
     if (EnaCanvas2 == true) {
         canvas2 = document.createElement('canvas')
@@ -7114,54 +7528,61 @@ function CheckLoop() {
     }, 100);
 }
 
-function CheckStaticVDO(attp) {
+async function CheckStaticVDO(IDK,attp) {
     if (attp == null) {
         attp = 10
     }
-    if (CanCheckStatic && document.getElementsByTagName("ytd-watch-flexy")[0] && attp > 0) {
+    if (await GetLoad("CheckStaticT") && attp > 0) {
         console.log("Check if static")
-        videoID = document.getElementsByTagName("ytd-watch-flexy")[0].getAttribute("video-id")
-        console.log(videoID)
+        attp--
+        if (document.getElementsByTagName("ytd-watch-flexy")[0]) {
+            videoID = document.getElementsByTagName("ytd-watch-flexy")[0].getAttribute("video-id")
+            console.log(videoID)
 
-        var Frame1Loaded,
-            Frame2Loaded,
-            Frame3Loaded
+            var Frame1Loaded,
+                Frame2Loaded,
+                Frame3Loaded
 
-        var frame1 = new Image()
-        frame1.crossOrigin = "https://www.youtube.com"
-        frame1.onload = function () {
-            Frame1Loaded = getBase64Image(frame1).length
-        }
-        frame1.src = `http://i.ytimg.com/vi/${videoID}/1.jpg`
-
-        var frame2 = new Image()
-        frame2.crossOrigin = "https://www.youtube.com"
-        frame2.onload = function () {
-            Frame2Loaded = getBase64Image(frame2).length
-        }
-        frame2.src = `http://i.ytimg.com/vi/${videoID}/2.jpg`
-
-        var frame3 = new Image()
-        frame3.crossOrigin = "https://www.youtube.com"
-        frame3.onload = function () {
-            Frame3Loaded = getBase64Image(frame3).length
-        }
-        frame3.src = `http://i.ytimg.com/vi/${videoID}/3.jpg`
-
-
-        setTimeout(() => {
-            if (isNaN(Frame1Loaded) || isNaN(Frame2Loaded) || isNaN(Frame3Loaded)) {
-                CheckStaticVDO(attp)
-            } else {
-                Max = Math.max(Frame1Loaded, Frame2Loaded, Frame3Loaded)
-                Min = Math.min(Frame1Loaded, Frame2Loaded, Frame3Loaded)
-                CalDiff = Max / Min
-                console.log(Max, Min, CalDiff)
-                StaticVDO = Math.abs(CalDiff - 1) < 0.03
-                console.log(StaticVDO)
-                drawpic()
+            var frame1 = new Image()
+            frame1.crossOrigin = "https://www.youtube.com"
+            frame1.onload = function () {
+                Frame1Loaded = getBase64Image(frame1).length
             }
-        }, 500);
+            frame1.src = `http://i.ytimg.com/vi/${videoID}/1.jpg`
+
+            var frame2 = new Image()
+            frame2.crossOrigin = "https://www.youtube.com"
+            frame2.onload = function () {
+                Frame2Loaded = getBase64Image(frame2).length
+            }
+            frame2.src = `http://i.ytimg.com/vi/${videoID}/2.jpg`
+
+            var frame3 = new Image()
+            frame3.crossOrigin = "https://www.youtube.com"
+            frame3.onload = function () {
+                Frame3Loaded = getBase64Image(frame3).length
+            }
+            frame3.src = `http://i.ytimg.com/vi/${videoID}/3.jpg`
+
+
+            setTimeout(() => {
+                if (isNaN(Frame1Loaded) || isNaN(Frame2Loaded) || isNaN(Frame3Loaded)) {
+                    CheckStaticVDO(null,attp)
+                } else {
+                    Max = Math.max(Frame1Loaded, Frame2Loaded, Frame3Loaded)
+                    Min = Math.min(Frame1Loaded, Frame2Loaded, Frame3Loaded)
+                    CalDiff = Max / Min
+                    console.log(Max, Min, CalDiff)
+                    StaticVDO = Math.abs(CalDiff - 1) < 0.03
+                    console.log(StaticVDO)
+                    drawpic()
+                }
+            }, 500);
+        } else {
+            setTimeout(() => {
+                CheckStaticVDO(null,attp)
+            }, 500);
+        }
     }
 }
 
@@ -7244,6 +7665,10 @@ window.addEventListener('focus', async function () {
         if (document.pictureInPictureElement) {
             document.exitPictureInPicture();
         }
+    }
+
+    if (await GetLoad("VDOBGT") == true) {
+        StartDraw()
     }
 
     ReloadSave()
