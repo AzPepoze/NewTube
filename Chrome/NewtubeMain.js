@@ -374,7 +374,7 @@ async function CheckPar(ThisE) {
             EPar = ThisE
         } else {
             LoopCheck = LoopCheck - 1
-            CheckPar(ThisE.parentNode)
+            CheckPar(ThisE.parentElement)
         }
     } else {
         EPar = false
@@ -1807,14 +1807,14 @@ async function ScrollEv() {
         if (player == null) {
             player = document.querySelector(`#player-container.ytd-watch-flexy`)
         } else {
-            FindVideo()
+            await FindVideo()
             if (VdoPlayer == null || VdoActualPlayer == null) {
-                VdoPlayer = v.parentNode
-                VdoActualPlayer = v.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
+                VdoPlayer = v.parentElement
+                VdoActualPlayer = v.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
             } else {
                 var VideoBound = VdoActualPlayer.getBoundingClientRect()
                 CalPo = VideoBound.height + VideoBound.top
-                if (CalPo < 0 && !v.parentNode.parentNode.className.includes("ytp-small-mode")) {
+                if (CalPo < 0 && !v.parentElement.parentElement.className.includes("ytp-small-mode")) {
                     if (!ADDFlyout) {
                         StartFlyout()
                     }
@@ -2691,7 +2691,8 @@ async function update() {
                     color: var(--theme) !important;
                 }
 
-                .badge-style-type-live-now-alternate.ytd-badge-supported-renderer{
+                .badge-style-type-live-now-alternate.ytd-badge-supported-renderer,
+                .badge-style-type-verified svg{
                     color: var(--theme) !important;
                 }
                 
@@ -3475,7 +3476,7 @@ async function createList(Name) {
     ThisList.onclick = async function (v) {
         Tar = v.target
         if (Tar.className == "NDel") {
-            let Par = Tar.parentNode,
+            let Par = Tar.parentElement,
                 arr = await GetLoad("PRESET"),
                 ThisName = Par.getElementsByTagName("lable")[0].textContent
 
@@ -3494,13 +3495,13 @@ async function createList(Name) {
             }, 200);
         }
         else if (Tar.className == "NUp") {
-            ParName = Tar.parentNode.getElementsByTagName("lable")[0].textContent
+            ParName = Tar.parentElement.getElementsByTagName("lable")[0].textContent
             arr = await GetLoad("PRESET")
             download(JSON.stringify(arr[ParName]), ParName + '.NPreset')
         }
         else {
             if (Tar.className == "DES") {
-                Tar = v.target.parentNode
+                Tar = v.target.parentElement
             }
             let TarID = Tar.getElementsByTagName("lable")[0].textContent
             if (busy == false) {
@@ -4265,7 +4266,7 @@ async function createColor(id, Des, NEW) {
 
 
 async function createselect(id, option, Des, NEW) {
-    var Box = await createframe('<select id=' + id + ' class="select" > ' + option + ' </select>',NEW);
+    var Box = await createframe('<select id=' + id + ' class="select" > ' + option + ' </select>', NEW);
     await createDes(Des, Box);
 
     var thisSelect = document.getElementById(id);
@@ -4442,18 +4443,34 @@ async function GenNTubeCode() {
 }
 
 let v
+let vList
+let vClass
 
-function setV() {
-    v = document.getElementsByClassName('video-stream html5-main-video')[0]
-    console.log(v)
+async function setV() {
+    console.log("Finding Video")
+    vList = document.querySelectorAll("#player-container")
+
+    v = null
+    Array.from(vList).forEach(element => {
+        vClass = element.className
+        if (vClass.search("ytd-watch-flexy") >= 0) {
+            v = element.getElementsByTagName("video")[0]
+        }
+    });
+
+    if (v == null) {
+        await sleep(100)
+        await setV()
+    }
 }
 
-function FindVideo() {
+async function FindVideo() {
     try {
-        v.parentNode.parentNode
+        v.parentElement.parentElement
     } catch (e) {
         // console.log("FindVDOE")
-        setV()
+        await setV()
+        console.log(v)
     }
     return v
 }
@@ -5657,7 +5674,7 @@ async function CreateMENU() {
 }
 
 async function GetMainSetting(thisElement) {
-    var ParElement = thisElement.parentNode
+    var ParElement = thisElement.parentElement
     if (ParElement == SetBg) {
         ThisCheckMainSetting = thisElement
     } else {
@@ -5984,7 +6001,8 @@ async function SettoEnd() {
 
                     if (await GetLoad('NewVDOanimaT') == true) {
                         async function ThisFunc() {
-                            if (FindVideo()) {
+                            await FindVideo()
+                            if (v) {
                                 thisStyle = document.createElement('style')
                                 thisStyle.textContent = `
                             .ytp-doubletap-ui-legacy{
@@ -6063,7 +6081,8 @@ async function SettoEnd() {
 
                                 document.head.append(thisStyle)
 
-                                vdpar = FindVideo().parentNode
+                                await FindVideo()
+                                vdpar = v.parentElement
 
                                 volpanel = document.createElement('p')
 
@@ -6089,7 +6108,7 @@ async function SettoEnd() {
 
                                 vdpar.append(volpanel)
 
-                                FindVideo().addEventListener('volumechange', async function () {
+                                v.addEventListener('volumechange', async function () {
                                     UpdateVol()
                                 })
                             }
@@ -6113,7 +6132,7 @@ async function SettoEnd() {
 
 
                     // var audioCtx = new AudioContext()  
-                    // var audioSrc = audioCtx.createMediaElementSource(FindVideo())
+                    // var audioSrc = audioCtx.createMediaElementSource(await FindVideo())
                     // var analyser = audioCtx.createAnalyser()
 
 
@@ -6138,11 +6157,13 @@ async function SettoEnd() {
 
                     if (await GetLoad("VisualT") == true) {
 
-                        setTimeout(() => {
+                        setTimeout(async () => {
                             // we have to connect the MediaElementSource with the analyser
                             // we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
+                            await FindVideo()
+
                             var audioCtx = new AudioContext()
-                            var audioSrc = audioCtx.createMediaElementSource(FindVideo())
+                            var audioSrc = audioCtx.createMediaElementSource(v)
                             var analyser = audioCtx.createAnalyser()
 
                             audioSrc.connect(analyser)
@@ -6346,9 +6367,10 @@ function ChangeCanvasQua() {
     }
 }
 
-function SetCanvas() {
+async function SetCanvas() {
     if (canvas && !ADDFlyout) {
-        VDOBOUND = FindVideo().getBoundingClientRect()
+        await FindVideo()
+        VDOBOUND = v.getBoundingClientRect()
 
         VcenY = VDOBOUND.top + VDOBOUND.height / 2
         CanvasWraperbound = CanvasWraper.getBoundingClientRect()
@@ -6466,11 +6488,12 @@ function SetBGTran(Status) {
 LastMode = null
 let VDOPAR
 
-function CheckVDO() {
+async function CheckVDO() {
     //console.log("CheckVDO")
-    if (FindVideo().parentNode) {
-        VDOPAR = FindVideo().parentNode.parentNode
-        VDOPARCLASS = FindVideo().parentNode.parentNode.className
+    await FindVideo()
+    if (v.parentElement) {
+        VDOPAR = v.parentElement.parentElement
+        VDOPARCLASS = v.parentElement.parentElement.className
 
         pg = document.getElementById("page-manager")
 
@@ -6481,8 +6504,8 @@ function CheckVDO() {
         } else {
             pg.style = `margin-top:0px;`
             v.style.marginTop = "unset"
-            v.parentNode.style.height = "100%"
-            v.parentNode.style.marginTop = "unset"
+            v.parentElement.style.height = "100%"
+            v.parentElement.style.marginTop = "unset"
 
             // console.log("Set LastHeight")
             LastHeight = 0
@@ -6519,18 +6542,18 @@ function CheckVDO() {
     }
 }
 
-function CheckVDOSTATUS() {
+async function CheckVDOSTATUS() {
     if (!inIframe()) {
-        setTimeout(() => {
-            //console.log("CheckStatus")
+        setTimeout(async () => {
+            await FindVideo()
             YTAPP = document.getElementsByTagName('ytd-app')[0] || document.getElementById("player-page")
             BGFRAME = document.getElementById("BGFRAME")
-            if (FindVideo() == null || YTAPP == null || BGFRAME == null) {
+            if (v == null || YTAPP == null || BGFRAME == null) {
                 setTimeout(() => {
                     CheckVDOSTATUS()
                 }, 1000);
             } else {
-                VDOChangeEvent.observe(FindVideo().parentNode.parentNode, { attributes: true })
+                VDOChangeEvent.observe(v.parentElement.parentElement, { attributes: true })
                 CheckVDO()
             }
         }, 1);
@@ -6616,16 +6639,6 @@ const positionData = new Float32Array([
     1.0, 1.0,
     -1.0, 1.0
 ]);
-
-const colorData = [
-    0, 0, 1.0,
-    0, 0, 1.0,
-    0, 0, 1.0,
-    0, 0, 1.0,
-    0, 0, 1.0,
-    0, 0, 1.0
-];
-
 
 // Initialize a shader program, so WebGL knows how to draw our data
 function initShaderProgram(ThisGL, vsSource, fsSource) {
@@ -6861,29 +6874,29 @@ function CalVdoHeight() {
 
         if (SureTHisHeight > LastHeight) {
             // v.style.transition = "none"
-            v.parentNode.style.transition = "none"
+            v.parentElement.style.transition = "none"
         } else {
             // v.style.transition = "margin-top 0.5s"
-            v.parentNode.style.transition = "all 0.5s ease-out"
+            v.parentElement.style.transition = "all 0.5s ease-out"
         }
 
         LastHeight = SureTHisHeight
 
-        // v.parentNode.style.overflow = "hidden"
-        // v.parentNode.style.position = "absolute"
-        // v.parentNode.style.width = "100%"
+        // v.parentElement.style.overflow = "hidden"
+        // v.parentElement.style.position = "absolute"
+        // v.parentElement.style.width = "100%"
 
         // v.style.marginTop = -LastHeight - 1 + 'px'
-        v.parentNode.style.height = VDOBOUND.height - LastHeight * 2 - 2 + 'px'
+        v.parentElement.style.height = VDOBOUND.height - LastHeight * 2 - 2 + 'px'
     } else {
         if (SureTHisHeight <= 10) {
             // v.style.transition = "margin-top 0.5s"
-            v.parentNode.style.transition = "all 0.5s ease-out"
+            v.parentElement.style.transition = "all 0.5s ease-out"
             LastHeight = 0
             // v.style.marginTop = "unset"
-            v.parentNode.style.height = VDOBOUND.height + "px"
-            // v.parentNode.style.marginTop = "unset"
-            // v.parentNode.style.borderRadius = "unset"
+            v.parentElement.style.height = VDOBOUND.height + "px"
+            // v.parentElement.style.marginTop = "unset"
+            // v.parentElement.style.borderRadius = "unset"
         }
     }
 
@@ -7086,15 +7099,45 @@ let StartTime
 let NewTime
 let globalAlpha = 1
 let GPURender = true
+let FrameTime
 
 let DebugPerformace = false
+let Alerted = false
+
+let MaxFrameAttp = 10
+let FrameAttp = 0
+
 
 function drawOnePic() {
     if (NoWaitFrame) {
         NoWaitFrame = false
-        setTimeout(() => {
+        setTimeout(async () => {
+            NewTime = performance.now()
+            FrameTime = NewTime - StartTime
+            if (FrameTime > 150) {
+                console.log("PerFrame", FrameTime)
+                if (FrameAttp < MaxFrameAttp) {
+                    FrameAttp++
+                    console.log(FrameAttp)
+                } else {
+                    await MainSave({ "VDOBGT": false })
+                    DisableBGBlur(true)
+                    alert(`
+NEWTUBE : I see that you so laggy so I disable Background Video (you can turn it on later).
+                
+Solution to fix this laggy:
+1.Try enable "Use hardware acceleration when available" in your browser setting.
+2.If your graphic card is quite poor try change Background Video to renders by CPU.
+3.Try decrease quality of Background Video`)
+                }
+            } else {
+                FrameAttp = 0
+            }
             if (DebugPerformace) {
                 console.log("----------------------------------------")
+
+                console.log("PerFrame", FrameTime)
+
                 console.log("Draw")
 
                 StartTime = performance.now()
@@ -7218,7 +7261,9 @@ function drawOnePic() {
                 NewTime = performance.now()
                 console.log("Removed Black Bars", NewTime - StartTime)
 
+
             }
+            StartTime = performance.now()
 
             NoWaitFrame = true
         }, 0)
@@ -7241,6 +7286,8 @@ function SetCanvasEveryFrame() {
 
 
 function drawpic() {
+    StartTime = performance.now()
+    FrameAttp = 0
     if (drawing == false) {
         drawing = true
         // SetCanvasEveryFrame()
@@ -7248,9 +7295,9 @@ function drawpic() {
     }
 }
 
-function DrawApic() {
-    FindVideo()
-    if ((v.paused || v.ended || Cloning == false || StaticVDO == true || PipMode == true || document.visibilityState == 'hidden') && !GPURender) {
+async function DrawApic() {
+    await FindVideo()
+    if ((Cloning == false || StaticVDO == true) || ((v.paused || v.ended || PipMode == true || document.visibilityState == 'hidden') && !GPURender)) {
         drawing = false
         // console.log("CancelDraw")
     } else {
@@ -7282,12 +7329,13 @@ function getBase64Image(img) {
     return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
 }
 
-function callback(mutationsList, observer) {
+async function callback(mutationsList, observer) {
     if (mutationsList[0].type == "attributes") {
         // console.log("CHANGE")
         CheckVDOSTATUS()
+        await FindVideo()
 
-        if (!FindVideo().paused) {
+        if (!v.paused) {
             SetCanvas()
         }
     }
@@ -7309,7 +7357,8 @@ function LeavePip() {
 }
 
 
-function CreateCanvas() {
+async function CreateCanvas() {
+    await FindVideo()
     YTAPP = document.getElementsByTagName('ytd-app')[0] || document.getElementsByTagName('ytmusic-app')[0]
     CanvasSpawned = true
     drawing = 0
@@ -7318,6 +7367,7 @@ function CreateCanvas() {
     Cloning = true
 
     if (NotOverFlow == null) {
+        console.log("CreateNew")
         Precanvas = new OffscreenCanvas(10, 10)
         canvas = document.createElement('canvas');
         NotOverFlow = document.createElement('div')
@@ -7446,7 +7496,7 @@ function CreateCanvas() {
 
     if (EnaCanvas2 == true) {
         canvas2 = document.createElement('canvas')
-        v.parentNode.parentNode.append(canvas2)
+        v.parentElement.parentElement.append(canvas2)
         canvas2.style = `position: absolute;
         top: 0px;
         image-rendering: pixelated;
@@ -7477,7 +7527,7 @@ function CreateCanvas() {
 
     if (EnaCanvas2 == true || BlackDebug == true) {
         if (BlackDebug == true) {
-            FindVideo().style.setProperty("opacity", "1")
+            v.style.setProperty("opacity", "1")
         } else {
             canvas2.style.setProperty("display", "none")
         }
@@ -7486,7 +7536,7 @@ function CreateCanvas() {
     ChangeCanvasQua()
 }
 
-function RemoveCanvas(Force) {
+async function RemoveCanvas(Force) {
     // console.log("Remove")
     Cloning = false
 
@@ -7501,6 +7551,7 @@ function RemoveCanvas(Force) {
             }, 1000);
 
             NotOverFlow = null
+            console.log("Removed")
         }
         if (canvas2) {
             canvas2.remove()
@@ -7508,7 +7559,7 @@ function RemoveCanvas(Force) {
         SetBGTran(false)
         BGFRAME.style.setProperty("opacity", "1")
 
-        FindVideo()
+        await FindVideo()
         v.style.setProperty("opacity", "1")
         v.removeEventListener('play', StartDraw, false)
         v.removeEventListener("enterpictureinpicture", EnterPip)
@@ -7516,11 +7567,12 @@ function RemoveCanvas(Force) {
 
         CanvasSpawned = false
     }
-    drawing = 0
+    drawing = false
 }
 
-function CheckLoop() {
-    if (FindVideo() && BGFRAME) {
+async function CheckLoop() {
+    await FindVideo()
+    if (v && BGFRAME) {
         CheckVDO()
     }
     setTimeout(() => {
@@ -7528,7 +7580,7 @@ function CheckLoop() {
     }, 100);
 }
 
-async function CheckStaticVDO(IDK,attp) {
+async function CheckStaticVDO(IDK, attp) {
     if (attp == null) {
         attp = 10
     }
@@ -7546,41 +7598,77 @@ async function CheckStaticVDO(IDK,attp) {
             var frame1 = new Image()
             frame1.crossOrigin = "https://www.youtube.com"
             frame1.onload = function () {
-                Frame1Loaded = getBase64Image(frame1).length
+                Frame1Loaded = true
             }
             frame1.src = `http://i.ytimg.com/vi/${videoID}/1.jpg`
 
             var frame2 = new Image()
             frame2.crossOrigin = "https://www.youtube.com"
             frame2.onload = function () {
-                Frame2Loaded = getBase64Image(frame2).length
+                Frame2Loaded = true
             }
             frame2.src = `http://i.ytimg.com/vi/${videoID}/2.jpg`
 
             var frame3 = new Image()
             frame3.crossOrigin = "https://www.youtube.com"
             frame3.onload = function () {
-                Frame3Loaded = getBase64Image(frame3).length
+                Frame3Loaded = true
             }
             frame3.src = `http://i.ytimg.com/vi/${videoID}/3.jpg`
 
 
             setTimeout(() => {
                 if (isNaN(Frame1Loaded) || isNaN(Frame2Loaded) || isNaN(Frame3Loaded)) {
-                    CheckStaticVDO(null,attp)
+                    CheckStaticVDO(null, attp)
                 } else {
-                    Max = Math.max(Frame1Loaded, Frame2Loaded, Frame3Loaded)
-                    Min = Math.min(Frame1Loaded, Frame2Loaded, Frame3Loaded)
-                    CalDiff = Max / Min
-                    console.log(Max, Min, CalDiff)
-                    StaticVDO = Math.abs(CalDiff - 1) < 0.03
+                    CheckCanvas = new OffscreenCanvas(1,1)
+                    CheckContext = CheckCanvas.getContext('2d')
+
+                    CheckContext.drawImage(frame1,0,0,1,1)
+                    frame1 = CheckContext.getImageData(0,0,1,1).data
+                    Frame1Loaded = frame1
+
+                    CheckContext.drawImage(frame2,0,0,1,1)
+                    frame2 = CheckContext.getImageData(0,0,1,1).data
+                    Frame2Loaded = frame2
+                    
+                    CheckContext.drawImage(frame3,0,0,1,1)
+                    frame3 = CheckContext.getImageData(0,0,1,1).data
+                    Frame3Loaded = frame3
+
+                    AllFrame = [frame1[0],frame1[1],frame1[2],
+                                frame2[0],frame2[1],frame2[2],
+                                frame3[0],frame3[1],frame3[2]]
+
+                    MAX_RGB = [0,0,0]
+                    MIN_RGB = [255,255,255]
+
+                    for (let i = 0; i < 3*3; i++) {
+                        var NumColor = AllFrame[i],
+                        RGBPosition = i - Math.floor(i/3)*3
+
+                        if (NumColor > MAX_RGB[RGBPosition]) {
+                            MAX_RGB[RGBPosition] = NumColor
+                        }
+
+                        if (NumColor < MIN_RGB[RGBPosition]) {
+                            MIN_RGB[RGBPosition] = NumColor
+                        }
+                    }
+
+                    Max = MAX_RGB[0] + MAX_RGB[1] + MAX_RGB[2]
+                    Min = MIN_RGB[0] + MIN_RGB[1] + MIN_RGB[2]
+                    
+
+                    console.log(Max, Min, (Max - Min))
+                    StaticVDO = Frame1Loaded == Frame2Loaded || Frame2Loaded == Frame3Loaded || (Max - Min) <= 5
                     console.log(StaticVDO)
                     drawpic()
                 }
             }, 500);
         } else {
             setTimeout(() => {
-                CheckStaticVDO(null,attp)
+                CheckStaticVDO(null, attp)
             }, 500);
         }
     }
@@ -7653,7 +7741,8 @@ document.addEventListener('visibilitychange', async function () {
     if (document.visibilityState == 'hidden' && rqpip == true && await GetLoad("AutoPIPT") == true) {
         rqpip = false
         if (document.pictureInPictureElement == null) {
-            FindVideo().requestPictureInPicture()
+            await FindVideo()
+            v.requestPictureInPicture()
         }
     }
 })
