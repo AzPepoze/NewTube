@@ -5,8 +5,6 @@ let AzCached = {}
 let Loaded = false
 
 async function MainLoad(GetLoadArray) {
-    let GetLoad
-
     if (GetLoadArray == null) {
         return AzCached
         // console.log("Load", GetLoadArray, AzCached[GetLoadArray])
@@ -16,8 +14,7 @@ async function MainLoad(GetLoadArray) {
             await sleep(100)
             return await MainLoad(GetLoadArray)
         } else {
-            GetLoad = AzCached[GetLoadArray]
-            return GetLoad
+            return AzCached[GetLoadArray]
         }
     }
 
@@ -35,8 +32,10 @@ async function MainLoad(GetLoadArray) {
 }
 
 async function GetLoad(GetLoad) {
+    // let Start = performance.now()
     let ThisLoad = await MainLoad(GetLoad)
     // console.log("Loaded", GetLoad, ThisLoad)
+    // console.log(GetLoad, performance.now() - Start)
     return ThisLoad
 }
 
@@ -2300,6 +2299,10 @@ async function update() {
                     --ytmusic-background: transparent !important;
                 }
 
+                ytd-tabbed-page-header{
+                    --yt-lightsource-section1-color: transparent !important;
+                }
+
                 .ytp-preview .ytp-tooltip-text-no-title,
                 .ytd-thumbnail-overlay-bottom-panel-renderer,
                 .ytp-time-display *,
@@ -2506,6 +2509,10 @@ async function update() {
                 {
                     background: transparent !important;
                 }
+
+                #header.ytd-browse * {
+                    background: transparent;
+                }
                 
                 .sbsb_d,
                 #endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:hover,
@@ -2634,7 +2641,8 @@ async function update() {
                 .ytp-menuitem,
                 yt-live-chat-text-message-renderer,
                 yt-img-shadow img,
-                ytmusic-player-queue-item
+                ytmusic-player-queue-item,
+                yt-dynamic-text-view-model
                 {
                     border-radius: var(--theme-radius) !important;
                 }
@@ -2676,7 +2684,8 @@ async function update() {
                     fill: var(--theme) !important;
                 }
 
-                ytd-author-commebadge-renderer{
+                ytd-author-commebadge-renderer,
+                yt-dynamic-text-view-model{
                     background: var(--theme-fort) !important;
                 }
 
@@ -3182,6 +3191,26 @@ async function update() {
                     padding-inline: 20px !important;
                     transition: margin .2s ;
                 }
+
+                yt-dynamic-text-view-model{
+                    text-align: center;
+                }
+
+                tp-yt-iron-dropdown {
+                    opacity: 0;
+                    transform: scale(0.9);
+                    transition:  transform .4s,opacity .4s;
+                    display: flex !important;
+               }
+               
+               tp-yt-iron-dropdown[focused] {
+                    transform: scale(1) !important;
+                    opacity: 1 !important;
+               }
+
+               tp-yt-iron-dropdown[aria-hidden="true"]{
+                pointer-events: none;
+               }
                     
                 `+ BGBLURCODE + `
                 
@@ -3243,10 +3272,10 @@ async function update() {
         var thisStyle = NORMAL + Collect_Style + AfterNEWTUBE
 
         if (await GetLoad("PtranT") == true) {
-            thisStyle = thisStyle + `html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary,
-                    html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #below,
-                    html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) div.ytp-gradient-bottom,
-                    html:not(:has(div.ytp-offline-slate)) div.html5-video-player.unstarted-mode:not(.ytp-small-mode) div.ytp-chrome-bottom
+            thisStyle = thisStyle + `html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) ytd-watch-flexy #secondary,
+                    html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) ytd-watch-flexy #below,
+                    html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) ytd-watch-flexy div.ytp-gradient-bottom,
+                    html:not(:has(div.ytp-offline-slate)) div.html5-video-player.unstarted-mode:not(.ytp-small-mode) ytd-watch-flexy div.ytp-chrome-bottom
                     {
                         transition: all 0.5s !important;
                         opacity:0 !important;
@@ -3262,12 +3291,12 @@ async function update() {
                     }`
             if (await GetLoad("SwapRowT") == true) {
                 thisStyle = thisStyle + `
-                        html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary{
+                        html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) ytd-watch-flexy #secondary{
                             transform: translate(-100px,0);
                         }`
             } else {
                 thisStyle = thisStyle + `
-                        html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary{
+                        html:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) ytd-watch-flexy #secondary{
                             transform: translate(100px,0);
                         }`
             }
@@ -3856,7 +3885,7 @@ async function PRESET() {
         CancelCode()
     }
 
-    THISDES = await createDes("✨ Select preset ✨", Main)
+    THISDES = createDes("✨ Select preset ✨", Main)
     THISDES.style = `font-size: 25px; padding:10px; fowidth:700;`
 
     THISDES.style = 'font-size:20px'
@@ -4061,7 +4090,8 @@ var THISPar = "NEWTUBE",
     LeftCount,
     LeftList
 
-async function createMainframe() {
+function createMainframe() {
+
     var List = document.createElement("p");
     List.className = "MainBox";
     List.id = THISPar
@@ -4127,7 +4157,7 @@ async function CreateNew(E) {
         font-size: 14px;`
 }
 
-async function createframe(inner, NEW) {
+function createframe(inner, NEW) {
     var List = document.createElement("p");
     List.className = "SndBox";
     List.innerHTML = inner;
@@ -4135,7 +4165,7 @@ async function createframe(inner, NEW) {
     var ParFrame = document.getElementById(THISPar)
 
     if (ParFrame == null) {
-        await createMainframe()
+        createMainframe()
     }
 
     document.getElementById(THISPar).appendChild(List)
@@ -4160,8 +4190,8 @@ async function createDes(Des, Box) {
 };
 
 async function createCheck(id, Des, NEW, Value, IfTrue, IfFlase) {
-    var Box = await createframe('<input type="checkbox" id=' + id + ' class="CheckBox" >', NEW);
-    await createDes(Des, Box);
+    var Box = createframe('<input type="checkbox" id=' + id + ' class="CheckBox" >', NEW)
+    createDes(Des, Box);
 
     ThisCheck = Box.getElementsByTagName("input")[0];
 
@@ -4197,13 +4227,14 @@ async function createCheck(id, Des, NEW, Value, IfTrue, IfFlase) {
 
     })
 
+
     return Box
 };
 
 
 async function createTextBox(id, Des, NEW, Value) {
-    var Box = await createframe('<input type="number" id=' + id + ' class="TextBox" >', NEW);
-    await createDes(Des, Box);
+    var Box = createframe('<input type="number" id=' + id + ' class="TextBox" >', NEW);
+    createDes(Des, Box);
 
     ThisText = document.getElementById(id);
 
@@ -4228,7 +4259,7 @@ async function PickerAndSlide(thiscolor) {
 }
 
 async function createColor(id, Des, NEW) {
-    var Box = await createframe('<input type="color" id=' + id + 'C class="ColorPick" > <p> <label class="DES" >Opacity : </label> <input type="range" id=' + id + 'O class="slidebar" min="0" max="100" > </p>', NEW);
+    var Box = createframe('<input type="color" id=' + id + 'C class="ColorPick" > <p> <label class="DES" >Opacity : </label> <input type="range" id=' + id + 'O class="slidebar" min="0" max="100" > </p>', NEW);
 
     Box.className = "DoY";
 
@@ -4239,7 +4270,7 @@ async function createColor(id, Des, NEW) {
 
     Box2.appendChild(Box)
 
-    var THISDES = await createDes(Des, Box2);
+    var THISDES = createDes(Des, Box2);
 
     THISDES.style = "padding:10px;"
 
@@ -4266,8 +4297,8 @@ async function createColor(id, Des, NEW) {
 
 
 async function createselect(id, option, Des, NEW) {
-    var Box = await createframe('<select id=' + id + ' class="select" > ' + option + ' </select>', NEW);
-    await createDes(Des, Box);
+    var Box = createframe('<select id=' + id + ' class="select" > ' + option + ' </select>', NEW);
+    createDes(Des, Box);
 
     var thisSelect = document.getElementById(id);
     thisSelect.value = await GetLoad(id + 'T')
@@ -4350,7 +4381,7 @@ async function CreateXY(XorY) {
         Max = "300"
     }
 
-    let ThisFrame = await createframe(`<lable class="DES">Image ` + PoOrSize[0] + XorY + PoOrSize[1] + ` : </lable>
+    let ThisFrame = createframe(`<lable class="DES">Image ` + PoOrSize[0] + XorY + PoOrSize[1] + ` : </lable>
     <input id="IMG`+ XorY + `" type="range" min=0 max=` + Max + `>`)
 
     let ThisTextBox = await createTextBox("IMG" + XorY + "BOX", "%", null, await GetLoad("IMG" + XorY))
@@ -4702,7 +4733,7 @@ async function CreateMENU() {
 
     THISPar = "☕ Buy me a coffee!"
 
-    DonateFrame = await createframe(`<p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://i.ibb.co/269h23M/2020021209494988264-logo-truemoneywallet-300x300.jpg" class="DONATEIMG"><lable class="DES">Wallet ID : AzDonate</lable></p>
+    DonateFrame = createframe(`<p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://i.ibb.co/269h23M/2020021209494988264-logo-truemoneywallet-300x300.jpg" class="DONATEIMG"><lable class="DES">Wallet ID : AzDonate</lable></p>
     <p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://i.ibb.co/4sCYzXK/index.jpg" class="DONATEIMG"><a id="HOVERLINK" href="https://www.paypal.com/signin?returnUri=https%3A%2F%2Fwww.paypal.com%2Fmyaccount%2Ftransfer%2Fhomepage%2Fexternal%2Fprofile%3FflowContextData%3DTmV7sH9Ip5x6ax_bhu-4ib7mr3qtJYLUST5ILgPTUCV-aPS5wiTHYReTyrjZUrzo6RnqrG_IGcMdzZxRSNMClpiXW_YUozCtGT_myuY-Iz482jS6LkbxXl-gkNRo--RFIFS5jtg954mBPuxa3P8N6dBFNsBMVJEOLK1-ZP-PxAwS6mdpbwpVFeEEuJwof9Nl2PE-NgFySGvPQWI_rjkTbugXS-O6HuRR3SRqTTe1SuhE25IMdYvBvUBK2y4zpVk2KbEVhQg63WzznD1emOkCq2orEG1bCTi0M4Txky3iSId11K7Xg8e_qpf4rjOaXEPDsIlw1IbKw3WAJRLdIHx0MJFLL0yfGjE7GzR42C0GeYLnods79sPkPJCqo2GjLZzLJ07epiRk2bv33AnwcLEwp4_eVm8TMwNFK-5JX_RZOd8AiOzq3_Q9hY_A19S&onboardData=%7B%22country.x%22%3A%22US%22%2C%22locale.x%22%3A%22en_US%22%2C%22intent%22%3A%22paypalme%22%2C%22redirect_url%22%3A%22https%253A%252F%252Fwww.paypal.com%252Fmyaccount%252Ftransfer%252Fhomepage%252Fexternal%252Fprofile%253FflowContextData%253DTmV7sH9Ip5x6ax_bhu-4ib7mr3qtJYLUST5ILgPTUCV-aPS5wiTHYReTyrjZUrzo6RnqrG_IGcMdzZxRSNMClpiXW_YUozCtGT_myuY-Iz482jS6LkbxXl-gkNRo--RFIFS5jtg954mBPuxa3P8N6dBFNsBMVJEOLK1-ZP-PxAwS6mdpbwpVFeEEuJwof9Nl2PE-NgFySGvPQWI_rjkTbugXS-O6HuRR3SRqTTe1SuhE25IMdYvBvUBK2y4zpVk2KbEVhQg63WzznD1emOkCq2orEG1bCTi0M4Txky3iSId11K7Xg8e_qpf4rjOaXEPDsIlw1IbKw3WAJRLdIHx0MJFLL0yfGjE7GzR42C0GeYLnods79sPkPJCqo2GjLZzLJ07epiRk2bv33AnwcLEwp4_eVm8TMwNFK-5JX_RZOd8AiOzq3_Q9hY_A19S%22%2C%22sendMoneyText%22%3A%22You%2520are%2520sending%2520Jakkrit%2520Kaewtong%22%7D" target="_blank" class="DES" >jakkrit_portraitist@hotmail.com</a></p>
     <p style="display: flex; align-items: center; padding:10px; width: 100%;"><img src="https://theme.zdassets.com/theme_assets/948919/d80b722da9edc37805def78a512b90c5772434a6.png" class="DONATEIMG"><a id="HOVERLINK" href="https://streamlabs.com/gfirstg/tip" target="_blank" class="DES" >streamlabs (PayPal / VISA / mastercard / AMEX / DISCOVER)</a></p>`);
 
@@ -4728,7 +4759,7 @@ async function CreateMENU() {
 
     THISPar = "🎉 Join my Discord 🎉"
 
-    await createframe(`<p style="display: flex; align-items: center;"><img src="https://brandlogos.net/wp-content/uploads/2021/11/discord-logo.png" class="DONATEIMG"><a id="HOVERLINK" href="https://discord.gg/BgxvVqap4G" target="_blank" class="DES" >NEWTUBE</a></p>`)
+    createframe(`<p style="display: flex; align-items: center;"><img src="https://brandlogos.net/wp-content/uploads/2021/11/discord-logo.png" class="DONATEIMG"><a id="HOVERLINK" href="https://discord.gg/BgxvVqap4G" target="_blank" class="DES" >NEWTUBE</a></p>`)
 
     //----------------------------------------------------------------------------------------------
 
@@ -4736,7 +4767,7 @@ async function CreateMENU() {
 
     Frame = await createMainframe()
 
-    await createframe(`<label class="DES">Version : ` + Ver + `</label>`)
+    createframe(`<label class="DES">Version : ` + Ver + `</label>`)
 
     await createCheck("EnableButton", "Enable");
 
@@ -4869,7 +4900,7 @@ async function CreateMENU() {
     LocatePar = await createMainframe()
 
 
-    await createframe(`<textarea id="Export" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste NTubeCode here."></textarea>`)
+    createframe(`<textarea id="Export" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 400px; font-size: 18px;" placeholder="Paste NTubeCode here."></textarea>`)
 
     var ExportTEXT = document.getElementById("Export")
 
@@ -5111,7 +5142,7 @@ async function CreateMENU() {
 
     await createCheck("IconFill", `Logo theme sync with Theme 1<br>Work when disable *Custom Top-Left Icon Image*`)
 
-    var IconFrame = await createframe(`<lable class="DES">Tab Icon Image (Recommend to use URL)</lable>
+    var IconFrame = createframe(`<lable class="DES">Tab Icon Image (Recommend to use URL)</lable>
     <p><input id="IconFrame" type="file" accept="image/*" > </p>
     <p class="DES">Enter URL :  </label><input id="IconURL" class="TextBox" type="text" style="display: flex;"></p>
     <p><lable class="DES" style="display: flex; text-align: center;" id="IconSTATUS"></label></p>`)
@@ -5194,7 +5225,7 @@ async function CreateMENU() {
 
     await createCheck("ReplaceYT", "Enable Custom Top-Left Icon Image")
 
-    let ReplaceYTFrame = await createframe(`<lable class="DES">Top-Left Icon Image</lable>
+    let ReplaceYTFrame = createframe(`<lable class="DES">Top-Left Icon Image</lable>
     <p class="DES" style="display: flex; align-items: center; width:-webkit-fill-available;">Enter URL :  </label><input id="ReplaceYTLOGO" style="width:380px; margin-left: 10px; margin-bottom: 10px;" class="TextBox" type="text" style="display: flex;"></p>
     <a class="yt-simple-endpoint style-scope ytd-topbar-logo-renderer" id="logo" aria-label="" href="/" title="หน้าแรกของ YouTube">
     <div class="style-scope ytd-topbar-logo-renderer">
@@ -5301,7 +5332,7 @@ async function CreateMENU() {
 
     await createCheck("API", "Use upload api (imgbb.com)")
 
-    var ChooseBG = await createframe(`<lable class="DES">Background Image (Recommend to use URL)</lable>
+    var ChooseBG = createframe(`<lable class="DES">Background Image (Recommend to use URL)</lable>
     <p><input id="ChooseBG" type="file" accept="image/*" > </p>
     <p><label class="DES" style="display: block; text-align: center; margin-block: 15px; flex-direction: column;">If your computer is slow. You should enable</br>"Use upload api" button for saving your computer. ♥♥♥</br>(If not please disable it to save your internet. ♥♥♥)</label> </p>
     <p><label class="DES" style="display: flex; text-align: center; margin-bottom: 30px;">(Thanks you imgbb.com for free api image upload! ♥)</label> </p>
@@ -5481,13 +5512,13 @@ async function CreateMENU() {
 
     //Add Added Font
 
-    AddedFontFrame = await createframe(`<div class="DES" style="text-align: center;width: 100%; margin-bottom:30px;">Added Fonts</div>`)
+    AddedFontFrame = createframe(`<div class="DES" style="text-align: center;width: 100%; margin-bottom:30px;">Added Fonts</div>`)
     AddedFontFrame.style = `display: flex;
     flex-direction: column;`
 
     CreateAddedFont()
 
-    AddFontFrame = await createframe(`<a id="HOVERLINK" style="margin-bottom: 20px;font-size: 18px;background: #4b4b4b;padding: 10px;border-radius: 10px;" href="https://youtu.be/Lk145lrTIcU" target="_blank" class="DES" >See how to add fonts!</a>
+    AddFontFrame = createframe(`<a id="HOVERLINK" style="margin-bottom: 20px;font-size: 18px;background: #4b4b4b;padding: 10px;border-radius: 10px;" href="https://youtu.be/Lk145lrTIcU" target="_blank" class="DES" >See how to add fonts!</a>
     <textarea id="NTInstallFont" style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; height: 200px; font-size: 18px;" placeholder="Paste Fonts here."></textarea>
     <div id="ntAddFont" class="DES" style="background: #005100; border: #72ff72 solid 1px; border-radius: 10px; padding: 10px; margin-top: 20px;">✳️ Add fonts ✳️</div>`)
 
@@ -5520,7 +5551,7 @@ async function CreateMENU() {
 
     await createCheck("EnaADDCSS", "Enable Additional CSS")
 
-    await createframe(`<textarea id="Additional_CSS" placeholder="Write/Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
+    createframe(`<textarea id="Additional_CSS" placeholder="Write/Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
 
     ADDTEXT = document.getElementById("Additional_CSS")
 
@@ -5537,7 +5568,7 @@ async function CreateMENU() {
 
     await createCheck("EnaCUSCSS", "Enable Custom CSS")
 
-    await createframe(`<textarea id="Custom_CSS" placeholder="Write/Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
+    createframe(`<textarea id="Custom_CSS" placeholder="Write/Paste CSS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
 
     CusText = document.getElementById("Custom_CSS")
 
@@ -5559,7 +5590,7 @@ async function CreateMENU() {
         await MainSave({ ["JSAutoT"]: false })
     })
 
-    await createframe(`<textarea id="Additional_JS" placeholder="Write/Paste JS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
+    createframe(`<textarea id="Additional_JS" placeholder="Write/Paste JS here." style="background: rgb(30, 30, 30); color: white; width: 100%; resize: vertical; font-size: 18px; height: 400px;"></textarea>`)
 
     ADDJS = document.getElementById("Additional_JS")
 
@@ -5582,7 +5613,7 @@ async function CreateMENU() {
 
     THISPar = "🌠 Beta features!"
 
-    await createframe(`<label class="DES">Maybe need to reload website</label>`)
+    createframe(`<label class="DES">Maybe need to reload website</label>`)
 
     await createCheck("Visual", "Audio Visualizer")
 
@@ -7621,31 +7652,31 @@ async function CheckStaticVDO(IDK, attp) {
                 if (isNaN(Frame1Loaded) || isNaN(Frame2Loaded) || isNaN(Frame3Loaded)) {
                     CheckStaticVDO(null, attp)
                 } else {
-                    CheckCanvas = new OffscreenCanvas(1,1)
+                    CheckCanvas = new OffscreenCanvas(1, 1)
                     CheckContext = CheckCanvas.getContext('2d')
 
-                    CheckContext.drawImage(frame1,0,0,1,1)
-                    frame1 = CheckContext.getImageData(0,0,1,1).data
+                    CheckContext.drawImage(frame1, 0, 0, 1, 1)
+                    frame1 = CheckContext.getImageData(0, 0, 1, 1).data
                     Frame1Loaded = frame1
 
-                    CheckContext.drawImage(frame2,0,0,1,1)
-                    frame2 = CheckContext.getImageData(0,0,1,1).data
+                    CheckContext.drawImage(frame2, 0, 0, 1, 1)
+                    frame2 = CheckContext.getImageData(0, 0, 1, 1).data
                     Frame2Loaded = frame2
-                    
-                    CheckContext.drawImage(frame3,0,0,1,1)
-                    frame3 = CheckContext.getImageData(0,0,1,1).data
+
+                    CheckContext.drawImage(frame3, 0, 0, 1, 1)
+                    frame3 = CheckContext.getImageData(0, 0, 1, 1).data
                     Frame3Loaded = frame3
 
-                    AllFrame = [frame1[0],frame1[1],frame1[2],
-                                frame2[0],frame2[1],frame2[2],
-                                frame3[0],frame3[1],frame3[2]]
+                    AllFrame = [frame1[0], frame1[1], frame1[2],
+                    frame2[0], frame2[1], frame2[2],
+                    frame3[0], frame3[1], frame3[2]]
 
-                    MAX_RGB = [0,0,0]
-                    MIN_RGB = [255,255,255]
+                    MAX_RGB = [0, 0, 0]
+                    MIN_RGB = [255, 255, 255]
 
-                    for (let i = 0; i < 3*3; i++) {
+                    for (let i = 0; i < 3 * 3; i++) {
                         var NumColor = AllFrame[i],
-                        RGBPosition = i - Math.floor(i/3)*3
+                            RGBPosition = i - Math.floor(i / 3) * 3
 
                         if (NumColor > MAX_RGB[RGBPosition]) {
                             MAX_RGB[RGBPosition] = NumColor
@@ -7658,7 +7689,7 @@ async function CheckStaticVDO(IDK, attp) {
 
                     Max = MAX_RGB[0] + MAX_RGB[1] + MAX_RGB[2]
                     Min = MIN_RGB[0] + MIN_RGB[1] + MIN_RGB[2]
-                    
+
 
                     console.log(Max, Min, (Max - Min))
                     StaticVDO = Frame1Loaded == Frame2Loaded || Frame2Loaded == Frame3Loaded || (Max - Min) <= 5
