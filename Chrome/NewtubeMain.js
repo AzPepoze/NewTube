@@ -1154,6 +1154,8 @@ async function SetNull() {
 
     await SetTo("RenderEngineT", "GPU")
 
+    await SetTo("ScWidthNewT", "thin")
+
     //Color------------------------
 
     NUllColor("Theme", `#659aff`, 100)
@@ -2142,32 +2144,54 @@ async function update() {
                     background: ${await GetSaveRgba('ThemeChips')} !important;
                 }
 
-                ytd-app::-webkit-scrollbar {
-                    width: 0px  !important;
+                @supports (scrollbar-width: auto) {
+                    *
+                    {
+                        scrollbar-width: `+ await GetLoad("ScWidthNewT") + `;
+                        scrollbar-color: var(--theme) transparent;
+                    }
+
+                    ytd-app {
+                        scrollbar-width: none;
+                    }
+
+                    body::-webkit-scrollbar-track
+                    {
+                        scrollbar-color: var(--theme) ` + await GetLoad("BGC") + ` !important;
+                    }
+                }
+
+                @supports selector(::-webkit-scrollbar) {
+                    *::-webkit-scrollbar
+                    {
+                        width: `+ await GetLoad("ScWidth") + `px  !important;
+                        height: `+ await GetLoad("ScWidth") + `px  !important;
+                    }
+                    
+                    *::-webkit-scrollbar-thumb
+                    {
+                        border-radius:10px;
+                        background-color: var(--theme) !important;
+                    }
+
+                    *:not(body)::-webkit-scrollbar-track{
+                        background: transparent !important;
+                    }
+
+                    ytd-app::-webkit-scrollbar {
+                        width: 0px  !important;
+                    }
+
+                    body::-webkit-scrollbar-track
+                    {
+                        background: `+ await GetLoad("BGC") + ` !important;
+                    }
                 }
                 
-                *::-webkit-scrollbar
-                {
-                    width: `+ await GetLoad("ScWidth") + `px  !important;
-                    height: `+ await GetLoad("ScWidth") + `px  !important;
-                }
-                
-                *::-webkit-scrollbar-thumb
-                {
-                    border-radius:10px;
-                    background-color: var(--theme) !important;
-                }
-                
-                *:not(body)::-webkit-scrollbar-track,
                 html[watch-color-update]
                 {
                     --yt-spec-general-background-a: transparent !important;
                     background: transparent !important;
-                }
-                
-                body::-webkit-scrollbar-track
-                {
-                    background: `+ await GetLoad("BGC") + ` !important;
                 }
                 
                 ytd-thumbnail-overlay-time-status-renderer,
@@ -3196,21 +3220,29 @@ async function update() {
                     text-align: center;
                 }
 
+                @keyframes show-box {
+                    from {
+                        opacity: 0;
+                    }
+                    to {
+                        opacity: 1;
+                    }
+                }
+
                 tp-yt-iron-dropdown {
-                    opacity: 0;
-                    transform: scale(0.9);
                     transition:  transform .4s,opacity .4s;
                     display: flex !important;
-               }
-               
-               tp-yt-iron-dropdown[focused] {
-                    transform: scale(1) !important;
-                    opacity: 1 !important;
-               }
+                }
+
+               tp-yt-iron-dropdown:not([aria-hidden="true"]) {
+                    animation: show-box .4s;
+                }
 
                tp-yt-iron-dropdown[aria-hidden="true"]{
-                pointer-events: none;
-               }
+                    pointer-events: none;
+                    opacity: 0 !important;
+                    transform: scale(0.9) !important;
+                }
                     
                 `+ BGBLURCODE + `
                 
@@ -5002,7 +5034,7 @@ async function CreateMENU() {
     await createselect("RenderEngine",
         `<option value="CPU">CPU (2D Canvas)</option>
         <option value="GPU">GPU (Webgl 2)</option>`,
-        "Render by CPU or GPU (if your Graphic card is powerful I recommend to use GPU)", true)
+        "Render by CPU or GPU (if your Graphic card is powerful I recommend to use GPU)")
     await createTextBox("CanvasQua", "% Quality")
     await createTextBox("NVDOB", `Blur amount`)
     await createTextBox("VDOSmooth", 'Smooth frame (Minimum & None is 1)')
@@ -5493,7 +5525,13 @@ async function CreateMENU() {
 
     THISPar = "⚛️ Other settings"
 
-    await createTextBox("ScWidth", "(Scrollbar) width")
+    await createTextBox("ScWidth", "(Scrollbar) width (Legacy)")
+
+    await createselect("ScWidthNew",
+        `<option value="auto">auto</option>
+	<option value="thin">thin</option>
+    <option value="none">none</option>`,
+        "(Scrollbar) width", true)
 
     await createCheck("VBG", "(Video) remove background solid color (Theater mode)")
 
