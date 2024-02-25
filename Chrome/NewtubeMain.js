@@ -1,5 +1,11 @@
 /* Yeaaaaaah :3 AzPepoze https://www.youtube.com/channel/UCJ2C0UTfxQo6iGTfudPfoRQ */
 
+async function SetWhenUpdate() {
+    AzCached["MediaH"] = 65
+    AzCached["MediaHFull"] = 70
+    update()
+}
+
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 let AzCached = {}
 let Loaded = false
@@ -158,10 +164,6 @@ var PreloadImg = new Image
 PreloadImg.onload = async function () {
     //console.log(PreloadImg.src)
     SetGlobalBGImage(PreloadImg.src)
-}
-
-async function SetWhenUpdate() {
-
 }
 
 async function SetidxTo(Name, Va) {
@@ -689,7 +691,7 @@ async function SetValueCheck() {
     
     div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed).ytp-autohide .ytp-chrome-bottom
     {
-    width: calc(100% - 24px) !important;
+    width: calc(100% - 38px) !important;
     }`)
 
     SetValueCheck2("ControlUnderVDO", `
@@ -1024,7 +1026,8 @@ async function SetNull() {
     await SetTo("Border", 1)
     await SetTo("PlayerBorder", 1)
 
-    await SetTo("MediaH", 24)
+    await SetTo("MediaH", 65)
+    await SetTo("MediaHFull", 70)
 
     await SetTo("IMGX", 50)
     await SetTo("IMGY", 50)
@@ -1145,6 +1148,8 @@ async function SetNull() {
     await SetTo("HideYourVIDT", false)
 
     await SetTo("JSAutoT", false)
+
+    await SetTo("ChatReplayT", false)
 
     //Select------------------------
 
@@ -1829,6 +1834,122 @@ async function ScrollEv() {
     }
 }
 
+let MainChapters
+let GetCurrentTimeElement
+
+async function ForceUpdateTime() {
+    await FindVideo()
+    if (RunningForceUpdateTime == true) {
+        if (MainChapters == null) {
+            MainChapters = document.querySelector(".ytp-chapters-container")
+            if (MainChapters == null) return
+        }
+
+        let Chapters = MainChapters.children
+
+        let Sec = Math.floor(v.currentTime)
+        let Minite = Math.floor(Sec / 60)
+        let Hours = Math.floor(Minite / 60)
+
+        Sec -= Minite * 60
+        Minite -= Hours * 60
+
+        let CalTime
+
+        if (Sec < 10) {
+            Sec = `0${Sec}`
+        }
+
+        if (Hours > 0) {
+            if (Minite < 10) {
+                Minite = `0${Minite}`
+            }
+            CalTime = `${Hours}:${Minite}:${Sec}`
+        } else {
+            CalTime = `${Minite}:${Sec}`
+        }
+
+        if (GetCurrentTimeElement == null) {
+            GetCurrentTimeElement = document.querySelector(".ytp-time-current")
+            if (GetCurrentTimeElement == null) return
+        }
+
+        GetCurrentTimeElement.textContent = CalTime
+
+
+        ///////////////////////////
+
+        let TimeLineMaxWidth = MainChapters.getBoundingClientRect().width
+
+        let StartWidth = 0
+        let NowShouldWidth = (v.currentTime / v.duration) * TimeLineMaxWidth
+        let NowShouldBufferWidth
+
+        for (var i = 0; i < v.buffered.length; i++) {
+            let BufferStartTime = v.buffered.start(i)
+            let BufferEndTime = v.buffered.end(i)
+
+            if (v.currentTime > BufferStartTime && v.currentTime < BufferEndTime) {
+                NowShouldBufferWidth = (BufferEndTime / v.duration) * TimeLineMaxWidth
+            }
+        }
+
+        for (var i = 0; i < Chapters.length; i++) {
+            let ThisChapter = Chapters[i]
+            let ThisChapterWidth = ThisChapter.getBoundingClientRect().width
+
+            let CalTimeForThisChapter
+
+            if (NowShouldWidth < StartWidth) {
+                CalTimeForThisChapter = 0
+            } else {
+                CalTimeForThisChapter = (NowShouldWidth - StartWidth) / ThisChapterWidth
+
+                if (CalTimeForThisChapter > 1) {
+                    CalTimeForThisChapter = 1
+                }
+            }
+
+            ThisChapter.querySelector(".ytp-play-progress").style.transform = `scaleX(${CalTimeForThisChapter})`
+
+
+            let CalBufferForThisChapter
+
+            if (NowShouldBufferWidth < StartWidth) {
+                CalBufferForThisChapter = 0
+            } else {
+                CalBufferForThisChapter = (NowShouldBufferWidth - StartWidth) / ThisChapterWidth
+
+                if (CalBufferForThisChapter > 1) {
+                    CalBufferForThisChapter = 1
+                }
+            }
+
+            ThisChapter.querySelector(".ytp-load-progress").style.transform = `scaleX(${CalBufferForThisChapter})`
+
+            if (Chapters[i + 1]) {
+                StartWidth += 2
+            }
+
+            StartWidth += ThisChapterWidth
+        }
+
+    } else {
+        v.removeEventListener("timeupdate", ForceUpdateTime)
+    }
+}
+
+let RunningForceUpdateTime = false
+
+async function StartForceUpdateTime() {
+    if (RunningForceUpdateTime == false && await GetLoad("AutohideBarT") == false && !inIframe()) {
+        await FindVideo()
+        RunningForceUpdateTime = true
+
+        v.addEventListener("timeupdate", ForceUpdateTime)
+    }
+}
+
 async function SetGlobalBGImage(ImgValue) {
     if (document.getElementById("BGIMG")) {
         RenderPreImg(ImgValue)
@@ -1855,7 +1976,7 @@ let CanvasNewQua = 1
 let RenderEngine = null
 
 async function update() {
-
+    RunningForceUpdateTime = false
     // console.log("UPDATE");
 
     BlackBarWaitPx = await GetLoad("LazyAmount")
@@ -1921,6 +2042,7 @@ async function update() {
     else if (await GetLoad("EnaCUSCSST") == true) {
         NTstyle.textContent = NORMAL + await GetLoad("CUSTOM") + ADDCSS + AfterNEWTUBE
     } else {
+        await StartForceUpdateTime()
 
         if ((await GetLoad("ScrollT") == true || await GetLoad("FlyoutT") == true) && await GetLoad("EnableButtonT") == true) {
             AddScrollEv()
@@ -2533,10 +2655,6 @@ async function update() {
                 {
                     background: transparent !important;
                 }
-
-                #header.ytd-browse * {
-                    background: transparent;
-                }
                 
                 .sbsb_d,
                 #endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:hover,
@@ -3018,9 +3136,14 @@ async function update() {
 
                 .ytp-gradient-bottom
                 {
+                    padding: 0px !important;
                     height: `+ await GetLoad("MediaH") + `px !important;
                     border-radius: var(--theme-radius-big) !important;
                     `+ await GetCodeC("BottomG") + `
+                }
+
+                .ytp-fullscreen .ytp-gradient-bottom{
+                    height: `+ await GetLoad("MediaHFull") + `px !important;
                 }
 
                 
@@ -5056,6 +5179,8 @@ async function CreateMENU() {
     await createColor("MediaBG", "Background color")
     await createCheck("BottomG", "Remove default background gradient")
     await createTextBox("MediaH", "Background height")
+    await createTextBox("MediaHFull", "(Full screen) Background height", true)
+
 
     await createCheck("PlayerOut", "Enable Borders/Shadows");
     await createTextBox("PlayerBorder", "Borders/Shadows width")
@@ -5135,6 +5260,8 @@ async function CreateMENU() {
     await createCheck("SwapRow", "Swap left-right row (In watching mode)")
 
     await createCheck("SrollRow", "Srollable row (In normal watching mode only)<br>Flyout will not working")
+
+    await createCheck("ChatReplay", "Auto show chat replay")
 
     //theme-------------------------------------------------------------------------------
 
@@ -5531,7 +5658,7 @@ async function CreateMENU() {
         `<option value="auto">auto</option>
 	<option value="thin">thin</option>
     <option value="none">none</option>`,
-        "(Scrollbar) width", true)
+        "(Scrollbar) width")
 
     await createCheck("VBG", "(Video) remove background solid color (Theater mode)")
 
@@ -7743,6 +7870,28 @@ async function CheckStaticVDO(IDK, attp) {
     }
 }
 
+async function ShowReplayChat(Times) {
+    if (Times == null) {
+        Times = 10
+    }
+    Times -= 1
+    if (await GetLoad("ChatReplayT") == true) {
+        let FindReplayChatButton = document.querySelector(`ytd-live-chat-frame[collapsed] ytd-toggle-button-renderer button[aria-pressed="false"]`)
+        if (FindReplayChatButton) {
+            FindReplayChatButton.click()
+        } else {
+            setTimeout(() => {
+                ShowReplayChat(Times)
+            }, 1000);
+        }
+    }
+}
+
+function WhenYoutubeUpdated() {
+    ShowReplayChat()
+}
+
+window.addEventListener('yt-page-data-updated', WhenYoutubeUpdated)
 
 function EnableBGBlur() {
     //console.log("EnaVDOBG")
