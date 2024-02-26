@@ -684,7 +684,7 @@ async function SetValueCheck() {
     opacity: 1 !important;
     }
     
-    div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed).ytp-autohide .ytp-gradient-bottom
+    div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.unstarted-mode).ytp-autohide .ytp-gradient-bottom
     {
     width:100% !important;
     }
@@ -1976,8 +1976,8 @@ let CanvasNewQua = 1
 let RenderEngine = null
 
 async function update() {
+    console.log("UPDATE");
     RunningForceUpdateTime = false
-    // console.log("UPDATE");
 
     BlackBarWaitPx = await GetLoad("LazyAmount")
 
@@ -2042,7 +2042,7 @@ async function update() {
     else if (await GetLoad("EnaCUSCSST") == true) {
         NTstyle.textContent = NORMAL + await GetLoad("CUSTOM") + ADDCSS + AfterNEWTUBE
     } else {
-        await StartForceUpdateTime()
+        StartForceUpdateTime()
 
         if ((await GetLoad("ScrollT") == true || await GetLoad("FlyoutT") == true) && await GetLoad("EnableButtonT") == true) {
             AddScrollEv()
