@@ -1,9 +1,8 @@
 /* Yeaaaaaah :3 AzPepoze https://www.youtube.com/channel/UCJ2C0UTfxQo6iGTfudPfoRQ */
-
 async function SetWhenUpdate() {
-    AzCached["MediaH"] = 65
-    AzCached["MediaHFull"] = 70
-    update()
+    // AzCached["MediaH"] = 65
+    // AzCached["MediaHFull"] = 70
+    // update()
 }
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
@@ -680,18 +679,13 @@ async function SetValueCheck() {
     div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed).ytp-autohide .ytp-gradient-bottom,
     div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed).ytp-autohide .ytp-chrome-bottom
     {
-    margin-left:0px !important;
-    opacity: 1 !important;
+        margin-left:0px !important;
+        opacity: 1 !important;
     }
     
     div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.unstarted-mode).ytp-autohide .ytp-gradient-bottom
     {
-    width:100% !important;
-    }
-    
-    div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed).ytp-autohide .ytp-chrome-bottom
-    {
-    width: calc(100% - 38px) !important;
+        width:100% !important;
     }`)
 
     SetValueCheck2("ControlUnderVDO", `
@@ -721,9 +715,8 @@ div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode)
 .ytp-chrome-top[aria-hidden=true],
 .ytp-chrome-bottom[aria-hidden=true]
 {
-      transition: all 0.5s !important;
-      opacity: 0 !important;
-      width: 0px !important;
+    transition: all 0.5s !important;
+    opacity: 0 !important;
 }
 
 .ytp-chrome-bottom,
@@ -2133,6 +2126,88 @@ async function update() {
             }
         }
 
+
+        let VideoControl
+
+        if (await GetLoad("AutohideBarT") == true && await GetLoad("ControlUnderVDOT") == true) {
+            VideoControl = `.ytp-gradient-bottom[aria-hidden=true],
+            .ytp-autohide .ytp-gradient-bottom,.ytp-autohide .ytp-playlist-menu-button,
+            .ytp-autohide .ytp-back-button,
+            .ytp-autohide .ytp-title-channel,
+            .ytp-autohide .ytp-title,
+            .ytp-autohide .ytp-chrome-top .ytp-watch-later-button,
+            .ytp-autohide .ytp-chrome-top .ytp-share-button,
+            .ytp-autohide .ytp-chrome-top .ytp-copylink-button,
+            .ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button,
+            .ytp-autohide .ytp-overflow-button,
+            .ytp-autohide .ytp-chrome-bottom,
+            .ytp-chrome-top[aria-hidden=true],
+            .ytp-chrome-bottom[aria-hidden=true]
+            {
+                  width: 0px !important;
+            }`
+        }
+
+        let GetThemeColor
+        let GetThemeColor2
+        let GetThemeColor3
+        let GetTextColor
+        let BG
+
+        if (false) {
+            let GetColor = await GetSampleColor(await GetVideoThumbnail())
+
+            if (GetColor[0] == GetColor[1] && GetColor[1] == GetColor[2]) {
+                GetColor = await GetSampleColor(await GetVideoFirstFrame())
+            }
+
+            console.log("Before", GetColor)
+
+            let Max = 0
+
+            for (let i = 0; i <= 2; i++) {
+                let ThisValue = GetColor[i]
+                if (ThisValue > Max) {
+                    Max = ThisValue
+                }
+            }
+
+            let GetAdd = 255 - Max
+
+            for (let i = 0; i <= 2; i++) {
+                GetColor[i] += GetAdd
+            }
+
+            let hsv = RGBtoHSV(GetColor)
+            hsv[1] *= 1.5
+            if (true && hsv[1] > 0.6) {
+                hsv[1] = 0.6
+            }
+            console.log(hsv[1])
+            GetColor = HSVtoRGB(hsv)
+
+            console.log("After", GetColor)
+
+            GetThemeColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+            GetThemeColor2 = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
+            GetThemeColor3 = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
+
+            hsv[1] *= 0.4
+            GetColor = HSVtoRGB(hsv)
+            GetTextColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+
+            hsv[1] *= 2
+            hsv[2] *= 0.15
+            GetColor = HSVtoRGB(hsv)
+            BG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+        } else {
+            GetThemeColor = await GetSaveRgba('Theme')
+            GetThemeColor2 = await GetSaveRgba('ThemeThr')
+            GetTextColor = await GetSaveRgba('Text')
+            GetThemeColor3 = await GetSaveRgba("ThemeFort")
+            BG = await GetSaveRgba('BG')
+        }
+
         Collect_Style = `html:not(.style-scope)[system-icons]:not(.style-scope)
                 {
                     background: black !important;
@@ -2145,17 +2220,17 @@ async function update() {
                 :root {
                     --blur-amount: `+ await GetLoad("BlurAm") + `px;
                     --Bg-blur: `+ await GetLoad("BlurBGAM") + `px;
-                    --theme: `+ await GetSaveRgba('Theme') + `;
-                    --theme-fort: ${await GetSaveRgba("ThemeFort")};
+                    --theme: `+ GetThemeColor + `;
+                    --theme-fort: ${GetThemeColor3};
                     --playlist-bg: `+ await GetSaveRgba('Playlisthover') + `;
-                    --text-color: `+ await GetSaveRgba('Text') + `;
+                    --text-color: `+ GetTextColor + `;
                     --nd-text-color: `+ await GetSaveRgba('NdText') + `;
                     --border-width: `+ await GetLoad("Border") + `px;
                     --player-bg-border-width: `+ await GetLoad("PlayerBorder") + `px;
                     --border-color: `+ await GetSaveRgba('OutSha') + `;
                     --border-hover-color: `+ await GetSaveRgba('ThumbHoverColor') + `;
                     --border-click-color: `+ await GetSaveRgba('ThumbClick') + `;
-                    --bg-color: `+ await GetSaveRgba('BG') + `;
+                    --bg-color: `+ BG + `;
                     --in-player-bg-color: `+ await GetSaveRgba('MediaBG') + `;
                     --top-bar-and-search-background: `+ await GetSaveRgba('ThemeSnd') + `;
                     --things-end-on-video: `+ await GetSaveRgba('EndBG') + `;
@@ -2170,7 +2245,7 @@ async function update() {
                     --border-width-hover: `+ await GetLoad("HoverBorder") + `px;
                     --border-minus-hover: calc(var(--border-width-hover) * -1);
                     
-                    --theme-third: `+ await GetSaveRgba('ThemeThr') + `;
+                    --theme-third: `+ GetThemeColor2 + `;
                     --Zoom: `+ await GetLoad("Zoom") + `;
 
                     --sub-ShaWidth: `+ await GetLoad("subShaWidth") + `px;
@@ -2267,8 +2342,7 @@ async function update() {
                 }
 
                 @supports (scrollbar-width: auto) {
-                    *
-                    {
+                    *{
                         scrollbar-width: `+ await GetLoad("ScWidthNewT") + `;
                         scrollbar-color: var(--theme) transparent;
                     }
@@ -2288,6 +2362,9 @@ async function update() {
                     {
                         width: `+ await GetLoad("ScWidth") + `px  !important;
                         height: `+ await GetLoad("ScWidth") + `px  !important;
+
+                        background-color: transparent !important;
+                        color: var(--theme) !important;
                     }
                     
                     *::-webkit-scrollbar-thumb
@@ -2651,7 +2728,8 @@ async function update() {
                 #player,
                 ytd-thumbnail-overlay-resume-playback-renderer,
                 .button-container.ytd-rich-shelf-renderer,
-                ytd-video-preview
+                ytd-video-preview,
+                ytd-button-renderer.ytd-live-chat-frame
                 {
                     background: transparent !important;
                 }
@@ -3421,6 +3499,8 @@ async function update() {
                 `+ ADDCSS + `
 
                 `+ ADDReplaceLOGO + `
+
+                `+ VideoControl + `
 
                 `
 
@@ -6112,7 +6192,7 @@ async function ShowUpdated() {
     color: rgb(255 201 87);
     fofamily: cursive !important;
     `
-    changelogbt.innerHTML = "Changes log"
+    changelogbt.innerHTML = "Visit NewTube github"
 
     changelogbt.onclick = async function () {
         window.open(
@@ -7776,6 +7856,21 @@ async function CheckLoop() {
     }, 100);
 }
 
+async function GetVideoID(attemp) {
+
+    if (attemp == null) {
+        attemp = 10
+    }
+
+    if (document.getElementsByTagName("ytd-watch-flexy")[0]) {
+        videoID = document.getElementsByTagName("ytd-watch-flexy")[0].getAttribute("video-id")
+        return videoID
+    } else {
+        await sleep(500)
+        return await GetVideoID(attemp)
+    }
+}
+
 async function CheckStaticVDO(IDK, attp) {
     if (attp == null) {
         attp = 10
@@ -7783,90 +7878,84 @@ async function CheckStaticVDO(IDK, attp) {
     if (await GetLoad("CheckStaticT") && attp > 0) {
         console.log("Check if static")
         attp--
-        if (document.getElementsByTagName("ytd-watch-flexy")[0]) {
-            videoID = document.getElementsByTagName("ytd-watch-flexy")[0].getAttribute("video-id")
-            console.log(videoID)
 
-            var Frame1Loaded,
-                Frame2Loaded,
-                Frame3Loaded
+        videoID = await GetVideoID()
 
-            var frame1 = new Image()
-            frame1.crossOrigin = "https://www.youtube.com"
-            frame1.onload = function () {
-                Frame1Loaded = true
-            }
-            frame1.src = `http://i.ytimg.com/vi/${videoID}/1.jpg`
+        var Frame1Loaded,
+            Frame2Loaded,
+            Frame3Loaded
 
-            var frame2 = new Image()
-            frame2.crossOrigin = "https://www.youtube.com"
-            frame2.onload = function () {
-                Frame2Loaded = true
-            }
-            frame2.src = `http://i.ytimg.com/vi/${videoID}/2.jpg`
+        var frame1 = new Image()
+        frame1.crossOrigin = "https://www.youtube.com"
+        frame1.onload = function () {
+            Frame1Loaded = true
+        }
+        frame1.src = `http://i.ytimg.com/vi/${videoID}/1.jpg`
 
-            var frame3 = new Image()
-            frame3.crossOrigin = "https://www.youtube.com"
-            frame3.onload = function () {
-                Frame3Loaded = true
-            }
-            frame3.src = `http://i.ytimg.com/vi/${videoID}/3.jpg`
+        var frame2 = new Image()
+        frame2.crossOrigin = "https://www.youtube.com"
+        frame2.onload = function () {
+            Frame2Loaded = true
+        }
+        frame2.src = `http://i.ytimg.com/vi/${videoID}/2.jpg`
+
+        var frame3 = new Image()
+        frame3.crossOrigin = "https://www.youtube.com"
+        frame3.onload = function () {
+            Frame3Loaded = true
+        }
+        frame3.src = `http://i.ytimg.com/vi/${videoID}/3.jpg`
 
 
-            setTimeout(() => {
-                if (isNaN(Frame1Loaded) || isNaN(Frame2Loaded) || isNaN(Frame3Loaded)) {
-                    CheckStaticVDO(null, attp)
-                } else {
-                    CheckCanvas = new OffscreenCanvas(1, 1)
-                    CheckContext = CheckCanvas.getContext('2d')
+        setTimeout(() => {
+            if (isNaN(Frame1Loaded) || isNaN(Frame2Loaded) || isNaN(Frame3Loaded)) {
+                CheckStaticVDO(null, attp)
+            } else {
+                CheckCanvas = new OffscreenCanvas(1, 1)
+                CheckContext = CheckCanvas.getContext('2d')
 
-                    CheckContext.drawImage(frame1, 0, 0, 1, 1)
-                    frame1 = CheckContext.getImageData(0, 0, 1, 1).data
-                    Frame1Loaded = frame1
+                CheckContext.drawImage(frame1, 0, 0, 1, 1)
+                frame1 = CheckContext.getImageData(0, 0, 1, 1).data
+                Frame1Loaded = frame1
 
-                    CheckContext.drawImage(frame2, 0, 0, 1, 1)
-                    frame2 = CheckContext.getImageData(0, 0, 1, 1).data
-                    Frame2Loaded = frame2
+                CheckContext.drawImage(frame2, 0, 0, 1, 1)
+                frame2 = CheckContext.getImageData(0, 0, 1, 1).data
+                Frame2Loaded = frame2
 
-                    CheckContext.drawImage(frame3, 0, 0, 1, 1)
-                    frame3 = CheckContext.getImageData(0, 0, 1, 1).data
-                    Frame3Loaded = frame3
+                CheckContext.drawImage(frame3, 0, 0, 1, 1)
+                frame3 = CheckContext.getImageData(0, 0, 1, 1).data
+                Frame3Loaded = frame3
 
-                    AllFrame = [frame1[0], frame1[1], frame1[2],
-                    frame2[0], frame2[1], frame2[2],
-                    frame3[0], frame3[1], frame3[2]]
+                AllFrame = [frame1[0], frame1[1], frame1[2],
+                frame2[0], frame2[1], frame2[2],
+                frame3[0], frame3[1], frame3[2]]
 
-                    MAX_RGB = [0, 0, 0]
-                    MIN_RGB = [255, 255, 255]
+                MAX_RGB = [0, 0, 0]
+                MIN_RGB = [255, 255, 255]
 
-                    for (let i = 0; i < 3 * 3; i++) {
-                        var NumColor = AllFrame[i],
-                            RGBPosition = i - Math.floor(i / 3) * 3
+                for (let i = 0; i < 3 * 3; i++) {
+                    var NumColor = AllFrame[i],
+                        RGBPosition = i - Math.floor(i / 3) * 3
 
-                        if (NumColor > MAX_RGB[RGBPosition]) {
-                            MAX_RGB[RGBPosition] = NumColor
-                        }
-
-                        if (NumColor < MIN_RGB[RGBPosition]) {
-                            MIN_RGB[RGBPosition] = NumColor
-                        }
+                    if (NumColor > MAX_RGB[RGBPosition]) {
+                        MAX_RGB[RGBPosition] = NumColor
                     }
 
-                    Max = MAX_RGB[0] + MAX_RGB[1] + MAX_RGB[2]
-                    Min = MIN_RGB[0] + MIN_RGB[1] + MIN_RGB[2]
-
-
-                    console.log(Max, Min, (Max - Min))
-                    StaticVDO = Frame1Loaded == Frame2Loaded || Frame2Loaded == Frame3Loaded || (Max - Min) <= 5
-                    console.log(StaticVDO)
-                    drawpic()
+                    if (NumColor < MIN_RGB[RGBPosition]) {
+                        MIN_RGB[RGBPosition] = NumColor
+                    }
                 }
-            }, 500);
-        } else {
-            setTimeout(() => {
-                CheckStaticVDO(null, attp)
-            }, 500);
-        }
+
+                Max = MAX_RGB[0] + MAX_RGB[1] + MAX_RGB[2]
+                Min = MIN_RGB[0] + MIN_RGB[1] + MIN_RGB[2]
+
+
+                console.log(Max, Min, (Max - Min))
+                StaticVDO = Frame1Loaded == Frame2Loaded || Frame2Loaded == Frame3Loaded || (Max - Min) <= 5
+                console.log(StaticVDO)
+                drawpic()
+            }
+        }, 500);
     }
 }
 
@@ -8010,3 +8099,108 @@ function listFonts() {
     })
     return ArrayFont
 }
+
+async function GetVideoThumbnail() {
+    videoID = await GetVideoID()
+    let GetLink = `https://i.ytimg.com/vi/${videoID}/maxresdefault.jpg`
+    console.log(GetLink)
+    return new Promise((resolve, reject) => {
+        let img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = reject
+        img.crossOrigin = "Anonymous"
+        img.src = GetLink
+    })
+}
+
+async function GetVideoFirstFrame() {
+    videoID = await GetVideoID()
+    let GetLink = `https://i.ytimg.com/vi/${videoID}/0.jpg`
+    console.log(GetLink)
+    return new Promise((resolve, reject) => {
+        let img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = reject
+        img.crossOrigin = "Anonymous"
+        img.src = GetLink
+    })
+}
+
+async function GetSampleColor(element) {
+    // let width = element.width
+    // let height = element.height
+
+    // console.log(width, height)
+
+    // let samplecanvas = new OffscreenCanvas(width, height)
+    // let samplecontext = samplecanvas.getContext('2d')
+    // samplecontext.drawImage(element, 0, 0, width, height)
+
+    // let data = samplecontext.getImageData(0, 0, width, height).data
+
+    // let rgb = { r: 0, g: 0, b: 0 }
+
+    // length = data.length;
+
+    // let i = -4,
+    //     count = 0
+
+    // while ((i += 5 * 4) < length) {
+    //     if ( data[i] !=  data[i+1] &&  data[i+1] != data[i+2]) {
+    //         ++count;
+    //         rgb.r += data[i];
+    //         rgb.g += data[i + 1];
+    //         rgb.b += data[i + 2];
+    //     }
+    // }
+
+    // console.log(count)
+
+    // rgb.r = ~~(rgb.r / count);
+    // rgb.g = ~~(rgb.g / count);
+    // rgb.b = ~~(rgb.b / count);
+
+    // return [rgb.r, rgb.g, rgb.b]
+    var colorThief = new ColorThief();
+
+    var mostcolor = colorThief.getColor(element);
+    var palette = colorThief.getPalette(element, 5);
+    var ChooseInPalette
+    var ChooseInPaletteSat = 0
+    var ChooseInPaletteValue = 0
+
+    let paletteLength = palette.length
+    for (let i = 0; i < paletteLength; i++) {
+        let hsv = RGBtoHSV(palette[i])
+        console.log(palette[i], hsv[1], hsv[2], hsv[1] * hsv[2], ChooseInPaletteSat * ChooseInPaletteValue)
+        if (hsv[1] * hsv[2] > ChooseInPaletteSat * ChooseInPaletteValue) {
+            ChooseInPalette = palette[i]
+            ChooseInPaletteSat = hsv[1]
+            ChooseInPaletteValue = hsv[2]
+        }
+    }
+
+    if (ChooseInPaletteSat == 0) {
+        ChooseInPalette = [255, 255, 255, 255]
+    }
+
+    console.log(ChooseInPalette)
+    console.log(mostcolor)
+    console.log(palette)
+
+    var ChooseColor
+
+    var MostColorHSV = RGBtoHSV(mostcolor)
+
+    if (MostColorHSV[1] > 0.4) {
+        ChooseColor = mostcolor
+        console.log("Choose MostColor")
+    } else {
+        ChooseColor = ChooseInPalette
+        console.log("Choose Palette")
+    }
+
+    return ChooseInPalette
+}
+
+// window.addEventListener('yt-page-data-updated', update)

@@ -1,7 +1,7 @@
 {"manifest_version": 3,
     "name": "NewTube (YouTube Customizer & Enhancement)",
     "author": "AzPepoze",
-    "version": "4.12.1",
+    "version": "4.12.2",
     "description": "Customize your YouTube website with a lot customizable.",
     "homepage_url": "https://github.com/AzPepoze/Newtube",
     "default_locale": "en",
@@ -14,9 +14,7 @@
 	},
     "web_accessible_resources": [
         {
-            "resources": [ "icon/*",
-                            "asset/*"
-                         ],
+            "resources": [ "*"],
             "matches": [ "*://www.youtube.com/*", "*://giscus.app/*", "*://music.youtube.com/*" ]
         }
     ],
@@ -24,7 +22,9 @@
       {
 		"all_frames": true,
         "matches": ["*://www.youtube.com/*", "*://music.youtube.com/*" ],
-        "js": ["NewtubeMain.js"],
+        "js": ["NewtubeMain.js",
+                "scripts/etc.js",
+                "scripts/color-thief.min.js"],
 		"run_at": "document_start"
       },
       {
@@ -38,11 +38,15 @@
     },
     "commands": {
         "Enable": {
-            "suggested_key": "Alt+Shift+Z",
+            "suggested_key": {
+                "default": "Alt+Shift+Z"
+            },
             "description": "Toggle Enable"
         },
         "Setting": {
-            "suggested_key": "Alt+Shift+X",
+            "suggested_key": {
+                "default": "Alt+Shift+X"
+            },
             "description": "Toggle Setting"
         }
     },
