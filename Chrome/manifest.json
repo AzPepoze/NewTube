@@ -1,7 +1,7 @@
 {"manifest_version": 3,
     "name": "NewTube (YouTube Customizer & Enhancement)",
     "author": "AzPepoze",
-    "version": "4.12.2",
+    "version": "4.13.0",
     "description": "Customize your YouTube website with a lot customizable.",
     "homepage_url": "https://github.com/AzPepoze/Newtube",
     "default_locale": "en",
@@ -22,9 +22,11 @@
       {
 		"all_frames": true,
         "matches": ["*://www.youtube.com/*", "*://music.youtube.com/*" ],
-        "js": ["NewtubeMain.js",
+        "js": [
                 "scripts/etc.js",
-                "scripts/color-thief.min.js"],
+                "scripts/color-thief.min.js",
+                "NewtubeMain.js"
+            ],
 		"run_at": "document_start"
       },
       {

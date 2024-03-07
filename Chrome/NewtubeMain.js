@@ -5,92 +5,6 @@ async function SetWhenUpdate() {
     // update()
 }
 
-const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
-let AzCached = {}
-let Loaded = false
-
-async function MainLoad(GetLoadArray) {
-    if (GetLoadArray == null) {
-        return AzCached
-        // console.log("Load", GetLoadArray, AzCached[GetLoadArray])
-    } else {
-        if (Loaded == false) {
-            console.log("Not loaded")
-            await sleep(100)
-            return await MainLoad(GetLoadArray)
-        } else {
-            return AzCached[GetLoadArray]
-        }
-    }
-
-    // if (GetLoad == null) {
-    //     await chrome.storage.local.get(GetLoadArray).then((Loaded) => {
-    //         if (GetLoadArray == null) {
-    //             GetLoad = Loaded
-    //         } else {
-    //             GetLoad = Loaded[GetLoadArray]
-    //             AzCached[GetLoadArray] = GetLoad
-    //             // console.log("FirstLoad", GetLoadArray, AzCached[GetLoadArray])
-    //         }
-    //     })
-    // }
-}
-
-async function GetLoad(GetLoad) {
-    // let Start = performance.now()
-    let ThisLoad = await MainLoad(GetLoad)
-    // console.log("Loaded", GetLoad, ThisLoad)
-    // console.log(GetLoad, performance.now() - Start)
-    return ThisLoad
-}
-
-async function LoadCached() {
-    if (true) {
-        await chrome.storage.local.get("CachedSave").then((Loaded) => {
-            AzCached = Loaded["CachedSave"]
-        })
-
-        console.log(AzCached)
-
-        if (AzCached == null) {
-            AzCached = {}
-        } else {
-            if (AzCached["CachedSave"]) {
-                delete AzCached["CachedSave"]
-            }
-            console.log("Loaded Cached")
-        }
-
-        Loaded = true
-    }
-}
-
-LoadCached()
-
-async function MainSave(TheSave) {
-    let OriginTheSave = TheSave
-    //console.log("Save", TheSave)
-    if (true) {
-        Object.keys(TheSave).forEach(function (ThisKey) {
-            AzCached[ThisKey] = TheSave[ThisKey]
-            //console.log("SaveToCached", ThisKey, TheSave[ThisKey])
-        })
-    }
-
-    // console.log()
-    await chrome.storage.local.set({ "CachedSave": AzCached })
-}
-
-async function LoadToConsole(GetLoadArray) {
-    let Get = await MainLoad(GetLoadArray)
-    console.log(Get)
-}
-
-async function ClearSave() {
-    await chrome.storage.local.clear()
-    AzCached = {}
-}
-
 // window.addEventListener("beforeunload", async function () {
 //     await chrome.storage.local.set({ "CachedSave": AzCached })
 // })
@@ -304,46 +218,6 @@ async function styleloop() {
 }
 
 styleloop()
-
-async function waitForElmByID(selector) {
-    return new Promise(resolve => {
-        if (document.getElementById(selector)) {
-            return resolve(document.getElementById(selector));
-        }
-
-        const observer = new MutationObserver(mutations => {
-            if (document.getElementById(selector)) {
-                resolve(document.getElementById(selector));
-                observer.disconnect();
-            }
-        });
-
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-    });
-}
-
-async function waitForElm(selector) {
-    return new Promise(resolve => {
-        if (document.querySelector(selector)) {
-            return resolve(document.querySelector(selector));
-        }
-
-        const observer = new MutationObserver(mutations => {
-            if (document.querySelector(selector)) {
-                resolve(document.querySelector(selector));
-                observer.disconnect();
-            }
-        });
-
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-    });
-}
 
 function inIframe() {
     try {
@@ -1143,6 +1017,8 @@ async function SetNull() {
     await SetTo("JSAutoT", false)
 
     await SetTo("ChatReplayT", false)
+
+    await SetTo("AutoTheaterT", false)
 
     //Select------------------------
 
@@ -2148,11 +2024,18 @@ async function update() {
             }`
         }
 
-        let GetThemeColor
-        let GetThemeColor2
-        let GetThemeColor3
-        let GetTextColor
+        let ThemeColor
+        let ThemeColor2
+        let ThemeColor3
+        let TextColor
+        let TextColor2
         let BG
+        let PlayListColor
+        let LinkColor
+        let ControlPanel
+        let TimeText
+        let TimeLineBG
+        let TimeLoaded
 
         if (false) {
             let GetColor = await GetSampleColor(await GetVideoThumbnail())
@@ -2188,24 +2071,66 @@ async function update() {
 
             console.log("After", GetColor)
 
-            GetThemeColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
-            GetThemeColor2 = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
-            GetThemeColor3 = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
+            ThemeColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+            ThemeColor2 = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
+            ThemeColor3 = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
+            PlayListColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
+            LinkColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+
+            hsv[2] *= 0.4
+            GetColor = HSVtoRGB(hsv)
+            TimeBG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.8})`
+            hsv[2] *= 1 / 0.4
+
+            hsv[1] *= 0.8
+            GetColor = HSVtoRGB(hsv)
+            TextColor2 = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+            hsv[1] *= 1 / 0.8
+
+            hsv[1] *= 0.5
+            GetColor = HSVtoRGB(hsv)
+            TimeText = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+            hsv[1] *= 1 / 0.5
 
             hsv[1] *= 0.4
             GetColor = HSVtoRGB(hsv)
-            GetTextColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+            TextColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+            hsv[1] *= 1 / 0.4
 
-            hsv[1] *= 2
             hsv[2] *= 0.15
             GetColor = HSVtoRGB(hsv)
             BG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+            hsv[2] *= 1 / 0.15
+
+            hsv[2] *= 0.4
+            GetColor = HSVtoRGB(hsv)
+            TimeLineBG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+            hsv[2] *= 1 / 0.4
+
+            hsv[1] *= 0.5
+            hsv[2] *= 0.6
+            GetColor = HSVtoRGB(hsv)
+            TimeLoaded = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+            hsv[1] *= 1 / 0.5
+            hsv[2] *= 1 / 0.6
+
+            hsv[2] *= 0.2
+            GetColor = HSVtoRGB(hsv)
+            ControlPanel = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.7})`
         } else {
-            GetThemeColor = await GetSaveRgba('Theme')
-            GetThemeColor2 = await GetSaveRgba('ThemeThr')
-            GetTextColor = await GetSaveRgba('Text')
-            GetThemeColor3 = await GetSaveRgba("ThemeFort")
+            ThemeColor = await GetSaveRgba('Theme')
+            ThemeColor2 = await GetSaveRgba('ThemeThr')
+            TextColor = await GetSaveRgba('Text')
+            TextColor2 = await GetSaveRgba('NdText')
+            ThemeColor3 = await GetSaveRgba("ThemeFort")
             BG = await GetSaveRgba('BG')
+            PlayListColor = await GetSaveRgba('Playlisthover')
+            LinkColor = await GetSaveRgba('LinkColor')
+            ControlPanel = await GetSaveRgba('MediaBG')
+            TimeBG = await GetSaveRgba('TimeBG')
+            TimeText = await GetSaveRgba('TIMETEXT')
+            TimeLineBG = await GetSaveRgba("Time-LineBG")
+            TimeLoaded = await GetSaveRgba("TimeLoaded")
         }
 
         Collect_Style = `html:not(.style-scope)[system-icons]:not(.style-scope)
@@ -2220,21 +2145,21 @@ async function update() {
                 :root {
                     --blur-amount: `+ await GetLoad("BlurAm") + `px;
                     --Bg-blur: `+ await GetLoad("BlurBGAM") + `px;
-                    --theme: `+ GetThemeColor + `;
-                    --theme-fort: ${GetThemeColor3};
-                    --playlist-bg: `+ await GetSaveRgba('Playlisthover') + `;
-                    --text-color: `+ GetTextColor + `;
-                    --nd-text-color: `+ await GetSaveRgba('NdText') + `;
+                    --theme: `+ ThemeColor + `;
+                    --theme-fort: ${ThemeColor3};
+                    --playlist-bg: `+ PlayListColor + `;
+                    --text-color: `+ TextColor + `;
+                    --nd-text-color: `+ TextColor2 + `;
                     --border-width: `+ await GetLoad("Border") + `px;
                     --player-bg-border-width: `+ await GetLoad("PlayerBorder") + `px;
                     --border-color: `+ await GetSaveRgba('OutSha') + `;
                     --border-hover-color: `+ await GetSaveRgba('ThumbHoverColor') + `;
                     --border-click-color: `+ await GetSaveRgba('ThumbClick') + `;
                     --bg-color: `+ BG + `;
-                    --in-player-bg-color: `+ await GetSaveRgba('MediaBG') + `;
+                    --in-player-bg-color: `+ ControlPanel + `;
                     --top-bar-and-search-background: `+ await GetSaveRgba('ThemeSnd') + `;
                     --things-end-on-video: `+ await GetSaveRgba('EndBG') + `;
-                    --hover-time-background: `+ await GetSaveRgba('TimeBG') + `;
+                    --hover-time-background: `+ TimeBG + `;
                     --search-background-hover: `+ await GetSaveRgba('Themehover') + `;
                     --theme-radius: `+ await GetLoad("Edge") + `px;
                     --theme-time-radius: `+ await GetLoad("TimeEdge") + `px;
@@ -2245,7 +2170,7 @@ async function update() {
                     --border-width-hover: `+ await GetLoad("HoverBorder") + `px;
                     --border-minus-hover: calc(var(--border-width-hover) * -1);
                     
-                    --theme-third: `+ GetThemeColor2 + `;
+                    --theme-third: `+ ThemeColor2 + `;
                     --Zoom: `+ await GetLoad("Zoom") + `;
 
                     --sub-ShaWidth: `+ await GetLoad("subShaWidth") + `px;
@@ -2278,7 +2203,7 @@ async function update() {
                 }
 
                 ytd-text-inline-expander yt-attributed-string a{
-                    color: ${await GetSaveRgba('LinkColor')} !important;
+                    color: ${LinkColor} !important;
                 }
 
                 ytd-menu-renderer .ytd-menu-renderer[style-target=button] yt-icon{
@@ -2530,7 +2455,7 @@ async function update() {
                 .ytd-thumbnail-overlay-bottom-panel-renderer,
                 .ytp-time-display *,
                 #time-status{
-                    color: `+ await GetSaveRgba('TIMETEXT') + ` !important;
+                    color: `+ TimeText + ` !important;
                 }
 
                 #progress-bar.ytmusic-player-bar{
@@ -3107,12 +3032,12 @@ async function update() {
                 
                 .ytp-progress-list
                 {
-                    background: `+ await GetSaveRgba("Time-LineBG") + ` !important;
+                    background: `+ TimeLineBG + ` !important;
                 }
                 
                 .ytp-load-progress
                 {
-                    background: `+ await GetSaveRgba("TimeLoaded") + ` !important;
+                    background: `+ TimeLoaded + ` !important;
                 }
                 
                 #play
@@ -3169,7 +3094,7 @@ async function update() {
                 }
 
                 yt-chip-cloud-chip-renderer[selected]{
-                    color: var(--yt-spec-text-primary) !important;
+                    color: var(--bg) !important;
                     background: var(--theme) !important;
                 }
 
@@ -5029,7 +4954,7 @@ async function CreateMENU() {
     Rebug.style = DeBu + `background: rgb(135 51 51 / 76%);`
     Rebug.onclick = async function () {
         window.open(
-            'https://discord.gg/seDYEmvPbP',
+            'https://discord.gg/3Z8h7nvXru',
             '_blank'
         )
     }
@@ -5220,7 +5145,9 @@ async function CreateMENU() {
 
     await createCheck("CenterUDF", "(Fullscreen) Move tittle to the center")
 
-    await createCheck("FullTheater", "Enable Full Theater")
+    await createCheck("AutoTheater", "Auto Enter Theater Mode" , true)
+
+    await createCheck("FullTheater", "Enable Full Theater (In Theater Mode)")
 
     await createCheck("AutoPIP", "Auto Pictue In Pictue mode<br>(Pls click anywhere In page after you back to page)<br>(Security problem) (I do my best T_T)")
     await createCheck("AutoEXPIP", "Auto exit Pictue In Pictue mode")
@@ -5259,7 +5186,7 @@ async function CreateMENU() {
     await createColor("MediaBG", "Background color")
     await createCheck("BottomG", "Remove default background gradient")
     await createTextBox("MediaH", "Background height")
-    await createTextBox("MediaHFull", "(Full screen) Background height", true)
+    await createTextBox("MediaHFull", "(Full screen) Background height")
 
 
     await createCheck("PlayerOut", "Enable Borders/Shadows");
@@ -7862,12 +7789,16 @@ async function GetVideoID(attemp) {
         attemp = 10
     }
 
-    if (document.getElementsByTagName("ytd-watch-flexy")[0]) {
-        videoID = document.getElementsByTagName("ytd-watch-flexy")[0].getAttribute("video-id")
-        return videoID
+    if (attemp > 0) {
+        if (document.getElementsByTagName("ytd-watch-flexy")[0]) {
+            videoID = document.getElementsByTagName("ytd-watch-flexy")[0].getAttribute("video-id")
+            return videoID
+        } else {
+            await sleep(500)
+            return await GetVideoID(attemp)
+        }
     } else {
-        await sleep(500)
-        return await GetVideoID(attemp)
+        return
     }
 }
 
@@ -8164,43 +8095,19 @@ async function GetSampleColor(element) {
     var colorThief = new ColorThief();
 
     var mostcolor = colorThief.getColor(element);
-    var palette = colorThief.getPalette(element, 5);
-    var ChooseInPalette
-    var ChooseInPaletteSat = 0
-    var ChooseInPaletteValue = 0
-
-    let paletteLength = palette.length
-    for (let i = 0; i < paletteLength; i++) {
-        let hsv = RGBtoHSV(palette[i])
-        console.log(palette[i], hsv[1], hsv[2], hsv[1] * hsv[2], ChooseInPaletteSat * ChooseInPaletteValue)
-        if (hsv[1] * hsv[2] > ChooseInPaletteSat * ChooseInPaletteValue) {
-            ChooseInPalette = palette[i]
-            ChooseInPaletteSat = hsv[1]
-            ChooseInPaletteValue = hsv[2]
-        }
-    }
-
-    if (ChooseInPaletteSat == 0) {
-        ChooseInPalette = [255, 255, 255, 255]
-    }
-
-    console.log(ChooseInPalette)
-    console.log(mostcolor)
-    console.log(palette)
-
-    var ChooseColor
-
     var MostColorHSV = RGBtoHSV(mostcolor)
 
-    if (MostColorHSV[1] > 0.4) {
+    if (MostColorHSV[1] > 0.2 && MostColorHSV[2] > 100) {
         ChooseColor = mostcolor
         console.log("Choose MostColor")
     } else {
-        ChooseColor = ChooseInPalette
+        var palette = colorThief.getPalette(element, 5);
+        palette = calculateAndSortPalette(palette)
+        ChooseColor = palette[0]
         console.log("Choose Palette")
     }
 
-    return ChooseInPalette
+    return ChooseColor
 }
 
-// window.addEventListener('yt-page-data-updated', update)
+//window.addEventListener('yt-page-data-updated', update)
