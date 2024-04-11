@@ -23,20 +23,89 @@
 		"all_frames": true,
         "matches": ["*://www.youtube.com/*", "*://music.youtube.com/*" ],
         "js": [
-                "scripts/etc.js",
-                "scripts/color-thief.min.js",
-                "NewtubeMain.js"
+                "scripts/ImportantModules/ErrorHandle.js",
+                "scripts/ImportantModules/ExtensionVariable.js",
+                "scripts/ImportantModules/NormalFunction.js",
+                "scripts/ImportantModules/Colors.js",
+                "scripts/ImportantModules/GetFileFromInput.js",
+                "scripts/ImportantModules/ReadFileToURL.js",
+                "scripts/ImportantModules/YoutubeFunction.js",
+
+
+                "scripts/AutoRun/DisableDarkReader.js",
+
+
+                "scripts/OtherModules/color-thief.min.js",
+                "scripts/OtherModules/UploadImageByAPI.js",
+
+
+                "scripts/Events/HideWindow.js",
+                "scripts/Events/WhenUpdate.js",
+                "scripts/Events/NewUser.js",
+                "scripts/Modules/DefaultPreset.js",
+
+                "scripts/Modules/OpenThemeStore.js",
+                "scripts/Modules/Save.js",
+                "scripts/Modules/ReloadSave.js",
+                "scripts/Modules/GetSortedPalette.js",
+                "scripts/Modules/AddMissingSave.js",
+                "scripts/Modules/SettingSearch.js",
+                "scripts/Modules/Preset.js",
+                
+                "scripts/Modules/SettingButton.js",
+                "scripts/Modules/OnSettingChange.js",
+                "scripts/Modules/SettingControl.js",
+                "scripts/Modules/SettingUI.js",
+                "scripts/Modules/SettingFunction.js",
+                "scripts/Modules/ChangeToDarkMode.js",
+                "scripts/Modules/VideoHandle.js",
+
+                "scripts/Events/YoutubeEvent.js",
+                "scripts/Events/ReciveMessage.js",
+
+                "scripts/AdvancedFeatures/AdvancedControls.js",
+
+                "scripts/AdvancedFeatures/BackgroundTint.js",
+                "scripts/AdvancedFeatures/BackgroundImage.js",
+                "scripts/AdvancedFeatures/BackgroundVideo.js",
+                "scripts/AdvancedFeatures/YoutubeAsBackground.js",
+                "scripts/AdvancedFeatures/RemoveBlackBars.js",
+                "scripts/AdvancedFeatures/Fonts.js",
+                "scripts/AdvancedFeatures/TabIcon.js",
+                "scripts/AdvancedFeatures/Flyout.js",
+                "scripts/AdvancedFeatures/AutoTransparentTopBar.js",
+                
+                "scripts/AdvancedFeatures/AddCustomCSS.js",
+
+
+                "scripts/Modules/Update.js",
+
+                "scripts/Modules/SettingFeatures.js",
+
+                "scripts/RunNewtube.js"
+
             ],
+        "css": [
+            "CSS/setting.css"
+        ],
 		"run_at": "document_start"
       },
       {
         "matches": [ "*://giscus.app/*" ],
-        "js": ["ThemeSelecter.js"],
+        "js": [
+            "scripts/ImportantModules/NormalFunction.js",
+            
+            "scripts/AutoRun/DisableDarkReader.js",
+
+            "scripts/Modules/Save.js",
+        
+            "scripts/NewtubeThemeSelector.js"
+        ],
 		"run_at": "document_start"
       }
     ],
     "background": {
-        "service_worker": "Background.js"
+        "service_worker": "scripts/Background.js"
     },
     "commands": {
         "Enable": {

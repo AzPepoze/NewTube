@@ -1,7 +1,6 @@
 let GetURL = window.location.href
 
 if (GetURL.includes("callbyNewtube")) {
-
     console.log("Run Theme")
 
     document.documentElement.style.background = "transparent"
@@ -363,16 +362,23 @@ if (GetURL.includes("callbyNewtube")) {
 
                         Install.onclick = async function () {
                             Install.innerText = "Installing..."
-                            let AzCached
-                            await chrome.storage.local.get("CachedSave").then((Loaded) => {
-                                AzCached = Loaded["CachedSave"]
-                            })
-                            Object.keys(GetCode).forEach(function (key) {
-                                if (key != "PRESET" && key != "JS" && key != "OldVer") {
-                                    AzCached[key] = GetCode[key]
+                            let ThisTheme = GetCode
+                            ThisTheme = await ConvertToNewSave(ThisTheme)
+
+                            console.log(ThisTheme)
+
+                            var NowCached = await Load()
+
+                            Object.keys(ThisTheme).forEach(async function (key) {
+                                if (CheckCanSaveForThemeSelector(key)) {
+                                    NowCached[key] = ThisTheme[key]
+                                    console.log("Added",key)
                                 }
                             })
-                            await chrome.storage.local.set({ "CachedSave": AzCached })
+
+                            console.log(NowCached)
+
+                            await SaveCached(NowCached)
 
                             chrome.runtime.sendMessage("ReloadSave")
                             Install.innerText = "❇️ Installed! ❇️"

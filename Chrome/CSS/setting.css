@@ -1,0 +1,624 @@
+@keyframes glowing {
+     0% {
+          background-position: 0 0;
+     }
+
+     50% {
+          background-position: 400% 0;
+     }
+
+     100% {
+          background-position: 0 0;
+     }
+}
+
+#MAINPRESET {
+     height: -webkit-fill-available;
+     height: -moz-available;
+}
+
+#NEWTUBEBG .CheckBox:hover {
+     filter: brightness(2);
+}
+
+#NEWTUBEBG .HoverList {
+     margin-block: -3px;
+     padding-right: 0px !important;
+     text-wrap: nowrap;
+}
+
+mark {
+     background: rgb(250, 200, 250);
+}
+
+.NDel:hover {
+     background: #41ffe5 !important;
+}
+
+.NUp:hover {
+     background: #ffaf76 !important;
+}
+
+html {
+     height: 100% !important;
+}
+
+#NEWTUBESET * {
+     transform: translateZ(0px);
+}
+
+#NEWTUBESET span {
+     cursor: pointer;
+     display: inline-block;
+     position: relative;
+     transition: 0.5s;
+}
+
+#NEWTUBESET span:after {
+     content: '\«';
+     position: absolute;
+     opacity: 0;
+     top: 0;
+     right: -20px;
+     transition: 0.5s;
+}
+
+#NEWTUBESET:hover span {
+     padding-right: 20px;
+}
+
+#NEWTUBESET:hover span:after {
+     opacity: 1;
+     right: 0;
+}
+
+#NEWTUBEHOVER {
+     position: absolute;
+     transition: all 0.2s;
+     border-radius: 20px;
+     height: 20px;
+     width: calc(100% - 50px);
+     top: 10px;
+     left: 10px;
+     color: white;
+     text-align: center;
+     font-size: 15px;
+     background: rgb(255 255 255 / 18%);
+}
+
+#NEWTUBEHOVER:hover,
+#CloseButton:hover {
+     background: rgba(255, 255, 255, 0.5) !important;
+}
+
+#NEWTUBE {
+     border-radius: 20px;
+     transform: translateZ(0);
+}
+
+#NEWTUBE .NewtubeHoverButton,
+#NEWTUBE .NewtubeHoverButton span {
+     transition: all 0.2s;
+}
+
+#NEWTUBE .NewtubeHoverButton:hover {
+     background: rgb(255, 255, 255) !important;
+     color: black !important;
+     border-color: black !important;
+}
+
+#NEWTUBE .NewtubeHoverButton:hover span {
+     color: black !important;
+     font-weight: 700;
+}
+
+
+[hover]:hover {
+     background: rgb(100, 100, 100) !important;
+}
+
+.HoverList {
+     border-radius: 20px;
+     transition: all 0.2s;
+     margin-inline-start: 10px;
+     user-select: none;
+}
+
+.HoverList:hover {
+     color: rgb(250, 215, 250) !important;
+     background: rgb(125, 80, 133);
+     margin-inline-start: 0px !important;
+}
+
+.select {
+     color: white;
+     border-radius: 10px;
+     background: rgb(33, 33, 33);
+     text-align: center;
+}
+
+#NEWTUBE .TextBox {
+     background: rgb(33, 33, 33);
+     width: 70px;
+     color: white;
+     border-radius: 10px;
+     text-align: center;
+     border: transparent;
+     padding: 4px;
+     box-shadow: 0px 0px 3px 0px #ffffff;
+     margin: 10px;
+     margin-right: 0px;
+     margin-left: 5px;
+}
+
+#NEWTUBEBG .DoY {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+}
+
+#NEWTUBEBG .ColorPick {
+     width: 200px;
+     border-width: 0px;
+     background: transparent;
+}
+
+#NEWTUBEBG .MainBox {
+     display: flex;
+     flex-direction: column;
+     -webkit-box-flex: 1;
+     -ms-flex: 1;
+     flex: 1;
+     font-size: 10px;
+     padding-inline: 10px;
+     margin-block: 10px;
+     border-radius: 20px;
+     margin-top: 50px;
+     align-items: center;
+}
+
+#NEWTUBEBG .NewtubeLeftText {
+     text-overflow: ellipsis;
+     overflow: hidden;
+     font-size: 16px;
+     width: 100%;
+}
+
+.ListBox {
+     padding: 10px 15px 10px 20px;
+     border-radius: 10px;
+     background: #383838;
+     display: flex;
+     flex-direction: column;
+     align-items: flex-start;
+     -webkit-box-flex: 1;
+     -ms-flex: 1;
+     flex: 1;
+     font-size: 10px;
+     margin-inline: 10px;
+     margin-block: 10px;
+}
+
+#NEWTUBEBG .SndBox {
+     position: relative;
+     padding: 10px;
+     width: 100%;
+     display: flex;
+     align-items: center;
+     -webkit-box-flex: 1;
+     -ms-flex: 1;
+     flex: 1;
+     font-size: 10px;
+     margin-inline: -10px;
+     margin-top: 20px;
+     border-radius: 20px;
+}
+
+
+.DES {
+     margin-inline: 10px;
+     color: white;
+     font-size: 15px;
+}
+
+#NEWTUBEBG .Reset:hover {
+     background: white !important;
+     color: black !important;
+}
+
+#NEWTUBEBG {
+     background: linear-gradient(-45deg, rgb(10, 10, 10), rgb(43, 43, 43));
+     border-radius: 20px 20px 0px 20px;
+     overflow: hidden;
+     resize: both;
+     padding-top: 40px;
+     width: 755px;
+     height: 600px;
+     max-height: -webkit-fill-available;
+     max-height: -moz-available;
+     position: fixed;
+     top: 56px;
+     z-index: 2020;
+     display: flex;
+     flex-direction: row;
+     min-width: 602px;
+     min-height: 247px;
+     box-shadow: #000000d6 0px 0px 20px !important;
+}
+
+#NEWTUBEBG[OPEN=true] {
+     opacity: 1;
+     transform: scale(1);
+     pointer-events: unset;
+}
+
+#NEWTUBEBG[OPEN=false] {
+     opacity: 0;
+     transform: scale(0.9);
+     pointer-events: none;
+}
+
+#NEWTUBEBG[OPEN=Prepare] {
+     opacity: 0;
+     pointer-events: none;
+}
+
+#NEWTUBEBG textarea {
+     padding: 10px;
+     border-radius: 5px;
+}
+
+#NEWTUBEBG,
+#NEWTUBEBG * {
+     scrollbar-width: thin !important;
+     scrollbar-color: #575757 transparent !important;
+}
+
+#NtSearch {
+     position: absolute;
+     width: -webkit-fill-available;
+     width: -moz-available;
+     height: 40px;
+     top: 40px;
+     border-radius: 20px;
+     color: white;
+     font-size: 20px;
+     padding-left: 20px;
+     background: rgb(255 255 255 / 18%);
+     border: none;
+     margin-right: 10px;
+}
+
+#NtSearch::placeholder {
+     color: rgb(197, 197, 197);
+     opacity: 1;
+}
+
+.NEWTUBEBG,
+.NEWTUBEMAIN {
+     overflow: hidden;
+}
+
+.NEWTUBE::-webkit-scrollbar,
+#MAINPRESET::-webkit-scrollbar {
+     width: 6px !important;
+}
+
+.NEWTUBE textarea {
+     white-space: nowrap !important;
+}
+
+.NEWTUBE textarea::-webkit-scrollbar {
+     width: 10px !important;
+     height: 10px !important;
+}
+
+.NEWTUBE::-webkit-scrollbar-track,
+#MAINPRESET::-webkit-scrollbar-track,
+.NEWTUBE textarea::-webkit-scrollbar-track {
+     background: transparent;
+     border-radius: 10px !important;
+}
+
+.NEWTUBE::-webkit-scrollbar-thumb,
+#MAINPRESET::-webkit-scrollbar-thumb,
+.NEWTUBE textarea::-webkit-scrollbar-thumb {
+     background: rgba(100, 100, 100, 1) !important;
+     border-radius: 10px !important;
+}
+
+#NEWTUBEBG .CheckBox {
+     margin-block: 10px;
+     font-size: 20px;
+     -webkit-appearance: none;
+     -moz-appearance: none;
+     appearance: none;
+     min-width: 4em;
+     height: 1.5em;
+     background: rgb(33, 33, 33);
+     border-radius: 3em;
+     position: relative;
+     cursor: pointer;
+     outline: none;
+     transition: all .2s;
+     box-shadow: 0px 0px 3px 0px #ffffff;
+}
+
+#NEWTUBEBG .CheckBox:checked {
+     background: #7f5db7;
+}
+
+#NEWTUBEBG .CheckBox:after {
+     position: absolute;
+     display: flex;
+     content: "❖";
+     font-weight: 1000;
+     width: 1.5em;
+     height: 1.5em;
+     border-radius: 50%;
+     background: #fff !important;
+     box-shadow: 0 0 0.25em rgb(0 0 0 / 30%);
+     transform: scale(.7);
+     left: 0;
+     transition: all .2s;
+     justify-content: center;
+     color: black !important;
+}
+
+.NDel,
+.NUp {
+     transition: background .2s;
+}
+
+#NEWTUBEBG .CheckBox:checked:after {
+     left: calc(100% - 1.5em) !important;
+     transform: rotate(180deg) !important;
+     filter: drop-shadow(0px 0px 10px black);
+}
+
+#NEWTUBEBG .TextBox[type=number]::-webkit-inner-spin-button,
+#NEWTUBEBG .TextBox[type=number]::-webkit-outer-spin-button {
+     -webkit-appearance: meter;
+}
+
+#HOVERLINK,
+#Imgid {
+     transition: all .2s ease-in-out;
+     border-bottom: 1px solid currentColor;
+     text-decoration: none;
+}
+
+#HOVERLINK:hover,
+#Imgid:hover {
+     color: #86c2ff;
+}
+
+#NEWTUBELIST {
+     overflow-y: scroll;
+     margin-right: 10px;
+     border-radius: 0px 20px 20px 0px;
+     padding-right: 10px;
+}
+
+.ntdeletefont {
+     color: white;
+     padding: 10px;
+     aspect-ratio: 1/1;
+     height: 20px;
+     background: brown;
+     font-size: medium;
+     text-align: center;
+     display: flex;
+     justify-content: center;
+     border-radius: 10px;
+     margin-left: 10px;
+     transition: filter 0.2s;
+     cursor: pointer;
+}
+
+.ntdeletefont:hover,
+#ntAddFont:hover {
+     filter: brightness(1.5);
+}
+
+
+
+
+
+
+#NEWTUBE .ColorPicker::-moz-color-swatch {
+     border: none;
+}
+
+#NEWTUBE .ColorPicker::-webkit-color-swatch-wrapper {
+     padding: 0;
+     border-radius: 100px;
+}
+
+#NEWTUBE .ColorPicker::-webkit-color-swatch {
+     border: none;
+     border-radius: 100px;
+}
+
+#NEWTUBE .ColorPicker {
+     transition: all 0.2s;
+     width: 50px;
+     height: 50px;
+     border-radius: 100px;
+     background: transparent;
+     border: none;
+     box-shadow: 0px 0px 5px #ffffff57;
+     padding: 0px;
+}
+
+#NEWTUBE .ColorPicker:hover {
+     transform: scale(1.1);
+}
+
+#NEWTUBE .Select {
+     color: white;
+     background: #00000070;
+     border-radius: 20px;
+     height: 30px;
+     padding-left: 10px;
+}
+
+#NEWTUBE input[type=file]::file-selector-button {
+     border-radius: 20px;
+     background-color: black;
+     color: rgb(255, 255, 255);
+     border: 1px solid rgba(255, 255, 255, 0.5);
+     padding: 10px;
+     margin-right: 10px;
+     transition: all 0.2s;
+}
+
+#NEWTUBE input[type=file]::file-selector-button:hover {
+     background-color: white;
+     color: black;
+     transform: scale(1.1);
+}
+
+#NEWTUBE .TextBox::placeholder {
+     color: rgb(168, 168, 168);
+     font-size: 16px;
+}
+
+#NEWTUBEBG .HoverList[selected] {
+     background: #ffffffd1;
+     color: black !important;
+     margin-left: 0px;
+     font-weight: 700;
+}
+
+#NEWTUBEBG .FontFrame {
+     display: flex;
+     width: -webkit-fill-available;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     margin: 10px;
+     background: #0000004f;
+     padding: 15px;
+     border-radius: 10px;
+     border: 1px solid #ffffff80;
+}
+
+#NEWTUBEBG .FontTopFrame {
+     display: flex;
+     flex-direction: row;
+     align-items: center;
+     justify-content: center;
+     width: -webkit-fill-available;
+}
+
+#NEWTUBEBG .FontBottomFrame {
+     width: -webkit-fill-available;
+     margin-top: 10px;
+     display: flex;
+     flex-direction: row;
+     justify-content: center;
+     align-items: center;
+}
+
+#NEWTUBEBG .FontBottomFrame {
+     width: -webkit-fill-available;
+     margin-top: 20px;
+     display: flex;
+     flex-direction: row;
+     justify-content: center;
+     align-items: center;
+}
+
+#NEWTUBEBG .Button {
+     margin: 5px;
+     font-size: 15px;
+     color: white;
+     background: #434343;
+     padding: 10px;
+     border-radius: 20px;
+     border: 1px solid white;
+     width: -webkit-fill-available;
+     text-align: center;
+}
+
+#NEWTUBEBG #AvailableFontFrame .AvailableFontButton:not(:last-child) {
+     border-bottom: 1px solid #ffffff5c;
+}
+
+#NEWTUBEBG #AvailableFontFrame .AvailableFontButtonGroup {
+     background: #333333;
+     border-radius: 20px;
+     padding: 10px;
+}
+
+#NEWTUBEBG #AvailableFontFrame .AvailableFontButtonGroup:not(:last-child) {
+     margin-bottom: 10px;
+}
+
+#NEWTUBEBG #NEWTUBERight {
+     width: -webkit-fill-available;
+     overflow: hidden;
+}
+
+#NewtubeFullScreen {
+     height: 100%;
+     z-index: 2021;
+     position: fixed;
+     width: 100%;
+     background: rgba(0, 0, 0, 0.3);
+     backdrop-filter: blur(var(--blur-amount), 10px);
+}
+
+.NewtubeTransition {
+     transition: all 0.2s;
+}
+
+#NewtubeTint {
+     position: fixed;
+     z-index: -9999;
+     width: 100%;
+     height: 100%;
+     top: 0;
+     left: 0;
+     background: var(--bg-color);
+     transition: background 1s;
+}
+
+#NEWTUBE .NewtubeSlider {
+     position: relative;
+     width: 90%;
+     height: 10px;
+     background-color: grey;
+     border-radius: 5px;
+     transition: all 0.2s;
+}
+
+#NEWTUBE .NewtubeSlider:hover {
+     filter: brightness(1.5);
+}
+
+#NEWTUBE .NewtubeSlider-progress {
+     width: 0;
+     height: 100%;
+     background: rgb(127, 93, 183);
+     border-radius: 5px;
+     position: absolute;
+     top: 0;
+     left: 0;
+     transform-origin: left;
+     z-index: 1;
+}
+
+#NEWTUBE .NewtubeSlider-thumb {
+     width: 20px;
+     height: 20px;
+     background: white;
+     box-shadow: 0px 0px 10px #000000ab;
+     border-radius: 50%;
+     position: absolute;
+     top: 50%;
+     transform: translate(-50%, -50%);
+     user-select: none;
+     z-index: 2;
+}
