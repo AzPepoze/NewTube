@@ -284,121 +284,6 @@ CreateSettingUI["URLBox"] = async function (args) {
      UpgradeFrame(Frame)
 }
 
-// CreateSettingUI["ColorPicker"] = async function (args) {
-
-//      var Frame = await CreateFrame()
-
-//      Frame.style.flexDirection = "column"
-
-//      CreateDescription(args.description, Frame)
-
-//      var Group = document.createElement("div")
-//      Group.style = `
-//      padding: 5px;
-//      display: flex;
-//      flex-direction: row;
-//      align-items: center;
-//      margin-top: 20px;
-//      `
-
-//      Frame.append(Group)
-
-//      var Color = document.createElement("input")
-//      Color.className = "ColorPicker"
-//      Color.type = "color"
-
-//      Color.id = args.id + "C"
-
-//      Group.append(Color)
-
-//      //--------------------------------------
-
-//      var OpacityGroup = document.createElement("div")
-//      OpacityGroup.style = `
-//      display: flex;
-//      flex-direction: row;
-//      align-items: center;
-//      `
-
-//      Group.append(OpacityGroup)
-
-
-
-//      var OpacityText = document.createElement("span")
-//      OpacityText.innerText = "Opacity : "
-//      OpacityText.style = `
-//      font-size: 16px !important;
-//      color: white !important;
-//      margin-inline:10px;
-//      `
-
-//      OpacityGroup.append(OpacityText)
-
-
-
-//      var Opacity = document.createElement("input")
-//      Opacity.className = "Opacity"
-//      Opacity.type = "range"
-
-//      Opacity.min = 0
-//      Opacity.max = 100
-
-//      Opacity.id = args.id + "O"
-
-//      OpacityGroup.append(Opacity)
-
-
-
-//      var OpacityBox = document.createElement("input")
-//      OpacityBox.className = "TextBox"
-//      OpacityBox.type = "number"
-//      OpacityBox.style = `
-//      margin-left:10px;
-//      `
-
-//      OpacityBox.id = args.id + "O"
-
-//      OpacityGroup.append(OpacityBox)
-
-//      //--------------------------------------
-
-//      async function UpdateUI() {
-//           Color.value = await Load(Color.id)
-//           Opacity.value = await Load(Opacity.id)
-//           if (document.activeElement != OpacityBox) OpacityBox.value = await Load(OpacityBox.id)
-//      }
-
-//      //--------------------------------------
-
-//      UpdateUI()
-
-//      SetOnChangeSettingUI(Color.id, UpdateUI)
-//      SetOnChangeSettingUI(Opacity.id, UpdateUI)
-
-//      var UpdateElement = [
-//           Color,
-//           Opacity,
-//           OpacityBox
-//      ]
-
-//      Array.from(UpdateElement).forEach(Element => {
-//           Element.addEventListener("input", async function () {
-//                if (await ShouldRealtime() == true) {
-//                     SetSetting(Element.id, Element.value)
-//                }
-//           })
-
-//           Element.addEventListener("change", async function () {
-//                if (await ShouldRealtime() == false) {
-//                     SetSetting(Element.id, Element.value)
-//                }
-//           })
-//      })
-
-//      UpgradeFrame(Frame)
-// }
-
-
 CreateSettingUI["ColorPicker"] = async function (args) {
 
      var Frame = await CreateFrame()
@@ -414,7 +299,6 @@ CreateSettingUI["ColorPicker"] = async function (args) {
      flex-direction: row;
      align-items: center;
      margin-top: 20px;
-     width: 90%;
      `
 
      Frame.append(Group)
@@ -434,7 +318,6 @@ CreateSettingUI["ColorPicker"] = async function (args) {
      display: flex;
      flex-direction: row;
      align-items: center;
-     width: calc(100% - 50px);
      `
 
      Group.append(OpacityGroup)
@@ -447,23 +330,24 @@ CreateSettingUI["ColorPicker"] = async function (args) {
      font-size: 16px !important;
      color: white !important;
      margin-inline:10px;
-     min-width:70px;
      `
 
      OpacityGroup.append(OpacityText)
 
 
 
-     var Opacity = CreateSlider(
-          OpacityGroup,
-          0,
-          100,
-          1,
-          0
-     )
+     var Opacity = document.createElement("input")
+     Opacity.className = "Opacity"
+     Opacity.type = "range"
 
-     var OpacityElement = Opacity.Element
-     OpacityElement.id = args.id + "O"
+     Opacity.min = 0
+     Opacity.max = 100
+
+     Opacity.id = args.id + "O"
+
+     OpacityGroup.append(Opacity)
+
+
 
      var OpacityBox = document.createElement("input")
      OpacityBox.className = "TextBox"
@@ -479,32 +363,21 @@ CreateSettingUI["ColorPicker"] = async function (args) {
      //--------------------------------------
 
      async function UpdateUI() {
-          Color.value = await Load(args.id + "C")
-          OpacityElement.setAttribute("value", await Load(args.id + "O"))
-          if (document.activeElement != OpacityBox) OpacityBox.value = await Load(args.id + "O")
+          Color.value = await Load(Color.id)
+          Opacity.value = await Load(Opacity.id)
+          if (document.activeElement != OpacityBox) OpacityBox.value = await Load(OpacityBox.id)
      }
 
      //--------------------------------------
 
      UpdateUI()
 
-     SetOnChangeSettingUI(args.id + "C", UpdateUI)
-     SetOnChangeSettingUI(args.id + "O", UpdateUI)
-
-     Opacity.OnInput = async function (Value) {
-          if (await ShouldRealtime() == true) {
-               SetSetting(args.id + "O", Value)
-          }
-     }
-
-     Opacity.OnChange = async function (Value) {
-          if (await ShouldRealtime() == false) {
-               SetSetting(args.id + "O", Value)
-          }
-     }
+     SetOnChangeSettingUI(Color.id, UpdateUI)
+     SetOnChangeSettingUI(Opacity.id, UpdateUI)
 
      var UpdateElement = [
           Color,
+          Opacity,
           OpacityBox
      ]
 
@@ -524,6 +397,133 @@ CreateSettingUI["ColorPicker"] = async function (args) {
 
      UpgradeFrame(Frame)
 }
+
+
+// CreateSettingUI["ColorPicker"] = async function (args) {
+
+//      var Frame = await CreateFrame()
+
+//      Frame.style.flexDirection = "column"
+
+//      CreateDescription(args.description, Frame)
+
+//      var Group = document.createElement("div")
+//      Group.style = `
+//      padding: 5px;
+//      display: flex;
+//      flex-direction: row;
+//      align-items: center;
+//      margin-top: 20px;
+//      width: 90%;
+//      `
+
+//      Frame.append(Group)
+
+//      var Color = document.createElement("input")
+//      Color.className = "ColorPicker"
+//      Color.type = "color"
+
+//      Color.id = args.id + "C"
+
+//      Group.append(Color)
+
+//      //--------------------------------------
+
+//      var OpacityGroup = document.createElement("div")
+//      OpacityGroup.style = `
+//      display: flex;
+//      flex-direction: row;
+//      align-items: center;
+//      width: calc(100% - 50px);
+//      `
+
+//      Group.append(OpacityGroup)
+
+
+
+//      var OpacityText = document.createElement("span")
+//      OpacityText.innerText = "Opacity : "
+//      OpacityText.style = `
+//      font-size: 16px !important;
+//      color: white !important;
+//      margin-inline:10px;
+//      min-width:70px;
+//      `
+
+//      OpacityGroup.append(OpacityText)
+
+
+
+//      var Opacity = CreateSlider(
+//           OpacityGroup,
+//           0,
+//           100,
+//           1,
+//           0
+//      )
+
+//      var OpacityElement = Opacity.Element
+//      OpacityElement.id = args.id + "O"
+
+//      var OpacityBox = document.createElement("input")
+//      OpacityBox.className = "TextBox"
+//      OpacityBox.type = "number"
+//      OpacityBox.style = `
+//      margin-left:20px;
+//      `
+
+//      OpacityBox.id = args.id + "O"
+
+//      OpacityGroup.append(OpacityBox)
+
+//      //--------------------------------------
+
+//      async function UpdateUI() {
+//           Color.value = await Load(args.id + "C")
+//           OpacityElement.setAttribute("value", await Load(args.id + "O"))
+//           if (document.activeElement != OpacityBox) OpacityBox.value = await Load(args.id + "O")
+//      }
+
+//      //--------------------------------------
+
+//      UpdateUI()
+
+//      SetOnChangeSettingUI(args.id + "C", UpdateUI)
+//      SetOnChangeSettingUI(args.id + "O", UpdateUI)
+
+//      Opacity.OnInput = async function (Value) {
+//           if (await ShouldRealtime() == true) {
+//                SetSetting(args.id + "O", Value)
+//           }
+//      }
+
+//      Opacity.OnChange = async function (Value) {
+//           if (await ShouldRealtime() == false) {
+//                SetSetting(args.id + "O", Value)
+//           }
+//      }
+
+//      var UpdateElement = [
+//           Color,
+//           OpacityBox
+//      ]
+
+//      Array.from(UpdateElement).forEach(Element => {
+//           Element.addEventListener("input", async function () {
+//                if (await ShouldRealtime() == true) {
+//                     SetSetting(Element.id, Element.value)
+//                }
+//           })
+
+//           Element.addEventListener("change", async function () {
+//                if (await ShouldRealtime() == false) {
+//                     SetSetting(Element.id, Element.value)
+//                }
+//           })
+//      })
+
+//      UpgradeFrame(Frame)
+// }
 
 
 
@@ -570,97 +570,6 @@ CreateSettingUI["Select"] = async function (args) {
 
 }
 
-// CreateSettingUI["NumberSlide"] = async function (args) {
-
-//      if (!args.min) {
-//           args.min = 0
-//      }
-
-//      if (!args.max) {
-//           args.max = 100
-//      }
-
-//      if (!args.step) {
-//           args.step = 1
-//      }
-
-//      var Frame = await CreateFrame()
-
-//      Frame.style.flexDirection = "column"
-
-//      CreateDescription(args.description, Frame).style.textAlign = "center"
-
-//      //-------------------------------------------------
-
-//      var Group = document.createElement("div")
-//      Group.style = `
-//      display: flex;
-//      flex-direction: row;
-//      justify-content: center;
-//      width: -webkit-fill-available;
-//      padding: 10px;`
-
-//      Frame.append(Group)
-
-//      //-------------------------------------------------
-
-//      var Element = document.createElement("input")
-//      Element.className = "NumberSlide"
-//      Element.type = "range"
-//      Element.id = args.id
-//      Element.style = `
-//      width: -webkit-fill-available;
-//      margin-right: 10px;`
-
-//      Element.min = args.min
-//      Element.max = args.max
-//      Element.step = args.step
-
-//      Group.append(Element)
-
-//      //-------------------------------------------------
-
-//      var ValueBox = document.createElement("input")
-//      ValueBox.className = "TextBox"
-//      ValueBox.type = "number"
-//      ValueBox.id = args.id
-
-//      Group.append(ValueBox)
-
-//      //-------------------------------------------------
-
-//      async function UpdateUI() {
-//           Element.value = await Load(args.id)
-//           if (document.activeElement != ValueBox) ValueBox.value = await Load(args.id)
-//      }
-
-//      UpdateUI()
-
-//      SetOnChangeSettingUI(args.id, UpdateUI)
-
-//      var UpdateElement = [
-//           Element,
-//           ValueBox
-//      ]
-
-//      Array.from(UpdateElement).forEach(Element => {
-//           Element.addEventListener("input", async function () {
-//                if (await ShouldRealtime() == true) {
-//                     SetSetting(Element.id, Element.value)
-//                }
-//           })
-
-//           Element.addEventListener("change", async function () {
-//                if (await ShouldRealtime() == false) {
-//                     SetSetting(Element.id, Element.value)
-//                }
-//           })
-//      })
-
-//      UpgradeFrame(Frame)
-// }
-
-
 CreateSettingUI["NumberSlide"] = async function (args) {
 
      if (!args.min) {
@@ -689,25 +598,25 @@ CreateSettingUI["NumberSlide"] = async function (args) {
      flex-direction: row;
      justify-content: center;
      width: -webkit-fill-available;
-     padding: 10px;
-     align-items: center;`
+     padding: 10px;`
 
      Frame.append(Group)
 
      //-------------------------------------------------
 
-     var Slider = CreateSlider(
-          Group,
-          args.min,
-          args.max,
-          args.step
-     )
-
-     var Element = Slider.Element
+     var Element = document.createElement("input")
+     Element.className = "NumberSlide"
+     Element.type = "range"
      Element.id = args.id
      Element.style = `
      width: -webkit-fill-available;
      margin-right: 10px;`
+
+     Element.min = args.min
+     Element.max = args.max
+     Element.step = args.step
+
+     Group.append(Element)
 
      //-------------------------------------------------
 
@@ -721,7 +630,7 @@ CreateSettingUI["NumberSlide"] = async function (args) {
      //-------------------------------------------------
 
      async function UpdateUI() {
-          Element.setAttribute("value", await Load(args.id))
+          Element.value = await Load(args.id)
           if (document.activeElement != ValueBox) ValueBox.value = await Load(args.id)
      }
 
@@ -729,32 +638,123 @@ CreateSettingUI["NumberSlide"] = async function (args) {
 
      SetOnChangeSettingUI(args.id, UpdateUI)
 
-     Slider.OnInput = async function (Value) {
-          if (await ShouldRealtime() == true) {
-               SetSetting(args.id, Value)
-          }
-     }
+     var UpdateElement = [
+          Element,
+          ValueBox
+     ]
 
-     Slider.OnChange = async function (Value) {
-          if (await ShouldRealtime() == false) {
-               SetSetting(args.id, Value)
-          }
-     }
+     Array.from(UpdateElement).forEach(Element => {
+          Element.addEventListener("input", async function () {
+               if (await ShouldRealtime() == true) {
+                    SetSetting(Element.id, Element.value)
+               }
+          })
 
-     ValueBox.addEventListener("input", async function () {
-          if (await ShouldRealtime() == true) {
-               SetSetting(args.id, ValueBox.value)
-          }
-     })
-
-     ValueBox.addEventListener("change", async function () {
-          if (await ShouldRealtime() == false) {
-               SetSetting(args.id, ValueBox.value)
-          }
+          Element.addEventListener("change", async function () {
+               if (await ShouldRealtime() == false) {
+                    SetSetting(Element.id, Element.value)
+               }
+          })
      })
 
      UpgradeFrame(Frame)
 }
+
+
+// CreateSettingUI["NumberSlide"] = async function (args) {
+
+//      if (!args.min) {
+//           args.min = 0
+//      }
+
+//      if (!args.max) {
+//           args.max = 100
+//      }
+
+//      if (!args.step) {
+//           args.step = 1
+//      }
+
+//      var Frame = await CreateFrame()
+
+//      Frame.style.flexDirection = "column"
+
+//      CreateDescription(args.description, Frame).style.textAlign = "center"
+
+//      //-------------------------------------------------
+
+//      var Group = document.createElement("div")
+//      Group.style = `
+//      display: flex;
+//      flex-direction: row;
+//      justify-content: center;
+//      width: -webkit-fill-available;
+//      padding: 10px;
+//      align-items: center;`
+
+//      Frame.append(Group)
+
+//      //-------------------------------------------------
+
+//      var Slider = CreateSlider(
+//           Group,
+//           args.min,
+//           args.max,
+//           args.step
+//      )
+
+//      var Element = Slider.Element
+//      Element.id = args.id
+//      Element.style = `
+//      width: -webkit-fill-available;`
+
+//      //-------------------------------------------------
+
+//      var ValueBox = document.createElement("input")
+//      ValueBox.className = "TextBox"
+//      ValueBox.type = "number"
+//      ValueBox.style = `margin-left:20px;`
+//      ValueBox.id = args.id
+
+//      Group.append(ValueBox)
+
+//      //-------------------------------------------------
+
+//      async function UpdateUI() {
+//           Element.setAttribute("value", await Load(args.id))
+//           if (document.activeElement != ValueBox) ValueBox.value = await Load(args.id)
+//      }
+
+//      UpdateUI()
+
+//      SetOnChangeSettingUI(args.id, UpdateUI)
+
+//      Slider.OnInput = async function (Value) {
+//           if (await ShouldRealtime() == true) {
+//                SetSetting(args.id, Value)
+//           }
+//      }
+
+//      Slider.OnChange = async function (Value) {
+//           if (await ShouldRealtime() == false) {
+//                SetSetting(args.id, Value)
+//           }
+//      }
+
+//      ValueBox.addEventListener("input", async function () {
+//           if (await ShouldRealtime() == true) {
+//                SetSetting(args.id, ValueBox.value)
+//           }
+//      })
+
+//      ValueBox.addEventListener("change", async function () {
+//           if (await ShouldRealtime() == false) {
+//                SetSetting(args.id, ValueBox.value)
+//           }
+//      })
+
+//      UpgradeFrame(Frame)
+// }
 
 
 CreateSettingUI["CombinationFunc"] = async function () { }
@@ -937,7 +937,9 @@ CreateSettingUI["UploadImage"] = async function (args) {
 
 
 async function CreateSettingElement() {
-     console.log("CreateSettingElement")
+     if (DebugMode) {
+          console.log("CreateSettingElement")
+     }
 
      for (var UI of SettingUI) {
           var type = UI.type
@@ -955,9 +957,11 @@ async function CreateSettingElement() {
           NewFeature = false
      }
 
-     console.log(SettingFuction)
-     console.log(SettingUI)
-     console.log(OnSettingChange)
+     if (DebugMode) {
+          console.log(SettingFuction)
+          console.log(SettingUI)
+          console.log(OnSettingChange)
+     }
 
      WatchNewtubeSettingScroll()
 

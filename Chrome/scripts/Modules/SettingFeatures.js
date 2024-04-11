@@ -1768,7 +1768,7 @@ async function CreateSettingFeatures() {
 
      //-------------------------------------------------------------------------------
 
-     Category = "🔳 Borders / Shadows"
+     Category = "🔲 Borders / Shadows"
      SubCategory = null
 
      await CreateFeatures("Select", {

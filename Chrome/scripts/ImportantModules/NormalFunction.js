@@ -321,7 +321,7 @@ function debounce(func, delay) {
 
 function CreateSlider(parentElement, min, max, step, value) {
     let slider = document.createElement("div");
-    slider.classList.add("NewtubeSlider");
+    slider.className = "NewtubeSlider"
     slider.setAttribute('max', max);
     slider.setAttribute('min', min);
     slider.setAttribute('step', step);
@@ -329,12 +329,12 @@ function CreateSlider(parentElement, min, max, step, value) {
     parentElement.appendChild(slider);
 
     let progress = document.createElement("div");
-    progress.classList.add("NewtubeSlider-progress");
+    progress.className = "NewtubeSlider-progress"
     slider.appendChild(progress);
 
     let thumb = document.createElement("div");
-    thumb.classList.add("NewtubeSlider-thumb");
-    thumb.style.userSelect = "none"; // Prevent text selection on thumb
+    thumb.className = "NewtubeSlider-thumb"
+    thumb.style.userSelect = "none";
     slider.appendChild(thumb);
 
     let sliderWidth, thumbWidth, isDragging = false;
@@ -360,6 +360,8 @@ function CreateSlider(parentElement, min, max, step, value) {
         }
     });
 
+    let stepDecimalPlaces = step.toString().split('.')[1] ? step.toString().split('.')[1].length : 0;
+
     function moveThumb(event) {
         if (isDragging) {
             sliderWidth = slider.offsetWidth;
@@ -368,16 +370,15 @@ function CreateSlider(parentElement, min, max, step, value) {
             let position = clickX;
 
             // Calculate the position based on step
-            let stepDecimalPlaces = step.toString().split('.')[1] ? step.toString().split('.')[1].length : 0;
             let newValue = Math.round((position / sliderWidth) * (max - min) / step) * step + min;
 
-            // Clamp the newValue
+            if (stepDecimalPlaces > 0) {
+                newValue = parseFloat(newValue.toFixed(stepDecimalPlaces));
+            }
+
             newValue = Math.min(max, Math.max(min, newValue));
 
             let newPosition = ((newValue - min) / (max - min)) * sliderWidth;
-
-            // Clamp the position
-            newPosition = Math.max(0, Math.min(newPosition, sliderWidth));
 
             thumb.style.left = newPosition + "px";
             slider.setAttribute('value', newValue);
@@ -396,12 +397,23 @@ function CreateSlider(parentElement, min, max, step, value) {
         value = parseFloat(slider.getAttribute('value')) || 0;
 
         sliderWidth = slider.offsetWidth;
-        let position = ((value - min) / (max - min)) * sliderWidth;
+        let position = (Math.min(max, Math.max(min, value - min)) / (max - min)) * sliderWidth;
         thumb.style.left = position + "px";
         progress.style.width = position + "px";
+        stepDecimalPlaces = step.toString().split('.')[1] ? step.toString().split('.')[1].length : 0;
     }
 
     updateSlider();
+
+    const valueObserver = new MutationObserver(function (mutationsList, observer) {
+        for (let mutation of mutationsList) {
+            if (mutation.type === 'attributes' && !isDragging) {
+                updateSlider();
+            }
+        }
+    });
+
+    valueObserver.observe(slider, { attributes: true });
 
     const resizeObserver = new ResizeObserver(updateSlider);
     resizeObserver.observe(parentElement);
