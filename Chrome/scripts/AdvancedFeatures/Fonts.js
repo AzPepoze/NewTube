@@ -23,7 +23,7 @@ async function UpdateAllFont() {
     //await WaitDocumentLoaded()
     await LoadFonts()
 
-    if (OldFont == JSON.stringify(Font)) {
+    if (await Load("EnableButton") && OldFont == JSON.stringify(Font)) {
         return
     }
 
@@ -66,6 +66,7 @@ async function UpdateAllFont() {
             font-family: ${FontFamily};
         }`
     } else {
+        OldFont = null
         FontHolder.innerHTML = ""
         EnableFontHolder.innerHTML = ""
     }
