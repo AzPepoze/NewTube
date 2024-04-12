@@ -109,12 +109,12 @@ function ExportFile(data, filename, type) {
 }
 
 async function RunAllCallback(array, args) {
-    array.filter(callback => !!callback).map(callback => callback(args))
-    // for (var callback of array) {
-    //     if (!callback) continue
-    //     await callback()
-    //     await sleep(0)
-    // }
+    //array.filter(callback => !!callback).map(callback => callback(args))
+    for (var callback of array) {
+        if (!callback) continue
+        await callback()
+        await sleep(0)
+    }
 }
 
 async function RunAllCallbackOBJ(OBJ, args) {
@@ -229,7 +229,7 @@ function isElementVerticallyInViewport(elem) {
 var OnScrollTask = new Map();
 
 async function RunScroll(element) {
-    console.log(element)
+    //console.log(element)
 
     if (!OnScrollTask.has(element)) return;
     if (OnScrollTask.get(element).Running) return;
@@ -319,110 +319,108 @@ function debounce(func, delay) {
 
 //--------------------------------------------------------------------------
 
-function CreateSlider(parentElement, min, max, step, value) {
-    let slider = document.createElement("div");
-    slider.className = "NewtubeSlider"
-    slider.setAttribute('max', max);
-    slider.setAttribute('min', min);
-    slider.setAttribute('step', step);
-    slider.setAttribute('value', value);
-    parentElement.appendChild(slider);
+// function CreateSlider(parentElement, min, max, step, value) {
+//     let slider = document.createElement("div");
+//     slider.classList.add("NewtubeSlider");
+//     slider.setAttribute('max', max);
+//     slider.setAttribute('min', min);
+//     slider.setAttribute('step', step);
+//     slider.setAttribute('value', value);
+//     parentElement.appendChild(slider);
 
-    let progress = document.createElement("div");
-    progress.className = "NewtubeSlider-progress"
-    slider.appendChild(progress);
+//     let progress = document.createElement("div");
+//     progress.classList.add("NewtubeSlider-progress");
+//     slider.appendChild(progress);
 
-    let thumb = document.createElement("div");
-    thumb.className = "NewtubeSlider-thumb"
-    thumb.style.userSelect = "none";
-    slider.appendChild(thumb);
+//     let thumb = document.createElement("div");
+//     thumb.classList.add("NewtubeSlider-thumb");
+//     thumb.style.userSelect = "none"; // Prevent text selection on thumb
+//     slider.appendChild(thumb);
 
-    let sliderWidth, thumbWidth, isDragging = false;
+//     let sliderWidth, thumbWidth, isDragging = false;
 
-    slider.addEventListener("mousedown", function (event) {
-        isDragging = true;
-        moveThumb(event);
-        document.addEventListener("mousemove", moveThumb);
-        // Prevent text selection on the entire slider while dragging
-        if (event.preventDefault) event.preventDefault();
+//     slider.addEventListener("mousedown", function (event) {
+//         isDragging = true;
+//         moveThumb(event);
+//         document.addEventListener("mousemove", moveThumb);
+//         // Prevent text selection on the entire slider while dragging
+//         if (event.preventDefault) event.preventDefault();
+//     });
+
+//     document.addEventListener("mouseup", function () {
+//         if (isDragging == true) {
+//             isDragging = false;
+//             document.removeEventListener("mousemove", moveThumb);
+//             if (Slider.OnChange) {
+//                 let currentValue = parseFloat(slider.getAttribute('value'));
+//                 Slider.OnChange(currentValue);
+//             }
+//             // Re-enable text selection after dragging
+//             document.body.style.userSelect = "";
+//         }
+//     });
+
+//     function moveThumb(event) {
+//         if (isDragging) {
+//             sliderWidth = slider.offsetWidth;
+//             thumbWidth = thumb.offsetWidth;
+//             let clickX = event.clientX - slider.getBoundingClientRect().left;
+//             let position = clickX;
+
+//             // Calculate the position based on step
+//             let stepDecimalPlaces = step.toString().split('.')[1] ? step.toString().split('.')[1].length : 0;
+//             let newValue = Math.round((position / sliderWidth) * (max - min) / step) * step + min;
+
+//             // Clamp the newValue
+//             newValue = Math.min(max, Math.max(min, newValue));
+
+//             let newPosition = ((newValue - min) / (max - min)) * sliderWidth;
+
+//             // Clamp the position
+//             newPosition = Math.max(0, Math.min(newPosition, sliderWidth));
+
+//             thumb.style.left = newPosition + "px";
+//             slider.setAttribute('value', newValue);
+//             progress.style.width = newPosition + "px";
+
+//             if (Slider.OnInput) {
+//                 Slider.OnInput(newValue);
+//             }
+//         }
+//     }
+
+//     function updateSlider() {
+//         max = parseFloat(slider.getAttribute('max')) || 100;
+//         min = parseFloat(slider.getAttribute('min')) || 0;
+//         step = parseFloat(slider.getAttribute('step')) || 1;
+//         value = parseFloat(slider.getAttribute('value')) || 0;
+
+//         sliderWidth = slider.offsetWidth;
+//         let position = ((value - min) / (max - min)) * sliderWidth;
+//         thumb.style.left = position + "px";
+//         progress.style.width = position + "px";
+//     }
+
+//     updateSlider();
+
+//     const resizeObserver = new ResizeObserver(updateSlider);
+//     resizeObserver.observe(parentElement);
+
+//     var Slider = {
+//         OnInput: null,
+//         OnChange: null,
+//         Element: slider
+//     };
+
+//     return Slider;
+// }
+
+function getUrlParams(url) {
+    const params = {};
+    const queryString = url.split('?')[1] || '';
+    queryString.split('&').forEach(param => {
+        const [key, value] = param.split('=');
+        params[key] = decodeURIComponent(value);
     });
-
-    document.addEventListener("mouseup", function () {
-        if (isDragging == true) {
-            isDragging = false;
-            document.removeEventListener("mousemove", moveThumb);
-            if (Slider.OnChange) {
-                let currentValue = parseFloat(slider.getAttribute('value'));
-                Slider.OnChange(currentValue);
-            }
-            // Re-enable text selection after dragging
-            document.body.style.userSelect = "";
-        }
-    });
-
-    let stepDecimalPlaces = step.toString().split('.')[1] ? step.toString().split('.')[1].length : 0;
-
-    function moveThumb(event) {
-        if (isDragging) {
-            sliderWidth = slider.offsetWidth;
-            thumbWidth = thumb.offsetWidth;
-            let clickX = event.clientX - slider.getBoundingClientRect().left;
-            let position = clickX;
-
-            // Calculate the position based on step
-            let newValue = Math.round((position / sliderWidth) * (max - min) / step) * step + min;
-
-            if (stepDecimalPlaces > 0) {
-                newValue = parseFloat(newValue.toFixed(stepDecimalPlaces));
-            }
-
-            newValue = Math.min(max, Math.max(min, newValue));
-
-            let newPosition = ((newValue - min) / (max - min)) * sliderWidth;
-
-            thumb.style.left = newPosition + "px";
-            slider.setAttribute('value', newValue);
-            progress.style.width = newPosition + "px";
-
-            if (Slider.OnInput) {
-                Slider.OnInput(newValue);
-            }
-        }
-    }
-
-    function updateSlider() {
-        max = parseFloat(slider.getAttribute('max')) || 100;
-        min = parseFloat(slider.getAttribute('min')) || 0;
-        step = parseFloat(slider.getAttribute('step')) || 1;
-        value = parseFloat(slider.getAttribute('value')) || 0;
-
-        sliderWidth = slider.offsetWidth;
-        let position = (Math.min(max, Math.max(min, value - min)) / (max - min)) * sliderWidth;
-        thumb.style.left = position + "px";
-        progress.style.width = position + "px";
-        stepDecimalPlaces = step.toString().split('.')[1] ? step.toString().split('.')[1].length : 0;
-    }
-
-    updateSlider();
-
-    const valueObserver = new MutationObserver(function (mutationsList, observer) {
-        for (let mutation of mutationsList) {
-            if (mutation.type === 'attributes' && !isDragging) {
-                updateSlider();
-            }
-        }
-    });
-
-    valueObserver.observe(slider, { attributes: true });
-
-    const resizeObserver = new ResizeObserver(updateSlider);
-    resizeObserver.observe(parentElement);
-
-    var Slider = {
-        OnInput: null,
-        OnChange: null,
-        Element: slider
-    };
-
-    return Slider;
+    return Object.entries(params);
 }

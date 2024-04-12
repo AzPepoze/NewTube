@@ -353,6 +353,7 @@ async function RenderBackgroundVideoFrame(globalAlpha) {
                console.log(NowLaggedFrame)
           } else {
                FoundBackgroundVideoLag()
+               NowLaggedFrame = 0
           }
      } else {
           NowLaggedFrame = 0
@@ -650,11 +651,13 @@ async function SetUpWebGL() {
 }
 
 async function RemoveBackgroundCanvas() {
-     var Old = BackgroundVideoContainer
-     PauseBackgroundVideo()
-     BackgroundVideoContainer = null
-     await sleep(2000)
-     Old.remove()
+     if (BackgroundVideoContainer) {
+          var Old = BackgroundVideoContainer
+          PauseBackgroundVideo()
+          BackgroundVideoContainer = null
+          await sleep(2000)
+          Old.remove()
+     }
 }
 
 var EnabledBackgroundVideo = false

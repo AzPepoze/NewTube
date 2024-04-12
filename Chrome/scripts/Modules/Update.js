@@ -1496,6 +1496,10 @@ async function update() {
                     background: black;
                     height: 100%;
                 }
+
+                .video.ytd-miniplayer{
+                    background:black;
+                }
                 `
 
         NTstyle.textContent = Collect_Style;

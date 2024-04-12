@@ -299,6 +299,7 @@ CreateSettingUI["ColorPicker"] = async function (args) {
      flex-direction: row;
      align-items: center;
      margin-top: 20px;
+     width: 90%;
      `
 
      Frame.append(Group)
@@ -318,6 +319,7 @@ CreateSettingUI["ColorPicker"] = async function (args) {
      display: flex;
      flex-direction: row;
      align-items: center;
+     width: calc(100% - 50px);
      `
 
      Group.append(OpacityGroup)
@@ -330,6 +332,7 @@ CreateSettingUI["ColorPicker"] = async function (args) {
      font-size: 16px !important;
      color: white !important;
      margin-inline:10px;
+     min-width:70px;
      `
 
      OpacityGroup.append(OpacityText)
@@ -469,7 +472,7 @@ CreateSettingUI["ColorPicker"] = async function (args) {
 //      OpacityBox.className = "TextBox"
 //      OpacityBox.type = "number"
 //      OpacityBox.style = `
-//      margin-left:20px;
+//      margin-left:10px;
 //      `
 
 //      OpacityBox.id = args.id + "O"
@@ -706,14 +709,14 @@ CreateSettingUI["NumberSlide"] = async function (args) {
 //      var Element = Slider.Element
 //      Element.id = args.id
 //      Element.style = `
-//      width: -webkit-fill-available;`
+//      width: -webkit-fill-available;
+//      margin-right: 10px;`
 
 //      //-------------------------------------------------
 
 //      var ValueBox = document.createElement("input")
 //      ValueBox.className = "TextBox"
 //      ValueBox.type = "number"
-//      ValueBox.style = `margin-left:20px;`
 //      ValueBox.id = args.id
 
 //      Group.append(ValueBox)
@@ -937,9 +940,7 @@ CreateSettingUI["UploadImage"] = async function (args) {
 
 
 async function CreateSettingElement() {
-     if (DebugMode) {
-          console.log("CreateSettingElement")
-     }
+     console.log("CreateSettingElement")
 
      for (var UI of SettingUI) {
           var type = UI.type
@@ -957,11 +958,9 @@ async function CreateSettingElement() {
           NewFeature = false
      }
 
-     if (DebugMode) {
-          console.log(SettingFuction)
-          console.log(SettingUI)
-          console.log(OnSettingChange)
-     }
+     console.log(SettingFuction)
+     console.log(SettingUI)
+     console.log(OnSettingChange)
 
      WatchNewtubeSettingScroll()
 

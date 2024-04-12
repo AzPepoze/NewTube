@@ -23,20 +23,17 @@ async function UpdateAllFont() {
     //await WaitDocumentLoaded()
     await LoadFonts()
 
-    if (Object.keys(OldFont).toString() == Object.keys(Font).toString()) {
+    if (OldFont == JSON.stringify(Font)) {
         return
     }
-
-    OldFont = {...Font}
 
     if (!FontHolder || !EnableFontHolder) {
         await CreateFontHolder()
     }
 
-    FontHolder.innerHTML = ""
-    EnableFontHolder.innerHTML = ""
-
     if (await Load("EnableButton")) {
+
+        OldFont = JSON.stringify(Font)
 
         var FontHolderHTML = ""
 
@@ -68,6 +65,9 @@ async function UpdateAllFont() {
         * {
             font-family: ${FontFamily};
         }`
+    } else {
+        FontHolder.innerHTML = ""
+        EnableFontHolder.innerHTML = ""
     }
 }
 
@@ -220,7 +220,7 @@ CreateSettingUI["FontManager"] = async function () {
         if (DebugMode) {
             console.log(Font)
         }
-        
+
         AddFontTextArea.value = ''
         SaveFonts()
         UpdateAddedFont()
@@ -253,16 +253,11 @@ CreateSettingUI["FontManager"] = async function () {
 
     //------------------------------------------------
 
-    var OldFontUI = {}
+    var OldFontUI
 
     async function UpdateAddedFont() {
 
-        if (DebugMode) {
-            console.log(Object.keys(OldFontUI))
-            console.log(Object.keys(Font))
-        }
-
-        if (Object.keys(OldFontUI).toString() == Object.keys(Font).toString()) {
+        if (OldFontUI == JSON.stringify(Font)) {
             return
         }
 
@@ -270,7 +265,7 @@ CreateSettingUI["FontManager"] = async function () {
             console.log("Create Font UI");
         }
 
-        OldFontUI = { ...Font }
+        OldFontUI = JSON.stringify(Font)
 
         Array.from(AddedFontFrame.getElementsByClassName("FontFrame")).forEach(element => {
             element.remove()

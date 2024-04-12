@@ -256,9 +256,14 @@ async function RunCheckBlackBars() {
 
      await GetVideoBound()
 
-     if (CanCheckBlackBars == false || !(await FindMainVideo())) {
-          // await FindVideo()
-          // v.parentElement.style.height = VideoBound.height
+     if (CanCheckBlackBars == false) {
+          return
+     }
+
+     if (!await FindMainVideo()) {
+          if (v.parentElement.style.height != "") {
+               v.parentElement.style.height = ""
+          }
           return
      }
 

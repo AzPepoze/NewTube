@@ -37,7 +37,7 @@ async function setV() {
         console.log("Finding Video")
     }
 
-    v = document.querySelector("#player-container.ytd-watch-flexy video")
+    v = document.querySelector(`#player-container[role="complementary"] video`)
 
     if (v == null) {
         await sleep(100)
@@ -57,20 +57,18 @@ async function FindVideo() {
 }
 
 async function GetVideoID(attemp) {
-
     if (attemp == null) {
         attemp = 10
     }
 
     if (attemp > 0) {
-        if (document.getElementsByTagName("ytd-watch-flexy")[0]) {
-            var videoID = document.getElementsByTagName("ytd-watch-flexy")[0].getAttribute("video-id")
-            return videoID
-        } else {
-            await sleep(500)
-            return await GetVideoID(attemp)
+        var URLParams = getUrlParams(window.location.href)
+        //console.log(URLParams)
+        if (URLParams["v"]) {
+            return URLParams.v
         }
     } else {
+        console.error("Can't find video ID")
         return
     }
 }
@@ -259,12 +257,20 @@ async function RunSyncWithVideo() {
 
     var Video = await FindVideo()
 
+    if (DebugMode) {
+        console.log(Video)
+    }
+
     if (Video == null) {
         await RunAllCallbackOBJ(FunctionWithVideoTasks.WhenNoVideo)
         return
     }
 
     var StaticVDO = await CheckStaticVDO()
+
+    if (DebugMode) {
+        console.log(Video)
+    }
 
     if (StaticVDO == true) {
         await RunAllCallbackOBJ(FunctionWithVideoTasks.WhenStaticVideo)
@@ -273,6 +279,9 @@ async function RunSyncWithVideo() {
     }
 
     if (SupportFrameUpdate == true) {
+        if (DebugMode) {
+            console.log("WaitNextFrame")
+        }
         v.requestVideoFrameCallback(RunSyncWithVideo)
     } else {
         setTimeout(() => {

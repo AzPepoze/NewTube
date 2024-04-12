@@ -84,6 +84,11 @@ async function LoadRgba(Text) {
 
 
 async function Save(Name, Value) {
+    
+    document.dispatchEvent(new CustomEvent(`${ExtensionID}_Save_Change_${Name}`, {
+        detail: Value
+    }))
+
     return await MainSave({ [Name]: Value })
 }
 
@@ -252,3 +257,12 @@ async function ConvertToNewSave(Save) {
 async function SaveCached(Cached) {
     chrome.storage.local.set({ "CachedSave": Cached })
 }
+
+document.addEventListener(ExtensionID + "_Save_Request", async function (e) {
+    document.dispatchEvent(new CustomEvent(`${ExtensionID}_Save_Recive`, {
+        detail: {
+            UniqueID: e.detail.UniqueID,
+            Value:await Load(e.detail.Name)
+        }
+    }))
+})

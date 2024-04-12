@@ -339,10 +339,6 @@ async function CreateSettingFeatures() {
                flex-direction: column;
           }
           
-          .style-scope ytd-watch-metadata{
-               display: flex;
-          }
-          
           h1.ytd-watch-metadata{
                text-align: center;
           }
@@ -1217,14 +1213,17 @@ async function CreateSettingFeatures() {
 
           enable: `
           #dismissible:has(.yt-core-image){
-          transition: all 1s ease;
-          margin-top: 100px !important;
-          opacity:0 !important;
+               transition: all 1s ease;
+               opacity:0 !important;
+          }
+
+          #dismissible:not(.ytd-reel-item-renderer):has(.yt-core-image){
+               margin-top: 100px;
           }
 
           #dismissible:has(.yt-core-image--loaded){
-          margin-top: 0px !important;
-          opacity:1 !important;
+               margin-top: 0px !important;
+               opacity:1 !important;
           }
           `
      })
@@ -1768,7 +1767,7 @@ async function CreateSettingFeatures() {
 
      //-------------------------------------------------------------------------------
 
-     Category = "🔲 Borders / Shadows"
+     Category = "🔳 Borders / Shadows"
      SubCategory = null
 
      await CreateFeatures("Select", {
@@ -2256,6 +2255,12 @@ async function CreateSettingFeatures() {
           id: "NewVDOanima",
           description: "New video animation (Volume up/down,Pause,Play)",
           Default: true
+     })
+
+     await CreateFeatures("Check", {
+          id: "NewYoutubeLayout",
+          description: "New Youtube Layout",
+          Default: false
      })
 
      if (DebugMode) {

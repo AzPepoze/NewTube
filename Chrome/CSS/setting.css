@@ -221,7 +221,7 @@ html {
      font-size: 15px;
 }
 
-.Reset:hover {
+#NEWTUBEBG .Reset:hover {
      background: white !important;
      color: black !important;
 }
@@ -574,10 +574,6 @@ html {
      transition: all 0.2s;
 }
 
-#NewtubeBackground{
-     transition: opacity 1s;
-}
-
 #NewtubeTint {
      position: fixed;
      z-index: -9999;
@@ -589,9 +585,9 @@ html {
      transition: background 1s;
 }
 
-#NEWTUBE .NewtubeSlider {
+/* #NEWTUBE .NewtubeSlider {
      position: relative;
-     width: -webkit-fill-available;
+     width: 90%;
      height: 10px;
      background-color: grey;
      border-radius: 5px;
@@ -625,4 +621,32 @@ html {
      transform: translate(-50%, -50%);
      user-select: none;
      z-index: 2;
+} */
+
+#NEWTUBE input[type="range"] {
+     -webkit-appearance: none;
+     appearance: none;
+     width: 100%;
+     cursor: pointer;
+     outline: none;
+     overflow: hidden;
+     border-radius: 16px;
+     height: 15px;
+}
+
+#NEWTUBE input[type="range"]::-webkit-slider-runnable-track {
+     height: 15px;
+     background: #969696;
+     border-radius: 16px;
+}
+
+#NEWTUBE input[type="range"]::-webkit-slider-thumb {
+     -webkit-appearance: none;
+     appearance: none;
+     height: 15px;
+     width: 15px;
+     background-color: #fff;
+     border-radius: 50%;
+     border: 2px solid rgb(127, 93, 183);
+     box-shadow: -407px 0 0 400px rgb(127, 93, 183);
 }

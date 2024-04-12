@@ -1,5 +1,5 @@
 var Ver = chrome.runtime.getManifest().version
-var DebugMode = true
+var DebugMode = false
 
 var isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
 
@@ -18,3 +18,5 @@ var RunAfterLoaded = {
      MiniPlayerYoutube : [],
      AllYoutubeMode : []
 }
+
+var ExtensionID = chrome.runtime.getURL('').slice(19, -1)
