@@ -2260,7 +2260,8 @@ async function CreateSettingFeatures() {
      await CreateFeatures("Check", {
           id: "NewYoutubeLayout",
           description: "New Youtube Layout",
-          Default: false
+          Default: false,
+          new: true
      })
 
      if (DebugMode) {
