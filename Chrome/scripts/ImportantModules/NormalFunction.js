@@ -422,5 +422,5 @@ function getUrlParams(url) {
         const [key, value] = param.split('=');
         params[key] = decodeURIComponent(value);
     });
-    return Object.entries(params);
+    return params;
 }

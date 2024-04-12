@@ -41,6 +41,4 @@ Newtube.Functions = {}
 
 //-------------------------------------------
 
-Newtube.RequestSave()
-
-console.log(window.Newtube)
+//console.log(window.Newtube)

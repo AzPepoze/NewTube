@@ -42,7 +42,7 @@ async function CreateBackgroundImage() {
      transition: opacity 1s;`
 
      var Body = await GetDocumentBody()
-     console.log(Body)
+     //console.log(Body)
      Body.append(BackgroundImage)
 }
 

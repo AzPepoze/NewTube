@@ -65,7 +65,7 @@ async function GetVideoID(attemp) {
         var URLParams = getUrlParams(window.location.href)
         //console.log(URLParams)
         if (URLParams["v"]) {
-            return URLParams.v
+            return URLParams["v"]
         }
     } else {
         console.error("Can't find video ID")
@@ -102,6 +102,8 @@ async function CheckStaticVDO() {
     }
 
     var videoID = await GetVideoID()
+
+    //console.log(videoID)
 
     if (videoID == OldCheckStaticVideoID) {
         return NowStaticVDO
@@ -269,7 +271,7 @@ async function RunSyncWithVideo() {
     var StaticVDO = await CheckStaticVDO()
 
     if (DebugMode) {
-        console.log(Video)
+        console.log(StaticVDO)
     }
 
     if (StaticVDO == true) {

@@ -940,7 +940,9 @@ CreateSettingUI["UploadImage"] = async function (args) {
 
 
 async function CreateSettingElement() {
-     console.log("CreateSettingElement")
+     if (DebugMode) {
+          console.log("CreateSettingElement")
+     }
 
      for (var UI of SettingUI) {
           var type = UI.type
@@ -949,7 +951,9 @@ async function CreateSettingElement() {
           SetCategory(args)
 
           if (args.new) {
-               console.log(args.id)
+               if (DebugMode) {
+                    console.log(args.id)
+               }
                NewFeature = true
           }
 

@@ -1,7 +1,7 @@
 {"manifest_version": 3,
     "name": "NewTube (YouTube Customizer & Enhancement)",
     "author": "AzPepoze",
-    "version": "5.0.1",
+    "version": "5.0.2",
     "description": "Customize your YouTube website with a lot customizable.",
     "homepage_url": "https://github.com/AzPepoze/Newtube",
     "default_locale": "en",
