@@ -8,8 +8,6 @@ FireFox_dir = './FireFox'
 
 archived = shutil.make_archive('NT_Chrome', 'zip', Chrome_dir)
 
-shutil.copyfile(Chrome_dir+'/NewtubeMain.js', FireFox_dir+'/NewtubeMain.js')
-
 GetVersion = None
 
 with open(Chrome_dir+'/manifest.json') as Chromefile:

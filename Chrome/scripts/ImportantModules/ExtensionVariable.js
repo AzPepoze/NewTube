@@ -16,7 +16,8 @@ var DefaultNewTubeLogo = `https://i.ibb.co/tD2VTyg/1705431438657.png`
 var RunAfterLoaded = {
      NormalYoutube : [],
      MiniPlayerYoutube : [],
-     AllYoutubeMode : []
+     AllYoutubeMode : [],
+     RunFirst:[],
 }
 
 var ExtensionID = chrome.runtime.getURL('').slice(19, -1)

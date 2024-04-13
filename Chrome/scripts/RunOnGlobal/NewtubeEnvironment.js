@@ -1,3 +1,5 @@
+function sleep(delay) { return new Promise((resolve) => setTimeout(resolve, delay)) }
+
 var Newtube = window.Newtube
 
 Newtube = {}
@@ -33,12 +35,20 @@ Newtube.OnSaveChangeWithAutoRun = async function (Name, callback) {
      })
 }
 
-Newtube.AskForReload = function(){
+Newtube.AskForReload = function () {
      if (confirm(`NEWTUBE : This feature is need to reload website\n\nAre you want to reload website?`)) window.location.reload()
 }
 
-Newtube.Functions = {}
+Newtube.GetDocumentHead = async function () {
+     let DocumentHead = document.head
 
+     if (DocumentHead) {
+          return DocumentHead
+     } else {
+          await sleep(100)
+          return await GetDocumentBody()
+     }
+}
 //-------------------------------------------
 
 //console.log(window.Newtube)

@@ -3,9 +3,6 @@ let Loaded = false
 
 async function MainLoad(GetLoadArray) {
     if (Loaded == false) {
-        if (DebugMode) {
-            console.log("Not loaded")
-        }
         await sleep(100)
         return await MainLoad(GetLoadArray)
     } else {
@@ -27,18 +24,11 @@ async function LoadCached() {
         AzCached = Loaded["CachedSave"]
     })
 
-    if (DebugMode) {
-        console.log(AzCached)
-    }
-
     if (AzCached == null) {
         AzCached = {}
     } else {
         if (AzCached["CachedSave"]) {
             delete AzCached["CachedSave"]
-        }
-        if (DebugMode) {
-            console.log("Loaded Cached")
         }
     }
 
@@ -59,9 +49,6 @@ async function MainSave(TheSave) {
 
 async function LoadToConsole(GetLoadArray) {
     let Get = await MainLoad(GetLoadArray)
-    if (DebugMode) {
-        console.log(Get)
-    }
 }
 
 async function ClearSave() {
@@ -113,9 +100,6 @@ function CheckCanSave(KeyName) {
     var CanAdd = true
     if (NewtubeSavePrevent.includes(KeyName) || !NewtubeAllSaveKey.includes(KeyName)) {
         CanAdd = false
-        if (DebugMode) {
-            console.log("Skip", KeyName)
-        }
     }
     return CanAdd
 }
@@ -124,9 +108,6 @@ function CheckCanSaveForThemeSelector(KeyName) {
     var CanAdd = true
     if (NewtubeSavePrevent.includes(KeyName) || AzCached[KeyName] == null) {
         CanAdd = false
-        if (DebugMode) {
-            console.log("Skip", KeyName)
-        }
     }
     return CanAdd
 }

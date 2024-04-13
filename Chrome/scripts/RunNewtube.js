@@ -1,21 +1,32 @@
 /* Yeaaaaaah :3 AzPepoze https://www.youtube.com/channel/UCJ2C0UTfxQo6iGTfudPfoRQ */
 
-async function RunOnGlobal(Name) {
-    var s = document.createElement('script');
-    s.id = "NewtubeGlobalScript"
-    s.setAttribute("ExtensionPath", chrome.runtime.getURL(''));
+async function RunScriptOnGlobal(Name) {
+    return new Promise(async function (res, rej) {
+        var s = document.createElement('script');
 
-    s.src = chrome.runtime.getURL(`scripts/RunOnGlobal/${Name}`);
-    (document.head || document.documentElement).appendChild(s);
+        s.onload = function () {
+            res()
+        }
+
+        s.id = "NewtubeGlobalScript"
+        s.setAttribute("ExtensionPath", chrome.runtime.getURL(''));
+        s.src = chrome.runtime.getURL(`scripts/${Name}`);
+        var Head = await GetDocumentHead()
+        Head.appendChild(s);
+    })
 }
 
-RunAfterLoaded.AllYoutubeMode.push(function(){
-    RunOnGlobal("NewtubeEnvironment.js")
+RunAfterLoaded.RunFirst.push(async function () {
+    await RunScriptOnGlobal("RunOnGlobal/NewtubeEnvironment.js")
+    await RunScriptOnGlobal("libs/RequireJS.js")
 })
 
 
-RunAfterLoaded.NormalYoutube.push(function(){
-    RunOnGlobal("EnableNewYoutubeLayout.js")
+RunAfterLoaded.NormalYoutube.push(async function () {
+    RunScriptOnGlobal("RunOnGlobal/EnableNewYoutubeLayout.js")
+    RunScriptOnGlobal("libs/VsCode/loader.js")
+    await sleep(1000)
+    RunScriptOnGlobal("RunOnGlobal/VsCode.js")
 })
 
 
@@ -54,8 +65,14 @@ async function MiniPlayerYoutube() {
 async function AllYoutubeMode() {
     update()
 
+    //----------------------------------------------
+    await RunFirst()
     //------------------------------------------------
     RunAllCallback(RunAfterLoaded.AllYoutubeMode)
+}
+
+async function RunFirst() {
+    await RunAllCallback(RunAfterLoaded.RunFirst)
 }
 
 async function Run() {

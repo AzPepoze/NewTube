@@ -278,7 +278,7 @@ function CreateMainFrame() {
     setTimeout(() => {
         LeftCategory.style.opacity = "1"
         LeftCategory.style.marginTop = "-3px"
-    }, 100 * LeftCount);
+    }, 70 * LeftCount);
 
     LeftCount++
 

@@ -394,6 +394,13 @@ async function CreateSettingFeatures() {
           Default: 0
      })
 
+     await CreateFeatures("Check", {
+          id: "RemoveAmbient",
+          description: "Auto Remove YouTube's Ambient Mode",
+          Default: true,
+          new: true
+     })
+
      //-------------------------------------------------------------------------------
 
      Category = "🎚️ Video control panel"
@@ -2191,11 +2198,12 @@ async function CreateSettingFeatures() {
           Default: false
      })
 
-     await CreateFeatures("TextArea", {
+     await CreateFeatures("CodeEditor", {
           id: "ADDCUSTOM",
           placeholder: "Write/Paste CSS here. ♪(´▽｀)",
           SetOnChange: true,
-          Default: ``
+          Default: ``,
+          language: "css"
      })
 
      Category = "📝 Custom CSS"
@@ -2207,11 +2215,12 @@ async function CreateSettingFeatures() {
           Default: false
      })
 
-     await CreateFeatures("TextArea", {
+     await CreateFeatures("CodeEditor", {
           id: "CUSTOM",
           placeholder: "Write/Paste CSS here. ♪(´▽｀)",
           SetOnChange: true,
-          Default: ``
+          Default: ``,
+          language: "css"
      })
 
      Category = "🌟 Additional JS"
@@ -2224,11 +2233,12 @@ async function CreateSettingFeatures() {
           AskWhenEnable: `⚠️*WARNING*⚠️\nYou are trying to enable Auto run JS\n\nPlease keep in mind that if somethings wrong by that code.\nYou can reset it by reinstall the extension only!\n(I'll make unload JS shortcut later)\n\nAre you sure?`
      })
 
-     await CreateFeatures("TextArea", {
+     await CreateFeatures("CodeEditor", {
           id: "ADDScript",
           placeholder: "Write/Paste JS here. ♪(´▽｀)",
           SetOnChange: true,
-          Default: ``
+          Default: ``,
+          language: "javascript"
      })
 
      await CreateFeatures("Button", {

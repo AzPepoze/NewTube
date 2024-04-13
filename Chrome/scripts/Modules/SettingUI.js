@@ -197,6 +197,93 @@ CreateSettingUI["TextArea"] = async function (args) {
      Frame.append(Element)
 }
 
+RequestCodeEditor = async function (Frame, args) {
+     return new Promise(async (resolve) => {
+          var UniqueID = Date.now()
+
+          var Complete = false
+
+          Frame.addEventListener("Complete", function () {
+               Complete = true
+               resolve()
+          }, { once: true })
+
+          document.dispatchEvent(new CustomEvent(ExtensionID + "_Create_CodeEditor", {
+               detail: {
+                    UniqueID: UniqueID,
+                    ...args
+               }
+          }));
+
+     })
+}
+
+CreateSettingUI["CodeEditor"] = async function (args) {
+     var Editor = await CreateFrame()
+
+     Editor.style.height = "400px"
+     Editor.style.borderRadius = "20px"
+     Editor.style.overflow = "hidden";
+     Editor.style.border = "1px solid rgb(138, 138, 138)";
+     Editor.style.paddingBlock = "10px";
+     Editor.style.resize = "vertical";
+     Editor.style.minHeight = "400px";
+     Editor.style.width = "90%";
+
+     Editor.id = 'NewtubeCodeEditor_' + makeid(5)
+
+     parentElementID = Editor.id
+
+     args.parentElementID = Editor.id
+     await RequestCodeEditor(Editor, args);
+
+     if (args.SetOnChange) {
+
+          async function UpdateUI() {
+               Editor.dispatchEvent(new CustomEvent("SetValue", {
+                    detail: await Load(args.id)
+               }))
+          }
+
+          UpdateUI()
+
+          SetOnChangeSettingUI(args.id, UpdateUI)
+
+          //-----------------------------------------------------
+
+          function UpdateSetting(Value) {
+               SetSetting(args.id, Value)
+          }
+
+
+          var OnInput = async function (e) {
+               //console.log(e.detail)
+               if (await ShouldRealtime() == true) {
+                    UpdateSetting(e.detail)
+               }
+          }
+          Editor.addEventListener("OnInput", OnInput)
+
+
+
+          var OnChange = async function (e) {
+               if (await ShouldRealtime() == false) {
+                    UpdateSetting(e.detail)
+               }
+          }
+          Editor.addEventListener("OnChange", OnChange)
+
+          //-----------------------------------------------------
+
+
+          WhenElementRemove(Editor, function () {
+               Editor.dispatchEvent(new CustomEvent("Remove"))
+               Editor.removeEventListener("OnInput", OnInput)
+               Editor.removeEventListener("OnChange", OnChange)
+          })
+     }
+}
+
 CreateSettingUI["NumberBox"] = async function (args) {
      var Frame = await CreateFrame()
 

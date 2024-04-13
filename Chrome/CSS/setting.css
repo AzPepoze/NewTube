@@ -221,7 +221,7 @@ html {
      font-size: 15px;
 }
 
-#NEWTUBEBG .Reset:hover {
+.Reset:hover {
      background: white !important;
      color: black !important;
 }
