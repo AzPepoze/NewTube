@@ -91,7 +91,8 @@ var NewtubeSavePrevent = [
     'Realtime',
     'ErrorCollect',
     "CachedSave",
-    "JSAuto"
+    "JSAuto",
+    "OldVer"
 ]
 
 var NewtubeAllSaveKey = []

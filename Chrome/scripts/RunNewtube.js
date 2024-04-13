@@ -66,6 +66,7 @@ async function AllYoutubeMode() {
     update()
 
     //----------------------------------------------
+    await sleep(1000)
     await RunFirst()
     //------------------------------------------------
     RunAllCallback(RunAfterLoaded.AllYoutubeMode)
