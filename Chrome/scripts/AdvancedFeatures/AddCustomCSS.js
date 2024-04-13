@@ -8,6 +8,7 @@ async function CreateAddCSS_Style() {
 }
 
 async function UpdateAddCSS() {
+     if (!AddCSS_Style) return
      AddCSS_Style.textContent = await Load("ADDCUSTOM")
 }
 
@@ -27,6 +28,9 @@ async function StopAddCSS() {
 }
 
 RunAfterLoaded.NormalYoutube.push(function () {
+     
+     AddOnChangeFunction("ADDCUSTOM", UpdateAddCSS)
+
      OnChangeButton(
           "EnaADDCSS",
           StartAddCSS,

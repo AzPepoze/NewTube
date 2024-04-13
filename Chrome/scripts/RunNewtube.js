@@ -19,6 +19,7 @@ async function RunScriptOnGlobal(Name) {
 RunAfterLoaded.RunFirst.push(async function () {
     await RunScriptOnGlobal("RunOnGlobal/NewtubeEnvironment.js")
     await RunScriptOnGlobal("libs/RequireJS.js")
+    await sleep(1000)
 })
 
 

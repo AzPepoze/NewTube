@@ -457,7 +457,7 @@ html {
 
 #NEWTUBE .Select {
      color: white;
-     background: #00000070;
+     background: #000000;
      border-radius: 20px;
      height: 30px;
      padding-left: 10px;
@@ -648,5 +648,5 @@ html {
      background-color: #fff;
      border-radius: 50%;
      border: 2px solid rgb(127, 93, 183);
-     box-shadow: -407px 0 0 400px rgb(127, 93, 183);
+     box-shadow: -1907px 0 0 1900px rgb(127, 93, 183);
 }

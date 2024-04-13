@@ -688,7 +688,8 @@ CreateSettingUI["NumberSlide"] = async function (args) {
      flex-direction: row;
      justify-content: center;
      width: -webkit-fill-available;
-     padding: 10px;`
+     padding: 10px;
+     align-items: center;`
 
      Frame.append(Group)
 
@@ -1049,9 +1050,11 @@ async function CreateSettingElement() {
           NewFeature = false
      }
 
-     console.log(SettingFuction)
-     console.log(SettingUI)
-     console.log(OnSettingChange)
+     if (DebugMode) {
+          console.log(SettingFuction)
+          console.log(SettingUI)
+          console.log(OnSettingChange)
+     }
 
      WatchNewtubeSettingScroll()
 

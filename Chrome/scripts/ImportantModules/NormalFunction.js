@@ -267,20 +267,22 @@ function RunWhenScroll(element, Func, UseGlobalScroll) {
     OnScrollTask.get(element).AllFunction.set(UniqueID, Func);
 
     function Stop() {
-        OnScrollTask.get(element).AllFunction.delete(UniqueID);
-        if (OnScrollTask.get(element).AllFunction.size === 0) {
+        if (OnScrollTask.get(element).AllFunction) {
+            OnScrollTask.get(element).AllFunction.delete(UniqueID);
+            if (OnScrollTask.get(element).AllFunction.size === 0) {
 
-            var ThisElementToRemove
+                var ThisElementToRemove
 
-            if (UseGlobalScroll) {
-                ThisElementToRemove = window
-            } else {
-                ThisElementToRemove = element
+                if (UseGlobalScroll) {
+                    ThisElementToRemove = window
+                } else {
+                    ThisElementToRemove = element
+                }
+
+                ThisElementToRemove.removeEventListener('scroll', OnScrollTask.get(element).EventListener);
+
+                OnScrollTask.delete(element)
             }
-
-            ThisElementToRemove.removeEventListener('scroll', OnScrollTask.get(element).EventListener);
-
-            OnScrollTask.delete(element)
         }
     }
 
