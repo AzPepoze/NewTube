@@ -75,6 +75,7 @@
                 "scripts/AdvancedFeatures/Flyout.js",
                 "scripts/AdvancedFeatures/AutoTransparentTopBar.js",
                 "scripts/AdvancedFeatures/RemoveAmbient.js",
+                "scripts/AdvancedFeatures/UpdateTimeStamp.js",
                 
                 "scripts/AdvancedFeatures/AddCustomCSS.js",
 

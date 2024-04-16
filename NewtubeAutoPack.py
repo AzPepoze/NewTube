@@ -4,7 +4,7 @@ import os.path
 # Creating the ZIP file
 
 Chrome_dir = './Chrome'
-FireFox_dir = './FireFox'
+#FireFox_dir = './FireFox'
 
 archived = shutil.make_archive('NT_Chrome', 'zip', Chrome_dir)
 
@@ -49,6 +49,6 @@ def replace_line(filename, line_number, text):
 
 # Prompt the user for the filename, line number and replacement text
 
-replace_line(FireFox_dir+'/manifest.json', 4, GetVersion)
+#replace_line(FireFox_dir+'/manifest.json', 4, GetVersion)
     
 # archived = shutil.make_archive('NT_FireFox', 'zip', FireFox_dir)

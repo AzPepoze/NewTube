@@ -49,6 +49,32 @@ Newtube.GetDocumentHead = async function () {
           return await GetDocumentBody()
      }
 }
+
+Newtube.ScriptHolder = document.createElement('fieldset')
+
+Newtube.RunScript = async function (params) {
+     return new Promise(async function (res, rej) {
+          var s = document.createElement('script');
+
+          s.onload = function () {
+               res()
+          }
+
+          s.id = "Newtube_Script"
+          s.src = Newtube.ExtensionPath + "scripts/" +params
+          Newtube.ScriptHolder.appendChild(s);
+     })
+}
+
+Newtube.RunSciptList = async function () {
+     var Head = await Newtube.GetDocumentHead()
+     Head.append(Newtube.ScriptHolder)
+
+     await Newtube.RunScript("RunAfterLoaded/EnableNewYoutubeLayout.js")
+     await Newtube.RunScript("RunAfterLoaded/VsCode.js")
+}
+
+Newtube.RunSciptList()
 //-------------------------------------------
 
 //console.log(window.Newtube)
