@@ -13,8 +13,8 @@ async function OnChangeBackground() {
           if (BackgroundImage) {
                BackgroundImage.remove()
                BackgroundImage = null
+               PreloadBackgroundImage.src = ""
           }
-
           return
      }
 
