@@ -47,6 +47,9 @@ CreateSettingUI["Check"] = async function (args) {
                if (!confirm(args.AskWhenEnable)) return
           }
           SetSetting(args.id, Element.checked)
+          if (args.Need_Reload) {
+               AskForReload()
+          }
      })
 
      Frame.append(Element)

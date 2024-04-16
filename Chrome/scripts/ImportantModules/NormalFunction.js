@@ -426,3 +426,7 @@ function getUrlParams(url) {
     });
     return params;
 }
+
+AskForReload = function () {
+    if (confirm(`NEWTUBE : This feature is need to reload website\n\nAre you want to reload website?`)) window.location.reload()
+}

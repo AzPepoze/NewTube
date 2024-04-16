@@ -12,7 +12,6 @@ async function OnChangeButton(id, EnableCallBack, DisableCallback, Swap) {
                var IsEnable = await Load(id)
                if (Swap) {
                     IsEnable = !IsEnable
-                    console.log(IsEnable, EnableCallBack)
                }
 
                if (IsEnable) {

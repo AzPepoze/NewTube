@@ -1087,7 +1087,8 @@ async function CreateSettingFeatures() {
           ItemsLabel: {
                Slide: "Slide",
                Zoom: "Zoom",
-               "Slide&Zoom": "Slide&Zoom"
+               "Slide&Zoom": "Slide&Zoom",
+               "None" : "None"
           },
           ItemsCSS: {
                Slide: `
@@ -1182,7 +1183,8 @@ async function CreateSettingFeatures() {
                ytd-guide-entry-renderer:hover
                {
                     margin-inline-start: -10px !important;
-               }`
+               }`,
+               None:``
           },
           Default: "Slide",
           description: "Hover animation style"
@@ -2269,9 +2271,10 @@ async function CreateSettingFeatures() {
 
      await CreateFeatures("Check", {
           id: "NewYoutubeLayout",
-          description: "Force enalbe new YouTube's Layout",
+          description: "Force enable new YouTube's Layout",
           Default: false,
-          new: true
+          new: true,
+          Need_Reload:true
      })
 
      if (DebugMode) {

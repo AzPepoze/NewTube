@@ -1,5 +1,4 @@
 function sleep(delay) { return new Promise((resolve) => setTimeout(resolve, delay)) }
-
 var Newtube = window.Newtube
 
 Newtube = {}
@@ -50,31 +49,30 @@ Newtube.GetDocumentHead = async function () {
      }
 }
 
-Newtube.ScriptHolder = document.createElement('fieldset')
+// Newtube.ScriptHolder = document.createElement('fieldset')
 
-Newtube.RunScript = async function (params) {
-     return new Promise(async function (res, rej) {
-          var s = document.createElement('script');
+// Newtube.RunScript = async function (params) {
+//      return new Promise(async function (res, rej) {
+//           var s = document.createElement('script');
 
-          s.onload = function () {
-               res()
-          }
+//           s.onload = function () {
+//                res()
+//           }
 
-          s.id = "Newtube_Script"
-          s.src = Newtube.ExtensionPath + "scripts/" +params
-          Newtube.ScriptHolder.appendChild(s);
-     })
-}
+//           s.id = "Newtube_Script"
+//           s.src = Newtube.ExtensionPath + "scripts/" +params
+//           Newtube.ScriptHolder.appendChild(s);
+//      })
+// }
 
-Newtube.RunSciptList = async function () {
-     var Head = await Newtube.GetDocumentHead()
-     Head.append(Newtube.ScriptHolder)
+// Newtube.RunSciptList = async function () {
+//      var Head = await Newtube.GetDocumentHead()
+//      Head.append(Newtube.ScriptHolder)
 
-     await Newtube.RunScript("RunAfterLoaded/EnableNewYoutubeLayout.js")
-     await Newtube.RunScript("RunAfterLoaded/VsCode.js")
-}
+//      //await Newtube.RunScript("RunAfterLoaded/EnableNewYoutubeLayout.js")
+// }
 
-Newtube.RunSciptList()
+// Newtube.RunSciptList()
 //-------------------------------------------
 
 //console.log(window.Newtube)

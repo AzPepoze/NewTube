@@ -1,7 +1,7 @@
 {"manifest_version": 3,
     "name": "NewTube (YouTube Customizer & Enhancement)",
     "author": "AzPepoze",
-    "version": "5.1.1",
+    "version": "5.1.2",
     "description": "Customize your YouTube website with a lot customizable.",
     "homepage_url": "https://github.com/AzPepoze/Newtube",
     "default_locale": "en",
@@ -23,14 +23,18 @@
 		"all_frames": true,
         "matches": ["*://www.youtube.com/*", "*://music.youtube.com/*" ],
         "js": [
-                "scripts/ImportantModules/ErrorHandle.js",
                 "scripts/ImportantModules/ExtensionVariable.js",
+                "scripts/ImportantModules/Save.js",
+                "scripts/ImportantModules/ErrorHandle.js",
                 "scripts/ImportantModules/NormalFunction.js",
                 "scripts/ImportantModules/Colors.js",
                 "scripts/ImportantModules/GetFileFromInput.js",
                 "scripts/ImportantModules/ReadFileToURL.js",
                 "scripts/ImportantModules/YoutubeFunction.js",
                 "scripts/ImportantModules/UploadImageByAPI.js",
+
+                
+                "scripts/RunFirst/RunFirstControl.js",
 
 
                 "scripts/AutoRun/DisableDarkReader.js",
@@ -45,7 +49,6 @@
                 "scripts/Modules/DefaultPreset.js",
 
                 "scripts/Modules/OpenThemeStore.js",
-                "scripts/Modules/Save.js",
                 "scripts/Modules/ReloadSave.js",
                 "scripts/Modules/GetSortedPalette.js",
                 "scripts/Modules/AddMissingSave.js",
@@ -76,6 +79,7 @@
                 "scripts/AdvancedFeatures/AutoTransparentTopBar.js",
                 "scripts/AdvancedFeatures/RemoveAmbient.js",
                 "scripts/AdvancedFeatures/UpdateTimeStamp.js",
+                "scripts/AdvancedFeatures/NewYoutubeLayout.js",
                 
                 "scripts/AdvancedFeatures/AddCustomCSS.js",
 
@@ -99,7 +103,7 @@
             
             "scripts/AutoRun/DisableDarkReader.js",
 
-            "scripts/Modules/Save.js",
+            "scripts/ImportantModules/Save.js",
         
             "scripts/NewtubeThemeSelector.js"
         ],
