@@ -42,11 +42,12 @@ CreateSettingUI["Check"] = async function (args) {
 
      SetOnChangeSettingUI(args.id, UpdateUI)
 
-     Element.addEventListener("change", function () {
+     Element.addEventListener("change", async function () {
           if (Element.checked == true && args.AskWhenEnable) {
                if (!confirm(args.AskWhenEnable)) return
           }
-          SetSetting(args.id, Element.checked)
+          await SetSetting(args.id, Element.checked)
+          await sleep(100)
           if (args.Need_Reload) {
                AskForReload()
           }
