@@ -165,7 +165,11 @@ if (GetURL.includes("callbyNewtube")) {
                                 GetDes = ThisPart.textContent.replace("\n", "")
                             }
                             if (GetText.includes("^thumbnail")) {
-                                GetThumbnail = ThisPart.getElementsByTagName("img")[0].src
+                                var GetThumbnail_Element = ThisPart.getElementsByTagName("img")[0]
+                                if (GetThumbnail_Element) {
+                                    GetThumbnail = GetThumbnail_Element.src
+                                }
+
                             }
                             if (GetText.includes("^pictures")) {
                                 GetPics = ThisPart.getElementsByTagName("img")
@@ -372,7 +376,7 @@ if (GetURL.includes("callbyNewtube")) {
                             Object.keys(ThisTheme).forEach(async function (key) {
                                 if (CheckCanSaveForThemeSelector(key)) {
                                     NowCached[key] = ThisTheme[key]
-                                    console.log("Added",key)
+                                    console.log("Added", key)
                                 }
                             })
 
