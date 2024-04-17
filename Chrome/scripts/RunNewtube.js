@@ -18,7 +18,7 @@ async function RunScriptOnGlobal(Name) {
 
 RunAfterLoaded.RunFirst.push(async function () {
     await RunScriptOnGlobal("RunOnGlobal/NewtubeEnvironment.js")
-//------------------------------------------------
+    //------------------------------------------------
     await RunScriptOnGlobal("libs/RequireJS.js")
     //------------------------------------------------
     await RunScriptOnGlobal("libs/VsCode/loader.js")
@@ -27,7 +27,7 @@ RunAfterLoaded.RunFirst.push(async function () {
 
 
 // RunAfterLoaded.NormalYoutube.push(async function () {
-    
+
 // })
 
 

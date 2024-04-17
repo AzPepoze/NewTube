@@ -1,7 +1,7 @@
 {"manifest_version": 3,
     "name": "NewTube (YouTube Customizer & Enhancement)",
     "author": "AzPepoze",
-    "version": "5.1.2",
+    "version": "5.1.3",
     "description": "Customize your YouTube website with a lot customizable.",
     "homepage_url": "https://github.com/AzPepoze/Newtube",
     "default_locale": "en",
@@ -23,6 +23,8 @@
 		"all_frames": true,
         "matches": ["*://www.youtube.com/*", "*://music.youtube.com/*" ],
         "js": [
+                "scripts/RunFirst/RunFirstControl.js",
+
                 "scripts/ImportantModules/ExtensionVariable.js",
                 "scripts/ImportantModules/Save.js",
                 "scripts/ImportantModules/ErrorHandle.js",
@@ -32,9 +34,6 @@
                 "scripts/ImportantModules/ReadFileToURL.js",
                 "scripts/ImportantModules/YoutubeFunction.js",
                 "scripts/ImportantModules/UploadImageByAPI.js",
-
-                
-                "scripts/RunFirst/RunFirstControl.js",
 
 
                 "scripts/AutoRun/DisableDarkReader.js",
@@ -80,6 +79,7 @@
                 "scripts/AdvancedFeatures/RemoveAmbient.js",
                 "scripts/AdvancedFeatures/UpdateTimeStamp.js",
                 "scripts/AdvancedFeatures/NewYoutubeLayout.js",
+                "scripts/AdvancedFeatures/AutoShowReplayChat.js",
                 
                 "scripts/AdvancedFeatures/AddCustomCSS.js",
 

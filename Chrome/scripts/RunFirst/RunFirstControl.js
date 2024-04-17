@@ -7,7 +7,6 @@ function FastInject(Name) {
           }
 
           s.id = "NewtubeGlobalScript"
-          s.setAttribute("ExtensionPath", chrome.runtime.getURL(''));
           s.src = chrome.runtime.getURL(`scripts/${Name}`);
 
           if (document.head || document.body) {

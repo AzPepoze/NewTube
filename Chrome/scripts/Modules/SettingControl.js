@@ -7,6 +7,7 @@ var NewtubeSetting,
     DragingSettingTransition = "opacity 0.5s, transform 0.5s"
 
 async function OpenSetting(animation) {
+    if (inIframe) return
     if (NewtubeMain == null) {
         await sleep(100)
         return await OpenSetting(animation)

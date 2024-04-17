@@ -97,7 +97,7 @@ async function CreateSettingFeatures() {
                background: linear-gradient(-45deg, rgba(10, 10, 10, 0.8), rgba(43, 43, 43, 0.8)) !important;
           }`,
 
-          new: true
+
      })
 
      await CreateFeatures("JustText", {
@@ -398,7 +398,7 @@ async function CreateSettingFeatures() {
           id: "RemoveAmbient",
           description: "Auto Remove YouTube's Ambient Mode",
           Default: true,
-          new: true
+
      })
 
      //-------------------------------------------------------------------------------
@@ -720,7 +720,7 @@ async function CreateSettingFeatures() {
           id: "BackgroundVDOStick",
           description: "Force Background Video Stick to Video",
           Default: false,
-          new: true
+
      })
 
      await CreateFeatures("Select", {
@@ -1088,7 +1088,7 @@ async function CreateSettingFeatures() {
                Slide: "Slide",
                Zoom: "Zoom",
                "Slide&Zoom": "Slide&Zoom",
-               "None" : "None"
+               "None": "None"
           },
           ItemsCSS: {
                Slide: `
@@ -1184,7 +1184,7 @@ async function CreateSettingFeatures() {
                {
                     margin-inline-start: -10px !important;
                }`,
-               None:``
+               None: ``
           },
           Default: "Slide",
           description: "Hover animation style"
@@ -1371,7 +1371,7 @@ async function CreateSettingFeatures() {
           }
           `,
 
-          new: true
+
      })
 
      await CreateFeatures("Check", {
@@ -1670,7 +1670,7 @@ async function CreateSettingFeatures() {
                     background-position-x: ${await Load("TopIconX")}%;
                }`
           },
-          new: true
+
      })
 
      await CreateFeatures("NumberSlide", {
@@ -1683,7 +1683,7 @@ async function CreateSettingFeatures() {
                     background-position-y: ${await Load("TopIconY")}%;
                }`
           },
-          new: true
+
      })
 
      await CreateFeatures("NumberSlide", {
@@ -1707,7 +1707,7 @@ async function CreateSettingFeatures() {
           ytd-topbar-logo-renderer{
                transform: scaleX(-1);
           }`,
-          new: true
+
      })
 
      await CreateFeatures("Check", {
@@ -1722,7 +1722,7 @@ async function CreateSettingFeatures() {
           ytd-topbar-logo-renderer{
                background-repeat: no-repeat;
           }`,
-          new: true
+
      })
 
      //-------------------------------------------------------------------------------
@@ -2038,7 +2038,7 @@ async function CreateSettingFeatures() {
           },
           Default: "none",
           description: "Things to blur",
-          new: true
+
      })
 
      //-------------------------------------------------------------------------------
@@ -2273,8 +2273,8 @@ async function CreateSettingFeatures() {
           id: "NewYoutubeLayout",
           description: "Force enable new YouTube's Layout",
           Default: false,
-          new: true,
-          Need_Reload:true
+
+          Need_Reload: true
      })
 
      if (DebugMode) {
