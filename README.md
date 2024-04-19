@@ -10,9 +10,9 @@
 
 # ✳️ Newtube (Customize youtube) changelog! ✳️
 
-*I'm too lazy to list this anymore. Just enjoy the lastest version 🤣🤣🤣*
+*I'm too lazy to list this anymore. Just enjoy the latest version 🤣🤣🤣*
 
-## Version 4.0.0 (Current)
+## Version 4.0.0
 
 - Upgrade Setting menu
 

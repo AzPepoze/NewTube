@@ -253,11 +253,6 @@ async function update() {
                    transform: translateZ(0px); 
                 }
 
-                ytd-app{
-                    backface-visibility: hidden;
-                }
-                
-
                 html:not(.style-scope)[system-icons]:not(.style-scope)
                 {
                     background: black !important;
