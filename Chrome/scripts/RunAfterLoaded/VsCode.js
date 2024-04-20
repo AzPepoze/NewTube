@@ -9,7 +9,7 @@ Newtube.CreateCodeEditor = async function ({ parentElement, value, language, onI
 
      require.config({
           paths: {
-               'vs': Newtube.ExtensionPath + 'scripts/libs/VsCode'
+               'vs': Newtube.ExtensionPath + 'scripts/libs/vs'
           }
      });
 

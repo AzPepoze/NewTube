@@ -62,6 +62,10 @@ async function CreateNewtubeSearch() {
      NewtubeSearch.placeholder = "🔍 Search"
      NewtubeRightSetting.appendChild(NewtubeSearch)
 
+     if (in_Setting_Page) {
+          NewtubeSearch.style.top = "5px"
+     }
+
      var changing = 0
      NewtubeSearch.addEventListener("input", async function () {
           changing += 1

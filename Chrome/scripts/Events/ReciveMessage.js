@@ -9,7 +9,7 @@ chrome.runtime.onMessage.addListener(async function (recived) {
           update()
      }
 
-     if (recived == 'Setting') {
+     if (!in_Setting_Page && recived == 'Setting') {
           clickSetting()
      }
 

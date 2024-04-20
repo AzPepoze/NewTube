@@ -1,7 +1,7 @@
 {"manifest_version": 3,
     "name": "NewTube (YouTube Customizer & Enhancement)",
     "author": "AzPepoze",
-    "version": "5.1.6",
+    "version": "5.1.7",
     "description": "Customize your YouTube website with a lot customizable.",
     "homepage_url": "https://github.com/AzPepoze/Newtube",
     "default_locale": "en",
@@ -18,6 +18,7 @@
             "matches": [ "*://www.youtube.com/*", "*://giscus.app/*", "*://music.youtube.com/*" ]
         }
     ],
+    "options_page": "html/Newtube_setting.html",
     "content_scripts": [
       {
 		"all_frames": true,
@@ -80,6 +81,7 @@
                 "scripts/AdvancedFeatures/UpdateTimeStamp.js",
                 "scripts/AdvancedFeatures/NewYoutubeLayout.js",
                 "scripts/AdvancedFeatures/AutoShowReplayChat.js",
+                "scripts/AdvancedFeatures/Move_To_Top.js",
                 
                 "scripts/AdvancedFeatures/AddCustomCSS.js",
 

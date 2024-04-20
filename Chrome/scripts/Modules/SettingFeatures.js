@@ -74,6 +74,13 @@ async function CreateSettingFeatures() {
           align: "left"
      })
 
+     await CreateFeatures("Button", {
+          innerHTML: "Go to setting page!",
+          callback: function () {
+               window.open(chrome.runtime.getURL("html/Newtube_setting.html"));
+          },
+     })
+
      await CreateFeatures("Check", {
           id: "EnableButton",
           description: "Enable",
@@ -2276,6 +2283,50 @@ async function CreateSettingFeatures() {
 
           Need_Reload: true
      })
+
+     // await CreateFeatures("Check", {
+     //      id: "MoveToTop",
+     //      description: "Enable Move to top Button",
+     //      Default: true,
+     //      new: true
+     // })
+
+     // await CreateFeatures("UploadImage", {
+     //      id: "MoveToTop_URL",
+     //      description: "Upload Move to top Button Image",
+     //      MaxFileSize: 1000000
+     // })
+
+     // await CreateFeatures("URLBox", {
+     //      id: "MoveToTop_URL",
+     //      description: "Move to top Button Image URL",
+     //      Default: DefaultNewTubeLogo
+     // })
+
+     // await CreateFeatures("PreviewImage", {
+     //      id: "MoveToTop_URL"
+     // })
+
+     // await CreateFeatures("Button", {
+     //      innerHTML: "View Image",
+     //      callback: async function () {
+     //           window.open(await Load("MoveToTop_URL"))
+     //      },
+     // })
+
+     // await CreateFeatures("Button", {
+     //      innerHTML: "Reset to default NewTube Icon",
+     //      callback: function () {
+     //           SetSetting("MoveToTop_URL", DefaultNewTubeLogo)
+     //      },
+     // })
+
+     // await CreateFeatures("Button", {
+     //      innerHTML: "Reset to Traxmaeus's Icon",
+     //      callback: function () {
+     //           SetSetting("MoveToTop_URL", "https://i.ibb.co/0Mr31QR/Preview.png")
+     //      },
+     // })
 
      if (DebugMode) {
           console.log(NewtubeAllSaveKey)

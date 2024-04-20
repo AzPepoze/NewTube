@@ -10,10 +10,10 @@ function FastInject(Name) {
           s.src = chrome.runtime.getURL(`scripts/${Name}`);
 
           if (document.head || document.body) {
-               (document.head || document.body).appendChild(s);
+               (document.head || document.body).prepend(s);
           } else {
                document.addEventListener("DOMContentLoaded", function () {
-                    (document.head || document.body).appendChild(s);
+                    (document.head || document.body).prepend(s);
                }, { once: true });
           }
      })
@@ -24,6 +24,4 @@ async function FastInjectAfterLoad() {
 }
 
 
-document.addEventListener("DOMContentLoaded", function () {
-     FastInjectAfterLoad()
-});  
+FastInjectAfterLoad()

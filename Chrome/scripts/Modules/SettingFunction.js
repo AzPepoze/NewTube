@@ -79,27 +79,27 @@ async function CreateFeatures(ThisType, args) {
 
     //----------------------------------------------------------------------------
 
-    if (ThisType == "Button") {
-        if (args.align == null) {
-            args.align = "center"
-        }
+    // if (ThisType == "Button") {
+    //     if (args.align == null) {
+    //         args.align = "center"
+    //     }
 
-        if (args.align == "left") {
-            args.align = "flex-start"
-        }
+    //     if (args.align == "left") {
+    //         args.align = "flex-start"
+    //     }
 
-        if (args.color == null) {
-            args.color = "white"
-        }
+    //     if (args.color == null) {
+    //         args.color = "white"
+    //     }
 
-        if (args.bg == null) {
-            args.bg = "#ffffff14"
-        }
+    //     if (args.bg == null) {
+    //         args.bg = "#ffffff14"
+    //     }
 
-        if (args.border == null) {
-            args.border = "#a6a6a6"
-        }
-    }
+    //     if (args.border == null) {
+    //         args.border = "#a6a6a6"
+    //     }
+    // }
 
     //----------------------------------------------------------------------------
 

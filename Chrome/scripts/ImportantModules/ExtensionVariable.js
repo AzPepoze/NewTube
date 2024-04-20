@@ -21,3 +21,12 @@ var RunAfterLoaded = {
 }
 
 var ExtensionID = chrome.runtime.getURL('').slice(19, -1)
+
+var in_Setting_Page
+
+if (window.location.href.includes("Newtube_setting")) {
+     document.title = "NewTube Setting";
+     in_Setting_Page = true
+} else {
+     in_Setting_Page = false
+}

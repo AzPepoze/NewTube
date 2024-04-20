@@ -62,6 +62,27 @@ CreateSettingUI["Check"] = async function (args) {
 }
 
 CreateSettingUI["Button"] = async function (args) {
+
+     if (args.align == null) {
+          args.align = "center"
+     }
+
+     if (args.align == "left") {
+          args.align = "flex-start"
+     }
+
+     if (args.color == null) {
+          args.color = "white"
+     }
+
+     if (args.bg == null) {
+          args.bg = "#ffffff14"
+     }
+
+     if (args.border == null) {
+          args.border = "#a6a6a6"
+     }
+
      var Frame = await CreateFrame()
 
      Frame.style.marginBlock = "6px"
@@ -137,7 +158,6 @@ CreateSettingUI["JustText"] = async function (args) {
      display: flex;
      align-items: center;
      flex-direction: row;
-     
      justify-content: ${args.align};
      text-align: ${args.align};
      `
@@ -223,6 +243,21 @@ RequestCodeEditor = async function (Frame, args) {
 }
 
 CreateSettingUI["CodeEditor"] = async function (args) {
+
+     if (!in_Setting_Page) {
+          CreateSettingUI["JustText"]({
+               innerHTML: "⚠️ If you want to use code editor ⚠️<br>Please go to setting page!",
+               align: "center"
+          })
+          CreateSettingUI["Button"]({
+               innerHTML: "Go to setting page!",
+               callback: function () {
+                    window.open(chrome.runtime.getURL("html/Newtube_setting.html"));
+               },
+          })
+          return CreateSettingUI["TextArea"](args)
+     }
+
      var Editor = await CreateFrame()
 
      Editor.style.height = "400px"
@@ -1048,6 +1083,8 @@ async function CreateSettingElement() {
                }
                NewFeature = true
           }
+
+          console.log(type)
 
           await CreateSettingUI[type](args)
 

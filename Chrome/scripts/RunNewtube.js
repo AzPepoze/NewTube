@@ -19,10 +19,12 @@ async function RunScriptOnGlobal(Name) {
 RunAfterLoaded.RunFirst.push(async function () {
     await RunScriptOnGlobal("RunOnGlobal/NewtubeEnvironment.js")
     //------------------------------------------------
-    await RunScriptOnGlobal("libs/RequireJS.js")
-    //------------------------------------------------
-    await RunScriptOnGlobal("libs/VsCode/loader.js")
-    await RunScriptOnGlobal("RunAfterLoaded/VsCode.js")
+    if (in_Setting_Page) {
+        await RunScriptOnGlobal("libs/RequireJS.js")
+        //------------------------------------------------
+        await RunScriptOnGlobal("libs/vs/loader.js")
+        await RunScriptOnGlobal("RunAfterLoaded/VsCode.js")
+    }
 })
 
 
@@ -64,7 +66,10 @@ async function MiniPlayerYoutube() {
 }
 
 async function AllYoutubeMode() {
-    update()
+    if (!in_Setting_Page) {
+        update()
+    }
+
 
     //----------------------------------------------
     await sleep(1000)
@@ -88,12 +93,16 @@ async function Run() {
     }
 
     if (!inIframe) {
-        if (document.documentElement.getAttribute("dark") == null) {
+        if (!in_Setting_Page && document.documentElement.getAttribute("dark") == null) {
             await WaitYoutubeLoaded()
             ChangeToDarkMode()
         } else {
-            AllYoutubeMode()
-            NormalYoutube()
+            await AllYoutubeMode()
+            await NormalYoutube()
+            if (in_Setting_Page) {
+                CreateSetting()
+                OpenSetting()
+            }
         }
     } else {
         AllYoutubeMode()

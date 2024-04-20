@@ -13,14 +13,33 @@ async function OpenSetting(animation) {
         return await OpenSetting(animation)
     }
 
-    NewtubeMain.style.left = '100%'
+    if (in_Setting_Page) {
+
+    } else {
+        NewtubeMain.style.left = '100%'
+    }
+
 
     await sleep(1)
 
-    NewtubeMain.style.left = 'calc(100% - 755px - 10px)'
 
-    NewtubeMain.style.width = '755px'
-    NewtubeMain.style.height = '600px'
+    if (in_Setting_Page) {
+        NewtubeMain.style.width = "100%"
+        NewtubeMain.style.height = "100%"
+        NewtubeMain.style.top = "0"
+        NewtubeMain.style.left = "0"
+
+        NewtubeMain.style.padding = "0"
+        NewtubeMain.style.resize = "none"
+        NewtubeMain.style.borderRadius = "0"
+    } else {
+        NewtubeMain.style.left = 'calc(100% - 755px - 10px)'
+
+        NewtubeMain.style.width = '755px'
+        NewtubeMain.style.height = '600px'
+    }
+
+
 
     NewtubeMain.setAttribute("Open", "true")
 
@@ -107,68 +126,71 @@ async function CreateSetting() {
     NewtubeMain = document.createElement("div")
     NewtubeMain.id = "NEWTUBEBG"
     NewtubeMain.className = "NEWTUBE"
+
     NewtubeMain.style.transition = DefaultSettingTransition
 
     NewtubeMain.setAttribute("Open", "Prepare")
 
-    let MoveBar = document.createElement("div")
-    MoveBar.innerHTML = "="
-    MoveBar.id = "NEWTUBEHOVER"
-    NewtubeMain.appendChild(MoveBar)
+    if (!in_Setting_Page) {
+        let MoveBar = document.createElement("div")
+        MoveBar.innerHTML = "="
+        MoveBar.id = "NEWTUBEHOVER"
+        NewtubeMain.appendChild(MoveBar)
 
-    let CalMousePo = null
+        let CalMousePo = null
 
-    async function MoveToMouse(Mouse) {
-        Mouse.preventDefault();
-        NewtubeMain.style.left = Mouse.clientX - CalMousePo[0] + "px"
-        NewtubeMain.style.top = Mouse.clientY - CalMousePo[1] + "px"
-    }
-
-    MoveBar.onmousedown = async function (Mouse) {
-        WidnowW = window.innerWidth
-        CalMousePo = [Mouse.clientX - NewtubeMain.offsetLeft, Mouse.clientY - NewtubeMain.offsetTop]
-        NewtubeMain.style.transition = DragingSettingTransition
-        addEventListener("mousemove", MoveToMouse)
-    }
-
-    document.onmouseup = async function () {
-        if (NewtubeMain == null) {
-            return
+        async function MoveToMouse(Mouse) {
+            Mouse.preventDefault();
+            NewtubeMain.style.left = Mouse.clientX - CalMousePo[0] + "px"
+            NewtubeMain.style.top = Mouse.clientY - CalMousePo[1] + "px"
         }
-        NewtubeMain.style.transition = DefaultSettingTransition
-        removeEventListener("mousemove", MoveToMouse)
+
+        MoveBar.onmousedown = async function (Mouse) {
+            WidnowW = window.innerWidth
+            CalMousePo = [Mouse.clientX - NewtubeMain.offsetLeft, Mouse.clientY - NewtubeMain.offsetTop]
+            NewtubeMain.style.transition = DragingSettingTransition
+            addEventListener("mousemove", MoveToMouse)
+        }
+
+        document.onmouseup = async function () {
+            if (NewtubeMain == null) {
+                return
+            }
+            NewtubeMain.style.transition = DefaultSettingTransition
+            removeEventListener("mousemove", MoveToMouse)
+        }
+
+        var CloseButton = document.createElement("div")
+        CloseButton.id = "CloseButton"
+        NewtubeMain.appendChild(CloseButton)
+        CloseButton.style = `
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        top: 5px;
+        right: 5px;
+        color: white;
+        background: rgba(255, 255, 255, 0.18);
+        border-radius: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        cursor: pointer; 
+        transition: all 0.2s ease 0s;
+        border: 1px solid #ffffff47;`
+
+        CloseButton.onclick = clickSetting
+
+        var CloseImage = document.createElement("img")
+        CloseImage.src = chrome.runtime.getURL("asset/Close.png")
+        CloseImage.style = `
+        filter: invert(1);
+        height: 50%;
+        pointer-events: none;`
+
+        CloseButton.append(CloseImage)
     }
-
-    var CloseButton = document.createElement("div")
-    CloseButton.id = "CloseButton"
-    NewtubeMain.appendChild(CloseButton)
-    CloseButton.style = `
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    top: 5px;
-    right: 5px;
-    color: white;
-    background: rgba(255, 255, 255, 0.18);
-    border-radius: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    cursor: pointer; 
-    transition: all 0.2s ease 0s;
-    border: 1px solid #ffffff47;`
-
-    CloseButton.onclick = clickSetting
-
-    var CloseImage = document.createElement("img")
-    CloseImage.src = chrome.runtime.getURL("asset/Close.png")
-    CloseImage.style = `
-    filter: invert(1);
-    height: 50%;
-    pointer-events: none;`
-
-    CloseButton.append(CloseImage)
 
 
     NewtubeLeftSetting = document.createElement("div")
@@ -412,7 +434,7 @@ function CheckSettingWhenScroll() {
         var GetLeftElement = NewtubeLeftSetting.querySelector(`#${element.id}`)
         var Distance = DistanceFromRootTop(element, NewtubeSetting)
 
-        if (!NowSelect.element || NowSelect.distance > Distance ) {
+        if (!NowSelect.element || NowSelect.distance > Distance) {
 
             if (NowSelect.element) {
                 NowSelect.element.removeAttribute("selected")
