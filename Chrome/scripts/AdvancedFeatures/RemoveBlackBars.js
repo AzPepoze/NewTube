@@ -316,6 +316,8 @@ var BlackBarsContext
 var BlackBarsRunWithVideo
 var BlackBarsWhenChangeVideo
 
+var Can_Check_BlackBars_Static = true
+
 async function CreateRemoveBlackBarsCanvas() {
      BlackBarsCanvas = document.createElement('canvas')
      await FindVideo()
@@ -336,7 +338,17 @@ async function CreateRemoveBlackBarsCanvas() {
 
      if (!BlackBarsRunWithVideo) {
           BlackBarsRunWithVideo = await RunFunctionWithVideo(
-               BlackBarsRunFrame
+               BlackBarsRunFrame,
+               undefined,
+               async function () {
+                    if (Can_Check_BlackBars_Static) {
+                         Can_Check_BlackBars_Static = false
+                         LastHeight = 0
+                         BlackBarsRunFrame()
+                         await sleep(1000)
+                         Can_Check_BlackBars_Static = true
+                    } 
+               }
           )
      }
 

@@ -123,7 +123,7 @@ async function update() {
         let TimeLineBG
         let TimeLoaded
 
-        if (false) {
+        if (await Load("Theme_by_video") && await GetVideoID()) {
             let GetColor = await GetSampleColor(await GetVideoThumbnail())
 
             if (GetColor[0] == GetColor[1] && GetColor[1] == GetColor[2]) {
@@ -185,7 +185,11 @@ async function update() {
 
             hsv[2] *= 0.15
             GetColor = HSVtoRGB(hsv)
-            BG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+            if (await Load("Solid_BG_Theme_by_video")) {
+                BG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+            } else {
+                BG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${await Load("BGO") / 100})`
+            }
             hsv[2] *= 1 / 0.15
 
             hsv[2] *= 0.4
@@ -263,6 +267,7 @@ async function update() {
                 }
 
                 :root {
+                    --NewtubeTheme: ${ThemeColor};
                     --blur-amount: `+ await Load("BlurAm") + `px;
                     --Bg-blur: `+ await Load("BlurBGAM") + `px;
                     --theme-fort: ${ThemeColor3};

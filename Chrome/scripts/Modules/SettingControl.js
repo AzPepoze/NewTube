@@ -104,19 +104,6 @@ async function CreateSetting() {
 
     LeftCount = 0
 
-    let DeBu = `width: -webkit-fill-available;
-        width: -moz-available;
-        padding: 10px;
-        background: rgb(94 94 94 / 76%);
-        color: white;
-        border-radius: 10px;
-        transition: all 0.2s ease 0s;
-        margin-inline: 10px;
-        margin-block: 10px;
-        border: transparent;
-        border-bottom: 1px solid #ffffff6b;
-        box-shadow: 0px 0px 3px;`
-
     if (await GetLoad("RealtimeT") == true) {
         MODE = 'input'
     } else {
@@ -220,7 +207,12 @@ async function CreateSetting() {
     NewtubeSetting = document.createElement("body")
     NewtubeSetting.id = "NEWTUBE";
     NewtubeSetting.className = "NEWTUBE"
-    NewtubeSetting.style = "width: -webkit-fill-available; width: -moz-available; height: calc(100% - 50px); margin-top: 50px;";
+    NewtubeSetting.style = `
+    width: -webkit-fill-available;
+    width: -moz-available;
+    height: calc(100% - 50px);
+    margin-top: 50px;
+    margin-bottom: 0px;`
     NewtubeRightSetting.appendChild(NewtubeSetting)
 
     await CreateNewtubeSearch()

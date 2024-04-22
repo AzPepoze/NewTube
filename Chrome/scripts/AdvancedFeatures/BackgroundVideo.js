@@ -285,6 +285,7 @@ async function PauseBackgroundVideo() {
 }
 
 var NewtubeBackground
+var Background_Video_StyleSheet = Create_StyleSheet()
 
 async function SetBGTran(Status, attempt) {
 
@@ -297,19 +298,21 @@ async function SetBGTran(Status, attempt) {
      }
 
      attempt -= 1
-
-     var BackgroundTint = document.getElementById("NewtubeTint")
      NewtubeBackground = document.getElementById("NewtubeBackground")
 
-     if (!BackgroundTint || !NewtubeBackground) {
+     if (!NewtubeBackground) {
+          await sleep(100)
           return await SetBGTran(Status, attempt)
      }
 
      if (Status == true) {
-          BackgroundTint.style.background = `black !important`
+          Background_Video_StyleSheet.textContent = `
+          #NewtubeTint{
+               background:black !important;
+          }`
           NewtubeBackground.style.opacity = 0
      } else {
-          BackgroundTint.style.background = ``
+          Background_Video_StyleSheet.textContent = ``
           NewtubeBackground.style.opacity = 1
      }
 }

@@ -430,3 +430,12 @@ function getUrlParams(url) {
 AskForReload = function () {
     if (confirm(`NEWTUBE : This feature is need to reload website\n\nAre you want to reload website?`)) window.location.reload()
 }
+
+function Create_StyleSheet() {
+    var style = document.createElement('style');
+    setTimeout(async () => {
+        var Head = await GetDocumentHead()
+    Head.append(style)
+    }, 0);
+    return style
+}

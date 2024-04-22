@@ -1473,12 +1473,6 @@ async function CreateSettingFeatures() {
           Default: {
                Color: "#659aff",
                Opacity: 100
-          },
-          CSSFunc: async function () {
-               return `
-               :root{
-                    --NewtubeTheme: ${await LoadRgba("Theme")};
-               }`
           }
      })
 
@@ -2264,17 +2258,17 @@ async function CreateSettingFeatures() {
 
      //      createframe(`<label class="DES">Maybe need to reload website</label>`)
 
-     await CreateFeatures("Check", {
-          id: "Visual",
-          description: "Audio Visualizer",
-          Default: false
-     })
+     // await CreateFeatures("Check", {
+     //      id: "Visual",
+     //      description: "Audio Visualizer",
+     //      Default: false
+     // })
 
-     await CreateFeatures("Check", {
-          id: "NewVDOanima",
-          description: "New video animation (Volume up/down,Pause,Play)",
-          Default: true
-     })
+     // await CreateFeatures("Check", {
+     //      id: "NewVDOanima",
+     //      description: "New video animation (Volume up/down,Pause,Play)",
+     //      Default: true
+     // })
 
      await CreateFeatures("Check", {
           id: "NewYoutubeLayout",
@@ -2327,6 +2321,22 @@ async function CreateSettingFeatures() {
      //           SetSetting("MoveToTop_URL", "https://i.ibb.co/0Mr31QR/Preview.png")
      //      },
      // })
+
+     await CreateFeatures("Check", {
+          id: "Theme_by_video",
+          description: "Theme colors base on video thumbnail",
+          Default: false,
+          AutoUpdate: true,
+          new: true
+     })
+
+     await CreateFeatures("Check", {
+          id: "Solid_BG_Theme_by_video",
+          description: "(Theme colors base on video thumbnail)<br>solid background",
+          Default: true,
+          AutoUpdate: true,
+          new: true
+     })
 
      if (DebugMode) {
           console.log(NewtubeAllSaveKey)
