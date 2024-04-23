@@ -244,7 +244,8 @@ async function update() {
                 ytd-video-preview,
                 ytd-button-renderer.ytd-live-chat-frame,
                 #player-container,
-                .ytp-endscreen-content
+                .ytp-endscreen-content,
+                ytd-thumbnail-overlay-time-status-renderer badge-shape
                 {
                     background: transparent !important;
                 }
@@ -574,7 +575,7 @@ async function update() {
 
                 .ytp-preview .ytp-tooltip-text-no-title,
                 .ytd-thumbnail-overlay-bottom-panel-renderer,
-                #time-status{
+                ytd-thumbnail-overlay-time-status-renderer *{
                     color: `+ TimeText + ` !important;
                 }
 

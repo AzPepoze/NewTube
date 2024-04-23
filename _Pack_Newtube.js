@@ -5,15 +5,37 @@
      const AdmZip = require('adm-zip');
 
      // Terser options
-     const terserOptions = {
+     const terserOptionsDefault = {
+          module: false,
           compress: {
                unused: false
           },
           mangle: {
                keep_fnames: true,
-               toplevel: false
+               keep_classnames: true
+          }
+     };
+
+     const terserOptionsModule = {
+          module: true,
+          compress: {
+               unused: false
+          },
+          mangle: false
+     };
+
+     async function clearFolder(folderPath) {
+          try {
+               await fs.emptyDir(folderPath);
+               console.log(`Successfully cleared the folder: ${folderPath}`);
+          } catch (err) {
+               console.error(`Error clearing the folder: ${err}`);
           }
      }
+
+     await clearFolder("dist/Chromium");
+     await clearFolder("dist/Firefox");
+     await clearFolder("release");
 
      // Function to copy files recursively from source directory to destination directory
      async function copyFiles(sourceDir, destDir) {
@@ -29,29 +51,48 @@
                     if ((await fs.stat(sourcePath)).isDirectory()) {
                          await copyFiles(sourcePath, destPath); // Recursively copy subdirectories
                     } else {
-                         await fs.copyFile(sourcePath, destPath);
-                         console.log(`Copied: ${sourcePath} to ${destPath}`);
+                         // Check if the file is within src/scripts/libs/
+                         const isLibFile = !sourcePath.startsWith(path.join('src', 'scripts', 'libs'));
+                         if (isLibFile) {
+                              await fs.copyFile(sourcePath, destPath);
+                              console.log(`${sourcePath}\nCopied!`);
 
-                         // If it's a JavaScript file, minify it
-                         if (file.endsWith('.js')) {
-                              await minifyFile(destPath);
+                              // If it's a JavaScript file, minify it
+                              if (file.endsWith('.js')) {
+                                   await minifyFile(destPath);
+                                   console.log(`Minified!`);
+                              }
+                         } else {
+                              // If it's within src/scripts/libs/, just copy without minifying
+                              await fs.copyFile(sourcePath, destPath);
+                              console.log(`${sourcePath}\nCopied! (without minification)`);
                          }
+                         console.log('-----------------');
                     }
                }
 
-               console.log(`All files copied successfully from ${sourceDir} to ${destDir}`);
+               console.log(`Copied! ${sourceDir}`);
+
+               console.log('-----------------');
           } catch (error) {
                console.error('Error:', error);
           }
      }
 
+
      // Function to minify a JavaScript file
      async function minifyFile(filePath) {
           try {
                const fileContent = await fs.readFile(filePath, 'utf8');
-               const minified = await terser.minify(fileContent, terserOptions);
+
+               let minified;
+               try {
+                    minified = await terser.minify(fileContent, terserOptionsDefault);
+               } catch (error) {
+                    minified = await terser.minify(fileContent, terserOptionsModule);
+               }
+               minified = minified.code.replace(/console\.log\(.*?\);?/g, '');
                await fs.writeFile(filePath, minified.code);
-               console.log(`Minified: ${filePath}`);
           } catch (error) {
                console.error('Error minifying file:', error);
           }
@@ -62,35 +103,35 @@
 
      //--------------------------------------------------------------------------
 
-     const sourceDir = 'dist/Chromium';
-     const destinationDir = 'dist/Firefox';
+     const sourceDirChromium = 'dist/Chromium';
+     const destDirFirefox = 'dist/Firefox';
 
      // Ensure the source directory exists
-     if (!fs.existsSync(sourceDir)) {
-          console.error(`Source directory ${sourceDir} does not exist.`);
+     if (!fs.existsSync(sourceDirChromium)) {
+          console.error(`Source directory ${sourceDirChromium} does not exist.`);
           return;
      }
 
      // Ensure the destination directory exists
-     if (!fs.existsSync(destinationDir)) {
-          fs.mkdirSync(destinationDir, { recursive: true });
+     if (!fs.existsSync(destDirFirefox)) {
+          fs.mkdirSync(destDirFirefox, { recursive: true });
      }
 
      // Clone the folder recursively
-     fs.copySync(sourceDir, destinationDir);
+     fs.copySync(sourceDirChromium, destDirFirefox);
 
-     console.log(`Folder cloned successfully from ${sourceDir} to ${destinationDir}.`);
+     console.log(`Folder cloned successfully from ${sourceDirChromium} to ${destDirFirefox}.`);
 
      //--------------------------------------------------------------------------
 
      // Replace text in the manifest.json file
 
-     const manifestPath = 'dist/Firefox/manifest.json';
+     const manifestPathFirefox = 'dist/Firefox/manifest.json';
 
      // Function to update manifest file
      function updateManifest() {
           return new Promise((resolve, reject) => {
-               fs.readFile(manifestPath, 'utf8', (err, data) => {
+               fs.readFile(manifestPathFirefox, 'utf8', (err, data) => {
                     if (err) {
                          reject(err);
                          return;
@@ -101,7 +142,7 @@
                     data = data.replace(/"options_page": "(.*)"/g, '"options_ui": { "page": "$1" }');
 
                     // Write the modified content back to the manifest.json file
-                    fs.writeFile(manifestPath, data, 'utf8', (err) => {
+                    fs.writeFile(manifestPathFirefox, data, 'utf8', (err) => {
                          if (err) {
                               reject(err);
                               return;
@@ -132,11 +173,11 @@
 
      // Zip Chromium directory
      const chromeZipPath = `${releasesDir}/Chromium.zip`;
-     zipDirectory(sourceDir, chromeZipPath);
+     zipDirectory(sourceDirChromium, chromeZipPath);
 
      // Zip Firefox directory
      const firefoxZipPath = `${releasesDir}/Firefox.zip`;
-     zipDirectory(destinationDir, firefoxZipPath);
+     zipDirectory(destDirFirefox, firefoxZipPath);
 
      //--------------------------------------------------------------------------
 
