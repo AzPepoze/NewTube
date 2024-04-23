@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "node Pack_Newtube.js",
-    "release": "release-it -VV — ci — no-git.requireUpstream"
+    "release": "dotenv release-it"
   },
   "keywords": [],
   "author": "",
@@ -15,5 +15,8 @@
     "fs-extra": "^11.2.0",
     "release-it": "^17.2.0",
     "terser": "^5.30.4"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^7.4.1"
   }
 }
