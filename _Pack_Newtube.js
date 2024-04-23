@@ -91,8 +91,8 @@
                } catch (error) {
                     minified = await terser.minify(fileContent, terserOptionsModule);
                }
-               minified = minified.code.replace(/console\.log\(.*?\);?/g, '');
-               await fs.writeFile(filePath, minified.code);
+               const minifiedCode = minified.code.replace(/console\.log\(.*?\);?/g, '');
+               await fs.writeFile(filePath, minifiedCode);
           } catch (error) {
                console.error('Error minifying file:', error);
           }
