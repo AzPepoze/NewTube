@@ -8,7 +8,8 @@
      const terserOptionsDefault = {
           module: false,
           compress: {
-               unused: false
+               unused: false,
+               drop_console: true
           },
           mangle: {
                keep_fnames: true,
@@ -19,7 +20,8 @@
      const terserOptionsModule = {
           module: true,
           compress: {
-               unused: false
+               unused: false,
+               drop_console: true
           },
           mangle: false
      };
@@ -91,8 +93,7 @@
                } catch (error) {
                     minified = await terser.minify(fileContent, terserOptionsModule);
                }
-               const minifiedCode = minified.code.replace(/console\.log\(.*?\);?/g, '');
-               await fs.writeFile(filePath, minifiedCode);
+               await fs.writeFile(filePath, minified.code);
           } catch (error) {
                console.error('Error minifying file:', error);
           }
