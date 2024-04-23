@@ -1,19 +1,19 @@
 {
   "name": "newtube",
-  "version": "5.2.2",
+  "version": "5.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "node Pack_Newtube.js",
-    "release": "dotenv release-it"
+    "build": "node _Pack_Newtube.js",
+    "release": "node _Release.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@octokit/rest": "^20.1.0",
     "adm-zip": "^0.5.12",
     "fs-extra": "^11.2.0",
-    "release-it": "^17.2.0",
     "terser": "^5.30.4"
   },
   "devDependencies": {

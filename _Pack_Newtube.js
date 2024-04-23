@@ -135,7 +135,7 @@
      zipDirectory(sourceDir, chromeZipPath);
 
      // Zip Firefox directory
-     const firefoxZipPath = `${releasesDir}/Firefox (Unstable).zip`;
+     const firefoxZipPath = `${releasesDir}/Firefox.zip`;
      zipDirectory(destinationDir, firefoxZipPath);
 
      //--------------------------------------------------------------------------
