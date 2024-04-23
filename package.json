@@ -1,0 +1,19 @@
+{
+  "name": "newtube",
+  "version": "5.2.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "node Pack_Newtube.js",
+    "release": "release-it -VV — ci — no-git.requireUpstream"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "adm-zip": "^0.5.12",
+    "fs-extra": "^11.2.0",
+    "release-it": "^17.2.0",
+    "terser": "^5.30.4"
+  }
+}

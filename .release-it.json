@@ -1,0 +1,12 @@
+{
+     "pkgFiles": [
+          "release/Chromium.zip",
+          "release/Firefox (Unstable).zip"
+     ],
+     "git": {
+          "tagName": "${version}"
+     },
+     "npm": {
+          "publish": false
+     }
+}
