@@ -15,8 +15,5 @@
     "adm-zip": "^0.5.12",
     "fs-extra": "^11.2.0",
     "terser": "^5.30.4"
-  },
-  "devDependencies": {
-    "dotenv-cli": "^7.4.1"
   }
 }
