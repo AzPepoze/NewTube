@@ -11,8 +11,15 @@ const octokit = new Octokit({
      auth: require('./_API_KEYS.json').Github
 });
 
-const owner = "AzPepoze";
-const repo = "Newtube-Installer";
+let owner;
+function Set_Owner(params) {
+     owner = params
+}
+
+let repo;
+function Set_Repo(params) {
+     repo = params
+}
 
 async function confirm_ask(question) {
      return new Promise((resolve, reject) => {
@@ -137,6 +144,9 @@ async function Release(filePath, fileName, releaseId) {
 
 (async () => {
      try {
+          Set_Owner("AzPepoze")
+          Set_Repo("NewTube")
+
           const version = await GetVersion("./src/manifest.json");
           if (!version) return;
 

@@ -200,10 +200,12 @@ if (GetURL.includes("callbyNewtube")) {
 
                         //----------------------------------------------------------------------
 
+                        var Image_Width = 330
+
                         let MainImage = document.createElement("div")
                         MainImage.style = `
                         object-fit: contain;
-                        width: 330px;
+                        width: ${Image_Width}px;
                         border-radius: 10px;
                         height: 210px;
                         aspect-ratio: 16 / 9;
@@ -239,7 +241,7 @@ if (GetURL.includes("callbyNewtube")) {
                             let Thumbnail = document.createElement("img")
                             Thumbnail.style = `
                             object-fit: contain;
-                            width: 100%;
+                            width: ${Image_Width}px;
                             border-radius: 10px;
                             height: fit-content;
                             aspect-ratio: 16/9;

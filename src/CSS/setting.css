@@ -14,7 +14,6 @@
 
 #MAINPRESET {
      height: -webkit-fill-available;
-     height: -moz-available;
 }
 
 #NEWTUBEBG .CheckBox:hover {
@@ -94,6 +93,7 @@ html {
 #NEWTUBE {
      border-radius: 20px;
      transform: translateZ(0);
+     overflow-y: scroll;
 }
 
 #NEWTUBE .NewtubeHoverButton,
@@ -166,8 +166,6 @@ html {
 #NEWTUBEBG .MainBox {
      display: flex;
      flex-direction: column;
-     -webkit-box-flex: 1;
-     -ms-flex: 1;
      flex: 1;
      font-size: 10px;
      padding-inline: 10px;
@@ -191,8 +189,6 @@ html {
      display: flex;
      flex-direction: column;
      align-items: flex-start;
-     -webkit-box-flex: 1;
-     -ms-flex: 1;
      flex: 1;
      font-size: 10px;
      margin-inline: 10px;
@@ -205,8 +201,6 @@ html {
      width: 100%;
      display: flex;
      align-items: center;
-     -webkit-box-flex: 1;
-     -ms-flex: 1;
      flex: 1;
      font-size: 10px;
      margin-inline: -10px;
@@ -235,7 +229,6 @@ html {
      width: 755px;
      height: 600px;
      max-height: -webkit-fill-available;
-     max-height: -moz-available;
      position: fixed;
      top: 56px;
      z-index: 2020;
@@ -277,7 +270,6 @@ html {
 #NtSearch {
      position: absolute;
      width: -webkit-fill-available;
-     width: -moz-available;
      height: 40px;
      top: 40px;
      border-radius: 20px;
@@ -330,8 +322,6 @@ html {
 #NEWTUBEBG .CheckBox {
      margin-block: 10px;
      font-size: 20px;
-     -webkit-appearance: none;
-     -moz-appearance: none;
      appearance: none;
      min-width: 4em;
      height: 1.5em;
@@ -428,6 +418,7 @@ html {
 
 #NEWTUBE .ColorPicker::-moz-color-swatch {
      border: none;
+     border-radius: 100px;
 }
 
 #NEWTUBE .ColorPicker::-webkit-color-swatch-wrapper {
@@ -641,7 +632,6 @@ html {
 }
 
 #NEWTUBE input[type="range"]::-webkit-slider-thumb {
-     -webkit-appearance: none;
      appearance: none;
      height: 15px;
      width: 15px;

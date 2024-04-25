@@ -8,7 +8,6 @@ async function createList(Name) {
     ThisList.style = `display: flex;
      overflow: hidden;
      width: -webkit-fill-available;
-     width: -moz-available;
      flex-direction: row;
      align-items: center;
      transition: all 0.2s;
@@ -17,8 +16,7 @@ async function createList(Name) {
     TellName = document.createElement("lable")
     TellName.style = `overflow-wrap: break-word;
      word-break: break-all;
-     width: -webkit-fill-available;
-     width: -moz-available;`
+     width: -webkit-fill-available;`
     TellName.innerHTML = Name
     TellName.className = `DES`
 
@@ -412,7 +410,6 @@ async function ShowPreset() {
     LIST = document.createElement("body")
     LIST.style = `width: 90%;
      height: width: -webkit-fill-available;
-     width: -moz-available;
      top: 50%;
      left: 50%;
      border-radius: 10px;
@@ -453,7 +450,6 @@ async function ShowPreset() {
     let SavePRe = document.getElementById("SavePreset")
 
     TextPre.style = `width: -webkit-fill-available;
-     width: -moz-available;
      background: rgb(56, 56, 56);
      border-radius: 10px;
      border: transparent;

@@ -185,7 +185,6 @@ async function CreateSetting() {
     NewtubeLeftSetting.className = "NEWTUBE"
     NewtubeLeftSetting.style = `
     width: 210px;
-    height: -webkit-fill-available;
     display: flex;
     flex-direction: column;
     border-radius: 20px;
@@ -209,7 +208,6 @@ async function CreateSetting() {
     NewtubeSetting.className = "NEWTUBE"
     NewtubeSetting.style = `
     width: -webkit-fill-available;
-    width: -moz-available;
     height: calc(100% - 50px);
     margin-top: 50px;
     margin-bottom: 0px;`
@@ -263,7 +261,7 @@ function CreateMainFrame() {
 
     if (RainbowCategory) {
         LabelCategory.style = DefaultLabelStyle + `
-        -webkit-text-stroke: 1px black;
+        text-stroke: 1px black;
         text-shadow: white 0px 0px 3px;
         color: black !important;
         background: linear-gradient(45deg, rgb(255, 0, 0), rgb(255, 115, 0), rgb(255, 251, 0), rgb(72, 255, 0), rgb(0, 255, 213), rgb(0, 43, 255), rgb(122, 0, 255), rgb(255, 0, 200), rgb(255, 0, 0)) 0% 0% / 400%;
@@ -283,7 +281,6 @@ function CreateMainFrame() {
     LeftCategory.style = `
     position:relative;
     width: -webkit-fill-available;
-    width: -moz-available;
     padding: 10px;
     color: white;
     

@@ -767,7 +767,7 @@ async function update() {
                 }
                 
                 ytd-multi-page-menu-renderer,
-                div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-inline-preview-mode):not(.ytp-player-minimized) .html5-video-container,
+                ytd-player:not(.ytd-video-preview) .html5-video-container,
                 .ytp-offline-slate-background,
                 .ytp-storyboard-framepreview,
                 .ytp-storyboard-framepreview-img,
@@ -776,7 +776,7 @@ async function update() {
                     border-radius: var(--theme-radius-big) !important;
                 }
 
-                div.html5-video-player.ytp-inline-preview-mode .html5-video-container {
+                ytd-video-preview .html5-video-container {
                     border-radius: var(--theme-radius) !important;
                 }
                 
@@ -1406,7 +1406,6 @@ async function update() {
 
                 .playlist-items.ytd-playlist-panel-renderer{
                     transform: translateZ(0);
-                    -webkit-transform: translateZ(0);
                 }
 
                 html > body{
