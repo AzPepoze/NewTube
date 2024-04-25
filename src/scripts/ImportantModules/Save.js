@@ -71,7 +71,7 @@ async function LoadRgba(Text) {
 
 
 async function Save(Name, Value) {
-    
+
     document.dispatchEvent(new CustomEvent(`${ExtensionID}_Save_Change_${Name}`, {
         detail: Value
     }))
@@ -92,7 +92,8 @@ var NewtubeSavePrevent = [
     'ErrorCollect',
     "CachedSave",
     "JSAuto",
-    "OldVer"
+    "OldVer",
+    "API"
 ]
 
 var NewtubeAllSaveKey = []
@@ -244,7 +245,7 @@ document.addEventListener(ExtensionID + "_Save_Request", async function (e) {
     document.dispatchEvent(new CustomEvent(`${ExtensionID}_Save_Recive`, {
         detail: {
             UniqueID: e.detail.UniqueID,
-            Value:await Load(e.detail.Name)
+            Value: await Load(e.detail.Name)
         }
     }))
 })

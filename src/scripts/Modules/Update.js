@@ -462,7 +462,7 @@ async function update() {
                 #author-thumbnail.ytd-commesimplebox-renderer,
                 .style-scope.ytd-commerenderer.no-transition,
                 div.html5-video-player:not(.ytp-fullscreen) .html5-video-container,
-                .ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title,
+                .ytp-preview:not(.ytp-text-detail) span.ytp-tooltip-text-no-title,
                 ytd-thumbnail-overlay-side-panel-renderer,
                 ytd-thumbnail-overlay-bottom-panel-renderer,
                 `+ await GetSettingCSS("PlayerOut") + `
@@ -659,12 +659,8 @@ async function update() {
                     background: transparent !important;
                 }
 
-                .ytp-tooltip-text-no-title
-                {
+                span.ytp-tooltip-text-no-title{
                     color: var(--yt-spec-static-brand-white) !important;
-                }
-
-                .ytp-tooltip-text-no-title{
                     background: var(--hover-time-background) !important;
                 }
                 
@@ -686,14 +682,14 @@ async function update() {
                     display: none;
                 }
                 
-                .ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title,
+                .ytp-preview:not(.ytp-text-detail) span.ytp-tooltip-text-no-title,
                 .ytd-thumbnail-overlay-loading-preview-renderer,
                 ytd-thumbnail-overlay-inline-unplayable-renderer
                 {
                     background-color: var(--hover-time-background) !important;
                 }
 
-                .ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title
+                .ytp-preview:not(.ytp-text-detail) span.ytp-tooltip-text-no-title
                 {
                     display: block !important;
                 }
@@ -1106,12 +1102,12 @@ async function update() {
                 
                 .ytp-tooltip:not([aria-hidden=true])
                 {
-                    transform: scale(1) !important;
+                    transform: scale(1) translateY(var(--Media-Space)) !important;
                 }
                 
                 .ytp-tooltip[aria-hidden=true]
                 {
-                    transform: scale(1.2) !important;
+                    transform: scale(1.2) translateY(var(--Media-Space)) !important;
                 }
                 
                 .ytp-tooltip[aria-hidden=true] > .ytp-tooltip-text-wrapper
@@ -1124,7 +1120,7 @@ async function update() {
                     margin-block: 0px;
                 }
                 
-                .ytp-button:not(.ytp-chapter-title):not(.ytp-ad-skip-button):not(.ytp-fullerscreen-edu-button):not(.iv-branding *):hover,
+                .ytp-chrome-bottom .ytp-button:hover,
                 .ytp-replay-button:hover,
                 .ytp-cards-button-icon:hover
                 {
@@ -1378,11 +1374,13 @@ async function update() {
                     background: transparent;
                 }
 
-                #text.ytd-channel-name:hover {
+                ytd-video-owner-renderer #text.ytd-channel-name:hover,
+                ytd-video-meta-block #text.ytd-channel-name:hover {
                     background: var(--theme-third);
                 }
                  
-                #text.ytd-channel-name:not(.complex-string):hover {
+                ytd-video-meta-block #text.ytd-channel-name:not(.complex-string):hover,
+                ytd-video-owner-renderer #text.ytd-channel-name:not(.complex-string):hover {
                      padding-inline: 10px;
                 }
 

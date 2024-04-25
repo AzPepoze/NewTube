@@ -475,27 +475,26 @@ async function CreateSettingFeatures() {
            
            #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-chrome-bottom,
            #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-gradient-bottom{
-                transform: translate(0px, var(--Media-Space));
+               transform: translate(0px, var(--Media-Space));
            }
            
            #player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not(.ytp-small-mode)),
            #player-wide-container > #player-container:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)){
-                margin-bottom: var(--Media-Space);
+               margin-bottom: var(--Media-Space);
            }
            
-           div.html5-video-player:not(.ytp-embed):not(.ytp-small-mode) div[aria-live="polite"]{
-                top: unset !important;
-                bottom: 100px;
+           div.html5-video-player:not(.ytp-embed):not(.ytp-small-mode) .ytp-tooltip.ytp-bottom.ytp-preview{
+
            }
            
            div.html5-video-player.ytp-embed{
-                overflow:hidden !important;
+               overflow:hidden !important;
            }
            
            #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([NewtubePlayerClassFlyout]) .ytp-caption-window-container,
            #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([NewtubePlayerClassFlyout]) .ytp-player-content,
            #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([NewtubePlayerClassFlyout]) .ytp-cued-thumbnail-overlay{
-                height: calc(100% - var(--Media-Space)) !important;
+               height: calc(100% - var(--Media-Space)) !important;
            }
            
            #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-caption-window-container,
@@ -567,7 +566,7 @@ async function CreateSettingFeatures() {
           ],
           CSSFunc: async function () {
                if (await Load("ControlUnderVDO")) {
-                    return `:root{
+                    return `#player{
                           --Media-Space: ${await Load("MediaSpace")}px;
                      }`
                } else {
@@ -1144,7 +1143,7 @@ async function CreateSettingFeatures() {
                }`,
 
                Zoom: `
-               ytd-thumbnail:hover,
+               ytd-thumbnail:not(.ytd-playlist-panel-video-renderer):hover,
                ytd-playlist-thumbnail:hover
                {   
                     transform: scale(var(--Zoom)) !important;

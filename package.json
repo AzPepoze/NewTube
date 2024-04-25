@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "node _Pack_Newtube.js",
-    "release": "node _Release.js"
+    "release": "node _Release.js",
+    "release_Chrome_web_store": "node --experimental-modules _Release_Chrome_web_store.js"
   },
   "keywords": [],
   "author": "",
@@ -15,5 +16,8 @@
     "adm-zip": "^0.5.12",
     "fs-extra": "^11.2.0",
     "terser": "^5.30.4"
+  },
+  "devDependencies": {
+    "chrome-webstore-upload": "^3.0.3"
   }
 }

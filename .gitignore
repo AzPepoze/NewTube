@@ -2,4 +2,4 @@ dist/
 release/
 
 node_modules/
-_Release.js
+_API_KEYS.json
