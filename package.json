@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "node _Pack_Newtube.js",
-    "release": "node _Release.js",
-    "release_Chrome_web_store": "node --experimental-modules _Release_Chrome_web_store.js"
+    "release": "node $Release.js",
+    "release_Chrome_web_store": "node --experimental-modules $Release_Chrome_web_store.js"
   },
   "keywords": [],
   "author": "",

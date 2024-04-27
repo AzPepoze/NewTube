@@ -185,6 +185,8 @@ async function Replace_for_Firefox_Folder(folderPath) {
 
      fs.copySync(sourceDirChromium, destDirFirefox);
 
+     fs.rmSync(destDirFirefox + '/scripts/libs/vs', { recursive: true, force: true })
+
      console.log(`Folder cloned successfully from ${sourceDirChromium} to ${destDirFirefox}.`);
 
      await update_Manifest_Firefox('dist/Firefox/manifest.json');
@@ -203,6 +205,9 @@ async function Replace_for_Firefox_Folder(folderPath) {
 
      const firefoxZipPath = `${releasesDir}/Firefox.zip`;
      zipDirectory(destDirFirefox, firefoxZipPath);
+
+     const SourceZipPath = `${releasesDir}/Source.zip`;
+     zipDirectory('src', SourceZipPath);
 
      console.log(`Complete!`);
 })();

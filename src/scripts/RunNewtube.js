@@ -19,7 +19,7 @@ async function RunScriptOnGlobal(Name) {
 RunAfterLoaded.RunFirst.push(async function () {
     await RunScriptOnGlobal("RunOnGlobal/NewtubeEnvironment.js")
     //------------------------------------------------
-    if (in_Setting_Page) {
+    if (in_Setting_Page && !isFirefox) {
         await RunScriptOnGlobal("libs/RequireJS.js")
         //------------------------------------------------
         await RunScriptOnGlobal("libs/vs/loader.js")

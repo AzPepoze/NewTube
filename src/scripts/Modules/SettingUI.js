@@ -244,17 +244,22 @@ RequestCodeEditor = async function (Frame, args) {
 
 CreateSettingUI["CodeEditor"] = async function (args) {
 
-     if (!in_Setting_Page) {
-          CreateSettingUI["JustText"]({
-               innerHTML: "⚠️ If you want to use code editor ⚠️<br>Please go to setting page!",
-               align: "center"
-          })
-          CreateSettingUI["Button"]({
-               innerHTML: "Go to setting page!",
-               callback: function () {
-                    window.open(chrome.runtime.getURL("html/Newtube_setting.html"));
-               },
-          })
+     if (!in_Setting_Page || isFirefox) {
+
+          if (!in_Setting_Page && !isFirefox) {
+               CreateSettingUI["JustText"]({
+                    innerHTML: "⚠️ If you want to use code editor ⚠️<br>Please go to setting page!",
+                    align: "center"
+               })
+
+               CreateSettingUI["Button"]({
+                    innerHTML: "Go to setting page!",
+                    callback: function () {
+                         window.open(chrome.runtime.getURL("html/Newtube_setting.html"));
+                    },
+               })
+          }
+
           return CreateSettingUI["TextArea"](args)
      }
 
