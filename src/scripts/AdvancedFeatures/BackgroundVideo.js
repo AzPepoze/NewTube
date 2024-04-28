@@ -1,4 +1,4 @@
-let DebugPerformace = false
+let DebugPerformace = true
 
 // Vertex shader program
 const vsSource = `
@@ -687,6 +687,7 @@ async function OnChangeBackgroundVideo() {
 }
 
 async function StartBackgroundVideo(SkipTweenOpacity) {
+     console.log(await Load("VDOBG"))
      StartWatchVideoChange()
      CreateBackgroundCanvas(SkipTweenOpacity)
 }
@@ -747,21 +748,23 @@ async function OnUpdateBackgroundVideoStick() {
 }
 
 async function OnUpdateBackgroundVideoRenderEngine() {
-     if (await Load("RenderEngine") == "CPU") {
-          if (GPURender == true) {
-               StopBackgroundVideo()
-               GPURender = false
-               await sleep(1)
-               StartBackgroundVideo(true)
+     if (RunningBackgroundVideo) {
+          if (await Load("RenderEngine") == "CPU") {
+               if (GPURender == true) {
+                    StopBackgroundVideo()
+                    GPURender = false
+                    await sleep(1)
+                    StartBackgroundVideo(true)
+               }
           }
-     }
 
-     if (await Load("RenderEngine") == "GPU") {
-          if (GPURender == false) {
-               StopBackgroundVideo()
-               GPURender = true
-               await sleep(1)
-               StartBackgroundVideo(true)
+          if (await Load("RenderEngine") == "GPU") {
+               if (GPURender == false) {
+                    StopBackgroundVideo()
+                    GPURender = true
+                    await sleep(1)
+                    StartBackgroundVideo(true)
+               }
           }
      }
 }

@@ -14,9 +14,12 @@ async function OnChangeButton(id, EnableCallBack, DisableCallback, Swap) {
                     IsEnable = !IsEnable
                }
 
+               console.log(id, IsEnable, EnableCallBack, DisableCallback)
+
                if (IsEnable) {
                     if (!Enabled) {
                          Enabled = true
+                         console.log("Enable")
                          EnableCallBack()
                     }
                } else {

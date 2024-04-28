@@ -31,6 +31,10 @@ const RGBtoHSV = function (color) {
     return [h, s, v];
 };
 
+const Edit_HSV = function () {
+    
+}
+
 const HSVtoRGB = function (color) {
     var i;
     var h, s, v, r, g, b;

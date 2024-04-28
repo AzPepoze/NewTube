@@ -162,9 +162,10 @@ async function update() {
             ThemeColor3 = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
             PlayListColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
             LinkColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
+            Themehover = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
 
             hsv[2] *= 0.4
-            GetColor = HSVtoRGB(hsv)
+            GetColor = HSVtoRGB(hsv)    
             TimeBG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.8})`
             hsv[2] *= 1 / 0.4
 
@@ -221,6 +222,7 @@ async function update() {
             TimeText = await LoadRgba("TIMETEXT")
             TimeLineBG = await LoadRgba("Time-LineBG")
             TimeLoaded = await LoadRgba("TimeLoaded")
+            Themehover = await LoadRgba("Themehover")
         }
 
         Collect_Style = `
@@ -285,7 +287,7 @@ async function update() {
                     --top-bar-and-search-background: `+ await LoadRgba("ThemeSnd") + `;
                     --things-end-on-video: `+ await LoadRgba("EndBG") + `;
                     --hover-time-background: `+ TimeBG + `;
-                    --search-background-hover: `+ await LoadRgba("Themehover") + `;
+                    --search-background-hover: `+ Themehover + `;
                     --theme-radius: `+ await Load("Edge") + `px;
                     --theme-time-radius: `+ await Load("TimeEdge") + `px;
                     --theme-radius-big: `+ await Load("PlayerEdge") + `px;
@@ -965,7 +967,7 @@ async function update() {
                 }
                 
                 .ytp-swatch-background-color,
-                .ytp-settings-button.ytp-hd-quality-badge:after,
+                .ytp-settings-button:after,
                 .ytp-chrome-controls .ytp-button[aria-pressed]:after,
                 .ytp-sb-subscribe, a.ytp-sb-subscribe,
                 yt-icon-button.yt-live-chat-item-list-renderer
@@ -1497,6 +1499,10 @@ async function update() {
 
                 .video.ytd-miniplayer{
                     background:black;
+                }
+
+                html.ytdl-is-fullscreen ytd-app{
+                    backface-visibility: hidden;
                 }
                 `
 
