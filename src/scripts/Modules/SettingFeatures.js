@@ -1118,7 +1118,7 @@ async function CreateSettingFeatures() {
                    margin-inline-start: -15px !important;
                }
         
-               ytd-compact-link-renderer:hover
+               yt-multi-page-menu-section-renderer #items > *:hover
                {    
                    margin-inline-start: 15px !important;
                }
@@ -1173,7 +1173,7 @@ async function CreateSettingFeatures() {
                     margin-inline-end: 15px !important;
                }
 
-               ytd-compact-link-renderer:hover
+               yt-multi-page-menu-section-renderer #items > *:hover
                {
                     margin-inline-end: -15px !important;
                }

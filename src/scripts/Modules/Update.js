@@ -613,7 +613,8 @@ async function update() {
                 .yt-spec-button-shape-next--outline,
                 #reply-button-end button,
                 .yt-spec-button-shape-next--filled,
-                .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text{
+                .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text,
+                #reply-button-end a{
                     border: 1px solid transparent !important;
                     transition: all 0.1s;
                 }
@@ -633,7 +634,8 @@ async function update() {
                 .yt-spec-button-shape-next--outline:hover,
                 #reply-button-end button:hover,
                 .yt-spec-button-shape-next--filled:hover,
-                .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text:hover{
+                .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text:hover,
+                #reply-button-end a:hover{
                     border-color: var(--NewtubeTheme) !important;
                 }
 
@@ -647,7 +649,8 @@ async function update() {
                 .yt-spec-button-shape-next--outline,
                 #reply-button-end button,
                 .yt-spec-button-shape-next--filled,
-                .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text:hover{
+                .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text:hover,
+                #reply-button-end a:hover{
                     background: var(--theme-third) !important;
                 }
 
@@ -701,9 +704,7 @@ async function update() {
                 ytd-guide-entry-renderer,
                 ytd-playlist-thumbnail,
                 ytd-thumbnail,
-                ytd-compact-playlist-renderer,
-                ytd-compact-video-renderer,
-                ytd-compact-radio-renderer,
+                ytd-watch-next-secondary-results-renderer .ytd-item-section-renderer > *,
                 ytd-compact-playlist-renderer>div>div>div>a,
                 ytd-compact-video-renderer>div>div>div>a,
                 ytd-compact-radio-renderer>div>div>div>a,
@@ -713,7 +714,7 @@ async function update() {
                 ytd-playlist-video-renderer,
                 ytd-video-renderer,
                 ytd-playlist-renderer,
-                ytd-compact-link-renderer,
+                yt-multi-page-menu-section-renderer #items > *,
                 ytd-notification-renderer,
                 ytd-macro-markers-list-item-renderer
                 {
@@ -769,7 +770,7 @@ async function update() {
                 }
                 
                 ytd-multi-page-menu-renderer,
-                ytd-player:not(.ytd-video-preview) .html5-video-container,
+                ytd-player:not(.ytd-video-preview):not(.ytp-player-minimized) .html5-video-container,
                 .ytp-offline-slate-background,
                 .ytp-storyboard-framepreview,
                 .ytp-storyboard-framepreview-img,
@@ -842,7 +843,7 @@ async function update() {
                 .ytp-autonav-endscreen-upnext-button,
                 ytd-playlist-panel-video-renderer,
                 ytd-guide-entry-renderer,
-                ytd-menu-service-item-renderer[use-icons],
+                tp-yt-paper-listbox > *,
                 .ytp-ad-overlay-image,
                 .ytp-ad-button-icon,
                 .ytp-ad-overlay-close-button,
@@ -870,7 +871,7 @@ async function update() {
                 [round],
                 ytd-engagemepanel-section-list-renderer,
                 #tooltip,
-                ytd-compact-link-renderer,
+                yt-multi-page-menu-section-renderer #items > *,
                 ytd-notification-renderer,
                 #time.ytd-macro-markers-list-item-renderer,
                 ytd-macro-markers-list-item-renderer,
@@ -878,7 +879,7 @@ async function update() {
                 tp-yt-paper-button.ytd-expander,
                 #text-container.yt-notification-action-renderer,
                 tp-yt-paper-button.ytd-text-inline-expander,
-                ytd-menu-service-item-renderer tp-yt-paper-item,
+                tp-yt-paper-listbox > * tp-yt-paper-item,
                 .ytp-menuitem,
                 yt-live-chat-text-message-renderer,
                 yt-img-shadow img,
@@ -942,9 +943,9 @@ async function update() {
                 }
 
                 #text.ytd-channel-name,
-                yt-button-renderer.yt-formatted-string.yt-button-renderer,
+                #items > #contents > * .yt-formatted-string,
                 paper-ripple,
-                a.yt-simple-endpoint.yt-formatted-string,
+                ytd-channel-name a,
                 .style-scope.ytd-menu-renderer.force-icon-button.style-default-active,
                 .badge-style-type-live-now.ytd-badge-supported-renderer, .badge-style-type-starting-soon.ytd-badge-supported-renderer
                 {   
@@ -953,20 +954,23 @@ async function update() {
                 }
 
                 .badge-style-type-live-now-alternate.ytd-badge-supported-renderer,
-                .badge-style-type-verified svg{
+                .badge-style-type-verified svg,
+                ytd-toggle-button-renderer yt-icon{
                     color: var(--NewtubeTheme) !important;
                 }
                 
                 paper-ripple,
                 .ytp-swatch-color,
                 a.ytp-ce-link,
-                yt-icon.ytd-compact-link-renderer,
+                yt-multi-page-menu-section-renderer #items > * yt-icon-shape,
                 yt-icon.ytd-toggle-theme-compact-link-renderer {
                     border-radius: var(--theme-radius) !important;
                     color: var(--NewtubeTheme) !important;
                 }
                 
                 .ytp-swatch-background-color,
+                .YtProgressBarLineProgressBarPlayed,
+                .YtProgressBarPlayheadProgressBarPlayheadDot,
                 .ytp-settings-button:after,
                 .ytp-chrome-controls .ytp-button[aria-pressed]:after,
                 .ytp-sb-subscribe, a.ytp-sb-subscribe,
@@ -996,7 +1000,8 @@ async function update() {
                 }
 
                 #container.ytd-searchbox input.ytd-searchbox,
-                .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text{
+                .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text,
+                #reply-button-end a{
                     color: var(--NewtubeTheme) !important;
                 }
                 
@@ -1137,12 +1142,14 @@ async function update() {
                     transform: scale(1.1) !important;
                 }
                 
-                .ytp-progress-list
+                .ytp-progress-list,
+                .YtProgressBarLineProgressBarBackground
                 {
                     background: `+ TimeLineBG + ` !important;
                 }
                 
-                .ytp-load-progress
+                .ytp-load-progress,
+                .YtProgressBarLineProgressBarLoaded
                 {
                     background: `+ TimeLoaded + ` !important;
                 }
@@ -1503,6 +1510,11 @@ async function update() {
 
                 html.ytdl-is-fullscreen ytd-app{
                     backface-visibility: hidden;
+                }
+
+                ytd-notification-topbar-button-renderer .yt-spec-icon-badge-shape__badge{
+                    background: var(--theme-fort) !important;
+                    color: var(--NewtubeTheme) !important;
                 }
                 `
 
