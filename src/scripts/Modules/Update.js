@@ -770,7 +770,7 @@ async function update() {
                 }
                 
                 ytd-multi-page-menu-renderer,
-                ytd-player:not(.ytd-video-preview):not(.ytp-player-minimized) .html5-video-container,
+                ytd-player:not(.ytd-video-preview):not(.ytp-player-minimized) .html5-video-player:not(.ytp-fullscreen) .html5-video-container,
                 .ytp-offline-slate-background,
                 .ytp-storyboard-framepreview,
                 .ytp-storyboard-framepreview-img,
