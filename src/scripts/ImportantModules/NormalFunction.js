@@ -192,7 +192,7 @@ async function WaitDocumentLoaded() {
     })
 }
 
-function WhenElementRemove(targetElement, callback) {
+function When_Element_Remove(targetElement, callback) {
     var observer = new MutationObserver((mutationsList, observer) => {
         for (const mutation of mutationsList) {
             if (mutation.type === 'childList' && mutation.removedNodes.length > 0) {

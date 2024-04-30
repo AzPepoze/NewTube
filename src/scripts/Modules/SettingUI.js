@@ -320,7 +320,7 @@ CreateSettingUI["CodeEditor"] = async function (args) {
           //-----------------------------------------------------
 
 
-          WhenElementRemove(Editor, function () {
+          When_Element_Remove(Editor, function () {
                Editor.dispatchEvent(new CustomEvent("Remove"))
                Editor.removeEventListener("OnInput", OnInput)
                Editor.removeEventListener("OnChange", OnChange)
