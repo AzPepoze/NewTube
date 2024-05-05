@@ -94,6 +94,7 @@ function CalVdoHeight() {
                v.parentElement.style.transition = "all 0.5s ease-out"
                LastHeight = 0
                v.parentElement.style.height = VideoBound.height + "px"
+               Disable_UltraWide()
           }
      }
 
@@ -250,6 +251,67 @@ function CheckNumLine(from, to) {
      }
 }
 
+var UltraWide = (21 / 9).toFixed(2)
+
+function Check_UltraWide() {
+     var ParentBound = v.parentElement.getBoundingClientRect()
+     console.log(UltraWide, (ParentBound.width / ParentBound.height), Math.abs(UltraWide - (ParentBound.width / ParentBound.height)))
+     if (Math.abs(UltraWide - (ParentBound.width / ParentBound.height) < 0.1)) {
+          Enable_UltraWide(ParentBound)
+     } else {
+          Disable_UltraWide()
+     }
+}
+
+var UltraWide_Mode = false
+var UltraWide_Style = Create_StyleSheet()
+
+var UltraWide_Scale_By_Width = `
+     width: 100% !important;
+     height: auto !important;`
+
+var UltraWide_Scale_By_Height = `
+     width: auto !important;
+     height: 100% !important;`
+
+var Is_Enable_UltraWide = false
+
+function Enable_UltraWide() {
+     if (!UltraWide_Mode) {
+          UltraWide_Mode = true
+
+          var Main_Container_Bound = v.parentElement.parentElement.getBoundingClientRect()
+          var This_Scale
+
+          var Imagine_Width = UltraWide * Main_Container_Bound.height
+
+          console.log(Imagine_Width, Main_Container_Bound.width)
+
+          if (Imagine_Width > Main_Container_Bound.width) {
+               This_Scale = UltraWide_Scale_By_Width
+          } else {
+               This_Scale = UltraWide_Scale_By_Height
+          }
+
+          UltraWide_Style.textContent = `
+          #player-full-bleed-container ytd-player:not(.ytd-video-preview):not(.ytp-player-minimized) .html5-video-player:not(.ytp-fullscreen) .html5-video-container{
+               aspect-ratio: 21.2 / 9;
+               ${This_Scale}
+          }
+          
+          #player-full-bleed-container ytd-player:not(.ytd-video-preview):not(.ytp-player-minimized) .html5-video-player:not(.ytp-fullscreen) video.video-stream.html5-main-video {
+               width: 100% !important;
+          }`
+     }
+}
+
+function Disable_UltraWide() {
+     if (UltraWide_Mode) {
+          UltraWide_Mode = false
+          UltraWide_Style.textContent = ``
+     }
+}
+
 var SampleBlackBarRGB
 
 async function RunCheckBlackBars() {
@@ -301,9 +363,15 @@ async function RunCheckBlackBars() {
 
      if (CanDropFrame) {
           await sleep(0)
-          CheckPxLine(0)
+          await CheckPxLine(0)
      } else {
-          CheckPxLine(0)
+          await CheckPxLine(0)
+     }
+
+     if (Is_Enable_UltraWide) {
+          Check_UltraWide()
+     } else {
+          Disable_UltraWide()
      }
 }
 
@@ -344,10 +412,11 @@ async function CreateRemoveBlackBarsCanvas() {
                     if (Can_Check_BlackBars_Static) {
                          Can_Check_BlackBars_Static = false
                          LastHeight = 0
+                         Disable_UltraWide()
                          BlackBarsRunFrame()
                          await sleep(1000)
                          Can_Check_BlackBars_Static = true
-                    } 
+                    }
                }
           )
      }
@@ -356,6 +425,7 @@ async function CreateRemoveBlackBarsCanvas() {
           BlackBarsWhenChangeVideo = await WhenChangeVideo(
                function () {
                     LastHeight = 0
+                    Disable_UltraWide()
                }
           )
      }
@@ -372,6 +442,7 @@ async function StopRemoveBlackBars() {
           StopRemoveBlackBars()
      }
      v.parentElement.style.height = ""
+     Disable_UltraWide()
      if (BlackBarsWhenChangeVideo) {
           BlackBarsWhenChangeVideo.Stop()
           BlackBarsWhenChangeVideo = null
@@ -417,6 +488,10 @@ async function OnChangeRemoveBlackBarsCooldownEveryPixel() {
      }
 }
 
+async function OnChange_UltraWide() {
+     Is_Enable_UltraWide = await Load("UltraWide")
+}
+
 RunAfterLoaded.NormalYoutube.push(function () {
 
      OnChangeRemoveBlackBarsCanDropFrame()
@@ -427,6 +502,9 @@ RunAfterLoaded.NormalYoutube.push(function () {
 
      OnChangeRemoveBlackBarsCooldownEveryPixel()
      AddOnChangeFunction("LazyAmount", OnChangeRemoveBlackBarsCooldownEveryPixel)
+
+     OnChange_UltraWide()
+     AddOnChangeFunction("UltraWide", OnChange_UltraWide)
 
      OnChangeButton(
           "DelBar",

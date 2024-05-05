@@ -822,6 +822,13 @@ async function CreateSettingFeatures() {
      })
 
      await CreateFeatures("Check", {
+          id: "UltraWide",
+          description: "Fit ultrawide video",
+          Default: true,
+          new: true
+     })
+
+     await CreateFeatures("Check", {
           id: "DropFrame",
           description: "Remove black bars Lazy Check (Drop frame)",
           Default: false
@@ -2325,16 +2332,14 @@ async function CreateSettingFeatures() {
           id: "Theme_by_video",
           description: "Theme colors base on video thumbnail",
           Default: false,
-          AutoUpdate: true,
-          new: true
+          AutoUpdate: true
      })
 
      await CreateFeatures("Check", {
           id: "Solid_BG_Theme_by_video",
           description: "(Theme colors base on video thumbnail)<br>solid background",
           Default: true,
-          AutoUpdate: true,
-          new: true
+          AutoUpdate: true
      })
 
      if (DebugMode) {
