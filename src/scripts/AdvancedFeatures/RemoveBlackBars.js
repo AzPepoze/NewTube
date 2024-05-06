@@ -255,9 +255,10 @@ var UltraWide = (21 / 9).toFixed(2)
 
 function Check_UltraWide() {
      var ParentBound = v.parentElement.getBoundingClientRect()
-     console.log(UltraWide, (ParentBound.width / ParentBound.height), Math.abs(UltraWide - (ParentBound.width / ParentBound.height)))
-     if (Math.abs(UltraWide - (ParentBound.width / ParentBound.height) < 0.1)) {
-          Enable_UltraWide(ParentBound)
+     var Cal_Width_Scale = ParentBound.width / ParentBound.height
+     console.log(UltraWide, Cal_Width_Scale,Math.abs(UltraWide - Cal_Width_Scale))
+     if (Math.abs(UltraWide - Cal_Width_Scale) < 0.15) {
+          Enable_UltraWide(Cal_Width_Scale)
      } else {
           Disable_UltraWide()
      }
@@ -276,14 +277,14 @@ var UltraWide_Scale_By_Height = `
 
 var Is_Enable_UltraWide = false
 
-function Enable_UltraWide() {
+function Enable_UltraWide(Cal_Width_Scale) {
      if (!UltraWide_Mode) {
           UltraWide_Mode = true
 
           var Main_Container_Bound = v.parentElement.parentElement.getBoundingClientRect()
           var This_Scale
 
-          var Imagine_Width = UltraWide * Main_Container_Bound.height
+          var Imagine_Width = Cal_Width_Scale * Main_Container_Bound.height
 
           console.log(Imagine_Width, Main_Container_Bound.width)
 
@@ -295,7 +296,7 @@ function Enable_UltraWide() {
 
           UltraWide_Style.textContent = `
           #player-full-bleed-container ytd-player:not(.ytd-video-preview):not(.ytp-player-minimized) .html5-video-player:not(.ytp-fullscreen) .html5-video-container{
-               aspect-ratio: 21.2 / 9;
+               aspect-ratio: ${Cal_Width_Scale} / 1;
                ${This_Scale}
           }
           

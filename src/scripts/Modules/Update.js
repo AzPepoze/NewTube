@@ -165,7 +165,7 @@ async function update() {
             Themehover = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
 
             hsv[2] *= 0.4
-            GetColor = HSVtoRGB(hsv)    
+            GetColor = HSVtoRGB(hsv)
             TimeBG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.8})`
             hsv[2] *= 1 / 0.4
 
@@ -704,7 +704,11 @@ async function update() {
                 ytd-guide-entry-renderer,
                 ytd-playlist-thumbnail,
                 ytd-thumbnail,
-                ytd-watch-next-secondary-results-renderer .ytd-item-section-renderer > *,
+
+                ytd-compact-playlist-renderer,
+                ytd-compact-video-renderer,
+                ytd-compact-radio-renderer,
+
                 ytd-compact-playlist-renderer>div>div>div>a,
                 ytd-compact-video-renderer>div>div>div>a,
                 ytd-compact-radio-renderer>div>div>div>a,

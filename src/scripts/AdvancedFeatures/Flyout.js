@@ -2,13 +2,13 @@
 
 async function EnableFlyout() {
     v.setAttribute('NewtubeFlyout', '')
-    v.parentElement.parentElement.setAttribute('NewtubePlayerClassFlyout', '')
+    v.parentElement.parentElement.setAttribute('NewtubeMainPlayerFlyout', '')
     PlayerContainer.setAttribute('NewtubePlayerContainerFlyout', '')
 }
 
 async function DisableFlyout() {
     v.removeAttribute('NewtubeFlyout')
-    v.parentElement.parentElement.removeAttribute('NewtubePlayerClassFlyout')
+    v.parentElement.parentElement.removeAttribute('NewtubeMainPlayerFlyout')
     PlayerContainer.removeAttribute('NewtubePlayerContainerFlyout')
 }
 

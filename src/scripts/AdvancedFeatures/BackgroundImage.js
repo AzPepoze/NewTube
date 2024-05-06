@@ -39,7 +39,8 @@ async function CreateBackgroundImage() {
      top:0;
      position:fixed;
      z-index: -10000;
-     transition: opacity 1s;`
+     transition: opacity 1s;
+     background-size: cover;`
 
      var Body = await GetDocumentBody()
      //console.log(Body)

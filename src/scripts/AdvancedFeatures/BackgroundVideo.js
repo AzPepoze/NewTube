@@ -1,4 +1,4 @@
-let DebugPerformace = true
+let DebugPerformace = false
 
 // Vertex shader program
 const vsSource = `

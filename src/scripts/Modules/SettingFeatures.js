@@ -438,118 +438,115 @@ async function CreateSettingFeatures() {
           Default: true,
 
           enable: `
-           #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not([NewtubePlayerClassFlyout]){
-                padding-bottom: var(--Media-Space);
-           }
-           
-           div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not([NewtubePlayerClassFlyout]) .ytp-chrome-bottom{
-                padding-top: 0px !important;
-           }
-           
-           div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) .ytp-chrome-bottom{
-                overflow: visible !important;
-           }
-           
-           .ytp-gradient-bottom[aria-hidden=true],
-           .ytp-autohide .ytp-gradient-bottom,.ytp-autohide .ytp-playlist-menu-button,
-           .ytp-autohide .ytp-back-button,
-           .ytp-autohide .ytp-title-channel,
-           .ytp-autohide .ytp-title,
-           .ytp-autohide .ytp-chrome-top .ytp-watch-later-button,
-           .ytp-autohide .ytp-chrome-top .ytp-share-button,
-           .ytp-autohide .ytp-chrome-top .ytp-copylink-button,
-           .ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button,
-           .ytp-autohide .ytp-overflow-button,
-           .ytp-autohide .ytp-chrome-bottom,
-           .ytp-chrome-top[aria-hidden=true],
-           .ytp-chrome-bottom[aria-hidden=true]
-           {
-                transition: all 0.5s !important;
-                opacity: 0 !important;
-           }
-           
-           .ytp-chrome-bottom,
-           .ytp-gradient-bottom{
-           left: unset !important;
-           }
-           
-           #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-chrome-bottom,
-           #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-gradient-bottom{
-               transform: translate(0px, var(--Media-Space));
-           }
-           
-           #player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not(.ytp-small-mode)),
-           #player-wide-container > #player-container:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)){
-               margin-bottom: var(--Media-Space);
-           }
-           
-           div.html5-video-player:not(.ytp-embed):not(.ytp-small-mode) .ytp-tooltip.ytp-bottom.ytp-preview{
+          #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not([NewtubeMainPlayerFlyout]){
+               padding-bottom: var(--Media-Space);
+          }
 
-           }
-           
-           div.html5-video-player.ytp-embed{
-               overflow:hidden !important;
-           }
-           
-           #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([NewtubePlayerClassFlyout]) .ytp-caption-window-container,
-           #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([NewtubePlayerClassFlyout]) .ytp-player-content,
-           #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([NewtubePlayerClassFlyout]) .ytp-cued-thumbnail-overlay{
-               height: calc(100% - var(--Media-Space)) !important;
-           }
-           
-           #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-caption-window-container,
-           #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-player-content,
-           #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-cued-thumbnail-overlay{
-                height: 100% !important;
-           }
-           
-           div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode) .ytp-caption-window-bottom{
-                margin-bottom: 0px !important;
-           }
-           
-           .iv-branding {
-           bottom: 10px !important;
-           }
-           
-           #player{
-                outline: transparent !important;
-                box-shadow: 0px 0px 0px 0px transparent !important;
-           }
-           
-           ytd-player {
-                overflow: visible !important;
-           }
+          div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode):not([NewtubeMainPlayerFlyout]) .ytp-chrome-bottom{
+               padding-top: 0px !important;
+          }
+          
+          div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) .ytp-chrome-bottom{
+               overflow: visible !important;
+          }
+          
+          .ytp-gradient-bottom[aria-hidden=true],
+          .ytp-autohide .ytp-gradient-bottom,.ytp-autohide .ytp-playlist-menu-button,
+          .ytp-autohide .ytp-back-button,
+          .ytp-autohide .ytp-title-channel,
+          .ytp-autohide .ytp-title,
+          .ytp-autohide .ytp-chrome-top .ytp-watch-later-button,
+          .ytp-autohide .ytp-chrome-top .ytp-share-button,
+          .ytp-autohide .ytp-chrome-top .ytp-copylink-button,
+          .ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button,
+          .ytp-autohide .ytp-overflow-button,
+          .ytp-autohide .ytp-chrome-bottom,
+          .ytp-chrome-top[aria-hidden=true],
+          .ytp-chrome-bottom[aria-hidden=true]
+          {
+               transition: all 0.5s !important;
+               opacity: 0 !important;
+          }
+          
+          .ytp-chrome-bottom,
+          .ytp-gradient-bottom{
+               left: unset !important;
+          }
+          
+          #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-chrome-bottom,
+          #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-gradient-bottom{
+              transform: translate(0px, var(--Media-Space));
+          }
+          
+          #player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not(.ytp-small-mode)),
+          #player-wide-container > #player-container:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)){
+              margin-bottom: var(--Media-Space);
+          }
+          
+          div.html5-video-player.ytp-embed{
+              overflow:hidden !important;
+          }
+          
+          #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([NewtubeMainPlayerFlyout]) .ytp-caption-window-container,
+          #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([NewtubeMainPlayerFlyout]) .ytp-player-content,
+          #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed):not([NewtubeMainPlayerFlyout]) .ytp-cued-thumbnail-overlay{
+              height: calc(100% - var(--Media-Space)) !important;
+          }
+          
+          #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-caption-window-container,
+          #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-player-content,
+          #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) .ytp-cued-thumbnail-overlay{
+               height: 100% !important;
+          }
+          
+          div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode) .ytp-caption-window-bottom{
+               margin-bottom: 0px !important;
+          }
+          
+          .iv-branding {
+          bottom: 10px !important;
+          }
+          
+          #player{
+               outline: transparent !important;
+               box-shadow: 0px 0px 0px 0px transparent !important;
+          }
+          
+          ytd-player {
+               overflow: visible !important;
+          }
            `,
           disable: `
-           .ytp-chrome-top,
-           .ytp-chrome-bottom,
-           .ytp-gradient-bottom,
-           .ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]) > svg > path,
-           ytd-playlist-panel-video-renderer,
-           ytd-menu-renderer
-           {
-           transition: all .2s  !important;
-           }
- 
-           .ytp-popup.ytp-settings-menu,
-           .ytp-gradient-bottom,
-           .iv-drawer,
-           .ytp-cards-teaser-box,
-           .ytp-popup,
-           [aria-live="polite"]
-           {
-           background-color: var(--in-player-bg-color) !important;
-           }
- 
-           .ytp-gradietop[aria-hidden=true], .ytp-gradient-bottom[aria-hidden=true], .ytp-autohide .ytp-gradietop, .ytp-autohide .ytp-gradient-bottom,.ytp-autohide .ytp-playlist-menu-button, .ytp-autohide .ytp-back-button, .ytp-autohide .ytp-title-channel, .ytp-autohide .ytp-title, .ytp-autohide .ytp-chrome-top .ytp-watch-later-button, .ytp-autohide .ytp-chrome-top .ytp-share-button, .ytp-autohide .ytp-chrome-top .ytp-copylink-button, .ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button, .ytp-autohide .ytp-overflow-button, .ytp-autohide .ytp-chrome-bottom, .ytp-chrome-top[aria-hidden=true], .ytp-chrome-bottom[aria-hidden=true]
-           {
-           margin-block-start: 50px !important;
-           margin-block-end: -50px !important;
-           transition: all .1s cubic-bezier(0.1,0.5,1,0) !important;
-           }
-           #player{
-                overflow: hidden;
-           }`
+          .ytp-chrome-top,
+          .ytp-chrome-bottom,
+          .ytp-gradient-bottom,
+          .ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]) > svg > path,
+          ytd-playlist-panel-video-renderer,
+          ytd-menu-renderer
+          {
+          transition: all .2s  !important;
+          }
+
+          .ytp-popup.ytp-settings-menu,
+          .ytp-gradient-bottom,
+          .iv-drawer,
+          .ytp-cards-teaser-box,
+          .ytp-popup,
+          [aria-live="polite"]
+          {
+          background-color: var(--in-player-bg-color) !important;
+          }
+
+          .ytp-gradietop[aria-hidden=true], .ytp-gradient-bottom[aria-hidden=true], .ytp-autohide .ytp-gradietop, .ytp-autohide .ytp-gradient-bottom,.ytp-autohide .ytp-playlist-menu-button, .ytp-autohide .ytp-back-button, .ytp-autohide .ytp-title-channel, .ytp-autohide .ytp-title, .ytp-autohide .ytp-chrome-top .ytp-watch-later-button, .ytp-autohide .ytp-chrome-top .ytp-share-button, .ytp-autohide .ytp-chrome-top .ytp-copylink-button, .ytp-autohide:not(.ytp-cards-teaser-shown) .ytp-cards-button, .ytp-autohide .ytp-overflow-button, .ytp-autohide .ytp-chrome-bottom, .ytp-chrome-top[aria-hidden=true], .ytp-chrome-bottom[aria-hidden=true]
+          {
+          margin-block-start: 50px !important;
+          margin-block-end: -50px !important;
+          transition: all .1s cubic-bezier(0.1,0.5,1,0) !important;
+          }
+
+          #player{
+               overflow: hidden;
+          }`
      })
 
      await CreateFeatures("NumberSlide", {
@@ -566,9 +563,10 @@ async function CreateSettingFeatures() {
           ],
           CSSFunc: async function () {
                if (await Load("ControlUnderVDO")) {
-                    return `#player{
-                          --Media-Space: ${await Load("MediaSpace")}px;
-                     }`
+                    return `
+                    #player{
+                         --Media-Space: ${await Load("MediaSpace")}px;
+                    }`
                } else {
                     return ``
                }
