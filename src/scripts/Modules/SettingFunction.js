@@ -190,7 +190,9 @@ async function CreateFeatures(ThisType, args) {
             args.AutoAddCSS = true
         } else {
             args.AutoAddCSS = false
-            args.AutoUpdate = true
+            if (args.AutoUpdate == null) {
+               args.AutoUpdate = true 
+            }
         }
 
         SettingFuction[ThisType][args.id] = {

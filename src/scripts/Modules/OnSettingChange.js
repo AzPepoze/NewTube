@@ -22,6 +22,9 @@ async function RunUpdateSettingCSS(Name) {
      var ThisSettingCSSFunction = await GetSettingFunction(Name)
 
      if (ThisSettingCSSFunction) {
+
+          console.log(ThisSettingCSSFunction)
+
           if (ThisSettingCSSFunction["AutoUpdate"] === true) {
                return false
           }
@@ -51,6 +54,7 @@ async function SetSetting(Name, Value) {
           return
      }
 
+     console.log(`*${Name}*`)
      update()
 }
 

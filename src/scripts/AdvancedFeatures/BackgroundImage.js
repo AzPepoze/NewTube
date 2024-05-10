@@ -39,8 +39,7 @@ async function CreateBackgroundImage() {
      top:0;
      position:fixed;
      z-index: -10000;
-     transition: opacity 1s;
-     background-size: cover;`
+     transition: opacity 1s;`
 
      var Body = await GetDocumentBody()
      //console.log(Body)
@@ -49,6 +48,8 @@ async function CreateBackgroundImage() {
 
 async function UpdateBackgroundImage() {
      BackgroundImage.style.backgroundImage = `url("${PreloadBackgroundImage.src}")`
+
+     OnChangeBackground_Size()
 }
 
 CreateSettingUI["PreviewBackgroundImage"] = async function () {
@@ -208,7 +209,7 @@ CreateSettingUI["UploadBackgroundImage"] = async function () {
 
                CanReloadSave = false
 
-               await ReadFileToURL(File,10000000)
+               await ReadFileToURL(File, 10000000)
                     .then(async (result) => {
 
                          SetSetting("BGIMG", result)
@@ -228,10 +229,34 @@ CreateSettingUI["UploadBackgroundImage"] = async function () {
      }
 }
 
+const Background_Size_StyleSheet = Create_StyleSheet()
+
+async function OnChangeBackground_Size() {
+     const Background_Bound = BackgroundImage.getBoundingClientRect()
+     const Imagine_Background_Height = ((PreloadBackgroundImage.height / PreloadBackgroundImage.width) * window.innerWidth)
+     const zoomValue = await Load("BackgroundS")
+
+     if (Imagine_Background_Height < Background_Bound.height) {
+          Background_Size_StyleSheet.textContent = `
+          #NewtubeBackground{
+               background-size: ${(Background_Bound.height / Imagine_Background_Height) * zoomValue}%;
+          }`
+     } else {
+          Background_Size_StyleSheet.textContent = `
+          #NewtubeBackground{
+               background-size: ${zoomValue}%;
+          }`
+     }
+
+     console.log(Background_Size_StyleSheet)
+}
+
 RunAfterLoaded.NormalYoutube.push(function () {
      OnChangeBackground()
-
      AddOnChangeFunction("BGIMG", OnChangeBackground)
+
+     AddOnChangeFunction("BackgroundS", OnChangeBackground_Size)
+     window.addEventListener('resize', OnChangeBackground_Size)
 
      AddOnChangeFunction("EnableButton", OnChangeBackground)
 })

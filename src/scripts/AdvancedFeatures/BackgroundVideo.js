@@ -327,7 +327,8 @@ let MaxLaggedFrame = 10
 let NowLaggedFrame = 0
 
 async function FoundBackgroundVideoLag() {
-     if (confirm(`
+     if (await Load("CheckLag")) {
+          if (confirm(`
 NEWTUBE : I see that you so laggy.
 (I guess it cause by Background Video)
                 
@@ -338,8 +339,10 @@ Solution to fix this laggy:
 
 Are you want to disable Background Video?
 (You can turn it back on later)`)) {
-          await Save("VDOBG", false)
+               await Save("VDOBG", false)
+          }
      }
+
 }
 
 var NoWaitFrame

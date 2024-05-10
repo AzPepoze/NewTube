@@ -721,6 +721,12 @@ async function CreateSettingFeatures() {
      })
 
      await CreateFeatures("Check", {
+          id: "CheckLag",
+          description: "PopUp when lag",
+          Default: false
+     })
+
+     await CreateFeatures("Check", {
           id: "BackgroundVDOStick",
           description: "Force Background Video Stick to Video",
           Default: false,
@@ -1902,13 +1908,8 @@ async function CreateSettingFeatures() {
           id: "BackgroundS",
           description: "Image Size",
           Default: 100,
-          CSSFunc: async function () {
-               return `
-               #NewtubeBackground{
-                    background-size: ${await Load("BackgroundS")}%;
-               }`
-          },
-          max: 300
+          max: 300,
+          AutoUpdate: false
      })
 
      await CreateFeatures("Check", {
