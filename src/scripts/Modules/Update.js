@@ -946,7 +946,6 @@ async function update() {
                     background: var(--theme-fort) !important;
                 }
 
-                #text.ytd-channel-name,
                 #items > #contents > * .yt-formatted-string,
                 paper-ripple,
                 ytd-channel-name a,
@@ -1519,6 +1518,10 @@ async function update() {
                 ytd-notification-topbar-button-renderer .yt-spec-icon-badge-shape__badge{
                     background: var(--theme-fort) !important;
                     color: var(--NewtubeTheme) !important;
+                }
+
+                #text.ytd-channel-name{
+                    color: ${await LoadRgba("Chanel_Color")};
                 }
                 `
 

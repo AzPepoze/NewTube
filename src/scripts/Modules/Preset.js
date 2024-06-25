@@ -1,4 +1,5 @@
 USEING = `(Current)`
+var CanSave = true
 
 async function createList(Name) {
     ThisList = document.createElement("body")

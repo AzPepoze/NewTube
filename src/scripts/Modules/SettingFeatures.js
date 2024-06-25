@@ -828,8 +828,7 @@ async function CreateSettingFeatures() {
      await CreateFeatures("Check", {
           id: "UltraWide",
           description: "Fit ultrawide video",
-          Default: true,
-          new: true
+          Default: true
      })
 
      await CreateFeatures("Check", {
@@ -1547,6 +1546,16 @@ async function CreateSettingFeatures() {
                Color: "#ffffff",
                Opacity: 100
           }
+     })
+
+     await CreateFeatures("ColorPicker", {
+          id: "Chanel_Color",
+          description: "Chanel name color",
+          Default: {
+               Color: "#ffffff",
+               Opacity: 100
+          },
+          new: true
      })
 
      //------------------------------------------------------------------------------
