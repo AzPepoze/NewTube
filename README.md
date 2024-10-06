@@ -1,4 +1,4 @@
-## <a href="[https://discord.gg/BgxvVqap4G](https://github.com/users/AzPepoze/projects/1)" style="font-size: xxx-large;" target="_blank">NewTube Status</a>
+## <a href="https://github.com/users/AzPepoze/projects/1" style="font-size: xxx-large;" target="_blank">NewTube Status</a>
 
 # ⚠️ If you want to report the issue/bug pls tell me in my discord server (I always use discord) ⚠️
 
