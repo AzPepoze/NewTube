@@ -1,148 +1,135 @@
-{"manifest_version": 3,
-    "name": "NewTube (YouTube Customizer & Enhancement)",
-    "author": "AzPepoze",
-    "version": "5.5.1",
-    "description": "Customize your YouTube website with a lot customizable.",
-    "homepage_url": "https://github.com/AzPepoze/Newtube",
-    "minimum_chrome_version": "88",
-	"icons":{
-		"128":"icon/128.png",
-		"64":"icon/64.png",
-		"32":"icon/32.png",
-		"16":"icon/16.png"
+{
+	"manifest_version": 3,
+	"name": "NewTube (YouTube Customizer & Enhancement)",
+	"author": "AzPepoze",
+	"version": "5.5.1",
+	"description": "Customize your YouTube website with a lot customizable.",
+	"homepage_url": "https://github.com/AzPepoze/Newtube",
+	"minimum_chrome_version": "88",
+	"icons": {
+		"128": "icon/128.png",
+		"64": "icon/64.png",
+		"32": "icon/32.png",
+		"16": "icon/16.png"
 	},
-    "web_accessible_resources": [
-        {
-            "resources": [ "*"],
-            "matches": [ "*://www.youtube.com/*", "*://giscus.app/*", "*://music.youtube.com/*" ]
-        }
-    ],
-    "options_page": "html/Newtube_setting.html",
-    "content_scripts": [
-      {
-		"all_frames": true,
-        "matches": ["*://www.youtube.com/*", "*://music.youtube.com/*" ],
-        "js": [
-                "scripts/RunFirst/RunFirstControl.js",
+	"web_accessible_resources": [
+		{
+			"resources": ["*"],
+			"matches": ["*://www.youtube.com/*", "*://giscus.app/*", "*://music.youtube.com/*"]
+		}
+	],
+	"options_page": "html/Newtube_setting.html",
+	"content_scripts": [
+		{
+			"all_frames": true,
+			"matches": ["*://www.youtube.com/*", "*://music.youtube.com/*"],
+			"js": [
+				"scripts/RunFirst/RunFirstControl.js",
 
-                "scripts/ImportantModules/ExtensionVariable.js",
-                "scripts/ImportantModules/Save.js",
-                "scripts/ImportantModules/ErrorHandle.js",
-                "scripts/ImportantModules/NormalFunction.js",
-                "scripts/ImportantModules/Colors.js",
-                "scripts/ImportantModules/GetFileFromInput.js",
-                "scripts/ImportantModules/ReadFileToURL.js",
-                "scripts/ImportantModules/YoutubeFunction.js",
-                "scripts/ImportantModules/UploadImageByAPI.js",
+				"scripts/ImportantModules/ExtensionVariable.js",
+				"scripts/ImportantModules/Save.js",
+				"scripts/ImportantModules/ErrorHandle.js",
+				"scripts/ImportantModules/NormalFunction.js",
+				"scripts/ImportantModules/Colors.js",
+				"scripts/ImportantModules/GetFileFromInput.js",
+				"scripts/ImportantModules/ReadFileToURL.js",
+				"scripts/ImportantModules/YoutubeFunction.js",
+				"scripts/ImportantModules/UploadImageByAPI.js",
 
+				"scripts/AutoRun/DisableDarkReader.js",
 
-                "scripts/AutoRun/DisableDarkReader.js",
+				"scripts/libs/color-thief.min.js",
 
+				"scripts/Events/HideWindow.js",
+				"scripts/Events/WhenUpdate.js",
+				"scripts/Events/NewUser.js",
+				"scripts/Modules/DefaultPreset.js",
 
-                "scripts/libs/color-thief.min.js",
+				"scripts/Modules/OpenThemeStore.js",
+				"scripts/Modules/ReloadSave.js",
+				"scripts/Modules/GetSortedPalette.js",
+				"scripts/Modules/AddMissingSave.js",
+				"scripts/Modules/SettingSearch.js",
+				"scripts/Modules/Preset.js",
 
+				"scripts/Modules/SettingButton.js",
+				"scripts/Modules/OnSettingChange.js",
+				"scripts/Modules/SettingControl.js",
+				"scripts/Modules/SettingUI.js",
+				"scripts/Modules/SettingFunction.js",
+				"scripts/Modules/ChangeToDarkMode.js",
+				"scripts/Modules/VideoHandle.js",
 
-                "scripts/Events/HideWindow.js",
-                "scripts/Events/WhenUpdate.js",
-                "scripts/Events/NewUser.js",
-                "scripts/Modules/DefaultPreset.js",
+				"scripts/Events/YoutubeEvent.js",
+				"scripts/Events/ReciveMessage.js",
 
-                "scripts/Modules/OpenThemeStore.js",
-                "scripts/Modules/ReloadSave.js",
-                "scripts/Modules/GetSortedPalette.js",
-                "scripts/Modules/AddMissingSave.js",
-                "scripts/Modules/SettingSearch.js",
-                "scripts/Modules/Preset.js",
-                
-                "scripts/Modules/SettingButton.js",
-                "scripts/Modules/OnSettingChange.js",
-                "scripts/Modules/SettingControl.js",
-                "scripts/Modules/SettingUI.js",
-                "scripts/Modules/SettingFunction.js",
-                "scripts/Modules/ChangeToDarkMode.js",
-                "scripts/Modules/VideoHandle.js",
+				"scripts/AdvancedFeatures/AdvancedControls.js",
 
-                "scripts/Events/YoutubeEvent.js",
-                "scripts/Events/ReciveMessage.js",
+				"scripts/AdvancedFeatures/BackgroundTint.js",
+				"scripts/AdvancedFeatures/BackgroundImage.js",
+				"scripts/AdvancedFeatures/BackgroundVideo.js",
+				"scripts/AdvancedFeatures/YoutubeAsBackground.js",
+				"scripts/AdvancedFeatures/RemoveBlackBars.js",
+				"scripts/AdvancedFeatures/Fonts.js",
+				"scripts/AdvancedFeatures/TabIcon.js",
+				"scripts/AdvancedFeatures/Flyout.js",
+				"scripts/AdvancedFeatures/AutoTransparentTopBar.js",
+				"scripts/AdvancedFeatures/RemoveAmbient.js",
+				"scripts/AdvancedFeatures/UpdateTimeStamp.js",
+				"scripts/AdvancedFeatures/NewYoutubeLayout.js",
+				"scripts/AdvancedFeatures/AutoShowReplayChat.js",
+				"scripts/AdvancedFeatures/Move_To_Top.js",
+				"scripts/AdvancedFeatures/Theme_By_Video.js",
+				"scripts/AdvancedFeatures/AudioVisualizer.js",
+				"scripts/AdvancedFeatures/NewVideoAnimation.js",
 
-                "scripts/AdvancedFeatures/AdvancedControls.js",
+				"scripts/AdvancedFeatures/AddCustomCSS.js",
 
-                "scripts/AdvancedFeatures/BackgroundTint.js",
-                "scripts/AdvancedFeatures/BackgroundImage.js",
-                "scripts/AdvancedFeatures/BackgroundVideo.js",
-                "scripts/AdvancedFeatures/YoutubeAsBackground.js",
-                "scripts/AdvancedFeatures/RemoveBlackBars.js",
-                "scripts/AdvancedFeatures/Fonts.js",
-                "scripts/AdvancedFeatures/TabIcon.js",
-                "scripts/AdvancedFeatures/Flyout.js",
-                "scripts/AdvancedFeatures/AutoTransparentTopBar.js",
-                "scripts/AdvancedFeatures/RemoveAmbient.js",
-                "scripts/AdvancedFeatures/UpdateTimeStamp.js",
-                "scripts/AdvancedFeatures/NewYoutubeLayout.js",
-                "scripts/AdvancedFeatures/AutoShowReplayChat.js",
-                "scripts/AdvancedFeatures/Move_To_Top.js",
-                "scripts/AdvancedFeatures/Theme_By_Video.js",
-                "scripts/AdvancedFeatures/AudioVisualizer.js",
-                "scripts/AdvancedFeatures/NewVideoAnimation.js",
-                
-                "scripts/AdvancedFeatures/AddCustomCSS.js",
+				"scripts/Modules/Update.js",
 
+				"scripts/Modules/SettingFeatures.js",
 
-                "scripts/Modules/Update.js",
+				"scripts/RunNewtube.js"
+			],
+			"css": ["CSS/setting.css"],
+			"run_at": "document_start"
+		},
+		{
+			"matches": ["*://giscus.app/*"],
+			"js": [
+				"scripts/ImportantModules/NormalFunction.js",
 
-                "scripts/Modules/SettingFeatures.js",
+				"scripts/AutoRun/DisableDarkReader.js",
 
-                "scripts/RunNewtube.js"
+				"scripts/ImportantModules/Save.js",
 
-            ],
-        "css": [
-            "CSS/setting.css"
-        ],
-		"run_at": "document_start"
-      },
-      {
-        "matches": [ "*://giscus.app/*" ],
-        "js": [
-            "scripts/ImportantModules/NormalFunction.js",
-            
-            "scripts/AutoRun/DisableDarkReader.js",
-
-            "scripts/ImportantModules/Save.js",
-        
-            "scripts/NewtubeThemeSelector.js"
-        ],
-		"run_at": "document_start"
-      }
-    ],
-    "background": {
-        "service_worker": "scripts/Background.js"
-    },
-    "commands": {
-        "Enable": {
-            "suggested_key": {
-                "default": "Alt+Shift+Z"
-            },
-            "description": "Toggle Enable"
-        },
-        "Setting": {
-            "suggested_key": {
-                "default": "Alt+Shift+X"
-            },
-            "description": "Toggle Setting"
-        }
-    },
-    "permissions": [
-        "storage",
-        "unlimitedStorage",
-        "scripting"
-    ],
-    "host_permissions": [
-        "*://www.youtube.com/*",
-        "*://music.youtube.com/*" 
-    ],
-    "browser_specific_settings": {
-        "gecko": {
-            "id": "Newtube@AzPepoze"
-        }
-    }
+				"scripts/NewtubeThemeSelector.js"
+			],
+			"run_at": "document_start"
+		}
+	],
+	"background": {
+		"service_worker": "scripts/Background.js"
+	},
+	"commands": {
+		"Enable": {
+			"suggested_key": {
+				"default": "Alt+Shift+Z"
+			},
+			"description": "Toggle Enable"
+		},
+		"Setting": {
+			"suggested_key": {
+				"default": "Alt+Shift+X"
+			},
+			"description": "Toggle Setting"
+		}
+	},
+	"permissions": ["storage", "unlimitedStorage", "scripting"],
+	"host_permissions": ["*://www.youtube.com/*", "*://music.youtube.com/*"],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "Newtube@AzPepoze"
+		}
+	}
 }
