@@ -1,10 +1,9 @@
 {"manifest_version": 3,
     "name": "NewTube (YouTube Customizer & Enhancement)",
     "author": "AzPepoze",
-    "version": "5.4.0",
+    "version": "5.5.1",
     "description": "Customize your YouTube website with a lot customizable.",
     "homepage_url": "https://github.com/AzPepoze/Newtube",
-    "default_locale": "en",
     "minimum_chrome_version": "88",
 	"icons":{
 		"128":"icon/128.png",
@@ -83,7 +82,8 @@
                 "scripts/AdvancedFeatures/AutoShowReplayChat.js",
                 "scripts/AdvancedFeatures/Move_To_Top.js",
                 "scripts/AdvancedFeatures/Theme_By_Video.js",
-                "scripts/AdvancedFeatures/YoutubeAsBackground.js",
+                "scripts/AdvancedFeatures/AudioVisualizer.js",
+                "scripts/AdvancedFeatures/NewVideoAnimation.js",
                 
                 "scripts/AdvancedFeatures/AddCustomCSS.js",
 

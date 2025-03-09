@@ -1,256 +1,262 @@
-var StyleElementHolder
-var SettingCSS = {}
+var StyleElementHolder;
+var SettingCSS = {};
 
-var Collect_Style
+var Collect_Style;
 var NTstyle = document.createElement("style");
 NTstyle.id = "NEWTUBESTYLE";
 
 async function AddNewtubeStyle() {
-    var Head = await GetDocumentHead()
-    Head.append(NTstyle)
+	var Head = await GetDocumentHead();
+	Head.append(NTstyle);
 }
 
-AddNewtubeStyle()
+AddNewtubeStyle();
 
 async function UpdateSettingCSS(id) {
-    if (DebugMode) {
-        console.log("Update", id)
-    }
+	if (DebugMode) {
+		console.log("Update", id);
+	}
 
-    SettingCSS[id]()
+	SettingCSS[id]();
 }
 
 async function CheckStyleElementHolder() {
+	if (StyleElementHolder) {
+		return StyleElementHolder;
+	}
 
-    if (StyleElementHolder) {
-        return StyleElementHolder
-    }
+	var Head = document.head;
 
-    var Head = document.head
+	if (Head) {
+		StyleElementHolder = document.createElement("fieldset");
+		StyleElementHolder.id = "NewtubeStyleHolder";
+		Head.append(StyleElementHolder);
 
-    if (Head) {
-        StyleElementHolder = document.createElement("fieldset")
-        StyleElementHolder.id = "NewtubeStyleHolder"
-        Head.append(StyleElementHolder)
-
-        return StyleElementHolder
-    } else {
-        await sleep(100)
-        return await CheckStyleElementHolder()
-    }
+		return StyleElementHolder;
+	} else {
+		await sleep(100);
+		return await CheckStyleElementHolder();
+	}
 }
 
 async function CreateStyleElement(id) {
-    await CheckStyleElementHolder()
-    var ThisStyle = document.createElement("style")
-    StyleElementHolder.append(ThisStyle)
+	await CheckStyleElementHolder();
+	var ThisStyle = document.createElement("style");
+	StyleElementHolder.append(ThisStyle);
 
-    async function UpdateStyle() {
-        if (await Load("EnableButton") && !await Load("EnaCUSCSS")) {
-            ThisStyle.innerHTML = await GetSettingCSS(id)
-        } else {
-            ThisStyle.innerHTML = ``
-        }
-    }
+	async function UpdateStyle() {
+		if ((await Load("EnableButton")) && !(await Load("EnaCUSCSS"))) {
+			ThisStyle.innerHTML = await GetSettingCSS(id);
+		} else {
+			ThisStyle.innerHTML = ``;
+		}
+	}
 
-    UpdateStyle()
+	UpdateStyle();
 
-    AddOnChangeFunction("EnableButton", UpdateStyle)
-    AddOnChangeFunction("EnaCUSCSS", UpdateStyle)
+	AddOnChangeFunction("EnableButton", UpdateStyle);
+	AddOnChangeFunction("EnaCUSCSS", UpdateStyle);
 
-    SettingCSS[id] = UpdateStyle
+	SettingCSS[id] = UpdateStyle;
 }
 
-var AlreadyCreatedSeparateSettingCSS = false
+var AlreadyCreatedSeparateSettingCSS = false;
 
 async function CreateSeparateSettingCSS() {
-    if (DebugMode) {
-        console.log("CreateSeparateSettingCSS")
-    }
+	if (DebugMode) {
+		console.log("CreateSeparateSettingCSS");
+	}
 
-    for (var [ThisType, ThisFeature] of Object.entries(SettingFuction)) {
-        for (var [id, ThisSetting] of Object.entries(ThisFeature)) {
-            if (ThisSetting.AutoAddCSS) {
-                CreateStyleElement(id)
-            }
-        }
-    }
+	for (var [ThisType, ThisFeature] of Object.entries(SettingFuction)) {
+		for (var [id, ThisSetting] of Object.entries(ThisFeature)) {
+			if (ThisSetting.AutoAddCSS) {
+				CreateStyleElement(id);
+			}
+		}
+	}
 
-    if (DebugMode) {
-        console.log(SettingCSS)
-    }
+	if (DebugMode) {
+		console.log(SettingCSS);
+	}
 
-    AlreadyCreatedSeparateSettingCSS = true
+	AlreadyCreatedSeparateSettingCSS = true;
 }
 
 async function WaitCreatedSeparateSettingCSS() {
-    if (AlreadyCreatedSeparateSettingCSS) {
-        return true
-    } else {
-        await sleep(100)
-        return await WaitCreatedSeparateSettingCSS()
-    }
+	if (AlreadyCreatedSeparateSettingCSS) {
+		return true;
+	} else {
+		await sleep(100);
+		return await WaitCreatedSeparateSettingCSS();
+	}
 }
 
 async function update() {
-    if (DebugMode) {
-        console.log("UPDATE");
-    }
+	if (DebugMode) {
+		console.log("UPDATE");
+	}
 
-    Collect_Style = ``
+	Collect_Style = ``;
 
-    if (await Load("EnaADDCSS") == true) {
-        ADDCSS = await Load("ADDCUSTOM")
-    }
+	if ((await Load("EnaADDCSS")) == true) {
+		ADDCSS = await Load("ADDCUSTOM");
+	}
 
-    if (await Load("EnableButton") == false) {
-        NTstyle.textContent = ``;
-    }
-    else if (await Load("EnaCUSCSS") == true) {
-        NTstyle.textContent = await Load("CUSTOM")
-    } else {
+	if ((await Load("EnableButton")) == false) {
+		NTstyle.textContent = ``;
+	} else if ((await Load("EnaCUSCSS")) == true) {
+		NTstyle.textContent = await Load("CUSTOM");
+	} else {
+		let ThemeColor;
+		let ThemeColor2;
+		let ThemeColor3;
+		let TextColor;
+		let TextColor2;
+		let BG;
+		let PlayListColor;
+		let LinkColor;
+		let ControlPanel;
+		let TimeText;
+		let TimeLineBG;
+		let TimeLoaded;
 
-        let ThemeColor
-        let ThemeColor2
-        let ThemeColor3
-        let TextColor
-        let TextColor2
-        let BG
-        let PlayListColor
-        let LinkColor
-        let ControlPanel
-        let TimeText
-        let TimeLineBG
-        let TimeLoaded
+		if ((await Load("Theme_by_video")) && (await GetVideoID())) {
+			let GetColor = await GetSampleColor(await GetVideoThumbnail());
 
-        if (await Load("Theme_by_video") && await GetVideoID()) {
-            let GetColor = await GetSampleColor(await GetVideoThumbnail())
+			if (GetColor[0] == GetColor[1] && GetColor[1] == GetColor[2]) {
+				GetColor = await GetSampleColor(await GetVideoFirstFrame());
+			}
 
-            if (GetColor[0] == GetColor[1] && GetColor[1] == GetColor[2]) {
-                GetColor = await GetSampleColor(await GetVideoFirstFrame())
-            }
+			console.log("Before", GetColor);
 
-            console.log("Before", GetColor)
+			let Max = 0;
 
-            let Max = 0
+			for (let i = 0; i <= 2; i++) {
+				let ThisValue = GetColor[i];
+				if (ThisValue > Max) {
+					Max = ThisValue;
+				}
+			}
 
-            for (let i = 0; i <= 2; i++) {
-                let ThisValue = GetColor[i]
-                if (ThisValue > Max) {
-                    Max = ThisValue
-                }
-            }
+			let GetAdd = 255 - Max;
 
-            let GetAdd = 255 - Max
+			for (let i = 0; i <= 2; i++) {
+				GetColor[i] += GetAdd;
+			}
 
-            for (let i = 0; i <= 2; i++) {
-                GetColor[i] += GetAdd
-            }
+			let hsv = RGBtoHSV(GetColor);
+			hsv[1] *= 1.5;
+			if (true && hsv[1] > 0.6) {
+				hsv[1] = 0.6;
+			}
+			console.log(hsv[1]);
+			GetColor = HSVtoRGB(hsv);
 
-            let hsv = RGBtoHSV(GetColor)
-            hsv[1] *= 1.5
-            if (true && hsv[1] > 0.6) {
-                hsv[1] = 0.6
-            }
-            console.log(hsv[1])
-            GetColor = HSVtoRGB(hsv)
+			console.log("After", GetColor);
 
-            console.log("After", GetColor)
+			ThemeColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`;
+			ThemeColor2 = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`;
+			ThemeColor3 = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`;
+			PlayListColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`;
+			LinkColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`;
+			Themehover = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`;
 
-            ThemeColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
-            ThemeColor2 = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
-            ThemeColor3 = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
-            PlayListColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
-            LinkColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
-            Themehover = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.3})`
+			hsv[2] *= 0.4;
+			GetColor = HSVtoRGB(hsv);
+			TimeBG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.8})`;
+			hsv[2] *= 1 / 0.4;
 
-            hsv[2] *= 0.4
-            GetColor = HSVtoRGB(hsv)
-            TimeBG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.8})`
-            hsv[2] *= 1 / 0.4
+			hsv[1] *= 0.8;
+			GetColor = HSVtoRGB(hsv);
+			TextColor2 = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`;
+			hsv[1] *= 1 / 0.8;
 
-            hsv[1] *= 0.8
-            GetColor = HSVtoRGB(hsv)
-            TextColor2 = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
-            hsv[1] *= 1 / 0.8
+			hsv[1] *= 0.5;
+			GetColor = HSVtoRGB(hsv);
+			TimeText = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`;
+			hsv[1] *= 1 / 0.5;
 
-            hsv[1] *= 0.5
-            GetColor = HSVtoRGB(hsv)
-            TimeText = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
-            hsv[1] *= 1 / 0.5
+			hsv[1] *= 0.4;
+			GetColor = HSVtoRGB(hsv);
+			TextColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`;
+			hsv[1] *= 1 / 0.4;
 
-            hsv[1] *= 0.4
-            GetColor = HSVtoRGB(hsv)
-            TextColor = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
-            hsv[1] *= 1 / 0.4
+			hsv[2] *= 0.15;
+			GetColor = HSVtoRGB(hsv);
+			if (await Load("Solid_BG_Theme_by_video")) {
+				BG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`;
+			} else {
+				BG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${(await Load("BGO")) / 100})`;
+			}
+			hsv[2] *= 1 / 0.15;
 
-            hsv[2] *= 0.15
-            GetColor = HSVtoRGB(hsv)
-            if (await Load("Solid_BG_Theme_by_video")) {
-                BG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
-            } else {
-                BG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${await Load("BGO") / 100})`
-            }
-            hsv[2] *= 1 / 0.15
+			hsv[2] *= 0.4;
+			GetColor = HSVtoRGB(hsv);
+			TimeLineBG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`;
+			hsv[2] *= 1 / 0.4;
 
-            hsv[2] *= 0.4
-            GetColor = HSVtoRGB(hsv)
-            TimeLineBG = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
-            hsv[2] *= 1 / 0.4
+			hsv[1] *= 0.5;
+			hsv[2] *= 0.6;
+			GetColor = HSVtoRGB(hsv);
+			TimeLoaded = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`;
+			hsv[1] *= 1 / 0.5;
+			hsv[2] *= 1 / 0.6;
 
-            hsv[1] *= 0.5
-            hsv[2] *= 0.6
-            GetColor = HSVtoRGB(hsv)
-            TimeLoaded = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${1})`
-            hsv[1] *= 1 / 0.5
-            hsv[2] *= 1 / 0.6
+			hsv[2] *= 0.2;
+			GetColor = HSVtoRGB(hsv);
+			ControlPanel = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.7})`;
+		} else {
+			ThemeColor = await LoadRgba("Theme");
+			ThemeColor2 = await LoadRgba("ThemeThr");
+			TextColor = await LoadRgba("Text");
+			TextColor2 = await LoadRgba("NdText");
+			ThemeColor3 = await LoadRgba("ThemeFort");
+			BG = await LoadRgba("BG");
+			PlayListColor = await LoadRgba("Playlisthover");
+			LinkColor = await LoadRgba("LinkColor");
+			ControlPanel = await LoadRgba("MediaBG");
+			TimeBG = await LoadRgba("TimeBG");
+			TimeText = await LoadRgba("TIMETEXT");
+			TimeLineBG = await LoadRgba("Time-LineBG");
+			TimeLoaded = await LoadRgba("TimeLoaded");
+			Themehover = await LoadRgba("Themehover");
+		}
 
-            hsv[2] *= 0.2
-            GetColor = HSVtoRGB(hsv)
-            ControlPanel = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.7})`
-        } else {
-            ThemeColor = await LoadRgba("Theme")
-            ThemeColor2 = await LoadRgba("ThemeThr")
-            TextColor = await LoadRgba("Text")
-            TextColor2 = await LoadRgba("NdText")
-            ThemeColor3 = await LoadRgba("ThemeFort")
-            BG = await LoadRgba("BG")
-            PlayListColor = await LoadRgba("Playlisthover")
-            LinkColor = await LoadRgba("LinkColor")
-            ControlPanel = await LoadRgba("MediaBG")
-            TimeBG = await LoadRgba("TimeBG")
-            TimeText = await LoadRgba("TIMETEXT")
-            TimeLineBG = await LoadRgba("Time-LineBG")
-            TimeLoaded = await LoadRgba("TimeLoaded")
-            Themehover = await LoadRgba("Themehover")
-        }
-
-        Collect_Style = `
-                .sbfl_b,.sbsb_a,
-                #container.style-scope.ytd-masthead,
-                ytd-mini-guide-renderer,
-                ytd-mini-guide-entry-renderer,
-                ytd-page-manager>*.ytd-page-manager,
-                `+ await GetSettingCSS("VBG") + `
-                #channel-container,
-                #channel-header,
-                #tabs-inner-container,
-                .playlist-items,
-                #video-preview-container,
-                ytd-simple-menu-header-renderer,
-                .yt-spec-button-shape-next--mono.yt-spec-button-shape-next--tonal,
-                #description,
-                #player,
-                ytd-thumbnail-overlay-resume-playback-renderer,
-                .button-container.ytd-rich-shelf-renderer,
-                ytd-video-preview,
-                ytd-button-renderer.ytd-live-chat-frame,
-                #player-container,
-                .ytp-endscreen-content,
-                ytd-thumbnail-overlay-time-status-renderer badge-shape
-                {
+		Collect_Style =
+			`
+               .sbfl_b,.sbsb_a,
+               #container.style-scope.ytd-masthead,
+               ytd-mini-guide-renderer,
+               ytd-mini-guide-entry-renderer,
+               ytd-page-manager>*.ytd-page-manager,
+               ` +
+			(await GetSettingCSS("VBG")) +
+			`
+               #channel-container,
+               #channel-header,
+               #tabs-inner-container,
+               .playlist-items,
+               #video-preview-container,
+               ytd-simple-menu-header-renderer,
+               .yt-spec-button-shape-next--mono.yt-spec-button-shape-next--tonal,
+               #description,
+               #player,
+               ytd-thumbnail-overlay-resume-playback-renderer,
+               .button-container.ytd-rich-shelf-renderer,
+               ytd-video-preview,
+               ytd-button-renderer.ytd-live-chat-frame,
+               #player-container,
+               .ytp-endscreen-content,
+               ytd-thumbnail-overlay-time-status-renderer badge-shape,
+               .ytSearchboxComponentInputBox
+               {
                     background: transparent !important;
-                }
+               }
+
+               .ytSearchboxComponentInputBox
+               {
+                    border-color: transparent !important;
+               }
 
                 yt-interaction{
                     overflow: visible !important;
@@ -271,43 +277,101 @@ async function update() {
 
                 :root {
                     --NewtubeTheme: ${ThemeColor};
-                    --blur-amount: `+ await Load("BlurAm") + `px;
-                    --Bg-blur: `+ await Load("BlurBGAM") + `px;
+                    --blur-amount: ` +
+			(await Load("BlurAm")) +
+			`px;
+                    --Bg-blur: ` +
+			(await Load("BlurBGAM")) +
+			`px;
                     --theme-fort: ${ThemeColor3};
-                    --playlist-bg: `+ PlayListColor + `;
-                    --text-color: `+ TextColor + `;
-                    --nd-text-color: `+ TextColor2 + `;
-                    --border-width: `+ await Load("Border") + `px;
-                    --player-bg-border-width: `+ await Load("PlayerBorder") + `px;
-                    --border-color: `+ await LoadRgba("OutSha") + `;
-                    --border-hover-color: `+ await LoadRgba("ThumbHoverColor") + `;
-                    --border-click-color: `+ await LoadRgba("ThumbClick") + `;
-                    --bg-color: `+ BG + `;
-                    --in-player-bg-color: `+ ControlPanel + `;
-                    --top-bar-and-search-background: `+ await LoadRgba("ThemeSnd") + `;
-                    --things-end-on-video: `+ await LoadRgba("EndBG") + `;
-                    --hover-time-background: `+ TimeBG + `;
-                    --search-background-hover: `+ Themehover + `;
-                    --theme-radius: `+ await Load("Edge") + `px;
-                    --theme-time-radius: `+ await Load("TimeEdge") + `px;
-                    --theme-radius-big: `+ await Load("PlayerEdge") + `px;
+                    --playlist-bg: ` +
+			PlayListColor +
+			`;
+                    --text-color: ` +
+			TextColor +
+			`;
+                    --nd-text-color: ` +
+			TextColor2 +
+			`;
+                    --border-width: ` +
+			(await Load("Border")) +
+			`px;
+                    --player-bg-border-width: ` +
+			(await Load("PlayerBorder")) +
+			`px;
+                    --border-color: ` +
+			(await LoadRgba("OutSha")) +
+			`;
+                    --border-hover-color: ` +
+			(await LoadRgba("ThumbHoverColor")) +
+			`;
+                    --border-click-color: ` +
+			(await LoadRgba("ThumbClick")) +
+			`;
+                    --bg-color: ` +
+			BG +
+			`;
+                    --in-player-bg-color: ` +
+			ControlPanel +
+			`;
+                    --top-bar-and-search-background: ` +
+			(await LoadRgba("ThemeSnd")) +
+			`;
+                    --things-end-on-video: ` +
+			(await LoadRgba("EndBG")) +
+			`;
+                    --hover-time-background: ` +
+			TimeBG +
+			`;
+                    --search-background-hover: ` +
+			Themehover +
+			`;
+                    --theme-radius: ` +
+			(await Load("Edge")) +
+			`px;
+                    --theme-time-radius: ` +
+			(await Load("TimeEdge")) +
+			`px;
+                    --theme-radius-big: ` +
+			(await Load("PlayerEdge")) +
+			`px;
                     --border-minus: calc(var(--border-width) * -1);
                     --bg-border-minus: calc(var(--player-bg-border-width) * -1);
                     
-                    --border-width-hover: `+ await Load("HoverBorder") + `px;
+                    --border-width-hover: ` +
+			(await Load("HoverBorder")) +
+			`px;
                     --border-minus-hover: calc(var(--border-width-hover) * -1);
                     
-                    --theme-third: `+ ThemeColor2 + `;
-                    --Zoom: `+ await Load("Zoom") + `;
+                    --theme-third: ` +
+			ThemeColor2 +
+			`;
+                    --Zoom: ` +
+			(await Load("Zoom")) +
+			`;
 
-                    --sub-ShaWidth: `+ await Load("subShaWidth") + `px;
-                    --sub-ShaBlur: `+ await Load("subShaBlur") + `px;
+                    --sub-ShaWidth: ` +
+			(await Load("subShaWidth")) +
+			`px;
+                    --sub-ShaBlur: ` +
+			(await Load("subShaBlur")) +
+			`px;
 
-                    --sub-Width: `+ await Load("subWidth") + `;
-                    --sub-Space: `+ await Load("subSpace") + `px;
-                    --sub-color: ` + await LoadRgba("Subtitle") + `;
-                    --sub-bg: ` + await LoadRgba("CapBG") + `;
-                    --sub-sha-color: `+ await LoadRgba("subShaColor") + `;
+                    --sub-Width: ` +
+			(await Load("subWidth")) +
+			`;
+                    --sub-Space: ` +
+			(await Load("subSpace")) +
+			`px;
+                    --sub-color: ` +
+			(await LoadRgba("Subtitle")) +
+			`;
+                    --sub-bg: ` +
+			(await LoadRgba("CapBG")) +
+			`;
+                    --sub-sha-color: ` +
+			(await LoadRgba("subShaColor")) +
+			`;
 
                     --SubSc-BG : ${await LoadRgba("SPSubScribeBG")};
                     --SubSc-Tx : ${await LoadRgba("SPSubScribeColor")};
@@ -319,7 +383,7 @@ async function update() {
                     flex-direction: row;
                 }
 
-                #search::placeholder {
+                .ytSearchboxComponentInputBox::placeholder {
                     color: var(--nd-text-color) !important;
                 }
 
@@ -393,7 +457,9 @@ async function update() {
 
                 @supports (scrollbar-width: auto) {
                     *{
-                        scrollbar-width: `+ await Load("ScWidthNew") + `;
+                        scrollbar-width: ` +
+			(await Load("ScWidthNew")) +
+			`;
                         scrollbar-color: var(--NewtubeTheme) transparent;
                     }
 
@@ -403,15 +469,21 @@ async function update() {
 
                     body::-webkit-scrollbar-track
                     {
-                        scrollbar-color: var(--NewtubeTheme) ` + await Load("BGC") + ` !important;
+                        scrollbar-color: var(--NewtubeTheme) ` +
+			(await Load("BGC")) +
+			` !important;
                     }
                 }
 
                 @supports selector(::-webkit-scrollbar) {
                     *::-webkit-scrollbar
                     {
-                        width: `+ await Load("ScWidth") + `px  !important;
-                        height: `+ await Load("ScWidth") + `px  !important;
+                        width: ` +
+			(await Load("ScWidth")) +
+			`px  !important;
+                        height: ` +
+			(await Load("ScWidth")) +
+			`px  !important;
 
                         background-color: transparent !important;
                         color: var(--NewtubeTheme) !important;
@@ -433,7 +505,9 @@ async function update() {
 
                     body::-webkit-scrollbar-track
                     {
-                        background: `+ await Load("BGC") + ` !important;
+                        background: ` +
+			(await Load("BGC")) +
+			` !important;
                     }
                 }
                 
@@ -446,12 +520,16 @@ async function update() {
                 ytd-thumbnail-overlay-time-status-renderer,
                 ytd-thumbnail-overlay-bottom-panel-renderer
                 {
-                    height: `+ await Load("TimeH") + `px !important;
+                    height: ` +
+			(await Load("TimeH")) +
+			`px !important;
                 }
 
                 .ytp-time-current, .ytp-time-separator, .ytp-time-duration
                 {
-                    color: `+ await LoadRgba("VDOTEXT") + `!important;
+                    color: ` +
+			(await LoadRgba("VDOTEXT")) +
+			`!important;
                 }
                 
                 a.thumbnail > .ytcd-basic-item-large-image,
@@ -467,7 +545,9 @@ async function update() {
                 .ytp-preview:not(.ytp-text-detail) span.ytp-tooltip-text-no-title,
                 ytd-thumbnail-overlay-side-panel-renderer,
                 ytd-thumbnail-overlay-bottom-panel-renderer,
-                `+ await GetSettingCSS("PlayerOut") + `
+                ` +
+			(await GetSettingCSS("PlayerOut")) +
+			`
                 .ytp-popup.ytp-settings-menu,
                 .iv-drawer,
                 .ytp-cards-teaser-box,
@@ -481,11 +561,21 @@ async function update() {
                 #banner > img,
                 #icon > img,
                 #action,
-                `+ await GetSettingCSS("TopOut") + `
-                `+ await GetSettingCSS("CapOut") + `
-                `+ await GetSettingCSS("SubOut") + `
-                `+ await GetSettingCSS("TimeOut") + `
-                `+ await GetSettingCSS("SndOut") + `
+                ` +
+			(await GetSettingCSS("TopOut")) +
+			`
+                ` +
+			(await GetSettingCSS("CapOut")) +
+			`
+                ` +
+			(await GetSettingCSS("SubOut")) +
+			`
+                ` +
+			(await GetSettingCSS("TimeOut")) +
+			`
+                ` +
+			(await GetSettingCSS("SndOut")) +
+			`
                 .ytp-show-tiles .ytp-videowall-still,
                 #tabs-container,
                 yt-confirm-dialog-renderer[dialog][dialog][dialog],
@@ -495,7 +585,9 @@ async function update() {
                 .skeleton-bg-color.ytd-ghost-grid-renderer
                 {
                     border-collapse: separate;
-                    `+ JSON.parse(await GetSettingCSS("OutOrSha"))[0] + `
+                    ` +
+			JSON.parse(await GetSettingCSS("OutOrSha"))[0] +
+			`
                 }
 
                 div.html5-video-player:not(.ytp-small-mode){
@@ -507,13 +599,17 @@ async function update() {
                     position: relative !important;
                 }
                 
-                `+ await GetSettingCSS("PlayerOut") + `
+                ` +
+			(await GetSettingCSS("PlayerOut")) +
+			`
                 .ytp-popup.ytp-settings-menu,
                 #NEWTUBEBG,
                 .NEWTUBEMAIN
                 {
                     border-collapse: separate;
-                    `+ JSON.parse(await GetSettingCSS("OutOrSha"))[1] + `
+                    ` +
+			JSON.parse(await GetSettingCSS("OutOrSha"))[1] +
+			`
                 }
                 
                 #hearted-border.ytd-creator-heart-renderer
@@ -578,7 +674,9 @@ async function update() {
                 .ytp-preview .ytp-tooltip-text-no-title,
                 .ytd-thumbnail-overlay-bottom-panel-renderer,
                 ytd-thumbnail-overlay-time-status-renderer *{
-                    color: `+ TimeText + ` !important;
+                    color: ` +
+			TimeText +
+			` !important;
                 }
 
                 #progress-bar.ytmusic-player-bar{
@@ -602,7 +700,7 @@ async function update() {
                     text-decoration: none !important;
                 }
 
-                #search-icon-legacy{
+                .ytSearchboxComponentInputSearchIcon{
                     background: var(--theme-third) !important;
                     border-color: transparent !important;
                     transition: all 0.1s;
@@ -628,7 +726,7 @@ async function update() {
                     border: 1px solid var(--theme-third);
                 }
 
-                #search-icon-legacy:hover,
+                .ytSearchboxComponentInputSearchIcon:hover,
                 tp-yt-paper-button.ytd-expander:hover,
                 tp-yt-paper-button.ytd-text-inline-expander:hover,
                 .yt-spec-button-shape-next--outline:hover,
@@ -829,7 +927,7 @@ async function update() {
                 #guide-content,
                 .sbsb_d,
                 #endpoint.yt-simple-endpoint.ytd-guide-entry-renderer,
-                #search-icon-legacy,
+                .ytSearchboxComponentInputSearchIcon,
                 .ytp-ad-skip-button.ytp-button,
                 .ytp-flyout-cta .ytp-flyout-cta-icon,
                 #banner > img,
@@ -889,7 +987,8 @@ async function update() {
                 yt-img-shadow img,
                 ytmusic-player-queue-item,
                 yt-dynamic-text-view-model,
-                .ytp-inline-preview-controls
+                .ytp-inline-preview-controls,
+                .ytSearchboxComponentSearchButton
                 {
                     border-radius: var(--theme-radius) !important;
                 }
@@ -928,9 +1027,10 @@ async function update() {
                 .ytp-menuitem-icon path:not([fill="none"]),
                 .ytd-thumbnail-overlay-hover-text-renderer path,
                 .ytd-thumbnail-overlay-bottom-panel-renderer path,
-                #search-icon.ytd-searchbox path,
+                .ytSearchboxComponentInputBox-icon.ytd-searchbox path,
                 svg path[fill="#FF0000"],
                 svg [fill="#FF0000"],
+                svg [fill="#FF0033"],
                 svg [fill="red"],
                 svg [fill="#F00"],
                 button:not(.yt-share-target-renderer) path:not([fill="none"]),
@@ -1032,7 +1132,7 @@ async function update() {
                 ytd-two-column-browse-results-renderer,
                 ytd-alert-with-button-renderer,
                 .caption-window.ytp-caption-window-bottom,
-                .ytp-tooltip.ytp-text-detail.ytp-preview .ytp-tooltip-text
+                .ytp-tooltip.ytp-text-detail.ytp-preview .ytp-tooltip-text,
                 {
                     background: transparent !important;
                 }
@@ -1061,7 +1161,9 @@ async function update() {
                 
                 .ytp-button:not([aria-disabled=true]):not([disabled]):not([aria-hidden=true]):hover > svg path
                 {
-                    fill: `+ await LoadRgba("HBT") + ` !important;
+                    fill: ` +
+			(await LoadRgba("HBT")) +
+			` !important;
                 }
                 
                 .ytp-chrome-top,
@@ -1148,13 +1250,17 @@ async function update() {
                 .ytp-progress-list,
                 .YtProgressBarLineProgressBarBackground
                 {
-                    background: `+ TimeLineBG + ` !important;
+                    background: ` +
+			TimeLineBG +
+			` !important;
                 }
                 
                 .ytp-load-progress,
                 .YtProgressBarLineProgressBarLoaded
                 {
-                    background: `+ TimeLoaded + ` !important;
+                    background: ` +
+			TimeLoaded +
+			` !important;
                 }
                 
                 #play
@@ -1185,7 +1291,7 @@ async function update() {
                     width: 0px !important;
                 }
 
-                #search-icon.ytd-searchbox{
+                .ytSearchboxComponentInputBox-icon.ytd-searchbox{
                     transition:all 0.4s ease;
                     display:block !important;
                     opacity:0;
@@ -1194,7 +1300,7 @@ async function update() {
                     left:0px;
                 }
                  
-                ytd-searchbox[has-focus] #search-icon.ytd-searchbox{
+                ytd-searchbox[has-focus] .ytSearchboxComponentInputBox-icon.ytd-searchbox{
                     opacity:1;
                 }
                  
@@ -1208,11 +1314,6 @@ async function update() {
                 
                 .ytp-chapter-title-content {
                     margin-left: 10px;
-                }
-
-                yt-chip-cloud-chip-renderer[selected]{
-                    color: var(--bg) !important;
-                    background: var(--NewtubeTheme) !important;
                 }
 
                 .sbsb_i{
@@ -1243,7 +1344,9 @@ async function update() {
 
                 #guide-content,
                 #mini-guide-background{
-                    background: `+ await LoadRgba("LeftBar") + ` !important;
+                    background: ` +
+			(await LoadRgba("LeftBar")) +
+			` !important;
                     border-color: transparent !important;
                 }
 
@@ -1257,13 +1360,19 @@ async function update() {
                 .ytp-gradient-bottom
                 {
                     padding: 0px !important;
-                    height: `+ await Load("MediaH") + `px !important;
+                    height: ` +
+			(await Load("MediaH")) +
+			`px !important;
                     border-radius: var(--theme-radius-big) !important;
-                    `+ await GetSettingCSS("BottomG") + `
+                    ` +
+			(await GetSettingCSS("BottomG")) +
+			`
                 }
 
                 .ytp-fullscreen .ytp-gradient-bottom{
-                    height: `+ await Load("MediaHFull") + `px !important;
+                    height: ` +
+			(await Load("MediaHFull")) +
+			`px !important;
                 }
 
                 
@@ -1413,7 +1522,9 @@ async function update() {
                 }
 
                 #below {
-                    margin-top:`+ await Load("BelowSpace") + `px;
+                    margin-top:` +
+			(await Load("BelowSpace")) +
+			`px;
                 }
 
                 .playlist-items.ytd-playlist-panel-renderer{
@@ -1523,15 +1634,19 @@ async function update() {
                 #text.ytd-channel-name{
                     color: ${await LoadRgba("Chanel_Color")};
                 }
-                `
 
-        NTstyle.textContent = Collect_Style;
+                yt-chip-cloud-chip-renderer[selected] #chip-container {
+                    background: var(--NewtubeTheme) !important;
+                }
+                `;
 
-        await WaitCreatedSeparateSettingCSS()
+		NTstyle.textContent = Collect_Style;
 
-        Array.from(StyleElementHolder.children).forEach(style => {
-            if (style.textContent == "") return
-            Collect_Style += `\n\n/*----------------------------------*/\n${style.textContent}`
-        });
-    }
+		await WaitCreatedSeparateSettingCSS();
+
+		Array.from(StyleElementHolder.children).forEach((style) => {
+			if (style.textContent == "") return;
+			Collect_Style += `\n\n/*----------------------------------*/\n${style.textContent}`;
+		});
+	}
 }

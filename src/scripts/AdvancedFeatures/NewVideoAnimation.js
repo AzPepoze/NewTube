@@ -1,31 +1,33 @@
-let volchange = 0
+RunAfterLoaded.AllYoutubeMode.push(
+    async function () { 
+        let volchange = 0
 
-async function UpdateVol() {
-     volchange++
-     voldata = document.getElementsByClassName("ytp-volume-panel")[0]
-     volvalue = voldata.getAttribute('aria-valuenow')
-     volpanel.innerHTML = volvalue + `%`
+        async function UpdateVol() {
+            volchange++
+            voldata = document.getElementsByClassName("ytp-volume-panel")[0]
+            volvalue = voldata.getAttribute('aria-valuenow')
+            volpanel.innerHTML = volvalue + `%`
 
-     if (volchange == 1) {
-          volpanel.style.opacity = 1
-          volpanel.style.top = '10px'
-     }
+            if (volchange == 1) {
+                volpanel.style.opacity = 1
+                volpanel.style.top = '10px'
+            }
 
-     setTimeout(() => {
-          volchange--
-          if (volchange == 0) {
-               volpanel.style.opacity = 0
-               volpanel.style.top = '-50px'
-          }
-     }, 1000);
-}
+            setTimeout(() => {
+                volchange--
+                if (volchange == 0) {
+                    volpanel.style.opacity = 0
+                    volpanel.style.top = '-50px'
+                }
+            }, 1000);
+        }
 
-if (await GetLoad('NewVDOanimaT') == true) {
-     async function ThisFunc() {
-          await FindVideo()
-          if (v) {
-               thisStyle = document.createElement('style')
-               thisStyle.textContent = `
+        if (await Load('NewVDOanima') == true) {
+            async function ThisFunc() {
+                await FindVideo()
+                if (v) {
+                    thisStyle = document.createElement('style')
+                    thisStyle.textContent = `
          .ytp-doubletap-ui-legacy{
              display: flex !important;
              align-content: center;
@@ -100,14 +102,14 @@ if (await GetLoad('NewVDOanimaT') == true) {
              fill: var(--theme);
          }`
 
-               document.head.append(thisStyle)
+                    document.head.append(thisStyle)
 
-               await FindVideo()
-               vdpar = v.parentElement
+                    await FindVideo()
+                    vdpar = v.parentElement
 
-               volpanel = document.createElement('p')
+                    volpanel = document.createElement('p')
 
-               volpanel.style = `top: -50px;
+                    volpanel.style = `top: -50px;
              background: #0000008c;
              width: 100px;
              height: 50px;
@@ -125,19 +127,21 @@ if (await GetLoad('NewVDOanimaT') == true) {
              box-shadow: 0px 0px 10px white;
              left: calc(50% - 50px);`
 
-               volpanel.setAttribute('round', '')
+                    volpanel.setAttribute('round', '')
 
-               vdpar.append(volpanel)
+                    vdpar.append(volpanel)
 
-               v.addEventListener('volumechange', async function () {
-                    UpdateVol()
-               })
-          }
-          else {
-               setTimeout(() => {
-                    ThisFunc()
-               }, 1000);
-          }
-     }
-     ThisFunc()
-}
+                    v.addEventListener('volumechange', async function () {
+                        UpdateVol()
+                    })
+                }
+                else {
+                    setTimeout(() => {
+                        ThisFunc()
+                    }, 1000);
+                }
+            }
+            ThisFunc()
+        }
+    }
+)

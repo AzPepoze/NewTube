@@ -2,7 +2,5 @@ dist/
 release/
 node_modules/
 
-_API_KEYS.json
-
 $Release.js
 $Release_Chrome_web_store.js
