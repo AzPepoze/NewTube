@@ -1079,7 +1079,7 @@ async function update() {
                 .ytp-sb-subscribe, a.ytp-sb-subscribe,
                 yt-icon-button.yt-live-chat-item-list-renderer
                 {
-                    background-color: var(--NewtubeTheme) !important;
+                    background: var(--NewtubeTheme) !important;
                 }
                 
                 ytd-thumbnail-overlay-time-status-renderer,
