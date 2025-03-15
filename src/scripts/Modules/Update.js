@@ -119,6 +119,7 @@ async function update() {
 		let TimeText;
 		let TimeLineBG;
 		let TimeLoaded;
+		let Chanel_Color;
 
 		if ((await Load("Theme_by_video")) && (await GetVideoID())) {
 			let GetColor = await GetSampleColor(await GetVideoThumbnail());
@@ -205,6 +206,8 @@ async function update() {
 			hsv[2] *= 0.2;
 			GetColor = HSVtoRGB(hsv);
 			ControlPanel = `rgba(${GetColor[0]},${GetColor[1]},${GetColor[2]},${0.7})`;
+
+			Chanel_Color = ThemeColor;
 		} else {
 			ThemeColor = await LoadRgba("Theme");
 			ThemeColor2 = await LoadRgba("ThemeThr");
@@ -220,6 +223,7 @@ async function update() {
 			TimeLineBG = await LoadRgba("Time-LineBG");
 			TimeLoaded = await LoadRgba("TimeLoaded");
 			Themehover = await LoadRgba("Themehover");
+			Chanel_Color = await LoadRgba("Chanel_Color");
 		}
 
 		Collect_Style =
@@ -632,7 +636,7 @@ async function update() {
                     --yt-live-chat-header-background-color: var(--yt-spec-brand-background-primary);
                 }
 
-                html,[dark]{
+                html{
                     --ytd-chip-cloud-background: rgba(0,0,0,.3) !important;
                     --yt-spec-brand-background-primary: var(--top-bar-and-search-background) !important;
                     --yt-spec-brand-background-solid: var(--bg-color) !important;
@@ -665,6 +669,8 @@ async function update() {
                     --yt-spec-themed-blue: var(--NewtubeTheme) !important;
                     --yt-live-chat-vem-background-color: var(--top-bar-and-search-background) !important;
                     --ytmusic-background: transparent !important;
+
+                    --yt-spec-themed-green: var(--NewtubeTheme) !important;
                 }
 
                 ytd-tabbed-page-header{
@@ -700,7 +706,7 @@ async function update() {
                     text-decoration: none !important;
                 }
 
-                .ytSearchboxComponentInputSearchIcon{
+                [role="listbox"] > div:hover{
                     background: var(--theme-third) !important;
                     border-color: transparent !important;
                     transition: all 0.1s;
@@ -726,7 +732,7 @@ async function update() {
                     border: 1px solid var(--theme-third);
                 }
 
-                .ytSearchboxComponentInputSearchIcon:hover,
+                [role="search"]:hover,
                 tp-yt-paper-button.ytd-expander:hover,
                 tp-yt-paper-button.ytd-text-inline-expander:hover,
                 .yt-spec-button-shape-next--outline:hover,
@@ -833,7 +839,7 @@ async function update() {
                     background: var(--things-end-on-video) !important;
                 }
                 
-                .sbdd_b,
+                [role="listbox"],
                 #scrim,
                 tp-yt-iron-overlay-backdrop,
                 #tabs-container
@@ -891,7 +897,7 @@ async function update() {
                 ytd-thumbnail,
                 #thumbnail,
                 .thumbnail-container.ytd-notification-renderer,
-                .sbdd_b,
+                [role="listbox"],
                 .ytp-ce-video,
                 .ytp-ce-playlist,
                 [aria-live="polite"],
@@ -927,7 +933,7 @@ async function update() {
                 #guide-content,
                 .sbsb_d,
                 #endpoint.yt-simple-endpoint.ytd-guide-entry-renderer,
-                .ytSearchboxComponentInputSearchIcon,
+                [role="search"],
                 .ytp-ad-skip-button.ytp-button,
                 .ytp-flyout-cta .ytp-flyout-cta-icon,
                 #banner > img,
@@ -988,7 +994,8 @@ async function update() {
                 ytmusic-player-queue-item,
                 yt-dynamic-text-view-model,
                 .ytp-inline-preview-controls,
-                .ytSearchboxComponentSearchButton
+                .ytSearchboxComponentSearchButton,
+                [role="listbox"] > div
                 {
                     border-radius: var(--theme-radius) !important;
                 }
@@ -1058,7 +1065,10 @@ async function update() {
 
                 .badge-style-type-live-now-alternate.ytd-badge-supported-renderer,
                 .badge-style-type-verified svg,
-                ytd-toggle-button-renderer yt-icon{
+                ytd-toggle-button-renderer yt-icon,
+                .ytSearchboxComponentInput,
+                [role="listbox"] > div,
+                [role="search"]{
                     color: var(--NewtubeTheme) !important;
                 }
                 
@@ -1632,7 +1642,7 @@ async function update() {
                 }
 
                 #text.ytd-channel-name{
-                    color: ${await LoadRgba("Chanel_Color")};
+                    color: ${Chanel_Color};
                 }
 
                 yt-chip-cloud-chip-renderer[selected] #chip-container {
