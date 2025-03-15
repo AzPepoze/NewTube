@@ -18,6 +18,7 @@
     "terser": "^5.30.4"
   },
   "devDependencies": {
+    "@types/chrome-webstore-upload": "^1.0.0",
     "chrome-webstore-upload": "^3.0.3"
   }
 }

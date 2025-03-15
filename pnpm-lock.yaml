@@ -21,6 +21,9 @@ importers:
         specifier: ^5.30.4
         version: 5.30.4
     devDependencies:
+      '@types/chrome-webstore-upload':
+        specifier: ^1.0.0
+        version: 1.0.0
       chrome-webstore-upload:
         specifier: ^3.0.3
         version: 3.0.3
@@ -106,6 +109,12 @@ packages:
   '@octokit/types@13.4.1':
     resolution: {integrity: sha512-Y73oOAzRBAUzR/iRAbGULzpNkX8vaxKCqEtg6K74Ff3w9f5apFnWtE/2nade7dMWWW3bS5Kkd6DJS4HF04xreg==}
 
+  '@types/chrome-webstore-upload@1.0.0':
+    resolution: {integrity: sha512-Dc04aKntQlHBImzQlk/nEdQMgzYVbf1PLvWO5HrKreQ7sUEmUGpioELbojqOtazo81Hta27SNyN5JRgAi83d/A==}
+
+  '@types/node@22.13.10':
+    resolution: {integrity: sha512-I6LPUvlRH+O6VRUqYOcMudhaIdUVWfsjnZavnsraHvpBwaEyMN29ry+0UVJhImYL16xsscu0aske3yA+uPOWfw==}
+
   acorn@8.11.3:
     resolution: {integrity: sha512-Y9rRfJG5jcKOE0CLisYbojUjIrIEE7AGMzA/Sm4BslANhbS+cDMpgBdcPT91oJ7OuJ9hYJBx59RjbhxVnrF8Xg==}
     engines: {node: '>=0.4.0'}
@@ -155,6 +164,9 @@ packages:
     resolution: {integrity: sha512-xRdd0v64a8mFK9bnsKVdoNP9GQIKUAaJPTaqEQDL4w/J8WaW4sWXXoMZ+6SimPkfT5bElreXf8m9HnmPc3E1BQ==}
     engines: {node: '>=10'}
     hasBin: true
+
+  undici-types@6.20.0:
+    resolution: {integrity: sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==}
 
   universal-user-agent@6.0.1:
     resolution: {integrity: sha512-yCzhz6FN2wU1NiiQRogkTQszlQSlpWaw8SvVegAc+bDxbzHgh1vX8uIe8OYyMH6DwH+sdTJsgMl36+mSMdRJIQ==}
@@ -259,6 +271,14 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 22.1.0
 
+  '@types/chrome-webstore-upload@1.0.0':
+    dependencies:
+      '@types/node': 22.13.10
+
+  '@types/node@22.13.10':
+    dependencies:
+      undici-types: 6.20.0
+
   acorn@8.11.3: {}
 
   adm-zip@0.5.12: {}
@@ -304,6 +324,8 @@ snapshots:
       acorn: 8.11.3
       commander: 2.20.3
       source-map-support: 0.5.21
+
+  undici-types@6.20.0: {}
 
   universal-user-agent@6.0.1: {}
 
