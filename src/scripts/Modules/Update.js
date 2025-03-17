@@ -1087,7 +1087,8 @@ async function update() {
                 .ytp-settings-button:after,
                 .ytp-chrome-controls .ytp-button[aria-pressed]:after,
                 .ytp-sb-subscribe, a.ytp-sb-subscribe,
-                yt-icon-button.yt-live-chat-item-list-renderer
+                yt-icon-button.yt-live-chat-item-list-renderer,
+                #progress.yt-page-navigation-progress
                 {
                     background: var(--NewtubeTheme) !important;
                 }
