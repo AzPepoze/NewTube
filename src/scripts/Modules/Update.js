@@ -1068,7 +1068,8 @@ async function update() {
                 ytd-toggle-button-renderer yt-icon,
                 .ytSearchboxComponentInput,
                 [role="listbox"] > div,
-                [role="search"]{
+                [role="search"],
+                yt-icon.ytd-compact-link-renderer{
                     color: var(--NewtubeTheme) !important;
                 }
                 
@@ -1648,6 +1649,12 @@ async function update() {
 
                 yt-chip-cloud-chip-renderer[selected] #chip-container {
                     background: var(--NewtubeTheme) !important;
+                }
+
+
+                yt-chip-cloud-chip-renderer[aria-selected="true"] yt-formatted-string {
+                    color: var(--bg-color);
+                    font-weight: 900;
                 }
                 `;
 
