@@ -821,7 +821,7 @@ async function update() {
                 #button.ytd-menu-renderer.yt-icon.ytd-menu-renderer,
                 ytd-playlist-video-renderer,
                 ytd-video-renderer,
-                ytd-playlist-renderer,
+                yt-lockup-view-model,
                 yt-multi-page-menu-section-renderer #items > *,
                 ytd-notification-renderer,
                 ytd-macro-markers-list-item-renderer

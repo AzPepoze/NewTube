@@ -1107,7 +1107,7 @@ async function CreateSettingFeatures() {
                ytd-compact-video-renderer:hover,
                ytd-compact-radio-renderer:hover,
                ytd-video-renderer:hover,
-               ytd-playlist-renderer:hover,
+               yt-lockup-view-model:hover,
                ytmusic-player-queue-item:hover
                {    
                    margin-inline-start: -15px !important;
@@ -1163,7 +1163,7 @@ async function CreateSettingFeatures() {
                ytd-compact-video-renderer:hover>div>div>div>a,
                ytd-compact-radio-renderer:hover>div>div>div>a,
                ytd-video-renderer:hover,
-               ytd-playlist-renderer:hover
+               yt-lockup-view-model:hover
                {
                     margin-inline-end: 15px !important;
                }
