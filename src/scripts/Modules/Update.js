@@ -1034,7 +1034,7 @@ async function update() {
                 .ytp-menuitem-icon path:not([fill="none"]),
                 .ytd-thumbnail-overlay-hover-text-renderer path,
                 .ytd-thumbnail-overlay-bottom-panel-renderer path,
-                .ytSearchboxComponentInputBox-icon.ytd-searchbox path,
+                .ytSearchboxComponentInnerSearchIcon path,
                 svg path[fill="#FF0000"],
                 svg [fill="#FF0000"],
                 svg [fill="#FF0033"],
@@ -1085,13 +1085,16 @@ async function update() {
                 .ytp-swatch-background-color,
                 .YtProgressBarLineProgressBarPlayed,
                 .YtProgressBarPlayheadProgressBarPlayheadDot,
-                .ytp-settings-button:after,
                 .ytp-chrome-controls .ytp-button[aria-pressed]:after,
                 .ytp-sb-subscribe, a.ytp-sb-subscribe,
                 yt-icon-button.yt-live-chat-item-list-renderer,
                 #progress.yt-page-navigation-progress
                 {
                     background: var(--NewtubeTheme) !important;
+                }
+
+                .ytp-settings-button:after{
+                    background-color: var(--NewtubeTheme) !important;
                 }
                 
                 ytd-thumbnail-overlay-time-status-renderer,
@@ -1303,21 +1306,35 @@ async function update() {
                     width: 0px !important;
                 }
 
-                .ytSearchboxComponentInputBox-icon.ytd-searchbox{
-                    transition:all 0.4s ease;
+                @keyframes show-searchIcon {
+                    0% {
+                        opacity: 0;
+                        left: 20px;
+                    }
+                    100% {
+                        opacity: 1;
+                        left: 0px;
+                    }
+                }
+
+                yt-searchbox [class*="SearchIcon"]{
                     display:block !important;
-                    opacity:0;
                     width: 20px !important;
                     position: absolute;
-                    left:0px;
+                    animation: show-searchIcon 0.4s;
                 }
-                 
-                ytd-searchbox[has-focus] .ytSearchboxComponentInputBox-icon.ytd-searchbox{
-                    opacity:1;
+               
+                yt-searchbox [role="listbox"]{
+                    transition: all 0.4s;
+                    display:block !important;
+                    position: absolute;
+                    left: 20px;
+                    opacity: 0;
                 }
-                 
-                #container.ytd-searchbox{
-                    transition:all 0.4s ease;
+
+                yt-searchbox:has([class*="Focus"]) [role="listbox"]{
+                    left: 0px;
+                    opacity: 1;
                 }
 
                 .ytp-chapter-title-prefix {
