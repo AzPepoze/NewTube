@@ -1,0 +1,42 @@
+name: ✨ Feature Request
+description: Suggest an idea for this project
+title: "[Feature]: "
+labels: ["Feature Request"]
+body:
+     - type: markdown
+       attributes:
+            value: |
+                 Thanks for taking the time to suggest a new feature!
+     - type: textarea
+       id: feature-description
+       attributes:
+            label: What feature would you like to see?
+            description: Describe the feature you'd like in detail, including its benefits
+            placeholder: I would like to have...
+       validations:
+            required: true
+     - type: textarea
+       id: problem-solution
+       attributes:
+            label: What problem does this feature solve?
+            description: Describe the current problem this feature would address or situations where it would be useful
+       validations:
+            required: true
+     - type: textarea
+       id: alternatives
+       attributes:
+            label: Have you considered any alternatives?
+            description: Describe any alternative solutions or features you've considered
+     - type: textarea
+       id: additional-context
+       attributes:
+            label: Additional context
+            description: Add any other context, screenshots, mockups, or relevant links about the feature request here
+     - type: checkboxes
+       id: terms
+       attributes:
+            label: Prerequisites
+            description: Please confirm that you have checked these items
+            options:
+                 - label: I have searched the issues and no similar feature request exists
+                   required: true

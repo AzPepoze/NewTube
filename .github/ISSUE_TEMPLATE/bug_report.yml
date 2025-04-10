@@ -1,5 +1,5 @@
-name: Bug Report
-description: File a bug report to help us improve NewTube
+name: 🐛 Bug Report
+description: File a bug report to help me improve NewTube
 title: "[Bug]: "
 labels: ["bug"]
 assignees:
@@ -13,8 +13,8 @@ body:
        id: what-happened
        attributes:
             label: What happened?
-            description: Also tell us, what did you expect to happen?
-            placeholder: Tell us what you see!
+            description: Also tell me, what did you expect to happen?
+            placeholder: Tell me what you see!
             value: "A bug happened!"
        validations:
             required: true
@@ -28,45 +28,27 @@ body:
                  2. Click on '....'
                  3. Scroll down to '....'
                  4. See error
-       validations:
-            required: true
      - type: input
        id: version
        attributes:
             label: NewTube Version
             description: What version of NewTube are you running? You can find this in the extension settings.
             placeholder: e.g., 1.2.3
-       validations:
-            required: true
-     - type: dropdown
-       id: browsers
-       attributes:
-            label: What browsers are you seeing the problem on?
-            multiple: true
-            options:
-                 - Firefox
-                 - Chrome
-                 - Edge
-                 - Safari
-                 - Other
-       validations:
-            required: true
+     - type: input
+          id: browsers
+          attributes:
+               label: What browsers are you seeing the problem on?
+               placeholder: e.g. Chrome, Firefox, Safari
      - type: input
        id: os
        attributes:
             label: Operating System
-            description: What operating system are you using?
+            description: What operating system are you meing?
             placeholder: e.g., Windows 11, macOS Sonoma
        validations:
             required: true
      - type: textarea
-       id: logs
-       attributes:
-            label: Relevant log output
-            description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
-            render: shell
-     - type: textarea
        id: additional-context
        attributes:
-            label: Additional Context
+            label: Additional Context (Screenshots or Videos)
             description: Add any other context about the problem here. Screenshots or videos are very helpful!

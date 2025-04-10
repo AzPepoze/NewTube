@@ -12,63 +12,18 @@ If you encounter an issue while using NewTube, please report it following these 
 
 3.   **Choose a Template (if available):**
 
-     -    If there's a Bug Report template available (like the one generated from `.github/ISSUE_TEMPLATE/bug_report.yml`), GitHub will guide you through filling it out. Click "Get started" next to "Bug Report".
-     -    If you prefer to create a blank issue, you can use the template below.
+     -    If there's a Bug Report template, please use it.
 
-4.   **Add Labels**
+4.   **Provide Details:**
 
-     -    Select relevant labels, such as `bug`, the browser name (e.g., `chrome`, `firefox`), or the affected component.
+     -    **Issue Title:** Create a title that clearly summarizes the problem.
+     -    **Describe the Problem:** Explain the steps to reproduce the issue, the expected result, and the actual result (attach screenshots or videos if possible).
 
-5.   **Provide Details (Follow these template):**
+5.   **Add Labels:**
 
-     ```markdown
-          **Description:**
-
-          (Describe the bug clearly and concisely)
-
-          **Steps to Reproduce:**
-
-          1. Go to '...'
-          2. Click on '....'
-          3. Scroll down to '....'
-          4. See error
-
-          **Expected Behavior:**
-
-          (What you expected to happen)
-
-          **Actual Behavior:**
-
-          (What actually happened)
-
-          **Screenshots/Videos:**
-
-          (If applicable, add screenshots or link to videos to help explain your problem)
-
-          **Environment:**
-
-          -    **NewTube Version:** [e.g., 1.2.3]
-          -    **Browser(s):** [e.g., Chrome, Firefox]
-          -    **Operating System:** [e.g., Windows 11, macOS Sonoma]
-
-          **Additional Context:**
-
-          (Add any other context about the problem here.)
-     ```
+     -    Select relevant labels, the browser name (e.g., `chrome`, `firefox`), or the affected component.
 
 6.   **Submit the Issue:**
-     -    Review the information and click "Submit new issue".
-
----
-
-## Issues Template
-
-You can copy and paste the following template into the issue description if you are creating a blank issue:
-
----
+     -    Review the information and click "Create".
 
 Thank you for helping report issues! 🙏
-
-```
-
-```
