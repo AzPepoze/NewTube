@@ -7,9 +7,7 @@ async function CreateSettingButton() {
 		document.querySelector("#container > #end") ||
 		document.querySelector("ytd-masthead");
 
-	if (DebugMode) {
-		console.log(RightTopBar);
-	}
+	console.log("RightTopBar", RightTopBar);
 
 	if (RightTopBar) {
 		var SettingButton = document.createElement("button");
