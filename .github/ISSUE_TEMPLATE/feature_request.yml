@@ -20,10 +20,10 @@ body:
      - type: textarea
        id: problem-solution
        attributes:
-            label: What problem does this feature solve?
+            label: What problem does this feature solve? (Optional)
             description: Describe the current problem this feature would address or situations where it would be useful
      - type: textarea
        id: additional-context
        attributes:
-            label: Additional context
+            label: Additional context (Optional)
             description: Add any other context, screenshots, mockups, or relevant links about the feature request here

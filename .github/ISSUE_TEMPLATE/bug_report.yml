@@ -21,7 +21,7 @@ body:
      - type: textarea
        id: reproduce
        attributes:
-            label: Steps to Reproduce
+            label: Steps to Reproduce (Optional)
             description: Please provide detailed steps for reproducing the issue.
             placeholder: |
                  1. Go to '...'
@@ -31,24 +31,24 @@ body:
      - type: input
        id: version
        attributes:
-            label: NewTube Version
+            label: NewTube Version (Optional)
             description: What version of NewTube are you running? You can find this in the extension settings.
             placeholder: e.g., 1.2.3
      - type: input
        id: browsers
        attributes:
-            label: What browsers are you seeing the problem on?
+            label: What browsers are you seeing the problem on? (Optional)
             placeholder: e.g. Chrome, Firefox, Safari
      - type: input
        id: os
        attributes:
             label: Operating System
-            description: What operating system are you meing?
+            description: What operating system are you using?
             placeholder: e.g., Windows 11, macOS Sonoma
        validations:
             required: true
      - type: textarea
        id: additional-context
        attributes:
-            label: Additional Context (Screenshots or Videos)
+            label: Additional Context (Screenshots or Videos) (Optional)
             description: Add any other context about the problem here. Screenshots or videos are very helpful!
