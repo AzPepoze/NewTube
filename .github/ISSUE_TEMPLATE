@@ -1,0 +1,72 @@
+name: Bug Report
+description: File a bug report to help us improve NewTube
+title: "[Bug]: "
+labels: ["bug"]
+assignees:
+     - AzPepoze
+body:
+     - type: markdown
+       attributes:
+            value: |
+                 Thanks for taking the time to fill out this bug report!
+     - type: textarea
+       id: what-happened
+       attributes:
+            label: What happened?
+            description: Also tell us, what did you expect to happen?
+            placeholder: Tell us what you see!
+            value: "A bug happened!"
+       validations:
+            required: true
+     - type: textarea
+       id: reproduce
+       attributes:
+            label: Steps to Reproduce
+            description: Please provide detailed steps for reproducing the issue.
+            placeholder: |
+                 1. Go to '...'
+                 2. Click on '....'
+                 3. Scroll down to '....'
+                 4. See error
+       validations:
+            required: true
+     - type: input
+       id: version
+       attributes:
+            label: NewTube Version
+            description: What version of NewTube are you running? You can find this in the extension settings.
+            placeholder: e.g., 1.2.3
+       validations:
+            required: true
+     - type: dropdown
+       id: browsers
+       attributes:
+            label: What browsers are you seeing the problem on?
+            multiple: true
+            options:
+                 - Firefox
+                 - Chrome
+                 - Edge
+                 - Safari
+                 - Other
+       validations:
+            required: true
+     - type: input
+       id: os
+       attributes:
+            label: Operating System
+            description: What operating system are you using?
+            placeholder: e.g., Windows 11, macOS Sonoma
+       validations:
+            required: true
+     - type: textarea
+       id: logs
+       attributes:
+            label: Relevant log output
+            description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+            render: shell
+     - type: textarea
+       id: additional-context
+       attributes:
+            label: Additional Context
+            description: Add any other context about the problem here. Screenshots or videos are very helpful!
