@@ -1,11 +1,20 @@
-## <a href="https://github.com/users/AzPepoze/projects/1" style="font-size: xxx-large;" target="_blank">NewTube Status</a>
+# NewTube
 
-# ⚠️ If you want to report the issue/bug pls tell me in my discord server (I always use discord) ⚠️
+### [Project Status](https://github.com/users/AzPepoze/projects/1)
 
-## <a href="https://discord.gg/BgxvVqap4G" style="font-size: xxx-large;" target="_blank">Newtube discord</a>
+---
 
-# ⏬ Download this extension ⏬
+-    ### <img src="https://images-eds-ssl.xboxlive.com/image?url=4rt9.lXDC4H_93laV1_eHHFT949fUipzkiFOBH3fAiZZUCdYojwUyX2aTonS1aIwMrx6NUIsHfUHSLzjGJFxxsG72wAo9EWJR4yQWyJJaDb6rYcBtJvTvH3UoAS4JFNDaxGhmKNaMwgElLURlRFeVkLCjkfnXmWtINWZIrPGYq0-&format=source" alt="Discord logo" width="20" height="20" style="border-radius:20px;"> <b>[Discord](https://discord.gg/BgxvVqap4G) (fastest way to contact me) </b>
 
-<a href="https://chrome.google.com/webstore/detail/youtube-style-customizer/dnjjchajjdnfbjhjclmilicgheglcopj" style="font-size:40px;" target="_blank">(Chrome Web Store) Get this extention!</a>
+-    ### [🐛 Report a Bug](docs/issue.md)
 
-<a href="https://addons.mozilla.org/firefox/addon/newtube-youtubestylecustomizer/" style="font-size:40px;" target="_blank">(Firefox addon) Get this extention!</a>
+-    ### [💡 Suggest a Feature](docs/feature-request.md)
+
+---
+
+## ⏬ Download the Extension
+
+-    **<img src="https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_32x32.png" alt="Chrome logo" width="20" height="20"> Chrome Web Store:** [Install NewTube](https://chrome.google.com/webstore/detail/youtube-style-customizer/dnjjchajjdnfbjhjclmilicgheglcopj)
+-    **<img src="https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_32x32.png" alt="Firefox logo" width="20" height="20"> Firefox Add-ons:** [Install NewTube](https://addons.mozilla.org/firefox/addon/newtube-youtubestylecustomizer/)
+
+---

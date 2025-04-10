@@ -1330,11 +1330,13 @@ async function update() {
                     position: absolute;
                     left: 20px;
                     opacity: 0;
+                    pointer-events: none;
                 }
 
                 yt-searchbox:has([class*="Focus"]) [role="listbox"]{
                     left: 0px;
                     opacity: 1;
+                    pointer-events: all;
                 }
 
                 .ytp-chapter-title-prefix {
