@@ -4,7 +4,7 @@ If you encounter an issue while using NewTube, please report it following these 
 
 1.   **Go to the Issues Page:**
 
-     -    Click here to go to the [NewTube Issues](https://github.com/AzPepoze/NewTube/issues) page on GitHub.
+     -    Click here to go to the <a href="https://github.com/AzPepoze/NewTube/issues" target="_blank">NewTube Issues</a> page on GitHub.
 
 2.   **Create a New Issue:**
 

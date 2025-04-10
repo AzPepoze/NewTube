@@ -4,7 +4,7 @@ Have an idea for improving NewTube? Please suggest it using these steps:
 
 1.   **Go to the Issues Page:**
 
-     -    Click here to go to the [NewTube Issues](https://github.com/AzPepoze/NewTube/issues?q=state%3Aopen%20label%3Afeature request) page on GitHub.
+     -    Click here to go to the <a href="https://github.com/AzPepoze/NewTube/issues?q=state%3Aopen%20label%3A%22Feature%20Request%22%20" target="_blank">NewTube Issues</a> page on GitHub.
 
 2.   **Create a New Issue:**
 
@@ -21,7 +21,7 @@ Have an idea for improving NewTube? Please suggest it using these steps:
 
 5.   **Add Labels:**
 
-     -    Select the `Feature Request` label. You can add other relevant labels too.
+     -    Select the `enhancement` or `feature request` label. You can add other relevant labels too.
 
 6.   **Submit the Issue:**
      -    Review your suggestion and click "Submit new issue".
