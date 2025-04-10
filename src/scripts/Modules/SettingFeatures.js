@@ -143,7 +143,7 @@ async function CreateSettingFeatures() {
 		bg: "rgb(255 4 4 / 12%)",
 		color: "rgb(255 199 199)",
 		callback: function () {
-			window.open("https://github.com/AzPepoze/Newtube");
+			window.open("https://github.com/AzPepoze/NewTube/blob/main/contribute/bug_report.md");
 		},
 	});
 
