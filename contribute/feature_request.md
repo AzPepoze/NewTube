@@ -2,9 +2,9 @@
 
 Have an idea for improving NewTube? Please suggest it using these steps:
 
-1.   **Go to the Issues Page:**
+1.   **Create a feature request:**
 
-     -    Click here to go to the <a href="https://github.com/AzPepoze/NewTube/issues/new?template=feature_request.yml" target="_blank">NewTube Issues</a> page on GitHub.
+     -    Click here to create a <a href="https://github.com/AzPepoze/NewTube/issues/new?template=feature_request.yml" target="_blank">feature request</a>,
 
 2.   **Provide Details:**
 
