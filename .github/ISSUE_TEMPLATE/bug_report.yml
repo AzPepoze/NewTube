@@ -35,10 +35,10 @@ body:
             description: What version of NewTube are you running? You can find this in the extension settings.
             placeholder: e.g., 1.2.3
      - type: input
-          id: browsers
-          attributes:
-               label: What browsers are you seeing the problem on?
-               placeholder: e.g. Chrome, Firefox, Safari
+       id: browsers
+       attributes:
+            label: What browsers are you seeing the problem on?
+            placeholder: e.g. Chrome, Firefox, Safari
      - type: input
        id: os
        attributes:
