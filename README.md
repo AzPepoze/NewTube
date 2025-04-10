@@ -6,9 +6,9 @@
 
 -    ### <img src="https://images-eds-ssl.xboxlive.com/image?url=4rt9.lXDC4H_93laV1_eHHFT949fUipzkiFOBH3fAiZZUCdYojwUyX2aTonS1aIwMrx6NUIsHfUHSLzjGJFxxsG72wAo9EWJR4yQWyJJaDb6rYcBtJvTvH3UoAS4JFNDaxGhmKNaMwgElLURlRFeVkLCjkfnXmWtINWZIrPGYq0-&format=source" alt="Discord logo" width="20" height="20" style="border-radius:20px;"> <b><a href="https://discord.gg/BgxvVqap4G" target="_blank">Discord</a> (fastest way to contact me) </b>
 
--    ### <a href="contribute/issue.md" target="_blank">🐛 Report a Bug</a>
+-    ### <a href="contribute/bug_report.md" target="_blank">🐛 Report a Bug</a>
 
--    ### <a href="contribute/feature-request.md" target="_blank">💡 Suggest a Feature</a>
+-    ### <a href="contribute/feature_request.md" target="_blank">💡 Suggest a Feature</a>
 
 ---
 

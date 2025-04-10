@@ -22,23 +22,8 @@ body:
        attributes:
             label: What problem does this feature solve?
             description: Describe the current problem this feature would address or situations where it would be useful
-       validations:
-            required: true
-     - type: textarea
-       id: alternatives
-       attributes:
-            label: Have you considered any alternatives?
-            description: Describe any alternative solutions or features you've considered
      - type: textarea
        id: additional-context
        attributes:
             label: Additional context
             description: Add any other context, screenshots, mockups, or relevant links about the feature request here
-     - type: checkboxes
-       id: terms
-       attributes:
-            label: Prerequisites
-            description: Please confirm that you have checked these items
-            options:
-                 - label: I have searched the issues and no similar feature request exists
-                   required: true
