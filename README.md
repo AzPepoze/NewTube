@@ -1,6 +1,6 @@
 # NewTube
 
-### <a href="https://github.com/users/AzPepoze/projects/1" target="_blank">Project Status</a>
+### <a href="https://github.com/users/AzPepoze/projects/1" target="_blank">Development Status</a>
 
 ---
 
