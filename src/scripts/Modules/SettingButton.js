@@ -1,7 +1,11 @@
 async function CreateSettingButton() {
 	var RightTopBar =
+		document.querySelector("ytmusic-nav-bar #right-content") ||
 		document.querySelector("#masthead-container #end") ||
-		document.querySelector("ytmusic-nav-bar #right-content");
+		document.querySelector("ytd-masthead #end") ||
+		document.querySelector("#end.ytd-masthead") ||
+		document.querySelector("#container > #end") ||
+		document.querySelector("ytd-masthead");
 
 	if (DebugMode) {
 		console.log(RightTopBar);
