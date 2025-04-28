@@ -4,6 +4,8 @@ title: "[Feature]: "
 labels: ["Feature Request"]
 assignees:
      - AzPepoze
+projects:
+     - 1
 body:
      - type: markdown
        attributes:
