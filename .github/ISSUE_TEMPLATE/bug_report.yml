@@ -4,6 +4,8 @@ title: "[Bug]: "
 labels: ["bug"]
 assignees:
      - AzPepoze
+projects:
+     - 1
 body:
      - type: markdown
        attributes:
