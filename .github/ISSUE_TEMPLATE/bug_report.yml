@@ -5,7 +5,7 @@ labels: ["bug"]
 assignees:
      - AzPepoze
 projects:
-     - 1
+     - Newtube
 body:
      - type: markdown
        attributes:
