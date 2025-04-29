@@ -5,7 +5,7 @@ labels: ["Feature Request"]
 assignees:
      - AzPepoze
 projects:
-     - 1
+     - AzPepoze/1
 body:
      - type: markdown
        attributes:
