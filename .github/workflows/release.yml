@@ -1,0 +1,54 @@
+name: Auto Release
+
+on:
+     push:
+          branches:
+             - main
+
+jobs:
+     release:
+          runs-on: ubuntu-latest
+          permissions:
+               contents: write
+
+          steps:
+             - uses: actions/checkout@v4
+
+             - name: Setup Node.js
+               uses: actions/setup-node@v4
+               with:
+                    node-version: '20'
+
+             - uses: pnpm/action-setup@v3
+               with:
+                    version: 9
+
+             - name: Read Version from manifest.json
+               id: get_version
+               run: echo "VERSION=$(node -p "require('./src/extension/manifest.json').version")" >> $GITHUB_ENV
+
+             - name: Create/Update Tag
+               uses: rickstaa/action-create-tag@v1
+               with:
+                    tag: "v${{ env.VERSION }}"
+                    force_push_tag: true
+                    message: "Auto-generated tag for v${{ env.VERSION }}"
+
+             - name: Install Dependencies
+               run: pnpm install
+
+             - name: Build and Pack Extension
+               env:
+                    IMGBB_API_KEY: ${{ secrets.IMGBB_API_KEY }}
+               run: pnpm run build:release
+
+             - name: Create GitHub Release
+               uses: softprops/action-gh-release@v1
+               with:
+                    tag_name: "v${{ env.VERSION }}"
+                    name: "NewTube Beta v${{ env.VERSION }}"
+                    body: "Automated release for version ${{ env.VERSION }}"
+                    files: |
+                         out/release/*.zip
+                    draft: false
+                    prerelease: false

@@ -1,6 +1,6 @@
-dist/
-release/
-node_modules/
+.vscode
+node_modules
+out
+devs
 
-$Release.js
-$Release_Chrome_web_store.js
+test.json

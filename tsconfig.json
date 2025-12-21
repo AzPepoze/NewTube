@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"target": "es2022",
+		"module": "commonjs",
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"outDir": "./dist",
+		"types": ["chrome", "node"],
+		"lib": ["es2022", "dom"],
+		"downlevelIteration": true,
+		"strictNullChecks": false,
+		"noImplicitAny": false
+	},
+	"include": ["src/**/*.ts", "utils/**/*.ts", "eslint.config.mts"],
+	"exclude": ["node_modules"]
+}

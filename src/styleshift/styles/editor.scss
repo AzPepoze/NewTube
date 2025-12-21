@@ -1,0 +1,349 @@
+@use "variables";
+@use "animation";
+
+.STYLESHIFT-Main {
+	height: -webkit-fill-available;
+	position: fixed;
+	border: 1px #ffffff87 solid;
+	border-radius: var(--Border-Radius);
+	background-color: rgb(30, 30, 30);
+	backdrop-filter: none;
+	z-index: 10000;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+
+	*:not(.monaco-editor *) {
+		border-radius: var(--Border-Radius);
+		color: var(--Font-Color);
+	}
+
+	.monaco-editor .overflow-guard {
+		border-radius: 10px;
+	}
+
+	.STYLESHIFT-Code-Editor {
+		resize: vertical;
+		overflow: hidden;
+		padding: 5px;
+		background: #ffffff52;
+	}
+
+	.STYLESHIFT-Close {
+		width: 27px;
+		height: 27px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--Drag-Top-BG);
+		border-radius: 1000px;
+		margin-left: 5px;
+		font-size: 12px;
+		font-weight: 500;
+		user-select: none;
+	}
+
+	.STYLESHIFT-Search {
+		background: #ffffff38;
+		border-radius: 20px;
+		border: transparent;
+		padding: 10px;
+		font-size: 17px;
+		margin-top: 3px;
+
+		&::placeholder {
+			color: #b8b8b8;
+		}
+	}
+
+	.STYLESHIFT-Category-Frame {
+		gap: 10px;
+
+		.STYLESHIFT-Add-Setting-Button {
+			margin-top: -56px;
+			transform: scaleY(0);
+			opacity: 0;
+		}
+	}
+
+	.STYLESHIFT-Scrollable:not([Draging]) .STYLESHIFT-Category-Frame:hover .STYLESHIFT-Add-Setting-Button,
+	.STYLESHIFT-Add-Setting-Button[selecting] {
+		margin-top: 0;
+		transform: scaleY(1);
+		opacity: 1;
+	}
+
+	.STYLESHIFT-Glow-Hover:hover {
+		filter: brightness(1.4);
+	}
+
+	.STYLESHIFT-Topbar {
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		user-select: none;
+	}
+
+	.STYLESHIFT-Drag-Top {
+		width: 100%;
+		height: 20px;
+		text-align: center;
+		background: var(--Drag-Top-BG);
+		transition: 0.2s all;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 20px;
+		border-radius: 100px;
+	}
+
+	.STYLESHIFT-Scrollable {
+		position: relative;
+		overflow-y: auto;
+		width: 100%;
+		height: 100%;
+		border-radius: var(--Border-Radius);
+		transform: translateZ(0);
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+
+		&[Left] {
+			resize: horizontal;
+			background: var(--Category-Left-BG);
+		}
+
+		::-webkit-scrollbar {
+			width: 10px;
+		}
+
+		::-webkit-scrollbar-track {
+			background: transparent;
+		}
+
+		::-webkit-scrollbar-thumb {
+			background: #888;
+		}
+
+		scrollbar-color: #888 transparent;
+		scrollbar-width: thin;
+
+		.STYLESHIFT-Category-Frame {
+			background: var(--Setting-Frame-BG);
+		}
+
+		.STYLESHIFT-Category-Frame > .STYLESHIFT-Setting-Frame,
+		.STYLESHIFT-Main-Setting-Frame:has(.STYLESHIFT-Setting-Frame) {
+			background: radial-gradient(at center top, rgba(255, 255, 255, 0.23), rgba(255, 255, 255, 0.1));
+		}
+	}
+
+	.STYLESHIFT-Scrollable {
+		.STYLESHIFT-Category-Frame > .STYLESHIFT-Config-Frame {
+			gap: 0;
+
+			.STYLESHIFT-Config-Button {
+				--Config-Button-Size: 40px;
+				transition: all 0.2s;
+				opacity: 0;
+				min-width: 0;
+				min-height: 0;
+				max-width: 0;
+				max-height: 0;
+				padding: 0;
+				border-width: 0;
+			}
+		}
+
+		&:not([Draging]) .STYLESHIFT-Category-Frame > .STYLESHIFT-Config-Frame:hover {
+			gap: 10px;
+
+			.STYLESHIFT-Config-Button {
+				opacity: 1;
+				min-width: var(--Config-Button-Size);
+				min-height: var(--Config-Button-Size);
+				max-width: var(--Config-Button-Size);
+				max-height: var(--Config-Button-Size);
+				border-width: 1px;
+			}
+		}
+	}
+
+	.STYLESHIFT-Scrollable {
+		.STYLESHIFT-Add-Category-Button {
+			opacity: 0;
+		}
+
+		&:hover .STYLESHIFT-Add-Category-Button {
+			opacity: 1;
+		}
+	}
+
+	.STYLESHIFT-Scrollable[Draging] {
+		.STYLESHIFT-Drag-Hint:hover {
+			background: rgba(255, 255, 255, 0.5);
+		}
+	}
+
+	.STYLESHIFT-Setting-Sub-Title {
+		padding: 10px;
+		padding-top: 30px;
+		width: -webkit-fill-available;
+	}
+
+	.STYLESHIFT-preview_image {
+		width: 100%;
+		max-height: 400px;
+		object-fit: contain;
+	}
+}
+
+.STYLESHIFT-Highlight {
+	transition: background 0.2s, border-color 0.2s;
+	border-radius: 10px;
+	position: fixed;
+	border: 1px solid rgb(255, 255, 255);
+	position: absolute;
+	z-index: 1000;
+	left: 0;
+	top: 0;
+
+	&:hover {
+		background: #7cff7c4b !important;
+		border-color: rgba(144, 255, 129, 0.8) !important;
+	}
+}
+
+.STYLESHIFT-Window {
+	resize: both;
+	overflow: auto;
+	box-shadow: 2px 2px 10px black;
+}
+
+textarea.STYLESHIFT-Selector-Text-Editor {
+	height: 50px;
+}
+
+.STYLESHIFT-FillScreen {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 10000;
+	background: #000000a1;
+}
+
+.STYLESHIFT-DropDown-Container {
+	position: fixed;
+	padding: 0;
+	height: auto;
+	display: flex;
+	z-index: 10000;
+	gap: 5px;
+	padding-block: 5px !important;
+}
+
+.STYLESHIFT-DropDown-Items {
+	width: calc(100% - 10px);
+	height: 30px;
+	font-size: 13px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: radial-gradient(at center top, rgb(99, 99, 99), rgba(66, 66, 66, 0.5));
+	color: rgb(255, 255, 255);
+	border: #ffffff17 solid 1px;
+	transition: all 0.2s;
+}
+
+.STYLESHIFT-Notification-Container {
+	right: 0;
+	position: absolute;
+	width: 400px;
+	height: 100%;
+	pointer-events: none;
+	display: flex;
+	flex-direction: column-reverse;
+	padding: 10px;
+	height: -moz-available;
+	bottom: 0;
+	overflow-y: auto;
+}
+
+@keyframes STYLESHIFT-Notification-Hide {
+	0% {
+		opacity: 1;
+		max-height: 1000px;
+		padding: 10px;
+		margin-top: 10px;
+	}
+	100% {
+		opacity: 0;
+		max-height: 0;
+		min-height: 0;
+		height: 0;
+		padding: 0;
+		margin-top: 0;
+	}
+}
+
+@keyframes STYLESHIFT-Notification-Show {
+	0% {
+		opacity: 0;
+		max-height: 0;
+		padding: 0;
+		margin-top: 0;
+	}
+	100% {
+		opacity: 1;
+		max-height: 1000px;
+		padding: 10px;
+		margin-top: 10px;
+	}
+}
+
+.STYLESHIFT-Notification {
+	background: black;
+	border-radius: 10px;
+	border: solid 1px rgba(255, 255, 255, 0.527);
+	display: flex;
+	gap: 10px;
+	font-size: 16px;
+	pointer-events: all;
+	width: -webkit-fill-available;
+	height: max-content;
+	overflow: hidden;
+	min-height: fit-content;
+
+	.STYLESHIFT-Notification-Icon {
+		font-size: 20px;
+	}
+
+	.STYLESHIFT-Notification-Content-Frame {
+		display: flex;
+		gap: 5px;
+		width: -webkit-fill-available;
+	}
+
+	.STYLESHIFT-Notification-Title {
+		font-weight: 500;
+		color: white;
+	}
+
+	.STYLESHIFT-Notification-Content {
+		color: white;
+		white-space: pre;
+		text-wrap: auto;
+	}
+
+	.STYLESHIFT-Notification-Close {
+		padding: 10px;
+		color: white;
+		user-select: none;
+	}
+}

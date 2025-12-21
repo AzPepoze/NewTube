@@ -1,0 +1,26 @@
+.STYLESHIFT-Main {
+	--Theme-0: #7f5db7;
+	--Theme-1: rgb(246, 196, 255);
+
+	--Border-Radius: 10px;
+	--Font-Color: white;
+	--Drag-Top-BG: #80808082;
+
+	--Category-Title-BG: radial-gradient(
+		at center top,
+		rgb(255, 255, 255),
+		rgba(255, 255, 255, 0.62)
+	);
+	--Category-Title-Text-Color: black;
+
+	--Category-Left-BG: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1));
+	--Category-Left-Title-BG-Hover: rgb(125, 80, 133);
+	--Category-Left-Title-BG-Selected: rgba(255, 255, 255, 0.9);
+	--Category-Left-Title-Text-Color: rgb(255, 255, 255);
+	--Category-Left-Title-Text-Color-Hover: --Theme-1;
+	--Category-Left-Title-Text-Color-Selected: black;
+
+	--Text-Editor-BG: rgb(30, 30, 30);
+	--Setting-Frame-BG: rgba(255, 255, 255, 0.1);
+	--Checkbox-BG: #979797;
+}

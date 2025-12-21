@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"target": "es2022",
+		"module": "commonjs",
+		"declaration": true,
+		"emitDeclarationOnly": true,
+		"allowJs": true,
+		"types": ["chrome", "node"],
+		"outDir": "../devs/types"
+	},
+	"include": ["../src/styleshift/build-in-functions/extension.ts"],
+	"exclude": ["../node_modules"]
+}

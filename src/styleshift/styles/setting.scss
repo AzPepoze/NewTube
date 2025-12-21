@@ -1,0 +1,431 @@
+@use "editor";
+
+@keyframes glowing {
+	0% {
+		background-position: 0 0;
+	}
+
+	50% {
+		background-position: 400% 0;
+	}
+
+	100% {
+		background-position: 0 0;
+	}
+}
+
+.STYLESHIFT-Main {
+	@property --angle {
+		syntax: "<angle>";
+		initial-value: 0deg;
+		inherits: false;
+	}
+}
+
+@keyframes STYLESHIFT-spin-rainbow {
+	from {
+		--angle: 0deg;
+	}
+	to {
+		--angle: 360deg;
+	}
+}
+
+@keyframes STYLESHIFT-slide-rainbow {
+	0% {
+		background-position: 0px 0px;
+	}
+	50% {
+		background-position: 400% 0px;
+	}
+	100% {
+		background-position: 0px 0px;
+	}
+}
+
+.STYLESHIFT-Category-Title-Rainbow::before {
+	z-index: -1;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: -3px;
+	left: -3px;
+	content: "";
+	border-radius: 100px;
+	padding: 3px;
+
+	// animation: 1s STYLESHIFT-spin-rainbow linear infinite;
+	// background-image: conic-gradient(
+	// 	from var(--angle),
+	// 	red,
+	// 	orange,
+	// 	yellow,
+	// 	green,
+	// 	blue,
+	// 	indigo,
+	// 	violet,
+	// 	red
+	// );
+
+	background: linear-gradient(
+			45deg,
+			rgb(255, 0, 0),
+			rgb(255, 115, 0),
+			rgb(255, 251, 0),
+			rgb(72, 255, 0),
+			rgb(0, 255, 213),
+			rgb(0, 43, 255),
+			rgb(122, 0, 255),
+			rgb(255, 0, 200),
+			rgb(255, 0, 0)
+		)
+		0% 0% / 400%;
+	animation: 20s STYLESHIFT-slide-rainbow linear infinite;
+}
+
+.STYLESHIFT-Main {
+	* {
+		user-select: none;
+	}
+
+	textarea {
+		white-space: nowrap !important;
+	}
+
+	.STYLESHIFT-Scrollable,
+	textarea {
+		&::-webkit-scrollbar-track {
+			background: transparent;
+			border-radius: 10px !important;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background: rgba(100, 100, 100, 1) !important;
+			border-radius: 10px !important;
+		}
+	}
+
+	.STYLESHIFT-Scrollable {
+		&::-webkit-scrollbar {
+			width: 6px !important;
+			height: 10px !important;
+		}
+	}
+	textarea {
+		&::-webkit-scrollbar {
+			width: 10px !important;
+			height: 10px !important;
+		}
+	}
+
+	//---------------------------------------------
+
+	[STYLESHIFT-All-Transition] {
+		transition: all 0.3s;
+	}
+
+	.STYLESHIFT-Category-Title {
+		position: relative;
+		width: calc(100% - 6px);
+		font-size: 20px;
+		padding-block: 5px;
+		font-weight: 500;
+		background: var(--Category-Title-BG);
+		color: var(--Category-Title-Text-Color);
+		text-align: center;
+		border-radius: 100px;
+		margin: 3px;
+		user-select: text;
+	}
+
+	.STYLESHIFT-Left-Category-Title {
+		width: calc(100% - 50px);
+		font-size: 16px;
+		padding-inline: 20px;
+		padding-block: 7px;
+		font-weight: 400;
+		border-radius: 100px;
+		margin-bottom: -10px;
+		margin-left: 10px;
+		transition: all 0.2s, transform 0.3s, opacity 0.3s;
+		display: flex;
+		align-items: center;
+		height: 25px;
+
+		&:hover {
+			background: var(--Category-Left-Title-BG-Hover);
+			transform: translateX(-10px);
+
+			.STYLESHIFT-Left-Category-Text {
+				color: var(--Category-Left-Title-Text-Color-Hover);
+				font-weight: 500;
+			}
+		}
+
+		&[Selected] {
+			background: var(--Category-Left-Title-BG-Selected);
+			transform: translateX(-10px);
+
+			.STYLESHIFT-Left-Category-Text {
+				color: var(--Category-Left-Title-Text-Color-Selected);
+				font-weight: 500;
+			}
+		}
+	}
+
+	.STYLESHIFT-Left-Category-Text {
+		color: var(--Category-Left-Title-Text-Color);
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	.STYLESHIFT-Setting-Frame {
+		width: -webkit-fill-available;
+		padding-inline: 10px;
+		padding-block: 20px;
+		display: flex;
+	}
+
+	.STYLESHIFT-Config-Sub-Frame {
+		border: white 1px dashed;
+		background: #454545;
+		align-items: start !important;
+
+		.STYLESHIFT-Text-Main-Description {
+			text-align: left !important;
+		}
+	}
+
+	.STYLESHIFT-Collapse {
+		width: -webkit-fill-available;
+	}
+
+	.STYLESHIFT-Button {
+		--Button-Color: white;
+		display: flex;
+		align-items: center;
+		padding: 10px;
+		border: grey 1px solid;
+		font-size: 15px;
+		transition: all 0.2s;
+		user-select: none;
+		width: -webkit-fill-available;
+		flex-direction: row;
+		padding-block: 13px;
+	}
+
+	.STYLESHIFT-Button:hover {
+		filter: brightness(1.5) drop-shadow(2px 2px 3px black) drop-shadow(-2px -2px 3px rgba(255, 255, 255, 0.37));
+		// background: white !important;
+
+		.STYLESHIFT-Button-Text {
+			// color: black !important;
+			font-weight: 400;
+		}
+	}
+
+	.STYLESHIFT-Button-Logo {
+		height: 40px;
+		margin-right: 10px;
+	}
+
+	.STYLESHIFT-Button-Text {
+		display: flex;
+		width: 100%;
+	}
+
+	.STYLESHIFT-Main > .STYLESHIFT-Setting-Frame {
+		background: var(--Setting-Frame-BG);
+	}
+
+	.STYLESHIFT-Text-Main-Description {
+		text-wrap: wrap;
+		font-size: 17px;
+		white-space: break-spaces;
+		user-select: text;
+	}
+
+	.STYLESHIFT-Text-Editor {
+		background: var(--Text-Editor-BG);
+		color: white;
+		width: auto;
+		resize: vertical;
+		height: 50px;
+		font-size: 15px;
+		padding: 10px;
+		border-radius: 5px;
+		white-space: nowrap !important;
+		width: -webkit-fill-available;
+		border: 1px gray solid;
+	}
+
+	.STYLESHIFT-Sub-Title {
+		margin-block: 10px;
+		font-size: 15px;
+	}
+
+	//---------------------------------------------
+
+	.STYLESHIFT-Space {
+		width: -webkit-fill-available;
+	}
+
+	/* Checkbox */
+
+	.STYLESHIFT-Setting-Frame[settingtype="checkbox"] {
+		flex-direction: row;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.STYLESHIFT-Checkbox {
+		font-size: 20px;
+		appearance: none;
+		min-width: 4em;
+		height: 1.5em;
+		background: rgb(33, 33, 33);
+		border-radius: 3em;
+		position: relative;
+		cursor: pointer;
+		outline: none;
+		transition: all 0.2s;
+		box-shadow: 0px 0px 3px 0px #ffffff;
+		margin: 0px;
+
+		&:hover {
+			filter: brightness(2);
+		}
+
+		&:checked {
+			background: var(--Theme-0);
+
+			&:after {
+				left: calc(100% - 1.5em) !important;
+				transform: rotate(180deg) !important;
+				filter: drop-shadow(0px 0px 10px black);
+			}
+		}
+
+		&:after {
+			position: absolute;
+			display: flex;
+			content: "❖";
+			font-weight: 1000;
+			width: 1.5em;
+			height: 1.5em;
+			border-radius: 50%;
+			background: #fff !important;
+			box-shadow: 0 0 0.25em rgb(0 0 0 / 30%);
+			transform: scale(0.7);
+			left: 0;
+			transition: all 0.2s;
+			justify-content: center;
+			color: black !important;
+			align-items: center;
+		}
+	}
+
+	.STYLESHIFT-Number-Input {
+		width: 50px;
+		height: 15px;
+		background: rgb(33, 33, 33);
+		border: none;
+		box-shadow: 0px 0px 3px white;
+		padding-inline: 10px;
+		padding-block: 5px;
+		text-align: center;
+		-moz-appearance: textfield;
+
+		&::-webkit-inner-spin-button,
+		&::-webkit-outer-spin-button {
+			-webkit-appearance: none;
+		}
+
+		&:hover {
+			&::-webkit-inner-spin-button,
+			&::-webkit-outer-spin-button {
+				-webkit-appearance: meter;
+			}
+
+			-moz-appearance: unset;
+		}
+	}
+
+	.STYLESHIFT-Number-Slide {
+		-webkit-appearance: none;
+		appearance: none;
+		width: calc(100% - 50px);
+		cursor: pointer;
+		outline: none;
+		overflow: hidden;
+		border-radius: 16px;
+		height: 15px;
+
+		transition: all 0.2s;
+		filter: brightness(1) drop-shadow(1px 1px 4px #0000006e);
+
+		&:hover {
+			filter: brightness(1.3) drop-shadow(1px 1px 4px #0000006e);
+		}
+
+		&::-webkit-slider-runnable-track {
+			height: 15px;
+			background: #969696;
+			border-radius: 16px;
+		}
+
+		&::-webkit-slider-thumb {
+			appearance: none;
+			height: 15px;
+			width: 15px;
+			background-color: #fff;
+			border-radius: 50%;
+			border: 2px solid var(--Theme-0);
+			box-shadow: -1907px 0 0 1900px var(--Theme-0);
+		}
+	}
+
+	.STYLESHIFT-Dropdown {
+		width: 100px;
+		justify-content: center;
+	}
+
+	.STYLESHIFT-Dropdown-Frame {
+		align-items: center;
+		gap: 10px;
+	}
+
+	.STYLESHIFT-Setting-Frame[settingtype="color"] {
+		width: 95%;
+	}
+
+	.STYLESHIFT-Color {
+		-webkit-appearance: none;
+		min-width: 50px;
+		width: 50px;
+		min-height: 50px;
+		height: 50px;
+		box-shadow: rgba(0, 0, 0, 0.34) 1px 1px 7px;
+		transition: 0.2s;
+		border-radius: 100px;
+		background: transparent;
+		border: transparent 0px;
+		padding: 0px;
+		transition: all 0.2s;
+
+		&:hover {
+			transform: scale(1.1);
+		}
+	}
+
+	.STYLESHIFT-Color::-webkit-color-swatch-wrapper {
+		padding: 0;
+	}
+
+	.STYLESHIFT-Color::-webkit-color-swatch {
+		border: none;
+	}
+}

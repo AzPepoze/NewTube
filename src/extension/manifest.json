@@ -1,0 +1,72 @@
+{
+	"manifest_version": 3,
+	"name": "StyleShift",
+	"author": "AzPepoze",
+	"version": "0.8.0",
+	"description": "Customize your YouTube website with a lot customizable.",
+	"homepage_url": "https://github.com/AzPepoze/StyleShift",
+	"minimum_chrome_version": "88",
+	"icons": {
+		"128": "icon/128.png",
+		"64": "icon/64.png",
+		"32": "icon/32.png",
+		"16": "icon/16.png"
+	},
+	"options_page": "setting/styleshift.html",
+	"action": {
+		"default_title": "StyleShift Settings"
+	},
+	"web_accessible_resources": [
+		{
+			"resources": ["*"],
+			"matches": ["<all_urls>"]
+		}
+	],
+	"content_scripts": [
+		{
+			"matches": ["<all_urls>"],
+			"all_frames": true,
+			"js": ["styleshift.js"],
+			"css": ["style.css"],
+			"run_at": "document_start"
+		}
+	],
+
+	"background": {
+		"service_worker": "background.js",
+		"scripts": ["background.js"]
+	},
+	"commands": {
+		"Enable": {
+			"suggested_key": {
+				"default": "Alt+Shift+Z"
+			},
+			"description": "Toggle Enable"
+		},
+		"Setting": {
+			"suggested_key": {
+				"default": "Alt+Shift+X"
+			},
+			"description": "Toggle Setting"
+		},
+		"Customize": {
+			"suggested_key": {
+				"default": "Alt+Shift+C"
+			},
+			"description": "Toggle Customize Mode"
+		},
+		"Developer": {
+			"suggested_key": {
+				"default": "Alt+Shift+V"
+			},
+			"description": "Toggle Developer Mode"
+		}
+	},
+	"permissions": ["storage", "unlimitedStorage", "scripting"],
+	"host_permissions": ["*://*/*"],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "StyleShift@AzPepoze"
+		}
+	}
+}
