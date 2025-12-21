@@ -15,8 +15,8 @@ This project requires [Node.js](https://nodejs.org/) to run.
 First, clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/AzPepoze/NewTube-Beta.git
-cd NewTube-Beta
+git clone https://github.com/AzPepoze/NewTube -b dev
+cd NewTube
 ```
 
 ### Install Dependencies
