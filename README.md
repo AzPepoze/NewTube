@@ -2,12 +2,11 @@
 
 Test porting NewTube using StyleShift.
 
-This project requires [Node.js](https://nodejs.org/) to run.
-
-## Getting Started
+# Getting Started
 
 ## Prerequire
 
+-    [Node.js](https://nodejs.org/)
 -    [Firefox](https://www.firefox.com) (for web-ext)
 
 ### Clone the repository
