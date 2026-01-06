@@ -1,6 +1,7 @@
 {
 	"scripts": {
-		"dev": "concurrently \"npm:dev:css\" \"npm:dev:js\" \"web-ext run --pref gfx.webrender.all=true --source-dir=./out/dist/firefox\"",
+		"dev:firefox": "concurrently \"npm:dev:css\" \"npm:dev:js\" \"npm:test:firefox\"",
+		"dev:chromium": "concurrently \"npm:dev:css\" \"npm:dev:js\" \"npm:test:chromium\"",
 		"lint:fix": "eslint --fix src",
 		"dev:js": "ts-node utils/builder-extension.ts",
 		"dev:css": "sass --watch src/styleshift/styles/setting.scss out/build/style.css --style=compressed --no-source-map",
@@ -9,7 +10,9 @@
 		"build:release": "npm run build:prod && ts-node utils/builder-release.ts",
 		"build:types": "tsc -p utils/tsconfig-builder-types.json && ts-node utils/builder-types.ts",
 		"build:types_raw": "tsc -p utils/tsconfig-builder-types.json",
-		"build:folder_template": "ts-node utils/builder-template.ts -p utils/tsconfig-builder-types.json"
+		"build:folder_template": "ts-node utils/builder-template.ts -p utils/tsconfig-builder-types.json",
+		"test:firefox": "web-ext run --pref gfx.webrender.all=true --source-dir=./out/dist/firefox",
+		"test:chromium": "web-ext run --target=chromium --source-dir=./out/dist/chromium"
 	},
 	"dependencies": {
 		"colorthief": "^2.6.0",
