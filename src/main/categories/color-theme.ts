@@ -22,6 +22,22 @@ export const color_theme_category: Category = {
 		},
 		{
 			type: "color",
+			id: "ThemeFort",
+			name: "Theme Accent color",
+			description: "A secondary accent color for borders and small details.",
+			value: "#659aff66",
+			var_css: "--theme-fort",
+		},
+		{
+			type: "color",
+			id: "EndScreenBG",
+			name: "Video overlay Background (Endscreen)",
+			description: "Background color for endscreen elements and video overlays.",
+			value: "#00000080",
+			var_css: "--things-end-on-video",
+		},
+		{
+			type: "color",
 			id: "LeftBar",
 			name: "Left Sidebar Background",
 			description: "Background color of the main left-hand sidebar.",
@@ -35,7 +51,7 @@ export const color_theme_category: Category = {
 		},
 		{
 			type: "color",
-			id: "text",
+			id: "Text",
 			name: "Main text color",
 			description: "The primary text color for general ui text.",
 			value: "#ffffffff",
@@ -48,7 +64,7 @@ export const color_theme_category: Category = {
 		},
 		{
 			type: "color",
-			id: "Ndtext",
+			id: "NdText",
 			name: "Secondary text color",
 			description: "The secondary text color, used for metadata, descriptions, and less important text.",
 			value: "#c4c4c4ff",
@@ -61,7 +77,7 @@ export const color_theme_category: Category = {
 		},
 		{
 			type: "color",
-			id: "Linkcolor",
+			id: "LinkColor",
 			name: "Link color",
 			description: "The color for hyperlinks in descriptions and comments.",
 			value: "#5797ffff",
@@ -87,7 +103,7 @@ export const color_theme_category: Category = {
 		},
 		{
 			type: "color",
-			id: "Chanel_color",
+			id: "Chanel_Color",
 			name: "Channel name color",
 			description: "The color of channel names under video titles.",
 			value: "#ffffffff",
@@ -102,10 +118,59 @@ export const color_theme_category: Category = {
 			type: "checkbox",
 			id: "Theme_by_video",
 			name: "Theme colors base on video thumbnail",
-			description:
-				"Automatically extracts colors from the video thumbnail and applies them as the theme.",
+			description: "Automatically extracts colors from the video thumbnail and applies them as the theme.",
 			value: false,
 			enable_function: setup_theme_by_video,
+		},
+		{
+			type: "checkbox",
+			id: "Solid_BG_Theme_by_video",
+			name: "Solid background (Theme by video)",
+			description: "Makes the background tint fully opaque when 'Theme by video' is enabled.",
+			value: false,
+		},
+		{
+			type: "checkbox",
+			id: "StyleSync",
+			name: "Sync YouTube styles with Theme",
+			description: "Forces YouTube's internal color variables to match your custom theme.",
+			value: true,
+			enable_css: `
+                html, [watch-color-update] {
+                    --ytd-chip-cloud-background: rgba(0,0,0,.3) !important;
+                    --yt-spec-brand-background-primary: var(--top-bar-and-search-background) !important;
+                    --yt-spec-brand-background-solid: var(--newtube-bg-tint-color) !important;
+                    --yt-spec-general-background-a: var(--newtube-bg-tint-color) !important;
+                    --yt-spec-call-to-action: var(--theme-color) !important;
+                    --yt-spec-suggested-action: var(--theme-fort) !important;
+                    --yt-spec-badge-chip-background: var(--theme-fort) !important;
+                    --yt-spec-text-primary: var(--main-text-color) !important;
+                    --yt-spec-text-secondary: var(--secondary-text-color) !important;
+                    --yt-spec-brand-button-background: var(--theme-color) !important;
+                    --yt-spec-static-brand-red: var(--theme-color) !important;
+                    --yt-spec-brand-icon-inactive: var(--theme-color) !important;
+                    --yt-spec-10-percelayer: var(--theme-transparent-color) !important;
+                    --yt-spec-general-background-b: transparent !important;
+                    --yt-spec-wordmark-text: var(--main-text-color) !important;
+                    --yt-spec-button-chip-background-hover: var(--search-background-hover) !important;
+                    --yt-spec-text-primary-inverse: var(--top-bar-and-search-background) !important;
+                    --yt-spec-static-brand-white: var(--main-text-color) !important;
+                    --yt-spec-base-background: var(--top-bar-and-search-background) !important;
+                    --yt-spec-raised-background: var(--top-bar-and-search-background) !important;
+                    --yt-spec-menu-background: var(--top-bar-and-search-background) !important;
+                    --yt-spec-static-overlay-text-primary: var(--main-text-color) !important;
+                    --ytd-author-comment-badge-background-color: var(--theme-transparent-color) !important;
+                    --yt-spec-10-percent-layer: var(--theme-transparent-color) !important;
+                    --yt-spec-static-brand-black: var(--main-text-color) !important;
+                    --yt-spec-additive-background: var(--theme-transparent-color) !important;
+                    --yt-spec-static-overlay-background-brand: var(--theme-fort) !important;
+                    --yt-spec-inverted-background: var(--top-bar-and-search-background) !important;
+                    --yt-spec-themed-blue: var(--theme-color) !important;
+                    --yt-live-chat-vem-background-color: var(--top-bar-and-search-background) !important;
+                    --ytmusic-background: transparent !important;
+                    --yt-spec-themed-green: var(--theme-color) !important;
+                }
+            `,
 		},
 	],
 };

@@ -1,6 +1,38 @@
 .STYLESHIFT-Main {
 	--Theme-0: #7f5db7;
+	--Theme-0-10: rgba(127, 93, 183, 0.1);
+	--Theme-0-20: rgba(127, 93, 183, 0.2);
+	--Theme-0-30: rgba(127, 93, 183, 0.3);
+	--Theme-0-50: rgba(127, 93, 183, 0.5);
 	--Theme-1: rgb(246, 196, 255);
+
+	--White-05: rgba(255, 255, 255, 0.05);
+	--White-08: rgba(255, 255, 255, 0.08);
+	--White-10: rgba(255, 255, 255, 0.1);
+	--White-17: rgba(255, 255, 255, 0.17);
+	--White-20: rgba(255, 255, 255, 0.2);
+	--White-30: rgba(255, 255, 255, 0.3);
+	--White-38: rgba(255, 255, 255, 0.38);
+	--White-40: rgba(255, 255, 255, 0.4);
+	--White-50: rgba(255, 255, 255, 0.5);
+	--White-52: rgba(255, 255, 255, 0.32);
+	--White-70: rgba(255, 255, 255, 0.7);
+	--White-80: rgba(255, 255, 255, 0.8);
+	--White-87: rgba(255, 255, 255, 0.53);
+	--White-90: rgba(255, 255, 255, 0.9);
+
+	--Black-10: rgba(0, 0, 0, 0.1);
+	--Black-20: rgba(0, 0, 0, 0.2);
+	--Black-30: rgba(0, 0, 0, 0.3);
+	--Black-40: rgba(0, 0, 0, 0.4);
+	--Black-50: rgba(0, 0, 0, 0.5);
+	--Black-60: rgba(0, 0, 0, 0.6);
+
+	--BG-Dark: rgb(30, 30, 30);
+	--BG-Input: rgb(33, 33, 33);
+	--Grey: #888;
+	--Grey-Light: #b8b8b8;
+	--Grey-Dark: #646464;
 
 	--Border-Radius: 10px;
 	--Font-Color: white;
@@ -9,18 +41,19 @@
 	--Category-Title-BG: radial-gradient(
 		at center top,
 		rgb(255, 255, 255),
-		rgba(255, 255, 255, 0.62)
+		var(--White-50)
 	);
 	--Category-Title-Text-Color: black;
 
-	--Category-Left-BG: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1));
+	--Category-Left-BG: linear-gradient(90deg, transparent, var(--White-10));
 	--Category-Left-Title-BG-Hover: rgb(125, 80, 133);
-	--Category-Left-Title-BG-Selected: rgba(255, 255, 255, 0.9);
+	--Category-Left-Title-BG-Selected: var(--White-90);
 	--Category-Left-Title-Text-Color: rgb(255, 255, 255);
-	--Category-Left-Title-Text-Color-Hover: --Theme-1;
+	--Category-Left-Title-Text-Color-Hover: var(--Theme-1);
 	--Category-Left-Title-Text-Color-Selected: black;
 
-	--Text-Editor-BG: rgb(30, 30, 30);
-	--Setting-Frame-BG: rgba(255, 255, 255, 0.1);
+	--Text-Editor-BG: var(--BG-Dark);
+	--Setting-Frame-BG: var(--White-10);
 	--Checkbox-BG: #979797;
+	--Slider-Track: #969696;
 }

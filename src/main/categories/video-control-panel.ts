@@ -53,7 +53,7 @@ export const video_control_panel_category: Category = {
 		},
 		{
 			type: "number_slide",
-			id: "Mediaspace",
+			id: "MediaSpace",
 			name: "Controls-Below-Video Distance",
 			description: "Adjusts the distance of the control panel when moved below the video.",
 			value: 70,
@@ -87,7 +87,7 @@ export const video_control_panel_category: Category = {
 			value: "#00000080",
 			var_css: "--media-bg-color",
 			constant_css: `
-      .ytp-chrome-bottom {
+      .ytp-chrome-bottom, .ytp-gradient-bottom {
         background-color: var(--media-bg-color) !important;
       }
     `,
@@ -99,7 +99,7 @@ export const video_control_panel_category: Category = {
 			description: "Applies a blur effect to the control panel background.",
 			value: true,
 			enable_css: `
-                .ytp-chrome-bottom {
+                .ytp-chrome-bottom, .ytp-gradient-bottom {
                     backdrop-filter: blur(var(--media-blur-amount, 10px)) !important;
                 }
             `,
@@ -133,7 +133,23 @@ export const video_control_panel_category: Category = {
 			max: 150,
 			step: 1,
 			var_css: "--media-height",
-			constant_css: `.ytp-chrome-bottom { height: var(--media-height, 60px) !important; }`,
+			constant_css: `
+                .ytp-gradient-bottom { height: var(--media-height, 60px) !important; }
+            `,
+		},
+		{
+			type: "number_slide",
+			id: "MediaHFull",
+			name: "(Full screen) Background height",
+			description: "Adjusts the height of the control panel background when in fullscreen.",
+			value: 70,
+			min: 30,
+			max: 150,
+			step: 1,
+			var_css: "--media-height-full",
+			constant_css: `
+                .ytp-fullscreen .ytp-gradient-bottom { height: var(--media-height-full, 70px) !important; }
+            `,
 		},
 		{
 			type: "checkbox",
@@ -142,7 +158,7 @@ export const video_control_panel_category: Category = {
 			description: "Adds borders/shadows to the control panel (uses Global Border Settings).",
 			value: false,
 			enable_css: `
-                .ytp-chrome-bottom {
+                .ytp-chrome-bottom, .ytp-gradient-bottom {
                     box-shadow: var(--global-style-shadow) !important;
                     border-top: var(--global-style-outline) !important;
                 }
@@ -170,6 +186,46 @@ export const video_control_panel_category: Category = {
                 div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed).ytp-autohide .ytp-chrome-bottom {
                     opacity: 1 !important;
                     display: block !important;
+                }
+            `,
+		},
+		{
+			type: "checkbox",
+			id: "VdoBtnHover",
+			name: "Enlarge buttons on hover",
+			description: "Makes video control buttons larger when you hover over them.",
+			value: true,
+			enable_css: `
+                .ytp-chrome-bottom .ytp-button,
+                .ytp-replay-button,
+                .ytp-cards-button-icon {
+                    transition: transform .2s !important;
+                }
+                .ytp-chrome-bottom .ytp-button:hover,
+                .ytp-replay-button:hover,
+                .ytp-cards-button-icon:hover {
+                    transform: scale(1.5) !important;
+                }
+                
+                /* Settings Menu Animation from Update.js */
+                .html5-video-player .ytp-settings-menu:not(.ytpa-ambientlight-settings-menu) {
+                    transition: opacity 0.5s, transform 0.25s !important;
+                    margin-bottom: 20px !important;
+                }
+                .html5-video-player:not(.ytp-settings-shown) .ytp-settings-menu:not(.ytpa-ambientlight-settings-menu) {
+                    transform: translateX(100px) !important;
+                    opacity: 0 !important;
+                    pointer-events: none !important;
+                }
+
+                /* Central Play Button Styling */
+                path.ytp-large-play-button-bg {
+                    fill: black !important;
+                    opacity: 0.7 !important;
+                }
+                .ytp-large-play-button.ytp-button:hover path.ytp-large-play-button-bg {
+                    opacity: 1 !important;
+                    filter: drop-shadow(0px 0px 6px black);
                 }
             `,
 		},

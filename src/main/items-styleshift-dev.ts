@@ -10,7 +10,7 @@ const dev_only_items: Category[] = [
 				type: "sub_text",
 				color: "#1a34ffff",
 				font_size: 15,
-				text_align: "center",
+				align: "center",
 				text: "file (.StyleShift.zip)",
 			},
 			{
@@ -32,7 +32,7 @@ const dev_only_items: Category[] = [
 						await styleshift_functions["export_styleshift_zip"](
 							JSON.parse(await styleshift_functions["export_styleshift_json_text"]())
 								.custom_styleshift_items,
-							"Test.StyleShift.zip"
+							"Test.StyleShift.zip",
 						);
 
 						notification.set_icon("✅");
@@ -49,7 +49,7 @@ const dev_only_items: Category[] = [
 						});
 					}
 				},
-				text_align: "center",
+				align: "center",
 				icon: "",
 			},
 			{
@@ -85,7 +85,7 @@ const dev_only_items: Category[] = [
 						});
 					}
 				},
-				text_align: "center",
+				align: "center",
 				icon: "",
 			},
 		],

@@ -1,7 +1,7 @@
 import { save_any } from "../../core/save";
-import { advance_setting_ui } from "./components/advance";
-import { developer_setting_ui } from "./components/dev";
-import { main_setting_ui } from "./components/main";
+import { advance_setting_ui } from "./components/advance/advance";
+import { developer_setting_ui } from "./components/dev/dev";
+import { main_setting_ui } from "./components/main/main";
 
 export async function set_and_save(this_setting, value) {
 	// this_setting.value = value;

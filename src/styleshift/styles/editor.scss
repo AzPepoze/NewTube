@@ -4,9 +4,9 @@
 .STYLESHIFT-Main {
 	height: -webkit-fill-available;
 	position: fixed;
-	border: 1px #ffffff87 solid;
+	border: 1px var(--White-87) solid;
 	border-radius: var(--Border-Radius);
-	background-color: rgb(30, 30, 30);
+	background-color: var(--BG-Dark);
 	backdrop-filter: none;
 	z-index: 10000;
 	padding: 10px;
@@ -15,7 +15,7 @@
 	align-items: center;
 	gap: 10px;
 
-	*:not(.monaco-editor *) {
+	* {
 		border-radius: var(--Border-Radius);
 		color: var(--Font-Color);
 	}
@@ -28,7 +28,7 @@
 		resize: vertical;
 		overflow: hidden;
 		padding: 5px;
-		background: #ffffff52;
+		background: var(--White-52);
 	}
 
 	.STYLESHIFT-Close {
@@ -46,7 +46,7 @@
 	}
 
 	.STYLESHIFT-Search {
-		background: #ffffff38;
+		background: var(--White-38);
 		border-radius: 20px;
 		border: transparent;
 		padding: 10px;
@@ -54,7 +54,7 @@
 		margin-top: 3px;
 
 		&::placeholder {
-			color: #b8b8b8;
+			color: var(--Grey-Light);
 		}
 	}
 
@@ -125,19 +125,20 @@
 		}
 
 		::-webkit-scrollbar-thumb {
-			background: #888;
+			background: var(--Grey);
 		}
 
-		scrollbar-color: #888 transparent;
+		scrollbar-color: var(--Grey) transparent;
 		scrollbar-width: thin;
 
 		.STYLESHIFT-Category-Frame {
 			background: var(--Setting-Frame-BG);
+			padding: 10px;
 		}
 
 		.STYLESHIFT-Category-Frame > .STYLESHIFT-Setting-Frame,
 		.STYLESHIFT-Main-Setting-Frame:has(.STYLESHIFT-Setting-Frame) {
-			background: radial-gradient(at center top, rgba(255, 255, 255, 0.23), rgba(255, 255, 255, 0.1));
+			background: radial-gradient(at center top, var(--White-20), var(--White-10));
 		}
 	}
 
@@ -184,7 +185,7 @@
 
 	.STYLESHIFT-Scrollable[Draging] {
 		.STYLESHIFT-Drag-Hint:hover {
-			background: rgba(255, 255, 255, 0.5);
+			background: var(--White-50);
 		}
 	}
 
@@ -202,10 +203,12 @@
 }
 
 .STYLESHIFT-Highlight {
-	transition: background 0.2s, border-color 0.2s;
+	transition:
+		background 0.2s,
+		border-color 0.2s;
 	border-radius: 10px;
 	position: fixed;
-	border: 1px solid rgb(255, 255, 255);
+	border: 1px solid white;
 	position: absolute;
 	z-index: 1000;
 	left: 0;
@@ -235,7 +238,7 @@ textarea.STYLESHIFT-Selector-Text-Editor {
 	justify-content: center;
 	align-items: center;
 	z-index: 10000;
-	background: #000000a1;
+	background: var(--Black-60);
 }
 
 .STYLESHIFT-DropDown-Container {
@@ -256,8 +259,8 @@ textarea.STYLESHIFT-Selector-Text-Editor {
 	align-items: center;
 	justify-content: center;
 	background: radial-gradient(at center top, rgb(99, 99, 99), rgba(66, 66, 66, 0.5));
-	color: rgb(255, 255, 255);
-	border: #ffffff17 solid 1px;
+	color: white;
+	border: var(--White-10) solid 1px;
 	transition: all 0.2s;
 }
 
@@ -310,7 +313,7 @@ textarea.STYLESHIFT-Selector-Text-Editor {
 .STYLESHIFT-Notification {
 	background: black;
 	border-radius: 10px;
-	border: solid 1px rgba(255, 255, 255, 0.527);
+	border: solid 1px var(--White-50);
 	display: flex;
 	gap: 10px;
 	font-size: 16px;

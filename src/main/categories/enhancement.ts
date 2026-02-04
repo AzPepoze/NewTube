@@ -14,12 +14,7 @@ export const enhancement_category: Category = {
 			min: 0,
 			max: 50,
 			step: 1,
-			var_css: "--theme-radius-big",
-			constant_css: `
-                ytd-thumbnail, ytd-playlist-thumbnail, #player-container, ytd-watch-flexy {
-                    border-radius: var(--theme-radius-big, 10px) !important;
-                }
-            `,
+			var_css: "--theme-radius",
 		},
 		{
 			type: "checkbox",

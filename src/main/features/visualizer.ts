@@ -1,3 +1,5 @@
+import { load_any, load_setting } from "../../styleshift/core/save";
+import { on_setting_update } from "../../styleshift/settings/functions";
 import { get_ytd_app } from "../modules/main";
 
 let audio_ctx: AudioContext | null = null;
@@ -9,6 +11,7 @@ let animation_frame: number | null = null;
 
 export function setup_audio_visualizer() {
 	const init = async () => {
+		if ((await load_any("Enable_Extension")) === false) return;
 		if (audio_ctx) return; // Already running
 
 		const video = document.querySelector("video");
@@ -19,7 +22,8 @@ export function setup_audio_visualizer() {
 		}
 
 		try {
-			audio_ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+			// @ts-ignore
+			audio_ctx = new (window.AudioContext || window.webkitAudioContext)();
 			analyser = audio_ctx.createAnalyser();
 			analyser.fftSize = 512;
 
@@ -29,7 +33,7 @@ export function setup_audio_visualizer() {
 
 			await create_canvas();
 			visualize();
-		} catch (e) {
+		} catch {
 			// console.warn("Visualizer setup failed", e);
 		}
 	};
@@ -88,8 +92,8 @@ export function setup_audio_visualizer() {
 			for (let i = 0; i < buffer_length; i++) {
 				// Calculate bar height, scaling it to look nice
 				// Value is 0-255
-				let bar_height = ((data_array[i] * data_array[i]) / 500); 
-                if(bar_height < 0) bar_height = 0;
+				let bar_height = (data_array[i] * data_array[i]) / 500;
+				if (bar_height < 0) bar_height = 0;
 
 				// Initialize cap position
 				if (cap_y_positions.length < buffer_length) {
@@ -136,3 +140,27 @@ export function setup_audio_visualizer() {
 		}
 	});
 }
+
+export function destroy_audio_visualizer() {
+	if (animation_frame) cancelAnimationFrame(animation_frame);
+	if (canvas) canvas.remove();
+	if (audio_ctx) audio_ctx.close();
+	audio_ctx = null;
+	analyser = null;
+	source = null;
+	canvas = null;
+	canvas_ctx = null;
+	animation_frame = null;
+}
+
+on_setting_update("Enable_Extension", (val) => {
+	if (!val) {
+		destroy_audio_visualizer();
+	} else {
+		load_setting("AudioVisualizer").then((enabled) => {
+			if (enabled) {
+				setup_audio_visualizer();
+			}
+		});
+	}
+});

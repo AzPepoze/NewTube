@@ -16,28 +16,33 @@ export const remove_black_bars_category: Category = {
 		{
 			type: "checkbox",
 			id: "UltraWide",
-			name: "Fit ultrawide video (Not Implemented)",
-			description:
-				"Helps to fit ultrawide (21:9) videos better. This specific sub-feature is not yet implemented.",
+			name: "Fit ultrawide video",
+			description: "Helps to fit ultrawide (21:9) videos better.",
 			value: true,
 		},
 		{
 			type: "checkbox",
-			id: "Dropframe",
-			name: "Lazy Check (Not Implemented)",
-			description: "A performance-saving option. This specific sub-feature is not yet implemented.",
+			id: "DropFrame",
+			name: "Lazy Check (Drop Frame)",
+			description: "A performance-saving option that skips checks on some frames.",
 			value: false,
 		},
 		{
 			type: "number_slide",
 			id: "LazyAmount",
-			name: "Lazy Check Cooldown (Not Implemented)",
-			description:
-				"Adjusts how often the check is performed. This specific sub-feature is not yet implemented.",
+			name: "Lazy Check Cooldown",
+			description: "Adjusts how often the check is performed (higher is lazier).",
 			value: 50,
 			min: -1,
 			max: 200,
 			step: 1,
+		},
+		{
+			type: "checkbox",
+			id: "DelBarDebug",
+			name: "Remove black bars Debug",
+			description: "Shows the analysis canvas for debugging black bar detection.",
+			value: false,
 		},
 	],
 };

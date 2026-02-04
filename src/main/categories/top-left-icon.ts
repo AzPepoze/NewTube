@@ -33,7 +33,7 @@ export const top_left_icon_category: Category = {
 		},
 		{
 			type: "number_slide",
-			id: "TopiconX",
+			id: "TopIconX",
 			name: "image Position X",
 			description: "Horizontal position of the custom icon.",
 			value: 50,
@@ -44,7 +44,7 @@ export const top_left_icon_category: Category = {
 		},
 		{
 			type: "number_slide",
-			id: "TopiconY",
+			id: "TopIconY",
 			name: "image Position Y",
 			description: "Vertical position of the custom icon.",
 			value: 50,
@@ -55,7 +55,7 @@ export const top_left_icon_category: Category = {
 		},
 		{
 			type: "number_slide",
-			id: "YTsize",
+			id: "YTSize",
 			name: "image size",
 			description: "size of the custom icon.",
 			value: 100,
@@ -66,7 +66,7 @@ export const top_left_icon_category: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "TopiconFlip",
+			id: "TopIconFlip",
 			name: "Flip image",
 			description: "Flips the custom icon horizontally.",
 			value: false,
@@ -75,7 +75,7 @@ export const top_left_icon_category: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "TopiconRepeat",
+			id: "TopIconRepeat",
 			name: "Repeat image",
 			description: "Repeats the custom icon image.",
 			value: false,

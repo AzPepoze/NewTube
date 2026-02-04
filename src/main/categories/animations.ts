@@ -30,5 +30,51 @@ export const animation_category: Category = {
                 }
             `,
 		},
+		{
+			type: "checkbox",
+			id: "SearchIconAni",
+			name: "Enable Search icon moving animation",
+			description: "Adds a subtle moving animation to the search icon.",
+			value: false,
+			enable_css: `
+                #search-icon-legacy[ytd-searchbox].ytd-searchbox:not([is-iconbox]) yt-icon.ytd-searchbox {
+                    animation: SearchIconMove 2s infinite;
+                }
+                @keyframes SearchIconMove {
+                    0% { transform: scale(1) translate(0px, 0px) rotate(0deg); }
+                    30% { transform: scale(1) translate(2px, 2px) rotate(4deg); }
+                    60% { transform: scale(1) translate(-2px, -2px) rotate(-4deg); }
+                    100% { transform: scale(1) translate(0px, 0px) rotate(0deg); }
+                }
+            `,
+		},
+		{
+			type: "checkbox",
+			id: "MenuAnim",
+			name: "Enable Menu Fade-in Animation",
+			description: "Adds a smooth fade and scale effect to YouTube dropdown menus and popups.",
+			value: true,
+			enable_css: `
+                @keyframes show-box {
+                    from { opacity: 0; transform: scale(0.9); }
+                    to { opacity: 1; transform: scale(1); }
+                }
+
+                tp-yt-iron-dropdown {
+                    transition: transform .4s, opacity .4s;
+                    display: flex !important;
+                }
+
+                tp-yt-iron-dropdown:not([aria-hidden="true"]) {
+                    animation: show-box .4s;
+                }
+
+                tp-yt-iron-dropdown[aria-hidden="true"] {
+                    pointer-events: none;
+                    opacity: 0 !important;
+                    transform: scale(0.9) !important;
+                }
+            `,
+		},
 	],
 };

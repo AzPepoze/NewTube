@@ -30,7 +30,7 @@ export function copy_to_clipboard(text: string) {
 		(err) => {
 			console.error("Failed to copy text: ", err);
 			return false;
-		}
+		},
 	);
 }
 
@@ -202,39 +202,59 @@ export async function enter_text_prompt({ title = "Enter text", placeholder = ""
 		type: "text",
 		html: title,
 		font_size: 20,
-		text_align: "center",
+		align: "center",
 	});
 	dynamic_append(content_window, header);
 
 	//---------------------------------
 
-	const text_input = await settings_ui["text_editor"]();
+	if (content) {
+		const description = await settings_ui["sub_text"]({
+			type: "sub_text",
+			text: content,
+			font_size: 14,
+			align: "center",
+		});
+		dynamic_append(content_window, description);
+	}
+
+	//---------------------------------
+
+	const text_input_factory = settings_ui["text_editor"] as unknown as () => {
+		text_editor: HTMLTextAreaElement;
+		on_change: (callback: (value: string) => void) => void;
+	};
+	const text_input = await text_input_factory();
 	text_input.on_change(() => {});
 	text_input.text_editor.style.height = "inherit";
 	content_window.append(text_input.text_editor);
 
+	if (placeholder) {
+		text_input.text_editor.placeholder = placeholder;
+	}
+
 	//---------------------------------
 
-	const button_frame = await settings_ui["setting_frame"](true, false);
+	const button_frame = (await settings_ui["setting_frame"](true, false)) as HTMLDivElement;
 	button_frame.style.gap = "10px";
 	dynamic_append(content_window, button_frame);
 
 	//---------------------------------
 
-	const ok_button = await settings_ui["button"]({
+	const ok_button = (await settings_ui["button"]({
 		name: "OK",
 		color: "#00ff00",
-		text_align: "center",
-	});
+		align: "center",
+	})) as { button: HTMLDivElement };
 	dynamic_append(button_frame, ok_button);
 
 	//---------------------------------
 
-	const cancel_button = await settings_ui["button"]({
+	const cancel_button = (await settings_ui["button"]({
 		name: "Cancel",
 		color: "#ff0000",
-		text_align: "center",
-	});
+		align: "center",
+	})) as { button: HTMLDivElement };
 	dynamic_append(button_frame, cancel_button);
 
 	return new Promise((resolve, reject) => {
@@ -431,7 +451,7 @@ export async function import_styleshift_zip(zip_file) {
 					) {
 						const setting_property_name = setting_property_path.slice(
 							setting_path.length,
-							setting_property_path.lastIndexOf(".")
+							setting_property_path.lastIndexOf("."),
 						);
 
 						console.log(setting_property_path);
@@ -526,10 +546,10 @@ export async function export_styleshift_zip(styleshift_data, zip_file_name) {
  * it appends the frame. If the child has a `button` property, it appends the
  * button. Otherwise, it appends the child element itself.
  *
- * @param {HTMLDivElement} parent - The parent element to which the child will be appended.
- * @param {Object} child - The child element or object with specific properties (`frame` or `button`).
+ * @param {HTMLElement} parent - The parent element to which the child will be appended.
+ * @param {unknown} child - The child element or object with specific properties (`frame` or `button`).
  */
-export function dynamic_append(parent: HTMLDivElement, child: object | any) {
+export function dynamic_append(parent: HTMLDivElement, child: unknown) {
 	const element = dynamic_get_element(child);
 	if (element) {
 		parent.appendChild(element);
@@ -543,21 +563,24 @@ export function dynamic_append(parent: HTMLDivElement, child: object | any) {
  * (`frame` or `button`) and returns the corresponding element if found.
  * If neither property is present, it returns the object itself.
  *
- * @param {Object} child - The object containing potential elements.
- * @returns {HTMLElement | Object} The element associated with the `frame` or `button`
+ * @param {unknown} child - The object containing potential elements.
+ * @returns {HTMLElement | unknown} The element associated with the `frame` or `button`
  * property, or the object itself if neither property is found.
  */
 
-export function dynamic_get_element(child: object | any) {
-	if (child.frame) {
-		return child.frame;
+export function dynamic_get_element(child: unknown): HTMLElement | undefined {
+	if (child && typeof child === "object") {
+		const c = child as { frame?: HTMLElement; button?: HTMLElement };
+		if ("frame" in c && c.frame) {
+			return c.frame;
+		}
+
+		if ("button" in c && c.button) {
+			return c.button;
+		}
 	}
 
-	if (child.button) {
-		return child.button;
-	}
-
-	return child;
+	return child as HTMLElement;
 }
 
 /**
@@ -633,11 +656,12 @@ export async function save_styleshift_value(id, value: string) {
  * assigned a unique "styleshift-ui-id" attribute.
  *
  * @param {string} type - The type of the setting ui element.
- * @param {Setting | any} this_setting - The setting associated with the ui element.
- * @param {...any} args - Additional arguments to pass to the ui element function.
- * @returns {Promise<string>} The value of the "styleshift-ui-id" attribute assigned to the ui element.
+ * @param {Setting} this_setting - The setting associated with the ui element.
+ * @param {...unknown} args - Additional arguments to pass to the ui element function.
+ * @returns {Promise<any>}
  */
-export async function create_styleshift_setting_ui(type, this_setting: Setting | any, ...args) {
+export async function create_styleshift_setting_ui(type: string, this_setting: Setting, ...args: unknown[]) {
+	// @ts-ignore
 	const ui = await settings_ui[type](this_setting, ...args);
 
 	let ui_element;

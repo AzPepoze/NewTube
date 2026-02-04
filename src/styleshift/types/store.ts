@@ -27,7 +27,7 @@ export type Setting =
 
 			html: string;
 
-			text_align?: "left" | "center" | "right";
+			align?: "left" | "center" | "right";
 			font_size?: number;
 
 			editable?: boolean;
@@ -38,7 +38,7 @@ export type Setting =
 
 			text: string;
 
-			text_align?: "left" | "center" | "right";
+			align?: "left" | "center" | "right";
 			color?: string;
 			font_size?: number;
 
@@ -51,7 +51,7 @@ export type Setting =
 			description?: string;
 
 			icon?: string;
-			text_align?: "left" | "center" | "right";
+			align?: "left" | "center" | "right";
 			color?: string;
 			font_size?: number;
 
@@ -90,7 +90,7 @@ export type Setting =
 			max?: number;
 			step?: number;
 			value: number;
-			var_css_unit?: string;
+			unit?: string;
 
 			//--------------
 

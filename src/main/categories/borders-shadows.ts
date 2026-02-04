@@ -8,9 +8,9 @@ export const borders_shadows_category: Category = {
 			id: "OutOrSha",
 			name: "Style type",
 			description: "Choose between outlines (borders), shadows, or none for applicable elements.",
-			value: "Shadows",
+			value: "Sha",
 			options: {
-				Borders: {
+				Out: {
 					enable_css: `
                         :root {
                             --global-style-outline: var(--global-border-width, 1px) solid var(--global-border-color, #099DFF80);
@@ -18,7 +18,7 @@ export const borders_shadows_category: Category = {
                         }
                     `,
 				},
-				Shadows: {
+				Sha: {
 					enable_css: `
                         :root {
                             --global-style-outline: none;

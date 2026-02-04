@@ -1,8 +1,18 @@
 import { Category } from "../../styleshift/types/store";
+import { enable_settings_button, disable_settings_button } from "../features/newtube-settings-button";
 
 export const topbar_search_category: Category = {
 	category: "🔎 Topbar & Search",
 	settings: [
+		{
+			type: "checkbox",
+			id: "Enable_Settings_Button",
+			name: "Show NewTube Settings Button (✦)",
+			description: "Adds a star icon to the top right of the page to quickly open NewTube settings.",
+			value: true,
+			enable_function: enable_settings_button,
+			disable_function: disable_settings_button,
+		},
 		{
 			type: "checkbox",
 			id: "Scroll",
@@ -99,6 +109,38 @@ export const topbar_search_category: Category = {
                     transform: none !important;
                     pointer-events: visible !important;
                     opacity: 1 !important;
+                }
+
+                /* Search Icon Animation & Suggestion Styling */
+                @keyframes show-searchIcon {
+                    0% { opacity: 0; left: 20px; }
+                    100% { opacity: 1; left: 0px; }
+                }
+
+                yt-searchbox [class*="SearchIcon"] {
+                    display: block !important;
+                    width: 20px !important;
+                    position: absolute;
+                    animation: show-searchIcon 0.4s;
+                }
+               
+                .sbsb_i {
+                    background: black;
+                    padding: 5px 10px;
+                    border-radius: var(--theme-radius);
+                    outline: solid white 1px;
+                    color: white !important;
+                    transition: all 0.2s;
+                }
+                .sbsb_i:hover {
+                    background: white !important;
+                    color: black !important;
+                }
+                .sbpqs_a:before {
+                    filter: invert(0.5);
+                }
+                .ytSearchboxComponentInputBox::placeholder {
+                    color: var(--secondary-text-color) !important;
                 }
             `,
 		},

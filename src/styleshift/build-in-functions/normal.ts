@@ -40,9 +40,9 @@ export function hex_to_rgba(hex: string): { r: number; g: number; b: number; a: 
  * @param {string} hex - The hex color string.
  * @returns {{ r: number; g: number; b: number }}
  * @example
- * hex_to_rbg("#ff5733"); // { r: 255, g: 87, b: 51 }
+ * hex_to_rgb("#ff5733"); // { r: 255, g: 87, b: 51 }
  */
-export function hex_to_rbg(hex: string): { r: number; g: number; b: number } {
+export function hex_to_rgb(hex: string): { r: number; g: number; b: number } {
 	hex = hex.replace(/^#/, "");
 
 	if (hex.length === 3) {
@@ -406,7 +406,7 @@ export function update_drag_position(
 	element: HTMLElement,
 	event: MouseEvent,
 	offset_x: number,
-	offset_y: number
+	offset_y: number,
 ): void {
 	element.style.left = `${event.clientX - offset_x}px`;
 	element.style.top = `${event.clientY - offset_y}px`;
@@ -595,7 +595,7 @@ export async function fire_function_event_with_return(
 				console.log("Return Data", `${prefix}_${function_name}_${remote_id}`, detail);
 				resolve(detail);
 			},
-			{ once: true }
+			{ once: true },
 		);
 	});
 }
@@ -613,7 +613,7 @@ export async function fire_function_event_with_return(
 export async function on_function_event(
 	prefix: string = "Function",
 	function_name: string,
-	callback: Function
+	callback: Function,
 ): Promise<{ Cancel: Function }> {
 	const on_event_run_function = async function (event: Event) {
 		const detail = JSON.parse((event as CustomEvent).detail);
@@ -631,7 +631,7 @@ export async function on_function_event(
 		window.dispatchEvent(
 			new CustomEvent(`${prefix}_${function_name}_${remote_id}`, {
 				detail: JSON.stringify(get_return),
-			})
+			}),
 		);
 	};
 

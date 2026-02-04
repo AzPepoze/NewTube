@@ -25,6 +25,23 @@ export const thumbnail_category: Category = {
 			constant_css: `ytd-thumbnail-overlay-time-status-renderer { background-color: var(--thumb-time-bg, #00000080) !important; }`,
 		},
 		{
+			type: "number_slide",
+			id: "TimeH",
+			name: "timestamp Height",
+			description: "Adjusts the height of the video duration timestamp on thumbnails.",
+			value: 12,
+			min: 0,
+			max: 100,
+			step: 1,
+			var_css: "--thumb-time-height",
+			constant_css: `
+                ytd-thumbnail-overlay-time-status-renderer,
+                ytd-thumbnail-overlay-bottom-panel-renderer {
+                    height: var(--thumb-time-height, 12px) !important;
+                }
+            `,
+		},
+		{
 			type: "checkbox",
 			id: "TimeOut",
 			name: "Time Borders/Shadows",
@@ -50,7 +67,7 @@ export const thumbnail_category: Category = {
 		},
 		{
 			type: "color",
-			id: "ThumbHoverColor",
+			id: "ThumbHoverColorInput",
 			name: "Hover Border Color",
 			description: "Color of the border/shadow when hovering.",
 			value: "#659affff",
@@ -58,11 +75,36 @@ export const thumbnail_category: Category = {
 		},
 		{
 			type: "color",
-			id: "ThumbClick",
+			id: "ThumbClickColorInput",
 			name: "Click Border Color",
 			description: "Color of the border/shadow when clicked.",
 			value: "#ffffffff",
 			var_css: "--thumb-click-color",
+		},
+		{
+			type: "checkbox",
+			id: "ThumbActive",
+			name: "Enable Hover Overlay",
+			description: "Adds a glow effect and border when hovering over thumbnails.",
+			value: true,
+			enable_css: `
+                ytd-thumbnail:hover, ytd-playlist-thumbnail:hover {
+                    outline: var(--thumb-hover-border-width, 1px) solid var(--thumb-hover-color) !important;
+                    box-shadow: 0 0 15px var(--thumb-hover-color) !important;
+                }
+                ytd-thumbnail:active, ytd-playlist-thumbnail:active {
+                    outline-color: var(--thumb-click-color) !important;
+                }
+                #thumbnail:hover:after {
+                    content: "";
+                    position: absolute;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background: var(--thumb-hover-color);
+                    opacity: 0.1;
+                    pointer-events: none;
+                    border-radius: var(--theme-radius);
+                }
+            `,
 		},
 		{
 			type: "dropdown",
@@ -120,7 +162,7 @@ export const thumbnail_category: Category = {
 		},
 		{
 			type: "number_slide",
-			id: "Zoom",
+			id: "ThZoom",
 			name: "Zoom Amount",
 			description: "Adjusts the zoom scale for the 'Zoom' hover animation.",
 			value: 1.075,

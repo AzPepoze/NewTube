@@ -100,7 +100,7 @@ export async function create_main_settings_ui({
 				() => {
 					return_obj.remove_ui();
 				},
-				{ once: true }
+				{ once: true },
 			);
 
 			//---------------------------------------------------
@@ -113,7 +113,7 @@ export async function create_main_settings_ui({
 			for (const this_category of await get_category()) {
 				const { category_title, category_frame } = await create_category_ui(
 					settings_container,
-					this_category
+					this_category,
 				);
 
 				const left_category_title = await settings_ui["Left-title"](this_category.category, skip_animation);
@@ -133,7 +133,7 @@ export async function create_main_settings_ui({
 
 				if (loaded_developer_modules) {
 					const get_dev_only_category = get_styleshift_dev_only_items().find(
-						(x) => x.category == this_category.category
+						(x) => x.category == this_category.category,
 					);
 
 					console.log("Test", get_dev_only_category);
@@ -144,7 +144,7 @@ export async function create_main_settings_ui({
 						for (const this_setting_only of get_dev_only_category.settings) {
 							await create_setting_ui_element_with_able_developer_mode(
 								category_frame,
-								this_setting_only
+								this_setting_only,
 							);
 						}
 					}
@@ -155,7 +155,7 @@ export async function create_main_settings_ui({
 				if (this_category.editable && (await load("Developer_mode"))) {
 					dynamic_append(
 						category_frame,
-						await settings_ui["add_setting_button"](this_category.settings)
+						await settings_ui["add_setting_button"](this_category.settings),
 					);
 				}
 
@@ -177,7 +177,7 @@ export async function create_main_settings_ui({
 					await settings_ui["button"]({
 						name: "+",
 						color: "#FFFFFF",
-						text_align: "center",
+						align: "center",
 						click_function: function () {
 							add_category("🥳 new_category");
 						},
@@ -213,7 +213,8 @@ export async function create_main_settings_ui({
 
 			//------------------------------------------------------
 
-			let current_selected: HTMLElement;
+			let current_selected_left: HTMLElement;
+			let current_selected_right: HTMLElement;
 
 			if (show_category_list) {
 				update_setting_interval = setInterval(async function () {
@@ -229,14 +230,21 @@ export async function create_main_settings_ui({
 							(index == 0 &&
 								right_ui[index].getBoundingClientRect().top >= settings_container_box.top)
 						) {
-							if (current_selected == left_ui[index]) {
+							if (current_selected_left == left_ui[index]) {
 								break;
 							}
-							if (current_selected) {
-								current_selected.removeAttribute("selected");
+							if (current_selected_left) {
+								current_selected_left.removeAttribute("selected");
 							}
-							current_selected = left_ui[index];
-							current_selected.setAttribute("selected", "");
+							if (current_selected_right) {
+								current_selected_right.removeAttribute("selected");
+							}
+							current_selected_left = left_ui[index];
+							current_selected_right = right_ui[index];
+							current_selected_left.setAttribute("selected", "");
+							current_selected_right.setAttribute("selected", "");
+
+							current_selected_left.scrollIntoView({ behavior: "smooth", block: "nearest" });
 							break;
 						}
 					}
@@ -368,7 +376,7 @@ async function add_drag(frame, parent, this_data) {
 	const move_button = (
 		await settings_ui["button"]({
 			name: "☰",
-			text_align: "center",
+			align: "center",
 		})
 	).button;
 	move_button.className += " STYLESHIFT-Config-button";
@@ -393,7 +401,7 @@ async function add_drag(frame, parent, this_data) {
 
 		const space = create_setting_space(
 			frame_bound.height,
-			Number(getComputedStyle(parent).gap.replace("px", ""))
+			Number(getComputedStyle(parent).gap.replace("px", "")),
 		);
 
 		space.show();
@@ -448,7 +456,7 @@ async function add_drag(frame, parent, this_data) {
 				draging_setting = null;
 				space.element.remove();
 			},
-			{ once: true }
+			{ once: true },
 		);
 	});
 }
@@ -529,7 +537,7 @@ async function add_edit_delete_buttons(frame, main_element, this_data, data_type
 	const edit_button = (
 		await settings_ui["button"]({
 			name: "✏️",
-			text_align: "center",
+			align: "center",
 			color: "#3399ff",
 			click_function: function () {
 				show_config_ui(main_element.config_ui_function);
@@ -542,16 +550,16 @@ async function add_edit_delete_buttons(frame, main_element, this_data, data_type
 	const delete_button = (
 		await settings_ui["button"]({
 			name: "🗑️",
-			text_align: "center",
+			align: "center",
 			color: "#FF0000",
 			click_function:
 				data_type == "Category"
 					? async function () {
 							remove_category(this_data);
-					  }
+						}
 					: async function () {
 							remove_setting(this_data);
-					  },
+						},
 		})
 	).button;
 	delete_button.className += " STYLESHIFT-Config-button";
@@ -571,7 +579,7 @@ async function setup_developer_mode_wrapper(parent, this_data, main_element, dat
 		false,
 		false,
 		{ x: true, y: true },
-		this_data.type == "button" || data_type == "Category"
+		this_data.type == "button" || data_type == "Category",
 	);
 	main_frame.className += " STYLESHIFT-Main-Setting-Frame";
 	frame.append(main_frame);
@@ -619,7 +627,7 @@ export async function create_category_ui(parent, this_category: Category) {
 			create_error(`At ${this_category.category} - ${JSON.stringify(this_setting, null, 2)}\n${error}`).then(
 				(notification) => {
 					notification.set_title("StyleShift - Create ui error");
-				}
+				},
 			);
 		}
 	}

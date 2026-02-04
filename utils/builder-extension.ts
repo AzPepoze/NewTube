@@ -1,4 +1,5 @@
 const esbuild = require("esbuild");
+const esbuild_svelte = require("esbuild-svelte");
 const chokidar = require("chokidar");
 const fs = require("fs-extra");
 const path = require("path");
@@ -79,7 +80,7 @@ async function process_functions(code_path) {
 		code = code
 			.replace(
 				wrap_regex,
-				(_, async_keyword) => `StyleShift["Build-in"]["${name}"] = ${async_keyword || ""}function (`
+				(_, async_keyword) => `StyleShift["Build-in"]["${name}"] = ${async_keyword || ""}function (`,
 			)
 			.replace(call_regex, `StyleShift["Build-in"]["${name}"](`);
 	});
@@ -90,7 +91,7 @@ async function process_functions(code_path) {
 async function generate_build_in_functions(build_path) {
 	const functions_list = fs.readFileSync(
 		path.join(__dirname, "../src/styleshift/build-in-functions/extension.ts"),
-		"utf-8"
+		"utf-8",
 	);
 
 	const function_names = [
@@ -100,7 +101,7 @@ async function generate_build_in_functions(build_path) {
 	const functions_list_data = function_names
 		.map(
 			(name) =>
-				`StyleShift["Build-in"]["${name}"] = async function(...args){return await StyleShift["Build-in"]["_Call_Function"]("${name}",...args)};`
+				`StyleShift["Build-in"]["${name}"] = async function(...args){return await StyleShift["Build-in"]["_Call_Function"]("${name}",...args)};`,
 		)
 		.join("");
 
@@ -109,7 +110,7 @@ async function generate_build_in_functions(build_path) {
 
 	return `StyleShift = {"Build-in":{},"Custom":{}};${normal_functions}${build_in_functions.replace(
 		/\n/g,
-		""
+		"",
 	)}${functions_list_data}window['StyleShift'] = StyleShift;`;
 }
 
@@ -144,6 +145,13 @@ async function build() {
 			outfile: path.join(build_path, "styleshift.js"),
 			platform: "browser",
 			minify: is_production,
+			plugins: [
+				esbuild_svelte({
+					compilerOptions: {
+						css: "injected",
+					},
+				}),
+			],
 			define: {
 				imgbb_api_key: JSON.stringify(process.env.IMGBB_API_KEY || ""),
 			},
@@ -155,7 +163,7 @@ async function build() {
 		// Process functions
 		fs.copySync(
 			path.join(__dirname, "../src/styleshift/build-in-functions/normal.ts"),
-			path.join(temp_path, "normal.ts")
+			path.join(temp_path, "normal.ts"),
 		);
 
 		const code_path = path.join(temp_path, "normal.ts");

@@ -69,7 +69,7 @@ export const video_category: Category = {
 		},
 		{
 			type: "color",
-			id: "EndBG",
+			id: "VideoEndHover",
 			name: "End of video chanel hover background color",
 			description: "Background color when hovering over suggested videos at the end.",
 			value: "#00000050",
@@ -163,8 +163,56 @@ export const video_category: Category = {
 			step: 5,
 			var_css: "--below-video-space",
 			constant_css: `
-      #player-container.ytd-watch-flexy {
-        margin-bottom: var(--below-video-space, 0px);
+      #below {
+        margin-top: var(--below-video-space, 0px) !important;
+      }
+    `,
+		},
+		{
+			type: "number_slide",
+			id: "WatchZoom",
+			name: "Watch page zoom",
+			description: "Zooms in or out on the watch page (video and details).",
+			value: 1,
+			min: 0.5,
+			max: 1.5,
+			step: 0.05,
+			var_css: "--watch-page-zoom",
+			constant_css: `
+      #columns.ytd-watch-flexy {
+        zoom: var(--watch-page-zoom, 1) !important;
+      }
+    `,
+		},
+		{
+			type: "number_slide",
+			id: "PlaylistH",
+			name: "Playlist panel max height",
+			description: "Sets the maximum height of the playlist item list on the watch page.",
+			value: 600,
+			min: 200,
+			max: 2000,
+			step: 10,
+			var_css: "--playlist-max-height",
+			constant_css: `
+      #items.ytd-playlist-panel-renderer {
+        max-height: var(--playlist-max-height, 600px) !important;
+      }
+    `,
+		},
+		{
+			type: "number_slide",
+			id: "PlaylistHFull",
+			name: "Playlist panel max height (Theater)",
+			description: "Sets the maximum height of the playlist item list when in theater mode.",
+			value: 800,
+			min: 200,
+			max: 2000,
+			step: 10,
+			var_css: "--playlist-max-height-theater",
+			constant_css: `
+      ytd-watch-flexy[theater] #items.ytd-playlist-panel-renderer {
+        max-height: var(--playlist-max-height-theater, 800px) !important;
       }
     `,
 		},

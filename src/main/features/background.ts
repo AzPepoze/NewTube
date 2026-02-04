@@ -58,6 +58,7 @@ export async function enable_bg() {
 	(await get_document_body()).appendChild(bg_tint_element);
 	(await get_document_body()).appendChild(bg_image_element);
 	window.addEventListener("resize", update_bg_img_size);
+	window.addEventListener("yt-navigate-finish", update_bg_img);
 }
 
 export async function disable_bg() {
@@ -72,10 +73,19 @@ export async function disable_bg() {
 		bg_image_element = null;
 	}
 	window.removeEventListener("resize", update_bg_img_size);
+	window.removeEventListener("yt-navigate-finish", update_bg_img);
 }
 
 export async function update_bg_img() {
 	console.log("BG updated");
+	const use_thumb = await load_setting("ThumbBG");
+	if (use_thumb) {
+		const video_id = new URLSearchParams(window.location.search).get("v");
+		if (video_id) {
+			bg_image.src = `https://i.ytimg.com/vi/${video_id}/maxresdefault.jpg`;
+			return;
+		}
+	}
 	const url = await load_setting("BGIMG");
 	bg_image.src = url;
 }

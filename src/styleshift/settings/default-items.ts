@@ -1,9 +1,9 @@
 import { Category, Setting } from "../types/store";
 
 export const styleshift_property_list: { [key: string]: string[] } = {
-	text: ["type", "id", "html", "text_align", "color", "font_size", "editable"],
-	sub_text: ["type", "id", "text", "text_align", "color", "font_size", "editable"],
-	button: ["type", "id", "description", "icon", "text_align", "color", "font_size", "click_function", "editable"],
+	text: ["type", "id", "html", "align", "color", "font_size", "editable"],
+	sub_text: ["type", "id", "text", "align", "color", "font_size", "editable"],
+	button: ["type", "id", "description", "icon", "align", "color", "font_size", "click_function", "editable"],
 	checkbox: [
 		"type",
 		"id",
@@ -60,14 +60,14 @@ export const ui_preset: Setting[] = [
 		type: "text",
 		id: "Test_text",
 		html: "Test text",
-		text_align: "left",
+		align: "left",
 		font_size: 14,
 	},
 	{
 		type: "sub_text",
 		id: "Test_Sub_title",
 		text: "Test Setting Sub title",
-		text_align: "left",
+		align: "left",
 		color: "#ffffff",
 		font_size: 14,
 	},
@@ -77,7 +77,7 @@ export const ui_preset: Setting[] = [
 		name: "button",
 		description: "",
 		icon: "",
-		text_align: "center",
+		align: "center",
 		color: "#00FF99",
 		font_size: 15,
 	},

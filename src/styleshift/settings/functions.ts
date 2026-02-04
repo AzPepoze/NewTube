@@ -77,7 +77,7 @@ const settings_function = {
 				style_sheet.textContent = "";
 				style_sheet.textContent += `:root{${
 					this_setting.var_css ? this_setting.var_css : `--${this_setting.id}`
-				}: ${value}${this_setting.var_css_unit || "px"}`;
+				}: ${value}${this_setting.unit || "px"}`;
 				if (this_setting.constant_css) {
 					style_sheet.textContent += this_setting.constant_css;
 				}

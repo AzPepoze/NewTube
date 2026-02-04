@@ -1,6 +1,6 @@
 import { Category } from "../../styleshift/types/store";
 import { enable_new_youtube_layout, disable_new_youtube_layout } from "../features/beta";
-import { setup_audio_visualizer } from "../features/visualizer";
+import { setup_audio_visualizer, destroy_audio_visualizer } from "../features/visualizer";
 
 export const beta_features_category: Category = {
 	category: "🌠 Beta features!",
@@ -25,6 +25,7 @@ export const beta_features_category: Category = {
 			description: "Displays a real-time audio spectrum visualizer at the bottom of the screen.",
 			value: false,
 			enable_function: setup_audio_visualizer,
+			disable_function: destroy_audio_visualizer,
 		},
 	],
 };

@@ -17,27 +17,29 @@
 	"dependencies": {
 		"colorthief": "^2.6.0",
 		"jszip": "^3.10.1",
-		"monaco-editor": "^0.52.2",
-		"monaco-themes": "^0.4.7"
+		"monaco-editor": "^0.55.1",
+		"monaco-themes": "^0.4.8"
 	},
 	"devDependencies": {
-		"@eslint/js": "^9.39.1",
-		"@types/chrome": "^0.0.268",
-		"@types/node": "^22.19.1",
+		"@eslint/js": "^9.39.2",
+		"@types/chrome": "^0.1.36",
+		"@types/node": "^25.2.0",
 		"archiver": "^7.0.1",
 		"azpepoze.node_tools": "^1.0.4",
-		"chokidar": "^4.0.3",
+		"chokidar": "^5.0.0",
 		"concurrently": "^9.2.1",
 		"dotenv": "^17.2.3",
-		"esbuild": "^0.24.2",
-		"eslint": "^9.39.1",
-		"fs-extra": "^11.3.2",
-		"globals": "^16.5.0",
+		"esbuild": "^0.27.2",
+		"esbuild-svelte": "^0.9.4",
+		"eslint": "^9.39.2",
+		"fs-extra": "^11.3.3",
+		"globals": "^17.3.0",
 		"jiti": "^2.6.1",
-		"sass": "^1.94.2",
+		"sass": "^1.97.3",
+		"svelte": "^5.49.2",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.9.3",
-		"typescript-eslint": "^8.48.0",
+		"typescript-eslint": "^8.54.0",
 		"web-ext": "^9.2.0"
 	}
 }
