@@ -661,7 +661,6 @@ export async function save_styleshift_value(id, value: string) {
  * @returns {Promise<any>}
  */
 export async function create_styleshift_setting_ui(type: string, this_setting: Setting, ...args: unknown[]) {
-	// @ts-ignore
 	const ui = await settings_ui[type](this_setting, ...args);
 
 	let ui_element;

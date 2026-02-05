@@ -38,11 +38,7 @@
 	--Font-Color: white;
 	--Drag-Top-BG: #80808082;
 
-	--Category-Title-BG: radial-gradient(
-		at center top,
-		rgb(255, 255, 255),
-		var(--White-50)
-	);
+	--Category-Title-BG: radial-gradient(at center top, rgb(255, 255, 255), var(--White-50));
 	--Category-Title-Text-Color: black;
 
 	--Category-Left-BG: linear-gradient(90deg, transparent, var(--White-10));

@@ -19,3 +19,68 @@
 		opacity: 0;
 	}
 }
+
+@keyframes glowing {
+	0% {
+		background-position: 0 0;
+	}
+	50% {
+		background-position: 400% 0;
+	}
+	100% {
+		background-position: 0 0;
+	}
+}
+
+@keyframes STYLESHIFT-spin-rainbow {
+	from {
+		--angle: 0deg;
+	}
+	to {
+		--angle: 360deg;
+	}
+}
+
+@keyframes STYLESHIFT-slide-rainbow {
+	0% {
+		background-position: 0px 0px;
+	}
+	50% {
+		background-position: 400% 0px;
+	}
+	100% {
+		background-position: 0px 0px;
+	}
+}
+
+@keyframes STYLESHIFT-Notification-Hide {
+	0% {
+		opacity: 1;
+		max-height: 1000px;
+		padding: 10px;
+		margin-top: 10px;
+	}
+	100% {
+		opacity: 0;
+		max-height: 0;
+		min-height: 0;
+		height: 0;
+		padding: 0;
+		margin-top: 0;
+	}
+}
+
+@keyframes STYLESHIFT-Notification-Show {
+	0% {
+		opacity: 0;
+		max-height: 0;
+		padding: 0;
+		margin-top: 0;
+	}
+	100% {
+		opacity: 1;
+		max-height: 1000px;
+		padding: 10px;
+		margin-top: 10px;
+	}
+}

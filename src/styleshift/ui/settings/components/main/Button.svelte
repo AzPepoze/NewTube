@@ -1,23 +1,23 @@
 <script lang="ts">
-	import SettingFrame from "../SettingFrame.svelte";
-	import { hex_to_rgb, rgb_to_hsv, hsv_to_rgb } from "../../../../build-in-functions/normal";
-	import Description from "./Description.svelte";
-
-	let {
-		id = "",
-		name = "",
-		description = "",
-		icon = "",
-		color = "#ffffff",
-		align = "center",
-		font_size = 15,
-		style = "",
-		onClick = () => {},
-	} = $props();
-
-	let scale = $state(1);
-
-	const colors = $derived.by(() => {
+			import { hex_to_rgb, rgb_to_hsv, hsv_to_rgb } from "../../../../build-in-functions/normal";
+			import Description from "./Description.svelte";
+			import Icon from "./Icon.svelte";
+			import { getAssetUrl } from "@ui/utils";
+		
+			let {
+				name = "",
+				description = "",
+				icon = "",
+				color = "#ffffff",
+				align = "center",
+				font_size = 15,
+				onClick = () => {},
+			} = $props();
+		
+			let scale = $state(1);
+		
+			const colors = $derived.by(() => {
+		
 		const { r, g, b } = hex_to_rgb(color);
 
 		const bg_hsv = rgb_to_hsv({ r, g, b });
@@ -50,24 +50,22 @@
 	}
 </script>
 
-<SettingFrame
-	{id}
-	type="button"
-	clickable={true}
-	onClick={handleClick}
-	style="background: {colors.background}; border: 1px solid {colors.borderColor}; transform: scale({scale}); {style}"
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div 
+	class="STYLESHIFT-Button" 
+	style="justify-content: {align}; background: {colors.background}; border: 1px solid {colors.borderColor}; transform: scale({scale});"
+	onclick={handleClick}
 >
-	<div class="STYLESHIFT-Button" style="justify-content: {align};">
-		{#if icon}
-			<img class="STYLESHIFT-Button-Icon" src={icon} alt="" />
-		{/if}
-		<Description
-			{name}
-			{description}
-			style="display: flex; color: {colors.textColor}; font-size: {font_size}px;"
-		/>
-	</div>
-</SettingFrame>
+	{#if icon}
+		<Icon name={getAssetUrl(icon)} className="STYLESHIFT-Button-Icon" applyFilter={false} />
+	{/if}
+	<Description
+		{name}
+		{description}
+		style="display: flex; color: {colors.textColor}; font-size: {font_size}px;"
+	/>
+</div>
 
 <style lang="scss">
 	.STYLESHIFT-Button {
@@ -78,6 +76,9 @@
 		user-select: none;
 		width: -webkit-fill-available;
 		flex-direction: row;
+		padding: 20px;
+		border-radius: 20px;
+		cursor: pointer;
 	}
 
 	.STYLESHIFT-Button:hover {
@@ -93,6 +94,7 @@
 	.STYLESHIFT-Button-Icon {
 		height: 40px;
 		margin-right: 10px;
+		object-fit: contain;
 	}
 
 	.STYLESHIFT-Button-Text {

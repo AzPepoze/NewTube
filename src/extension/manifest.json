@@ -57,7 +57,7 @@
 		},
 		"Developer": {
 			"suggested_key": {
-				"default": "Alt+Shift+V"
+				"default": "Alt+Shift+A"
 			},
 			"description": "Toggle Developer Mode"
 		}

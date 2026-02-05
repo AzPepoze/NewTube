@@ -22,7 +22,6 @@ export function setup_audio_visualizer() {
 		}
 
 		try {
-			// @ts-ignore
 			audio_ctx = new (window.AudioContext || window.webkitAudioContext)();
 			analyser = audio_ctx.createAnalyser();
 			analyser.fftSize = 512;

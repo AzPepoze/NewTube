@@ -1,4 +1,7 @@
 <script lang="ts">
+	import Icon from "../main/Icon.svelte";
+	import { getAssetUrl } from "@ui/utils";
+
 	let {
 		icon,
 		onClick = () => {},
@@ -18,7 +21,11 @@
 	{style}
 	type="button"
 >
-	{icon}
+	{#if typeof icon === "string" && (icon.includes(".svg") || icon.includes("data:image/svg+xml") || icon.startsWith("/"))}
+		<Icon name={getAssetUrl(icon)} />
+	{:else}
+		{icon}
+	{/if}
 </button>
 
 <style lang="scss">

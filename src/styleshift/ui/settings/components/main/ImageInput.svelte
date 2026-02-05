@@ -3,6 +3,9 @@
 	import PreviewImage from "./PreviewImage.svelte";
 	import Button from "./Button.svelte";
 	import { extension_location } from "../../../../run";
+	import { getAssetUrl } from "@ui/utils";
+
+	import Description from "./Description.svelte";
 
 	let {
 		onFileSelect,
@@ -10,7 +13,7 @@
 		id = "",
 		name = "",
 		description = "",
-		value = "",
+		value = $bindable(""),
 		placeholder = "https://example.com/image.png",
 	} = $props();
 
@@ -83,12 +86,7 @@
 
 <SettingFrame {id} type="image_input" vertical={true}>
 	<div class="STYLESHIFT-Image-Input-Header">
-		<div class="STYLESHIFT-Label-Container">
-			<span class="STYLESHIFT-Label">{name || "Upload Image / Paste URL"}</span>
-			{#if description}
-				<span class="STYLESHIFT-Description">{description}</span>
-			{/if}
-		</div>
+		<Description {name} {description} />
 	</div>
 
 	<div class="STYLESHIFT-Image-Input-Controls">
@@ -104,7 +102,7 @@
 			onkeydown={(e) => e.key === "Enter" && fileInput.click()}
 			title="Click or Drag & Drop image to upload"
 		>
-			<img class="STYLESHIFT-Upload-Icon" src="{extension_location}/asset/upload.svg" alt="Upload" />
+			<img class="STYLESHIFT-Upload-Icon" src={getAssetUrl("asset/upload.svg")} alt="Upload" />
 			<span class="STYLESHIFT-Upload-Text">Upload</span>
 		</div>
 

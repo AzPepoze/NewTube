@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
+	import Icon from "./Icon.svelte";
+	import { getAssetUrl } from "@ui/utils";
 
 	let {
 		name = "",
@@ -38,10 +40,18 @@
 	{style}
 >
 	{#if name}
-		<div class="setting-name">{name}</div>
+		<div class="setting-name">
+			{#if name.includes(".svg") || name.includes("data:image/svg+xml") || name.startsWith("chrome-extension://")}
+				<Icon name={getAssetUrl(name)} className="STYLESHIFT-Description-Icon" applyFilter={true} />
+			{:else}
+				{name}
+			{/if}
+		</div>
 	{/if}
 	{#if description}
-		<div class="setting-description">{description}</div>
+		<div class="setting-description">
+			{description}
+		</div>
 	{/if}
 	{#if text}
 		{text}
@@ -69,6 +79,14 @@
 	.setting-name {
 		font-weight: 500;
 		user-select: text;
+		display: flex;
+		align-items: center;
+
+		:global(.STYLESHIFT-Description-Icon) {
+			width: 1.2em;
+			height: 1.2em;
+			filter: brightness(0) invert(1);
+		}
 	}
 
 	.setting-description {

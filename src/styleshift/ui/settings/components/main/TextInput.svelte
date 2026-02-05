@@ -1,8 +1,6 @@
 <script lang="ts">
-	import SettingFrame from "../SettingFrame.svelte";
 	import Description from "./Description.svelte";
 	let {
-		id = "",
 		name = "",
 		description = "",
 		placeholder = "Type here...",
@@ -15,12 +13,10 @@
 	}
 </script>
 
-<SettingFrame {id} type="text">
-	<Description {name} {description} />
-	<div class="STYLESHIFT-Input-Wrapper">
-		<input type="text" class="STYLESHIFT-Input" {placeholder} bind:value onchange={handleChange} />
-	</div>
-</SettingFrame>
+<Description {name} {description} />
+<div class="STYLESHIFT-Input-Wrapper">
+	<input type="text" class="STYLESHIFT-Input" {placeholder} bind:value onchange={handleChange} />
+</div>
 
 <style lang="scss">
 	.STYLESHIFT-Input-Wrapper {

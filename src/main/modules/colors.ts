@@ -1,13 +1,13 @@
-export function RGBtoHSV(color: [number, number, number]): [number, number, number] {
-	let r, g, b, h, s, v;
-	r = color[0];
-	g = color[1];
-	b = color[2];
+export function rgb_to_hsv(color: [number, number, number]): [number, number, number] {
+	const r = color[0];
+	const g = color[1];
+	const b = color[2];
 	const min = Math.min(r, g, b);
 	const max = Math.max(r, g, b);
 
-	v = max;
+	const v = max;
 	const delta = max - min;
+	let h, s;
 	if (max !== 0)
 		s = delta / max; // s
 	else {
@@ -27,19 +27,18 @@ export function RGBtoHSV(color: [number, number, number]): [number, number, numb
 	return [h, s, v];
 }
 
-export function HSVtoRGB(color: [number, number, number]): [number, number, number] {
-	let i;
-	let h, s, v, r, g, b;
-	h = color[0];
-	s = color[1];
-	v = color[2];
+export function hsv_to_rgb(color: [number, number, number]): [number, number, number] {
+	const h_input = color[0];
+	const s = color[1];
+	const v = color[2];
+	let r, g, b;
 	if (s === 0) {
 		// achromatic (grey)
 		r = g = b = v;
 		return [r, g, b];
 	}
-	h /= 60; // sector 0 to 5
-	i = Math.floor(h);
+	const h = h_input / 60; // sector 0 to 5
+	const i = Math.floor(h);
 	const f = h - i; // factorial part of h
 	const p = v * (1 - s);
 	const q = v * (1 - s * f);
@@ -79,11 +78,11 @@ export function HSVtoRGB(color: [number, number, number]): [number, number, numb
 	return [r, g, b];
 }
 
-export function hexToRgb(hex: string): [number, number, number] | null {
+export function hex_to_rgb(hex: string): [number, number, number] | null {
 	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 	return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : null;
 }
 
-export function rgbToHex(r: number, g: number, b: number): string {
+export function rgb_to_hex(r: number, g: number, b: number): string {
 	return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
 }

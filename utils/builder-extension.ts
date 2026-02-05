@@ -145,6 +145,16 @@ async function build() {
 			outfile: path.join(build_path, "styleshift.js"),
 			platform: "browser",
 			minify: is_production,
+			publicPath: "/",
+			alias: {
+				"@": path.join(__dirname, "../src"),
+				"@main": path.join(__dirname, "../src/main"),
+				"@styleshift": path.join(__dirname, "../src/styleshift"),
+				"@core": path.join(__dirname, "../src/styleshift/core"),
+				"@ui": path.join(__dirname, "../src/styleshift/ui"),
+				"@settings": path.join(__dirname, "../src/styleshift/settings"),
+				"@functions": path.join(__dirname, "../src/styleshift/build-in-functions"),
+			},
 			plugins: [
 				esbuild_svelte({
 					compilerOptions: {
@@ -157,6 +167,7 @@ async function build() {
 			},
 			loader: {
 				".ttf": "file",
+				".svg": "file",
 			},
 		});
 

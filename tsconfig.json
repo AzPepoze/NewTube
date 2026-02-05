@@ -11,7 +11,18 @@
 		"lib": ["es2022", "dom"],
 		"downlevelIteration": true,
 		"strictNullChecks": false,
-		"noImplicitAny": false
+		"noImplicitAny": false,
+		"ignoreDeprecations": "5.0",
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["src/*"],
+			"@main/*": ["src/main/*"],
+			"@styleshift/*": ["src/styleshift/*"],
+			"@core/*": ["src/styleshift/core/*"],
+			"@ui/*": ["src/styleshift/ui/*"],
+			"@settings/*": ["src/styleshift/settings/*"],
+			"@functions/*": ["src/styleshift/build-in-functions/*"]
+		}
 	},
 	"include": ["src/**/*.ts", "utils/**/*.ts", "eslint.config.mts"],
 	"exclude": ["node_modules"]

@@ -1,18 +1,5 @@
 @use "editor";
-
-@keyframes glowing {
-	0% {
-		background-position: 0 0;
-	}
-
-	50% {
-		background-position: 400% 0;
-	}
-
-	100% {
-		background-position: 0 0;
-	}
-}
+@use "animation";
 
 .STYLESHIFT-Main {
 	@property --angle {
@@ -20,40 +7,19 @@
 		initial-value: 0deg;
 		inherits: false;
 	}
-}
 
-@keyframes STYLESHIFT-spin-rainbow {
-	from {
-		--angle: 0deg;
-	}
-	to {
-		--angle: 360deg;
-	}
-}
-
-@keyframes STYLESHIFT-slide-rainbow {
-	0% {
-		background-position: 0px 0px;
-	}
-	50% {
-		background-position: 400% 0px;
-	}
-	100% {
-		background-position: 0px 0px;
-	}
-}
-
-.STYLESHIFT-Main {
 	* {
 		user-select: none;
 	}
 
 	textarea {
 		white-space: nowrap !important;
-	}
 
-	.STYLESHIFT-Scrollable,
-	textarea {
+		&::-webkit-scrollbar {
+			width: 10px !important;
+			height: 10px !important;
+		}
+
 		&::-webkit-scrollbar-track {
 			background: transparent;
 			border-radius: 10px !important;
@@ -70,15 +36,17 @@
 			width: 6px !important;
 			height: 10px !important;
 		}
-	}
-	textarea {
-		&::-webkit-scrollbar {
-			width: 10px !important;
-			height: 10px !important;
+
+		&::-webkit-scrollbar-track {
+			background: transparent;
+			border-radius: 10px !important;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background: var(--Grey-Dark) !important;
+			border-radius: 10px !important;
 		}
 	}
-
-	//---------------------------------------------
 
 	.STYLESHIFT-All-Transition {
 		transition: all 0.3s;
@@ -98,11 +66,9 @@
 		width: -webkit-fill-available;
 	}
 
-	.STYLESHIFT-Main > .STYLESHIFT-Setting-Frame {
+	> .STYLESHIFT-Setting-Frame {
 		background: var(--Setting-Frame-BG);
 	}
-
-	//---------------------------------------------
 
 	.STYLESHIFT-Number-Input {
 		width: 50px;

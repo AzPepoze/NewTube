@@ -1,54 +1,35 @@
-import { apply_drag } from "../../../../build-in-functions/normal";
-import { save_all } from "../../../../core/save";
-import { is_firefox, in_setting_page } from "../../../../run";
-import { update_setting_function } from "../../../../settings/functions";
-import { Category } from "../../../../types/store";
-import { settings_ui } from "../../setting-components";
-import { create_config_ui_function, setup_left_title_animation } from "../../settings";
+import { apply_drag } from "@functions/normal";
+import { save_all } from "@core/save";
+import { is_firefox, in_setting_page } from "@/styleshift/run";
+import { update_setting_function } from "@settings/functions";
+import { Category } from "@styleshift/types/store";
+import { settings_ui } from "@ui/settings/setting-components";
+import { create_config_ui_function, setup_left_title_animation } from "@ui/settings/settings";
 
-// @ts-ignore
 import FrameComponent from "./Frame.svelte";
-// @ts-ignore
 import SpaceComponent from "./Space.svelte";
-// @ts-ignore
 import TitleComponent from "./Title.svelte";
-// @ts-ignore
 import LeftTitleComponent from "./LeftTitle.svelte";
-// @ts-ignore
 import TextEditorComponent from "./TextEditor.svelte";
-// @ts-ignore
 import CodeEditorComponent from "./CodeEditor.svelte";
-// @ts-ignore
 import IconButtonComponent from "./IconButton.svelte";
-// @ts-ignore
-import DropdownComponent from "../main/Dropdown.svelte";
-// @ts-ignore
+import DropdownComponent from "@ui/settings/components/main/Dropdown.svelte";
 import SettingNameComponent from "./SettingName.svelte";
-// @ts-ignore
+import dragIcon from "@ui/assets/icons/drag.svg";
+import closeIcon from "@ui/assets/icons/close.svg";
 import BasicSliderComponent from "./BasicSlider.svelte";
-// @ts-ignore
 import BasicNumberInputComponent from "./BasicNumberInput.svelte";
-// @ts-ignore
 import FileInputComponent from "./FileInput.svelte";
-// @ts-ignore
 import CollapseSectionComponent from "./CollapseSection.svelte";
-// @ts-ignore
-import { mount, unmount } from "svelte";
+import { unmount } from "svelte";
 
 export const advance_setting_ui = {
 	["fill_screen"]: function (fill_bg: boolean = true) {
-		const target = document.createElement("div");
-
-		mount(FrameComponent as any, {
-			target: target,
-			props: {
-				className: "STYLESHIFT-FillScreen",
-				transparent: !fill_bg,
-				style: fill_bg ? "" : "pointer-events: none;",
-			},
-		});
-
-		return target.firstElementChild as HTMLDivElement;
+		return settings_ui.render_component(FrameComponent, {
+			className: "STYLESHIFT-FillScreen",
+			transparent: !fill_bg,
+			style: fill_bg ? "" : "pointer-events: none;",
+		}) as HTMLDivElement;
 	},
 
 	["setting_frame"]: function (
@@ -57,39 +38,23 @@ export const advance_setting_ui = {
 		center: { x: boolean; y: boolean } = { x: false, y: false },
 		transparent = false,
 	) {
-		const target = document.createElement("div");
-
-		mount(FrameComponent as any, {
-			target: target,
-			props: {
-				padding,
-				vertical,
-				centerX: center.x,
-				centerY: center.y,
-				transparent,
-			},
-		});
-
-		return target.firstElementChild as HTMLDivElement;
+		return settings_ui.render_component(FrameComponent, {
+			padding,
+			vertical,
+			centerX: center.x,
+			centerY: center.y,
+			transparent,
+		}) as HTMLDivElement;
 	},
 
 	["file_input"]: function (callback: (file: File) => void, type: string | null = null) {
-		const target = document.createElement("div");
-
-		mount(FileInputComponent as any, {
-			target: target,
-			props: {
-				accept: type,
-				onFileSelect: callback,
-			},
-		});
-
-		return target.firstElementChild as HTMLDivElement;
+		return settings_ui.render_component(FileInputComponent, {
+			accept: type,
+			onFileSelect: callback,
+		}) as HTMLDivElement;
 	},
 
 	["text_editor"]: function (obj: any = {}, key: string = "") {
-		const target = document.createElement("div");
-
 		let additinal_onchange: ((value: string) => void) | null = null;
 		let rearrange_value: ((value: string) => Promise<string> | string) | null = null;
 
@@ -101,22 +66,17 @@ export const advance_setting_ui = {
 			}
 		};
 
-		mount(TextEditorComponent as any, {
-			target: target,
-			props: {
-				value: obj[key] || "",
-				onInput: (val: string) => on_change(val),
-				onBlur: async (val: string) => {
-					let final_value = val;
-					if (rearrange_value) {
-						final_value = await rearrange_value(final_value);
-					}
-					on_change(final_value);
-				},
+		const text_editor = settings_ui.render_component(TextEditorComponent, {
+			value: obj[key] || "",
+			onInput: (val: string) => on_change(val),
+			onBlur: async (val: string) => {
+				let final_value = val;
+				if (rearrange_value) {
+					final_value = await rearrange_value(final_value);
+				}
+				on_change(final_value);
 			},
-		});
-
-		const text_editor = target.firstElementChild as HTMLTextAreaElement;
+		}) as HTMLTextAreaElement;
 
 		return {
 			text_editor: text_editor,
@@ -155,15 +115,14 @@ export const advance_setting_ui = {
 			}
 		};
 
-		const target = document.createElement("div");
-		parent.append(target);
-
 		let code_editor_instance: any;
 
 		if (!is_firefox || in_setting_page) {
-			code_editor_instance = mount(CodeEditorComponent as any, {
-				target: target,
-				props: {
+			const target = document.createElement("div");
+			parent.append(target);
+			code_editor_instance = (settings_ui as any).render_component(
+				CodeEditorComponent,
+				{
 					value: obj[key],
 					language: language,
 					height: height,
@@ -177,11 +136,12 @@ export const advance_setting_ui = {
 						on_change(final_value);
 					},
 				},
-			});
+				target,
+			);
 		} else {
 			const text_editor = settings_ui["text_editor"](obj, key);
 			(text_editor.text_editor as HTMLElement).style.height = height + "px";
-			target.append(text_editor.text_editor as HTMLElement);
+			parent.append(text_editor.text_editor as HTMLElement);
 
 			text_editor.on_change(async function (value: string) {
 				on_change(value);
@@ -202,50 +162,29 @@ export const advance_setting_ui = {
 	},
 
 	["setting_name"]: function (text: string, position: "left" | "center" | "right" = "left") {
-		const target = document.createElement("div");
-
-		mount(SettingNameComponent as any, {
-			target: target,
-			props: {
-				text,
-				align: position,
-			},
-		});
-
-		return target.firstElementChild as HTMLDivElement;
+		return settings_ui.render_component(SettingNameComponent, {
+			text,
+			align: position,
+		}) as HTMLDivElement;
 	},
 
 	["drag"]: function (target: HTMLElement) {
-		const div = document.createElement("div");
+		const drag = settings_ui.render_component(IconButtonComponent, {
+			icon: dragIcon,
+			className: "STYLESHIFT-Drag-Top",
+			onClick: () => {},
+		}) as HTMLDivElement;
 
-		mount(IconButtonComponent as any, {
-			target: div,
-			props: {
-				icon: "=",
-				className: "STYLESHIFT-Drag-Top",
-				onClick: () => {},
-			},
-		});
-
-		const drag = div.firstElementChild as HTMLDivElement;
 		apply_drag(drag, target);
-
 		return drag;
 	},
 
 	["close"]: function () {
-		const div = document.createElement("div");
-
-		mount(IconButtonComponent as any, {
-			target: div,
-			props: {
-				icon: "X",
-				className: "STYLESHIFT-Close",
-				onClick: () => {},
-			},
-		});
-
-		return div.firstElementChild as HTMLDivElement;
+		return settings_ui.render_component(IconButtonComponent, {
+			icon: closeIcon,
+			className: "STYLESHIFT-Close",
+			onClick: () => {},
+		}) as HTMLDivElement;
 	},
 
 	["title"]: async function (this_category: Category) {
@@ -253,13 +192,14 @@ export const advance_setting_ui = {
 
 		function update_ui() {
 			target.innerHTML = "";
-			mount(TitleComponent as any, {
-				target: target,
-				props: {
+			settings_ui.render_component(
+				TitleComponent,
+				{
 					text: this_category.category,
 					rainbow: this_category.rainbow,
 				},
-			});
+				target,
+			);
 		}
 		update_ui();
 
@@ -285,17 +225,10 @@ export const advance_setting_ui = {
 	},
 
 	["Left-title"]: function (category: string, skip_animation: boolean) {
-		const target = document.createElement("div");
-
-		mount(LeftTitleComponent as any, {
-			target: target,
-			props: {
-				category,
-				skipAnimation: skip_animation,
-			},
-		});
-
-		const title = target.firstElementChild as HTMLDivElement;
+		const title = settings_ui.render_component(LeftTitleComponent, {
+			category,
+			skipAnimation: skip_animation,
+		}) as HTMLDivElement;
 
 		if (!skip_animation) {
 			setup_left_title_animation(title);
@@ -305,17 +238,10 @@ export const advance_setting_ui = {
 	},
 
 	["Sub_title"]: function (text: string) {
-		const target = document.createElement("div");
-
-		mount(TitleComponent as any, {
-			target: target,
-			props: {
-				text,
-				subtitle: true,
-			},
-		});
-
-		return target.firstElementChild as HTMLDivElement;
+		return settings_ui.render_component(TitleComponent, {
+			text,
+			subtitle: true,
+		}) as HTMLDivElement;
 	},
 
 	["collapsed_button"]: async function (button_name: string, color: string, target_element: HTMLElement) {
@@ -326,16 +252,17 @@ export const advance_setting_ui = {
 			parent.insertBefore(target, target_element);
 		}
 
-		mount(CollapseSectionComponent as any, {
-			target: target,
-			props: {
+		settings_ui.render_component(
+			CollapseSectionComponent,
+			{
 				buttonName: button_name,
 				color: color,
 				children: () => {
 					return target_element;
 				},
 			},
-		});
+			target,
+		);
 
 		return { button: target.firstElementChild as HTMLDivElement };
 	},
@@ -349,9 +276,9 @@ export const advance_setting_ui = {
 		const container = document.createElement("div");
 		document.body.appendChild(container);
 
-		const dropdown = mount(DropdownComponent as any, {
-			target: container,
-			props: {
+		const dropdown = (settings_ui as any).render_component(
+			DropdownComponent,
+			{
 				options,
 				triggerEl: target,
 				isOpen: true,
@@ -365,7 +292,8 @@ export const advance_setting_ui = {
 					remove_dropdown();
 				},
 			},
-		});
+			container,
+		);
 
 		function remove_dropdown() {
 			if (container.parentNode) {
@@ -381,15 +309,7 @@ export const advance_setting_ui = {
 	},
 
 	["number_slide_ui"]: function (parent: HTMLElement) {
-		const target = document.createElement("div");
-		parent.appendChild(target);
-
-		mount(BasicSliderComponent as any, {
-			target: target,
-			props: {},
-		});
-
-		const number_slide_ui = target.firstElementChild as HTMLInputElement;
+		const number_slide_ui = settings_ui.render_component(BasicSliderComponent, {}, parent) as HTMLInputElement;
 
 		function update_number_slide(min: number = 0, max: number = 100, step: number = 1) {
 			number_slide_ui.min = min.toString();
@@ -401,23 +321,10 @@ export const advance_setting_ui = {
 	},
 
 	["number_input_ui"]: function (parent: HTMLElement) {
-		const target = document.createElement("div");
-		parent.appendChild(target);
-
-		mount(BasicNumberInputComponent as any, {
-			target: target,
-			props: {},
-		});
-
-		return target.firstElementChild as HTMLDivElement;
+		return settings_ui.render_component(BasicNumberInputComponent, {}, parent) as HTMLDivElement;
 	},
 
 	["space"]: async function (parent: HTMLElement, size: number = 20) {
-		mount(SpaceComponent as any, {
-			target: parent,
-			props: {
-				size,
-			},
-		});
+		settings_ui.render_component(SpaceComponent, { size }, parent);
 	},
 };

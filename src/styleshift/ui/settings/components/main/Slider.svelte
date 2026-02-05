@@ -1,8 +1,6 @@
 <script lang="ts">
-	import SettingFrame from "../SettingFrame.svelte";
 	import Description from "./Description.svelte";
 	let {
-		id = "",
 		name = "",
 		description = "",
 		value = $bindable(0),
@@ -12,7 +10,6 @@
 		unit = "",
 		onUpdate = () => {},
 	}: {
-		id?: string;
 		name?: string;
 		description?: string;
 		value: number;
@@ -28,7 +25,7 @@
 	}
 </script>
 
-<SettingFrame {id} type="slider" vertical={true}>
+<div class="STYLESHIFT-Slider-Container">
 	<div class="STYLESHIFT-Slider-Header">
 		<Description {name} {description} />
 		<div class="STYLESHIFT-Slider-Value-Wrapper">
@@ -48,9 +45,13 @@
 	</div>
 
 	<input type="range" class="STYLESHIFT-Slider-Range" {min} {max} {step} bind:value oninput={handleInput} />
-</SettingFrame>
+</div>
 
 <style lang="scss">
+	.STYLESHIFT-Slider-Container {
+		width: 100%;
+	}
+
 	.STYLESHIFT-Slider-Header {
 		display: flex;
 		justify-content: space-between;
@@ -80,9 +81,13 @@
 		font-weight: bold;
 		outline: none;
 		border-radius: 20px;
+		appearance: textfield;
+		-moz-appearance: textfield;
 
+		&::-webkit-outer-spin-button,
 		&::-webkit-inner-spin-button {
-			display: none;
+			-webkit-appearance: none;
+			margin: 0;
 		}
 	}
 

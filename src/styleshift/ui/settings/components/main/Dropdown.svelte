@@ -1,12 +1,10 @@
 <script lang="ts">
-	import SettingFrame from "../SettingFrame.svelte";
 	import Description from "./Description.svelte";
 	import { scale } from "svelte/transition";
 	import { quintOut } from "svelte/easing";
 	import { tick } from "svelte";
 
 	let {
-		id = "",
 		name = "",
 		description = "",
 		value = $bindable(""),
@@ -58,12 +56,15 @@
 	let menuLeft = $state(0);
 	let menuWidth = $state(0);
 	let isReady = $state(false);
+	let scrollParent = $state<HTMLElement | null>(null);
 
 	function updatePosition() {
 		if (!triggerEl) return;
 
-		// Check if trigger is visible in its scrollable container
-		const scrollParent = triggerEl.closest(".STYLESHIFT-Scrollable");
+		if (!scrollParent) {
+			scrollParent = triggerEl.closest(".STYLESHIFT-Scrollable") as HTMLElement;
+		}
+
 		const triggerRect = triggerEl.getBoundingClientRect();
 
 		if (scrollParent) {
@@ -82,93 +83,91 @@
 
 		if (!menuEl) return;
 
-		menuWidth = triggerRect.width;
-		menuLeft = triggerRect.left;
+		menuWidth = triggerEl.offsetWidth;
+		menuLeft = triggerEl.offsetLeft;
 
-		const spaceBelow = window.innerHeight - triggerRect.bottom;
+		const parentRect = scrollParent?.getBoundingClientRect() || { bottom: window.innerHeight, top: 0 };
+		const spaceBelow = parentRect.bottom - triggerRect.bottom;
 		const menuHeight = menuEl.offsetHeight;
 
-		if (spaceBelow < menuHeight && triggerRect.top > menuHeight) {
+		if (spaceBelow < menuHeight && triggerRect.top - parentRect.top > menuHeight) {
 			isMenuAbove = true;
-			menuTop = triggerRect.top - menuHeight - 8;
+			menuTop = triggerEl.offsetTop - menuHeight - 8;
 		} else {
 			isMenuAbove = false;
-			menuTop = triggerRect.bottom + 8;
+			menuTop = triggerEl.offsetTop + triggerEl.offsetHeight + 8;
 		}
 		isReady = true;
 	}
 
-	// Portal Action
-	function portal(node: HTMLElement) {
-		document.body.appendChild(node);
+	function menuAction(node: HTMLElement) {
+		menuEl = node;
 		updatePosition();
+
+		window.addEventListener("scroll", updatePosition, true);
+		window.addEventListener("resize", updatePosition);
+
 		return {
 			destroy() {
-				if (node.parentNode) node.parentNode.removeChild(node);
+				window.removeEventListener("scroll", updatePosition, true);
+				window.removeEventListener("resize", updatePosition);
 			},
 		};
 	}
 
 	$effect(() => {
-		if (isOpen) {
+		if (!isOpen) {
 			isReady = false;
-			tick().then(() => {
-				updatePosition();
-			});
-
-			window.addEventListener("scroll", updatePosition, true);
-			window.addEventListener("resize", updatePosition);
-
-			return () => {
-				window.removeEventListener("scroll", updatePosition, true);
-				window.removeEventListener("resize", updatePosition);
-			};
+			scrollParent = null;
 		}
 	});
 </script>
 
-<SettingFrame {id} type="dropdown" style={justMenu ? "display: none !important;" : ""}>
-	{#if !justMenu}
-		<Description {name} {description} />
-		<div class="STYLESHIFT-Dropdown-Wrapper">
-			<button
-				bind:this={triggerEl}
-				class="STYLESHIFT-Dropdown-Trigger"
-				class:open={isOpen}
-				onclick={toggleDropdown}
-			>
-				<span class="current-value">{value}</span>
-				<span class="arrow">▼</span>
-			</button>
-		</div>
-	{/if}
-
-	{#if isOpen}
-		<div
-			bind:this={menuEl}
-			use:portal
-			class="STYLESHIFT-Dropdown-Menu"
-			style:top="{menuTop}px"
-			style:left="{menuLeft}px"
-			style:width="{menuWidth}px"
-			style:opacity={isReady ? 1 : 0}
-			style:pointer-events={isReady ? "all" : "none"}
-			class:above={isMenuAbove}
-			transition:scale={{ duration: 300, start: 0.9, opacity: 0, easing: quintOut }}
+{#if !justMenu}
+	<Description {name} {description} />
+	<div class="STYLESHIFT-Dropdown-Wrapper">
+		<button
+			bind:this={triggerEl}
+			class="STYLESHIFT-Dropdown-Trigger"
+			class:open={isOpen}
+			onclick={toggleDropdown}
 		>
-			{#each options as option, i}
-				<button
-					class="STYLESHIFT-Dropdown-Item"
-					class:selected={option === value}
-					onclick={() => handleSelect(option)}
-					style="animation-delay: {i * 50}ms"
-				>
-					{option}
-				</button>
-			{/each}
-		</div>
-	{/if}
-</SettingFrame>
+			<span class="current-value">{value}</span>
+			<span class="arrow">▼</span>
+		</button>
+
+		{#if isOpen}
+			{@render menu()}
+		{/if}
+	</div>
+{:else if isOpen}
+	{@render menu()}
+{/if}
+
+{#snippet menu()}
+	<div
+		use:menuAction
+		class="STYLESHIFT-Dropdown-Menu"
+		style:top="{menuTop}px"
+		style:left="{menuLeft}px"
+		style:width="{menuWidth}px"
+		style:visibility={isReady ? "visible" : "hidden"}
+		style:pointer-events={isReady ? "all" : "none"}
+		class:above={isMenuAbove}
+		transition:scale={{ duration: 300, start: 0.9, opacity: 0, easing: quintOut }}
+	>
+		{#each options as option, i}
+			<button
+				class="STYLESHIFT-Dropdown-Item"
+				class:selected={option === value}
+				onclick={() => handleSelect(option)}
+				style="animation-delay: {i * 50}ms"
+			>
+				{option}
+			</button>
+		{/each}
+	</div>
+{/snippet}
 
 <style lang="scss">
 	.STYLESHIFT-Dropdown-Wrapper {
@@ -218,9 +217,9 @@
 	}
 
 	.STYLESHIFT-Dropdown-Menu {
-		position: fixed;
-		z-index: 2147483647;
-		background: var(--Setting-Frame-BG);
+		position: absolute;
+		z-index: 10000;
+		background: var(--BG-Dark);
 		border: 1px solid var(--White-10);
 		border-radius: 15px;
 		padding: 6px;

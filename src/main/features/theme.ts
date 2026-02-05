@@ -1,5 +1,4 @@
 import { get_ytd_app } from "../modules/main";
-// @ts-ignore
 import ColorThief from "colorthief";
 import { rgb_to_hsv, hsv_to_rgb } from "../../styleshift/build-in-functions/normal";
 import { load_setting } from "../../styleshift/core/save";
@@ -40,7 +39,7 @@ export function setup_theme_by_video() {
 
 		// Use mqdefault first, try maxres if possible?
 		// Actually legacy used maxresdefault then 0.jpg as fallback
-		let thumb_url = `https://i.ytimg.com/vi/${video_id}/maxresdefault.jpg`;
+		const thumb_url = `https://i.ytimg.com/vi/${video_id}/maxresdefault.jpg`;
 
 		try {
 			const img = new Image();
@@ -79,7 +78,7 @@ export function setup_theme_by_video() {
 			const set_prop = (name: string, val: string) => ytd_app.style.setProperty(name, val);
 
 			// HSV Adjustments
-			let hsv = rgb_to_hsv({ r: color[0], g: color[1], b: color[2] });
+			const hsv = rgb_to_hsv({ r: color[0], g: color[1], b: color[2] });
 			hsv.s *= 1.5;
 			if (hsv.s > 60) hsv.s = 60;
 

@@ -1,17 +1,14 @@
 <script lang="ts">
-	import SettingFrame from "../SettingFrame.svelte";
 	import Description from "./Description.svelte";
-	let { id = "", name = "", description = "", value = $bindable(false), onUpdate = () => {} } = $props();
+	let { name = "", description = "", value = $bindable(false), onUpdate = () => {} } = $props();
 
 	function handleChange() {
 		onUpdate(value);
 	}
 </script>
 
-<SettingFrame {id} type="checkbox">
-	<Description {name} {description} />
-	<input type="checkbox" class="STYLESHIFT-Checkbox" bind:checked={value} onchange={handleChange} />
-</SettingFrame>
+<Description {name} {description} />
+<input type="checkbox" class="STYLESHIFT-Checkbox" bind:checked={value} onchange={handleChange} />
 
 <style lang="scss">
 	.STYLESHIFT-Checkbox {

@@ -2,6 +2,7 @@
 	"scripts": {
 		"dev:firefox": "concurrently \"npm:dev:css\" \"npm:dev:js\" \"npm:test:firefox\"",
 		"dev:chromium": "concurrently \"npm:dev:css\" \"npm:dev:js\" \"npm:test:chromium\"",
+		"check": "svelte-check --tsconfig ./tsconfig.json && eslint src",
 		"lint:fix": "eslint --fix src",
 		"dev:js": "ts-node utils/builder-extension.ts",
 		"dev:css": "sass --watch src/styleshift/styles/setting.scss out/build/style.css --style=compressed --no-source-map",
@@ -37,6 +38,7 @@
 		"jiti": "^2.6.1",
 		"sass": "^1.97.3",
 		"svelte": "^5.49.2",
+		"svelte-check": "^4.3.6",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.54.0",

@@ -78,6 +78,7 @@
 		opacity: 0;
 		cursor: pointer;
 		-webkit-appearance: none;
+		appearance: none;
 	}
 
 	.STYLESHIFT-Color-Alpha-Section {

@@ -65,14 +65,13 @@
 			margin-top: -56px;
 			transform: scaleY(0);
 			opacity: 0;
-		}
-	}
 
-	.STYLESHIFT-Scrollable:not([Draging]) .STYLESHIFT-Category-Frame:hover .STYLESHIFT-Add-Setting-Button,
-	.STYLESHIFT-Add-Setting-Button[selecting] {
-		margin-top: 0;
-		transform: scaleY(1);
-		opacity: 1;
+			&[selecting] {
+				margin-top: 0;
+				transform: scaleY(1);
+				opacity: 1;
+			}
+		}
 	}
 
 	.STYLESHIFT-Glow-Hover:hover {
@@ -110,21 +109,22 @@
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
+		padding-block: 10px;
 
 		&[Left] {
 			resize: horizontal;
 			background: var(--Category-Left-BG);
 		}
 
-		::-webkit-scrollbar {
+		&::-webkit-scrollbar {
 			width: 10px;
 		}
 
-		::-webkit-scrollbar-track {
+		&::-webkit-scrollbar-track {
 			background: transparent;
 		}
 
-		::-webkit-scrollbar-thumb {
+		&::-webkit-scrollbar-thumb {
 			background: var(--Grey);
 		}
 
@@ -134,46 +134,42 @@
 		.STYLESHIFT-Category-Frame {
 			background: var(--Setting-Frame-BG);
 			padding: 10px;
+
+			.STYLESHIFT-Config-Frame {
+				gap: 0;
+
+				.STYLESHIFT-Config-Button {
+					--Config-Button-Size: 40px;
+					transition: all 0.2s;
+					opacity: 0;
+					min-width: 0;
+					min-height: 0;
+					max-width: 0;
+					max-height: 0;
+					padding: 0;
+					border-width: 0;
+				}
+
+				&:hover {
+					gap: 10px;
+
+					.STYLESHIFT-Config-Button {
+						opacity: 1;
+						min-width: var(--Config-Button-Size);
+						min-height: var(--Config-Button-Size);
+						max-width: var(--Config-Button-Size);
+						max-height: var(--Config-Button-Size);
+						border-width: 1px;
+					}
+				}
+			}
 		}
 
 		.STYLESHIFT-Category-Frame > .STYLESHIFT-Setting-Frame,
 		.STYLESHIFT-Main-Setting-Frame:has(.STYLESHIFT-Setting-Frame) {
 			background: radial-gradient(at center top, var(--White-20), var(--White-10));
 		}
-	}
 
-	.STYLESHIFT-Scrollable {
-		.STYLESHIFT-Category-Frame > .STYLESHIFT-Config-Frame {
-			gap: 0;
-
-			.STYLESHIFT-Config-Button {
-				--Config-Button-Size: 40px;
-				transition: all 0.2s;
-				opacity: 0;
-				min-width: 0;
-				min-height: 0;
-				max-width: 0;
-				max-height: 0;
-				padding: 0;
-				border-width: 0;
-			}
-		}
-
-		&:not([Draging]) .STYLESHIFT-Category-Frame > .STYLESHIFT-Config-Frame:hover {
-			gap: 10px;
-
-			.STYLESHIFT-Config-Button {
-				opacity: 1;
-				min-width: var(--Config-Button-Size);
-				min-height: var(--Config-Button-Size);
-				max-width: var(--Config-Button-Size);
-				max-height: var(--Config-Button-Size);
-				border-width: 1px;
-			}
-		}
-	}
-
-	.STYLESHIFT-Scrollable {
 		.STYLESHIFT-Add-Category-Button {
 			opacity: 0;
 		}
@@ -181,11 +177,19 @@
 		&:hover .STYLESHIFT-Add-Category-Button {
 			opacity: 1;
 		}
-	}
 
-	.STYLESHIFT-Scrollable[Draging] {
-		.STYLESHIFT-Drag-Hint:hover {
-			background: var(--White-50);
+		&[Draging] {
+			.STYLESHIFT-Drag-Hint:hover {
+				background: var(--White-50);
+			}
+		}
+
+		&:not([Draging]) {
+			.STYLESHIFT-Category-Frame:hover .STYLESHIFT-Add-Setting-Button {
+				margin-top: 0;
+				transform: scaleY(1);
+				opacity: 1;
+			}
 		}
 	}
 
@@ -200,6 +204,13 @@
 		max-height: 400px;
 		object-fit: contain;
 	}
+
+	mark {
+		background: var(--Theme-0);
+		color: white;
+		border-radius: 2px;
+		padding-inline: 2px;
+	}
 }
 
 .STYLESHIFT-Highlight {
@@ -207,7 +218,6 @@
 		background 0.2s,
 		border-color 0.2s;
 	border-radius: 10px;
-	position: fixed;
 	border: 1px solid white;
 	position: absolute;
 	z-index: 1000;
@@ -273,41 +283,8 @@ textarea.STYLESHIFT-Selector-Text-Editor {
 	display: flex;
 	flex-direction: column-reverse;
 	padding: 10px;
-	height: -moz-available;
 	bottom: 0;
 	overflow-y: auto;
-}
-
-@keyframes STYLESHIFT-Notification-Hide {
-	0% {
-		opacity: 1;
-		max-height: 1000px;
-		padding: 10px;
-		margin-top: 10px;
-	}
-	100% {
-		opacity: 0;
-		max-height: 0;
-		min-height: 0;
-		height: 0;
-		padding: 0;
-		margin-top: 0;
-	}
-}
-
-@keyframes STYLESHIFT-Notification-Show {
-	0% {
-		opacity: 0;
-		max-height: 0;
-		padding: 0;
-		margin-top: 0;
-	}
-	100% {
-		opacity: 1;
-		max-height: 1000px;
-		padding: 10px;
-		margin-top: 10px;
-	}
 }
 
 .STYLESHIFT-Notification {

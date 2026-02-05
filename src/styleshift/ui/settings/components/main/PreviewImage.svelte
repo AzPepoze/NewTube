@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+	import { getAssetUrl } from "@ui/utils";
 
 	let { src = "" } = $props();
 
@@ -48,7 +49,7 @@
 			console.warn("Failed to load image for preview:", url);
 			// Optionally clear canvas or show error
 		};
-		img.src = url;
+		img.src = getAssetUrl(url);
 	}
 
 	$effect(() => {

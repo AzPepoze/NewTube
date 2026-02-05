@@ -1,25 +1,18 @@
-import { rearrange_selector } from "../../../../build-in-functions/normal";
-import { Setting } from "../../../../types/store";
-import { settings_ui } from "../../setting-components";
+import { rearrange_selector } from "@functions/normal";
+import { Setting } from "@styleshift/types/store";
+import { settings_ui } from "@ui/settings/setting-components";
 
-// @ts-ignore
-// @ts-ignore
 import DevSettingSectionComponent from "./DevSettingSection.svelte";
-// @ts-ignore
 import ConfigSubSectionComponent from "./ConfigSubSection.svelte";
-// @ts-ignore
 import ConfigMainSectionComponent from "./ConfigMainSection.svelte";
-// @ts-ignore
 import AddSettingButtonComponent from "./AddSettingButton.svelte";
-// @ts-ignore
-import { mount } from "svelte";
 
 export const developer_setting_ui = {
 	["setting_developer_text_editor"]: async function (
 		parent: HTMLElement,
 		this_setting,
 		this_property,
-		update_ui = function (value) {},
+		update_ui = function (_value) {},
 	) {
 		const main_ui = settings_ui["setting_frame"](true, true);
 		main_ui.className += " STYLESHIFT-Config-Sub-Frame";
@@ -46,41 +39,27 @@ export const developer_setting_ui = {
 		ext_array = ["function", "css"],
 		update_config,
 	) {
-		const target = document.createElement("div");
-		parent.append(target);
-
-		mount(DevSettingSectionComponent as any, {
-			target: target,
-			props: {
-				setting: this_setting,
-				runType: run_type,
-				extArray: ext_array,
-				onUpdateConfig: update_config,
-			},
-		});
-
-		return target.firstElementChild as HTMLDivElement;
+		return settings_ui.render_component(DevSettingSectionComponent, {
+			setting: this_setting,
+			runType: run_type,
+			extArray: ext_array,
+			onUpdateConfig: update_config,
+		}, parent) as HTMLDivElement;
 	},
 
 	["Config_Main_Section"]: async function (parent, this_setting, props, update_ui = function () {}) {
-		mount(ConfigMainSectionComponent as any, {
-			target: parent,
-			props: {
-				setting: this_setting,
-				props: props,
-				updateUI: update_ui,
-			},
-		});
+		settings_ui.render_component(ConfigMainSectionComponent, {
+			setting: this_setting,
+			props: props,
+			updateUI: update_ui,
+		}, parent);
 	},
 
 	["Config_Sub_Section"]: async function (parent, this_setting, props) {
-		mount(ConfigSubSectionComponent as any, {
-			target: parent,
-			props: {
-				setting: this_setting,
-				props: props,
-			},
-		});
+		settings_ui.render_component(ConfigSubSectionComponent, {
+			setting: this_setting,
+			props: props,
+		}, parent);
 	},
 
 	["selector_text_editor"]: async function (parent, this_category) {
@@ -115,15 +94,10 @@ export const developer_setting_ui = {
 	},
 
 	["add_setting_button"]: async function (category_settings: Setting[]) {
-		const target = document.createElement("div");
+		const frame = settings_ui.render_component(AddSettingButtonComponent, {
+			categorySettings: category_settings,
+		}) as HTMLDivElement;
 
-		mount(AddSettingButtonComponent as any, {
-			target: target,
-			props: {
-				categorySettings: category_settings,
-			},
-		});
-
-		return { frame: target.firstElementChild as HTMLDivElement };
+		return { frame };
 	},
 };
