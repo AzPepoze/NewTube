@@ -13,7 +13,7 @@ export function setup_flyout() {
 				}
 			});
 		},
-		{ threshold: 0 }
+		{ threshold: 0 },
 	);
 
 	const start_observing = () => {

@@ -3,7 +3,7 @@ import { Setting } from "../types/store";
 
 export async function convert_to_export_setting(
 	this_setting: Setting,
-	create_file_function: (file_name: string, file_data: string) => Promise<void>
+	create_file_function: (file_name: string, file_data: string) => Promise<void>,
 ) {
 	for (const this_property of styleshift_property_list[this_setting.type]) {
 		if (

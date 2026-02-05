@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import type { Setting } from "../../../../types/store";
-	import Icon from "../main/Icon.svelte";
 
 	let {
 		innerContentFunction,

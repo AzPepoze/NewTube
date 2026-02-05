@@ -1,24 +1,35 @@
 <script lang="ts">
+	import type { Setting } from "@styleshift/types/store";
 	import Description from "./Description.svelte";
 	let {
-		name = "",
-		description = "",
+		setting,
+		name: nameProp = "",
+		description: descriptionProp = "",
+		min: minProp = 0,
+		max: maxProp = 100,
+		step: stepProp = 1,
+		unit: unitProp = "",
 		value = $bindable(0),
-		min = 0,
-		max = 100,
-		step = 1,
-		unit = "",
 		onUpdate = () => {},
 	}: {
+		setting?: Extract<Setting, { type: "number_slide" }>;
 		name?: string;
 		description?: string;
-		value: number;
 		min?: number;
 		max?: number;
 		step?: number;
 		unit?: string;
+		value: number;
 		onUpdate?: (val: number) => void;
 	} = $props();
+
+	// Derived values that fallback to props if setting object is missing
+	const name = $derived(setting?.name ?? nameProp);
+	const description = $derived(setting?.description ?? descriptionProp);
+	const min = $derived(setting?.min ?? minProp);
+	const max = $derived(setting?.max ?? maxProp);
+	const step = $derived(setting?.step ?? stepProp);
+	const unit = $derived(setting?.unit ?? unitProp);
 
 	function handleInput() {
 		onUpdate(value);

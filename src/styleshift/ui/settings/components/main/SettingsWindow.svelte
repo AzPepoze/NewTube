@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import type { Category, Setting } from "@styleshift/types/store";
+	import type { Category } from "@styleshift/types/store";
 	import Search from "./Search.svelte";
-	import Icon from "./Icon.svelte";
 	import SettingRenderer from "./SettingRenderer.svelte";
-	import { scroll_on_click } from "@functions/normal";
 
 	let {
 		categories = [],

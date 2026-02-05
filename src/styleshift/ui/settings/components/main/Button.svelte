@@ -1,23 +1,43 @@
 <script lang="ts">
-			import { hex_to_rgb, rgb_to_hsv, hsv_to_rgb } from "../../../../build-in-functions/normal";
-			import Description from "./Description.svelte";
-			import Icon from "./Icon.svelte";
-			import { getAssetUrl } from "@ui/utils";
-		
-			let {
-				name = "",
-				description = "",
-				icon = "",
-				color = "#ffffff",
-				align = "center",
-				font_size = 15,
-				onClick = () => {},
-			} = $props();
-		
-			let scale = $state(1);
-		
-			const colors = $derived.by(() => {
-		
+	import type { Setting } from "@styleshift/types/store";
+	import { hex_to_rgb, rgb_to_hsv, hsv_to_rgb } from "../../../../build-in-functions/normal";
+	import Description from "./Description.svelte";
+	import Icon from "./Icon.svelte";
+	import { getAssetUrl } from "@ui/utils";
+
+	let {
+		setting,
+		name: nameProp = "",
+		description: descriptionProp = "",
+		icon: iconProp = "",
+		color: colorProp = "#ffffff",
+		align: alignProp = "center",
+		font_size: fontSizeProp = 15,
+		style = "",
+		onClick = () => {},
+	}: {
+		setting?: Extract<Setting, { type: "button" }>;
+		name?: string;
+		description?: string;
+		icon?: string;
+		color?: string;
+		align?: "left" | "center" | "right";
+		font_size?: number;
+		style?: string;
+		onClick?: () => void;
+	} = $props();
+
+	// Derived values that fallback to props if setting object is missing
+	const name = $derived(setting?.name ?? nameProp);
+	const description = $derived(setting?.description ?? descriptionProp);
+	const icon = $derived(setting?.icon ?? iconProp);
+	const color = $derived(setting?.color ?? colorProp);
+	const align = $derived(setting?.align ?? alignProp);
+	const font_size = $derived(setting?.font_size ?? fontSizeProp);
+
+	let scale = $state(1);
+
+	const colors = $derived.by(() => {
 		const { r, g, b } = hex_to_rgb(color);
 
 		const bg_hsv = rgb_to_hsv({ r, g, b });
@@ -52,19 +72,15 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div 
-	class="STYLESHIFT-Button" 
-	style="justify-content: {align}; background: {colors.background}; border: 1px solid {colors.borderColor}; transform: scale({scale});"
+<div
+	class="STYLESHIFT-Button"
+	style="justify-content: {align}; background: {colors.background}; border: 1px solid {colors.borderColor}; transform: scale({scale}); {style}"
 	onclick={handleClick}
 >
 	{#if icon}
 		<Icon name={getAssetUrl(icon)} className="STYLESHIFT-Button-Icon" applyFilter={false} />
 	{/if}
-	<Description
-		{name}
-		{description}
-		style="display: flex; color: {colors.textColor}; font-size: {font_size}px;"
-	/>
+	<Description {name} {description} style="display: flex; color: {colors.textColor}; font-size: {font_size}px;" />
 </div>
 
 <style lang="scss">
@@ -83,10 +99,8 @@
 
 	.STYLESHIFT-Button:hover {
 		filter: brightness(1.5) drop-shadow(2px 2px 3px black) drop-shadow(-2px -2px 3px rgba(255, 255, 255, 0.37));
-		// background: white !important;
 
-		.STYLESHIFT-Button-Text {
-			// color: black !important;
+		:global(.STYLESHIFT-Main-Description .setting-name) {
 			font-weight: 400;
 		}
 	}
@@ -95,10 +109,5 @@
 		height: 40px;
 		margin-right: 10px;
 		object-fit: contain;
-	}
-
-	.STYLESHIFT-Button-Text {
-		display: flex;
-		width: 100%;
 	}
 </style>

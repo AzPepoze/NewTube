@@ -1,11 +1,16 @@
 <script lang="ts">
+	import type { Setting } from "@styleshift/types/store";
 	import Description from "./Description.svelte";
 	let {
-		name = "",
-		description = "",
+		setting,
 		placeholder = "Type here...",
 		value = $bindable(""),
 		onUpdate = () => {},
+	}: {
+		setting: Extract<Setting, { type: "text_input" }>;
+		placeholder?: string;
+		value: string;
+		onUpdate?: (val: string) => void;
 	} = $props();
 
 	function handleChange() {
@@ -13,7 +18,7 @@
 	}
 </script>
 
-<Description {name} {description} />
+<Description name={setting.name} description={setting.description} />
 <div class="STYLESHIFT-Input-Wrapper">
 	<input type="text" class="STYLESHIFT-Input" {placeholder} bind:value onchange={handleChange} />
 </div>

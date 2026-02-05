@@ -208,7 +208,7 @@ export async function load_ntube_code(preset) {
 			if (key == "ADDScript" && typeof value === "string" && value.trim() !== "") {
 				if (
 					await show_confirm(
-						`⚠️*WARNING*⚠️\nThis preset/Theme contains JS code.\nYou could be compromised if you continue.\n(Please make sure this code is from a trusted source!)\n\nDo you want to load the JS code?`
+						`⚠️*WARNING*⚠️\nThis preset/Theme contains JS code.\nYou could be compromised if you continue.\n(Please make sure this code is from a trusted source!)\n\nDo you want to load the JS code?`,
 					)
 				) {
 					await save_setting(key, value, true);
@@ -286,7 +286,7 @@ export async function convert_to_new_save(save) {
 				new_save[id.slice(0, -1)] = new_save[id];
 				delete new_save[id];
 			}
-		})
+		}),
 	);
 
 	return new_save;

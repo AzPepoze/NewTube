@@ -2,20 +2,12 @@
 	import searchIcon from "@ui/assets/icons/search.svg";
 	import { getAssetUrl } from "@ui/utils";
 
-	let {
-		value = $bindable(""),
-		placeholder = "Search",
-	} = $props();
+	let { value = $bindable(""), placeholder = "Search" } = $props();
 </script>
 
 <div class="STYLESHIFT-Search-Wrapper">
 	<img class="STYLESHIFT-Search-Icon" src={getAssetUrl(searchIcon)} alt="" />
-	<input
-		type="text"
-		class="STYLESHIFT-Search-Input"
-		{placeholder}
-		bind:value
-	/>
+	<input type="text" class="STYLESHIFT-Search-Input" {placeholder} bind:value />
 </div>
 
 <style lang="scss">

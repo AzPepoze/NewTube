@@ -27,14 +27,14 @@ export function highlight(node: HTMLElement, query: string) {
 
 		original_content_map.forEach((text, node) => {
 			if (!node.parentNode) return;
-			
+
 			// Skip if parent is already a mark or inside a script/style
 			if (node.parentNode.nodeName === "MARK" || node.parentNode.nodeName === "SCRIPT") return;
 
 			if (text.toLowerCase().includes(query.toLowerCase())) {
 				const span = document.createElement("span");
 				span.innerHTML = text.replace(regex, "<mark>$1</mark>");
-				
+
 				// Replace text node with the new span content
 				// Note: This is a simplified version. For production, we'd use document fragments.
 				const parent = node.parentNode;
@@ -53,7 +53,7 @@ export function highlight(node: HTMLElement, query: string) {
 	return {
 		update(new_query: string) {
 			// Reset before updating
-			node.querySelectorAll("mark").forEach(mark => {
+			node.querySelectorAll("mark").forEach((mark) => {
 				const text = document.createTextNode(mark.textContent || "");
 				mark.parentNode?.replaceChild(text, mark);
 			});
@@ -61,6 +61,6 @@ export function highlight(node: HTMLElement, query: string) {
 			walk_and_store(node);
 			query = new_query;
 			apply_highlight();
-		}
+		},
 	};
 }

@@ -14,11 +14,11 @@
 	import { load_any, load } from "@core/save";
 	import { settings_ui, set_and_save } from "@ui/settings/setting-components";
 	import { update_setting_function } from "@settings/functions";
-	import { 
-		run_text_script_from_setting, 
-		hex_to_color_obj, 
-		color_obj_to_hex, 
-		run_text_script 
+	import {
+		run_text_script_from_setting,
+		hex_to_color_obj,
+		color_obj_to_hex,
+		run_text_script,
 	} from "@core/extension";
 	import { remove_setting } from "@settings/items";
 	import { update_all } from "@/styleshift/run";
@@ -28,14 +28,14 @@
 	import { highlight as highlightAction } from "@ui/settings/highlight";
 	import SettingFrame from "../SettingFrame.svelte";
 
-	let { 
-		setting, 
-		highlight = "", 
-		onUpdate: externalOnUpdate 
-	}: { 
-		setting: Setting; 
-		highlight?: string; 
-		onUpdate?: (value: any) => void 
+	let {
+		setting,
+		highlight = "",
+		onUpdate: externalOnUpdate,
+	}: {
+		setting: Setting;
+		highlight?: string;
+		onUpdate?: (value: any) => void;
 	} = $props();
 
 	// State for reactive values
@@ -55,7 +55,7 @@
 
 	async function handleUpdate(newValue: any) {
 		value = newValue;
-		
+
 		if (externalOnUpdate) externalOnUpdate(newValue);
 
 		if ("id" in setting && setting.id) {
@@ -93,7 +93,13 @@
 		<div class="STYLESHIFT-Config-Frame">
 			<button class="STYLESHIFT-Config-Button drag"><Icon name="drag" /></button>
 			<button class="STYLESHIFT-Config-Button edit" onclick={handleEdit}><Icon name="edit" /></button>
-			<button class="STYLESHIFT-Config-Button delete" onclick={() => { remove_setting(setting); update_all(); }}><Icon name="delete" /></button>
+			<button
+				class="STYLESHIFT-Config-Button delete"
+				onclick={() => {
+					remove_setting(setting);
+					update_all();
+				}}><Icon name="delete" /></button
+			>
 		</div>
 	{/if}
 {/snippet}
@@ -105,26 +111,19 @@
 	useAction={(node) => highlightAction(node, highlight)}
 	padding={setting.type !== "button"}
 	transparent={setting.type === "button"}
-	vertical={setting.type === "number_slide" || setting.type === "color" || setting.type === "custom"}
+	vertical={setting.type === "number_slide" ||
+		setting.type === "color" ||
+		setting.type === "custom" ||
+		setting.type === "image_input"}
 >
 	{@render config_buttons()}
 	{#if setting.type === "checkbox"}
-		<Checkbox
-			name={setting.name}
-			description={setting.description}
-			bind:value
-			onUpdate={handleUpdate}
-		/>
+		<Checkbox {setting} bind:value onUpdate={handleUpdate} />
 	{:else if (setting.type as any) === "search"}
 		<Search onInput={externalOnUpdate} />
 	{:else if setting.type === "button"}
 		<Button
-			name={setting.name}
-			description={setting.description}
-			icon={setting.icon}
-			color={setting.color}
-			align={setting.align}
-			font_size={setting.font_size}
+			{setting}
 			onClick={() => {
 				if (!setting.click_function) return;
 				if (typeof setting.click_function === "string") {
@@ -135,40 +134,19 @@
 			}}
 		/>
 	{:else if setting.type === "number_slide"}
-		<Slider
-			name={setting.name}
-			description={setting.description}
-			bind:value
-			min={setting.min}
-			max={setting.max}
-			step={setting.step}
-			unit={setting.unit}
-			onUpdate={handleUpdate}
-		/>
+		<Slider {setting} bind:value onUpdate={handleUpdate} />
 	{:else if setting.type === "text_input"}
-		<TextInput
-			name={setting.name}
-			description={setting.description}
-			bind:value
-			onUpdate={handleUpdate}
-		/>
+		<TextInput {setting} bind:value onUpdate={handleUpdate} />
 	{:else if setting.type === "color"}
 		{@const colorObj = hex_to_color_obj(value || "#ffffff")}
 		<ColorPicker
-			name={setting.name}
-			description={setting.description}
+			{setting}
 			hex={colorObj.hex}
 			alpha={colorObj.alpha}
 			onUpdate={(hex, alpha) => handleUpdate(color_obj_to_hex({ hex, alpha }))}
 		/>
 	{:else if setting.type === "dropdown"}
-		<Dropdown
-			name={setting.name}
-			description={setting.description}
-			bind:value
-			options={Object.keys(setting.options)}
-			onUpdate={handleUpdate}
-		/>
+		<Dropdown {setting} bind:value onUpdate={handleUpdate} />
 	{:else if setting.type === "text"}
 		<Text
 			html={setting.html}
@@ -184,13 +162,7 @@
 			className="STYLESHIFT-Setting-Sub-Title"
 		/>
 	{:else if setting.type === "image_input"}
-		<ImageInput
-			name={setting.name}
-			description={setting.description}
-			bind:value
-			onFileSelect={() => {}} 
-			onUrlUpdate={handleUpdate}
-		/>
+		<ImageInput {setting} bind:value onFileSelect={() => {}} onUrlUpdate={handleUpdate} />
 	{:else if setting.type === "preview_image"}
 		<PreviewImage src={value} />
 	{:else if setting.type === "custom"}

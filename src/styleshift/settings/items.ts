@@ -41,7 +41,7 @@ export function find_exist_settings(setting: Setting) {
 		(this_setting) =>
 			this_setting.id === setting.id &&
 			//@ts-ignore
-			(this_setting.name == null || this_setting.name === Setting.name)
+			(this_setting.name == null || this_setting.name === Setting.name),
 	);
 }
 

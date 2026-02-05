@@ -142,7 +142,7 @@ export async function start_highlighter() {
 		if (
 			selector_found.length >= 1000 &&
 			!(await show_confirm(
-				`StyleShift : I found ${selector_found.length} elements on selector "${selector_value.selector}"\n\nAre you wish to continue??`
+				`StyleShift : I found ${selector_found.length} elements on selector "${selector_value.selector}"\n\nAre you wish to continue??`,
 			))
 		) {
 			exept_items.push(selector_value.selector);

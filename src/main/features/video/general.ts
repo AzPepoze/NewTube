@@ -17,7 +17,7 @@ export function setup_remove_ambient() {
 		// This selector is complex and might need adjustment.
 		// It looks for the settings menu item for "Ambient mode".
 		const ambient_switch = Array.from(
-			document.querySelectorAll(".ytp-settings-menu-item .ytp-menuitem-label")
+			document.querySelectorAll(".ytp-settings-menu-item .ytp-menuitem-label"),
 		).find((el) => el.textContent === "Ambient mode");
 		if (ambient_switch) {
 			const parent = ambient_switch.parentElement as HTMLElement;

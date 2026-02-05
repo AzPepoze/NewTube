@@ -1,23 +1,26 @@
 <script lang="ts">
-	import SettingFrame from "../SettingFrame.svelte";
+	import type { Setting } from "@styleshift/types/store";
 	import PreviewImage from "./PreviewImage.svelte";
 	import Button from "./Button.svelte";
-	import { extension_location } from "../../../../run";
 	import { getAssetUrl } from "@ui/utils";
 
 	import Description from "./Description.svelte";
 
 	let {
+		setting,
 		onFileSelect,
 		onUrlUpdate,
-		id = "",
-		name = "",
-		description = "",
 		value = $bindable(""),
 		placeholder = "https://example.com/image.png",
+	}: {
+		setting: Extract<Setting, { type: "image_input" }>;
+		onFileSelect: (file: File) => void;
+		onUrlUpdate: (val: string) => void;
+		value: string;
+		placeholder?: string;
 	} = $props();
 
-	let fileInput: HTMLInputElement;
+	let fileInput = $state<HTMLInputElement | null>(null);
 	let fileName = $state("");
 	let isDragging = $state(false);
 
@@ -40,7 +43,7 @@
 		if (file) {
 			fileName = file.name;
 			onFileSelect(file);
-			fileInput.value = "";
+			if (fileInput) fileInput.value = "";
 		}
 	}
 
@@ -84,22 +87,22 @@
 	});
 </script>
 
-<SettingFrame {id} type="image_input" vertical={true}>
+<div class="STYLESHIFT-Image-Input-Container">
 	<div class="STYLESHIFT-Image-Input-Header">
-		<Description {name} {description} />
+		<Description name={setting.name} description={setting.description} />
 	</div>
 
 	<div class="STYLESHIFT-Image-Input-Controls">
 		<div
 			class="STYLESHIFT-Upload-Zone"
 			class:dragging={isDragging}
-			onclick={() => fileInput.click()}
+			onclick={() => fileInput?.click()}
 			ondragover={handleDragOver}
 			ondragleave={handleDragLeave}
 			ondrop={handleDrop}
 			role="button"
 			tabindex="0"
-			onkeydown={(e) => e.key === "Enter" && fileInput.click()}
+			onkeydown={(e) => e.key === "Enter" && fileInput?.click()}
 			title="Click or Drag & Drop image to upload"
 		>
 			<img class="STYLESHIFT-Upload-Icon" src={getAssetUrl("asset/upload.svg")} alt="Upload" />
@@ -125,16 +128,24 @@
 			{#if fileName}
 				<span class="STYLESHIFT-File-Name" title={fileName}>{fileName}</span>
 			{/if}
-			<Button
-				name="View Original Image"
-				onClick={openImage}
-				style="padding: 5px 15px; width: auto; margin-top: 5px; height: 30px; border-radius: 15px;"
-			/>
+			<div class="STYLESHIFT-Button-Center-Wrapper">
+				<Button
+					name="View Original Image"
+					onClick={openImage}
+					font_size={12}
+					style="padding: 5px 10px; width: auto; margin-top: 5px; height: 25px; border-radius: 15px;"
+				/>
+			</div>
 		</div>
 	{/if}
-</SettingFrame>
+</div>
 
 <style lang="scss">
+	.STYLESHIFT-Button-Center-Wrapper {
+		display: flex;
+		justify-content: center;
+		width: 100%;
+	}
 	.STYLESHIFT-Image-Input-Header {
 		display: flex;
 		padding-left: 10px;

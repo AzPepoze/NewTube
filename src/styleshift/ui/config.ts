@@ -7,13 +7,13 @@ let current_content_function;
 
 export async function create_config_ui(skip_animation = false) {
 	config_window = await create_styleshift_window({ skip_animation });
-	
+
 	config_window.close.addEventListener(
 		"click",
 		function () {
 			remove_config_ui();
 		},
-		{ once: true }
+		{ once: true },
 	);
 
 	return config_window;
@@ -35,10 +35,13 @@ export async function recreate_config_ui() {
 		// For simplicity, we'll remount if content function changes
 	}
 
-	svelte_instance = settings_ui.config_window({
-		innerContentFunction: current_content_function,
-		onClose: () => remove_config_ui()
-	}, config_window.window_element);
+	svelte_instance = settings_ui.config_window(
+		{
+			innerContentFunction: current_content_function,
+			onClose: () => remove_config_ui(),
+		},
+		config_window.window_element,
+	);
 }
 
 export function remove_config_ui(skip_animation = false) {

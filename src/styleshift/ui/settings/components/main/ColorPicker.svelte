@@ -1,15 +1,18 @@
 <script lang="ts">
+	import type { Setting } from "@styleshift/types/store";
 	import Slider from "./Slider.svelte";
-	import SettingFrame from "../SettingFrame.svelte";
 	import Description from "./Description.svelte";
 
 	let {
-		id = "",
-		name = "",
-		description = "",
+		setting,
 		hex = $bindable("#ffffff"),
 		alpha = $bindable(100),
 		onUpdate = () => {},
+	}: {
+		setting: Extract<Setting, { type: "color" }>;
+		hex: string;
+		alpha: number;
+		onUpdate: (hex: string, alpha: number) => void;
 	} = $props();
 
 	function handleHexChange() {
@@ -22,19 +25,29 @@
 	}
 </script>
 
-<SettingFrame {id} type="color" vertical={true}>
-	<div class="STYLESHIFT-Color-Top-Section">
-		<Description {name} {description} />
-		<div class="STYLESHIFT-Color-Preview-Wrapper">
-			<div class="STYLESHIFT-Color-Preview" style="background-color: {hex}; opacity: {alpha / 100}"></div>
-			<input type="color" class="STYLESHIFT-Color-Input" bind:value={hex} oninput={handleHexChange} />
-		</div>
+<div class="STYLESHIFT-Color-Top-Section">
+	<Description name={setting.name} description={setting.description} />
+	<div class="STYLESHIFT-Color-Preview-Wrapper">
+		<div class="STYLESHIFT-Color-Preview" style="background-color: {hex}; opacity: {alpha / 100}"></div>
+		<input type="color" class="STYLESHIFT-Color-Input" bind:value={hex} oninput={handleHexChange} />
 	</div>
+</div>
 
-	<div class="STYLESHIFT-Color-Alpha-Section">
-		<Slider name="Opacity" bind:value={alpha} min={0} max={100} unit="%" onUpdate={handleAlphaChange} />
-	</div>
-</SettingFrame>
+<div class="STYLESHIFT-Color-Alpha-Section">
+	<Slider
+		setting={{
+			type: "number_slide",
+			name: "Opacity",
+			min: 0,
+			max: 100,
+			unit: "%",
+			value: alpha,
+			id: "",
+		}}
+		bind:value={alpha}
+		onUpdate={handleAlphaChange}
+	/>
+</div>
 
 <style lang="scss">
 	.STYLESHIFT-Color-Top-Section {

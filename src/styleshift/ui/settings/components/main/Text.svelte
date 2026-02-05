@@ -10,13 +10,7 @@
 	} = $props();
 </script>
 
-<div
-	{id}
-	class="STYLESHIFT-Text {className}"
-	style:font-size="{fontSize}px"
-	style:text-align={textAlign}
-	style:color
->
+<div {id} class="STYLESHIFT-Text {className}" style:font-size="{fontSize}px" style:text-align={textAlign} style:color>
 	{#if html}
 		{@html html}
 	{:else}

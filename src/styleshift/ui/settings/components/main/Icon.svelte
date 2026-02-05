@@ -40,7 +40,7 @@
 		alt={name}
 		class="STYLESHIFT-Icon {className}"
 		class:with-filter={applyFilter && !color}
-		style="{color ? `filter: none;` : ""}{style}"
+		style="{color ? `filter: none;` : ''}{style}"
 		style:color={color || undefined}
 	/>
 {/if}

@@ -28,6 +28,6 @@ export function setup_update_timestamp() {
 				update_url();
 			}
 		},
-		true
+		true,
 	);
 }

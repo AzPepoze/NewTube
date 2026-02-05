@@ -15,12 +15,7 @@
 	} = $props();
 </script>
 
-<button
-	class="STYLESHIFT-Icon-Button STYLESHIFT-Glow-Hover {className}"
-	onclick={onClick}
-	{style}
-	type="button"
->
+<button class="STYLESHIFT-Icon-Button STYLESHIFT-Glow-Hover {className}" onclick={onClick} {style} type="button">
 	{#if typeof icon === "string" && (icon.includes(".svg") || icon.includes("data:image/svg+xml") || icon.startsWith("/"))}
 		<Icon name={getAssetUrl(icon)} />
 	{:else}

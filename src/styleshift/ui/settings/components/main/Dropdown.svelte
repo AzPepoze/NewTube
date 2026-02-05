@@ -1,19 +1,25 @@
 <script lang="ts">
+	import type { Setting } from "@styleshift/types/store";
 	import Description from "./Description.svelte";
 	import { scale } from "svelte/transition";
 	import { quintOut } from "svelte/easing";
-	import { tick } from "svelte";
 
 	let {
-		name = "",
-		description = "",
+		setting,
 		value = $bindable(""),
-		options = [],
 		onUpdate = () => {},
 		isOpen = $bindable(false),
 		triggerEl = $bindable<HTMLElement | null>(null),
 		justMenu = false,
 		onClose = () => {},
+	}: {
+		setting: Extract<Setting, { type: "dropdown" }>;
+		value: string;
+		onUpdate: (val: string) => void;
+		isOpen?: boolean;
+		triggerEl?: HTMLElement | null;
+		justMenu?: boolean;
+		onClose?: () => void;
 	} = $props();
 
 	let menuEl = $state<HTMLElement | null>(null);
@@ -124,7 +130,7 @@
 </script>
 
 {#if !justMenu}
-	<Description {name} {description} />
+	<Description name={setting.name} description={setting.description} />
 	<div class="STYLESHIFT-Dropdown-Wrapper">
 		<button
 			bind:this={triggerEl}
@@ -156,7 +162,7 @@
 		class:above={isMenuAbove}
 		transition:scale={{ duration: 300, start: 0.9, opacity: 0, easing: quintOut }}
 	>
-		{#each options as option, i}
+		{#each Object.keys(setting.options) as option, i}
 			<button
 				class="STYLESHIFT-Dropdown-Item"
 				class:selected={option === value}

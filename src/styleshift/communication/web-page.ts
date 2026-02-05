@@ -27,7 +27,7 @@ const build_in_functions = {
 
 	save_styleshift_value: async function (id, value) {
 		return JSON.parse(
-			await StyleShift["Build-in"]["_Call_Function"]("_save_styleshift_value", id, JSON.stringify(value))
+			await StyleShift["Build-in"]["_Call_Function"]("_save_styleshift_value", id, JSON.stringify(value)),
 		);
 	},
 
@@ -36,11 +36,11 @@ const build_in_functions = {
 			"create_styleshift_setting_ui",
 			type,
 			this_setting,
-			...args
+			...args,
 		);
 
 		const ui = await StyleShift["Build-in"]["wait_for_element"](
-			`.StyleShift-Station [styleshift-ui-id="${ui_id}"]`
+			`.StyleShift-Station [styleshift-ui-id="${ui_id}"]`,
 		);
 
 		console.log("ui", ui);

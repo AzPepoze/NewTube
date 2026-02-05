@@ -1,13 +1,22 @@
 <script lang="ts">
+	import type { Setting } from "@styleshift/types/store";
 	import Description from "./Description.svelte";
-	let { name = "", description = "", value = $bindable(false), onUpdate = () => {} } = $props();
+	let {
+		setting,
+		value = $bindable(false),
+		onUpdate = () => {},
+	}: {
+		setting: Extract<Setting, { type: "checkbox" }>;
+		value: boolean;
+		onUpdate: (val: boolean) => void;
+	} = $props();
 
 	function handleChange() {
 		onUpdate(value);
 	}
 </script>
 
-<Description {name} {description} />
+<Description name={setting.name} description={setting.description} />
 <input type="checkbox" class="STYLESHIFT-Checkbox" bind:checked={value} onchange={handleChange} />
 
 <style lang="scss">

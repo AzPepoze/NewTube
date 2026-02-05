@@ -57,7 +57,7 @@ export async function update_styleshift_functions_list() {
 				styleshift_functions_list = event.detail;
 				resolve(true);
 			},
-			{ once: true }
+			{ once: true },
 		);
 
 		run_text_script({
@@ -154,7 +154,7 @@ export function is_safe_code(code: string, code_name: string) {
 
 				const highlighted_error = context_snippet.replace(
 					match[0],
-					`<span style="color: red; text-decoration: underline;">${match[0]}</span>`
+					`<span style="color: red; text-decoration: underline;">${match[0]}</span>`,
 				);
 
 				create_notification({
@@ -192,12 +192,12 @@ export async function run_text_script({
 				if (is_safe_code(text, code_name)) {
 					for (const [function_mode, functions_list] of Object.entries(styleshift_functions_list) as [
 						string,
-						Array<string>
+						Array<string>,
 					][]) {
 						for (const function_name of functions_list) {
 							text = text.replace(
 								new RegExp(`\\b${function_name}\\b`, "g"),
-								`window["StyleShift"]["${function_mode}"]["${function_name}"]`
+								`window["StyleShift"]["${function_mode}"]["${function_name}"]`,
 							);
 						}
 					}
@@ -278,7 +278,7 @@ export async function load_developer_modules() {
 			loading_ui.set_icon("⚠️");
 			loading_ui.set_title("StyleShift - Can't monaco editor (Code editor)");
 			loading_ui.set_content(
-				"If you want to use code editor, please consider enter setting page.\n(Firefox security issue!)"
+				"If you want to use code editor, please consider enter setting page.\n(Firefox security issue!)",
 			);
 		}
 
