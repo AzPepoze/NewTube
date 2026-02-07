@@ -57,10 +57,5 @@
 		&.with-filter {
 			filter: brightness(0) invert(1);
 		}
-
-		:global(&.STYLESHIFT-Button-Icon) {
-			height: 1.5em;
-			width: auto;
-		}
 	}
 </style>

@@ -21,9 +21,17 @@ import BasicSliderComponent from "./BasicSlider.svelte";
 import BasicNumberInputComponent from "./BasicNumberInput.svelte";
 import FileInputComponent from "./FileInput.svelte";
 import CollapseSectionComponent from "./CollapseSection.svelte";
+import ResizeHandleComponent from "./ResizeHandle.svelte";
 import { unmount } from "svelte";
 
 export const advance_setting_ui = {
+	["resize_handle"]: function (target: HTMLElement, position: "top" | "right" | "bottom" | "left" = "right") {
+		return settings_ui.render_component(ResizeHandleComponent, {
+			target,
+			position,
+		}) as HTMLDivElement;
+	},
+
 	["fill_screen"]: function (fill_bg: boolean = true) {
 		return settings_ui.render_component(FrameComponent, {
 			className: "STYLESHIFT-FillScreen",

@@ -105,9 +105,10 @@
 		}
 	}
 
-	.STYLESHIFT-Button-Icon {
-		height: 40px;
-		margin-right: 10px;
+	:global(.STYLESHIFT-Icon.STYLESHIFT-Button-Icon) {
+		height: 50px !important;
+		width: auto !important;
+		margin-right: 20px !important;
 		object-fit: contain;
 	}
 </style>

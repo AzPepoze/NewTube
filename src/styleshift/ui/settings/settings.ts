@@ -70,10 +70,13 @@ export async function create_main_settings_ui({
 			if (show_category_list) {
 				scroll_category = document.createElement("div");
 				scroll_category.className = "STYLESHIFT-Scrollable";
-				scroll_category.style.minwidth = "100px";
+				scroll_category.style.minWidth = "100px";
 				scroll_category.style.width = "250px";
 				scroll_category.setAttribute("Left", "true");
 				main_frame.append(scroll_category);
+
+				const resize_handle = await settings_ui["resize_handle"](scroll_category, "right");
+				main_frame.append(resize_handle);
 			}
 
 			//------------------------------------------------
