@@ -15,11 +15,11 @@ export const top_left_icon_category: Category = {
                     display: none !important;
                 }
                 ytd-topbar-logo-renderer {
-                    background-image: url(var(--top-icon-url)) !important;
-                    background-position: var(--top-icon-x, 50%) var(--top-icon-y, 50%) !important;
-                    background-size: var(--top-icon-size, 100%) !important;
-                    background-repeat: var(--top-icon-repeat, no-repeat) !important;
-                    transform: var("--top-icon-flip", scaleX(1));
+                    background-image: var(--nt-top-icon-url) !important;
+                    background-position: var(--nt-top-icon-x, 50%) var(--nt-top-icon-y, 50%) !important;
+                    background-size: var(--nt-top-icon-size, 100%) !important;
+                    background-repeat: var(--nt-top-icon-repeat, no-repeat) !important;
+                    transform: var(--nt-top-icon-flip, scaleX(1));
                 }
             `,
 		},
@@ -40,7 +40,7 @@ export const top_left_icon_category: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
-			var_css: "--top-icon-x",
+			var_css: "--nt-top-icon-x",
 		},
 		{
 			type: "number_slide",
@@ -51,7 +51,7 @@ export const top_left_icon_category: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
-			var_css: "--top-icon-y",
+			var_css: "--nt-top-icon-y",
 		},
 		{
 			type: "number_slide",
@@ -62,7 +62,7 @@ export const top_left_icon_category: Category = {
 			min: 10,
 			max: 300,
 			step: 5,
-			var_css: "--top-icon-size",
+			var_css: "--nt-top-icon-size",
 		},
 		{
 			type: "checkbox",
@@ -70,8 +70,8 @@ export const top_left_icon_category: Category = {
 			name: "Flip image",
 			description: "Flips the custom icon horizontally.",
 			value: false,
-			enable_css: `ytd-topbar-logo-renderer { --top-icon-flip: scaleX(-1); }`,
-			disable_css: `ytd-topbar-logo-renderer { --top-icon-flip: scaleX(1); }`,
+			enable_css: `ytd-topbar-logo-renderer { --nt-top-icon-flip: scaleX(-1); }`,
+			disable_css: `ytd-topbar-logo-renderer { --nt-top-icon-flip: scaleX(1); }`,
 		},
 		{
 			type: "checkbox",
@@ -79,8 +79,8 @@ export const top_left_icon_category: Category = {
 			name: "Repeat image",
 			description: "Repeats the custom icon image.",
 			value: false,
-			enable_css: `ytd-topbar-logo-renderer { --top-icon-repeat: repeat; }`,
-			disable_css: `ytd-topbar-logo-renderer { --top-icon-repeat: no-repeat; }`,
+			enable_css: `ytd-topbar-logo-renderer { --nt-top-icon-repeat: repeat; }`,
+			disable_css: `ytd-topbar-logo-renderer { --nt-top-icon-repeat: no-repeat; }`,
 		},
 		{
 			type: "checkbox",
@@ -91,7 +91,7 @@ export const top_left_icon_category: Category = {
 			value: true,
 			enable_css: `
                 #logo-icon.ytd-topbar-logo-renderer .yt-spec-icon-shape-fill {
-                    fill: var(--theme-color, #FF0000) !important;
+                    fill: var(--nt-theme-color, #FF0000) !important;
                 }
             `,
 		},

@@ -39,7 +39,7 @@ export const topbar_search_category: Category = {
                     transition: background-color 0.3s ease !important;
                 }
                 #masthead.scrolled {
-                    background-color: var(--topbar-color, #00000080) !important;
+                    background-color: var(--nt-topbar-bg, #00000080) !important;
                 }
             `,
 		},
@@ -49,7 +49,15 @@ export const topbar_search_category: Category = {
 			name: "Topbar color",
 			description: "The background color of the topbar when scrolled.",
 			value: "#00000080",
-			var_css: "--topbar-color",
+			var_css: "--nt-topbar-bg",
+		},
+		{
+			type: "color",
+			id: "Themehover",
+			name: "Search suggestion hover color",
+			description: "Background color of the search suggestions when hovered.",
+			value: "#ffffffff",
+			var_css: "--nt-search-bg-hover",
 		},
 		{
 			type: "checkbox",
@@ -59,8 +67,8 @@ export const topbar_search_category: Category = {
 			value: true,
 			enable_css: `
                 #masthead > #background {
-                    box-shadow: var(--global-style-shadow) !important;
-                    border-bottom: var(--global-style-outline) !important;
+                    box-shadow: var(--nt-global-shadow) !important;
+                    border-bottom: var(--nt-global-outline) !important;
                 }
             `,
 		},
@@ -70,10 +78,10 @@ export const topbar_search_category: Category = {
 			name: "Chips Bar color",
 			description: "Background color for the topic chips bar below the topbar.",
 			value: "#00000080",
-			var_css: "--chips-color",
+			var_css: "--nt-chips-bg",
 			constant_css: `
                 #chips-wrapper.ytd-feed-filter-chip-bar-renderer {
-                    background-color: var(--chips-color) !important;
+                    background-color: var(--nt-chips-bg) !important;
                 }
             `,
 		},
@@ -85,8 +93,8 @@ export const topbar_search_category: Category = {
 			value: false,
 			enable_css: `
                 #chips-wrapper.ytd-feed-filter-chip-bar-renderer {
-                    box-shadow: var(--global-style-shadow) !important;
-                    border-bottom: var(--global-style-outline) !important;
+                    box-shadow: var(--nt-global-shadow) !important;
+                    border-bottom: var(--nt-global-outline) !important;
                 }
             `,
 		},
@@ -127,7 +135,7 @@ export const topbar_search_category: Category = {
                 .sbsb_i {
                     background: black;
                     padding: 5px 10px;
-                    border-radius: var(--theme-radius);
+                    border-radius: var(--nt-border-radius);
                     outline: solid white 1px;
                     color: white !important;
                     transition: all 0.2s;
@@ -140,7 +148,7 @@ export const topbar_search_category: Category = {
                     filter: invert(0.5);
                 }
                 .ytSearchboxComponentInputBox::placeholder {
-                    color: var(--secondary-text-color) !important;
+                    color: var(--nt-text-secondary) !important;
                 }
             `,
 		},

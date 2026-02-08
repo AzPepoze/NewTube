@@ -2,6 +2,7 @@ import { create_unique_id, once_element_remove, wait_document_loaded } from "../
 import { get_styleshift_items } from "../settings/items";
 import { create_editor_ui, editor_ui } from "./editor";
 import { show_confirm } from "./extension";
+import { logger } from "../build-in-functions/logger";
 
 let highlight_elements = {};
 let debounce_timer: NodeJS.Timeout;
@@ -18,12 +19,12 @@ function debounce(callback: Function) {
 }
 
 function add_highlight(target_element: HTMLElement, selector_value) {
-	console.log(highlight_elements);
+	logger.info("highlight", highlight_elements);
 
 	const exist_unique_id = target_element.getAttribute("StyleShift-unique_id");
 	if (exist_unique_id) {
 		const obj = highlight_elements[exist_unique_id];
-		console.log(obj.target_element, target_element);
+		logger.info("highlight", obj.target_element, target_element);
 		obj.stop();
 	}
 
@@ -89,7 +90,7 @@ let watch_body: MutationObserver;
 export async function start_highlighter() {
 	await wait_document_loaded();
 	const editable_items = await get_styleshift_items();
-	console.log("editable_items", editable_items);
+	logger.info("highlight", "editable_items", editable_items);
 	const exept_items = [];
 
 	const containers = document.querySelectorAll(".dynamic-content, .user-content, main, #content");
@@ -108,7 +109,7 @@ export async function start_highlighter() {
 									element.matches(selector_value.selector) &&
 									!exept_items.some((item) => item === selector_value.selector)
 								) {
-									console.log("Add New Node", selector_value.selector);
+									logger.info("highlight", "Add New Node", selector_value.selector);
 									add_highlight(element, selector_value);
 									break;
 								}
@@ -151,7 +152,7 @@ export async function start_highlighter() {
 			continue;
 		}
 
-		console.log("selector_found", selector_value.selector, selector_found);
+		logger.info("highlight", "selector_found", selector_value.selector, selector_found);
 
 		// Process elements in chunks to avoid blocking the main thread
 		const chunk_size = 50;

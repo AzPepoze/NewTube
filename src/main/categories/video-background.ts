@@ -19,7 +19,7 @@ export const video_background_category: Category = {
 		},
 		{
 			type: "number_slide",
-			id: "NVDOB",
+			id: "VideoBGBlur",
 			name: "Blur Amount",
 			description: "Applies a blur effect to the background video.",
 			value: 30,
@@ -30,7 +30,7 @@ export const video_background_category: Category = {
 		},
 		{
 			type: "number_slide",
-			id: "CanvasQua",
+			id: "VideoBGQuality",
 			name: "Quality (%)",
 			description: "Adjusts the rendering resolution. Lower values improve performance.",
 			value: 50,
@@ -41,7 +41,7 @@ export const video_background_category: Category = {
 		},
 		{
 			type: "number_slide",
-			id: "NVDOBGT",
+			id: "VideoBGBrightness",
 			name: "Brightness (%)",
 			description: "Adjusts the brightness of the background video.",
 			value: 100,
@@ -52,7 +52,7 @@ export const video_background_category: Category = {
 		},
 		{
 			type: "number_slide",
-			id: "NVDOC",
+			id: "VideoBGContrast",
 			name: "Contrast (%)",
 			description: "Adjusts the contrast of the background video.",
 			value: 100,
@@ -63,7 +63,7 @@ export const video_background_category: Category = {
 		},
 		{
 			type: "number_slide",
-			id: "NVDOT",
+			id: "VideoBGSize",
 			name: "Scale / Size",
 			description: "Zooms the background video in or out.",
 			value: 2.2,
@@ -74,7 +74,7 @@ export const video_background_category: Category = {
 		},
 		{
 			type: "number_slide",
-			id: "VDOSmooth",
+			id: "VideoBGSmooth",
 			name: "Smooth Frame (Skip)",
 			description: "Skips frames to reduce CPU usage. Higher values = less smooth but better performance.",
 			value: 1,

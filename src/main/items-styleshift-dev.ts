@@ -1,6 +1,7 @@
 import * as styleshift_functions from "../styleshift/build-in-functions/extension";
 import { sleep } from "../styleshift/build-in-functions/normal";
 import { Category } from "../styleshift/types/store";
+import { logger } from "../styleshift/build-in-functions/logger";
 
 const dev_only_items: Category[] = [
 	{
@@ -68,7 +69,7 @@ const dev_only_items: Category[] = [
 					});
 					try {
 						const file = await styleshift_functions["get_file"](".StyleShift.zip");
-						console.log("file:", file);
+						logger.info("extension", "file:", file);
 						await styleshift_functions["import_styleshift_zip"](file);
 
 						notification.set_icon("✅");

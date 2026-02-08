@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Setting } from "@styleshift/types/store";
 	import Description from "./Description.svelte";
+	import { load } from "@core/save";
 	let {
 		setting,
 		name: nameProp = "",
@@ -31,7 +32,13 @@
 	const step = $derived(setting?.step ?? stepProp);
 	const unit = $derived(setting?.unit ?? unitProp);
 
-	function handleInput() {
+	async function handleInput() {
+		if (await load("Realtime_Extension")) {
+			onUpdate(value);
+		}
+	}
+
+	function handleChange() {
 		onUpdate(value);
 	}
 </script>
@@ -44,7 +51,8 @@
 				type="number"
 				class="STYLESHIFT-Slider-Number-Input"
 				bind:value
-				onchange={handleInput}
+				oninput={handleInput}
+				onchange={handleChange}
 				{min}
 				{max}
 				{step}
@@ -55,7 +63,16 @@
 		</div>
 	</div>
 
-	<input type="range" class="STYLESHIFT-Slider-Range" {min} {max} {step} bind:value oninput={handleInput} />
+	<input
+		type="range"
+		class="STYLESHIFT-Slider-Range"
+		{min}
+		{max}
+		{step}
+		bind:value
+		oninput={handleInput}
+		onchange={handleChange}
+	/>
 </div>
 
 <style lang="scss">

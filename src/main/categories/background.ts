@@ -20,7 +20,7 @@ export const background_category: Category = {
 			description:
 				"Sets the color and opacity of the page background or the tint applied over an image/video.",
 			value: "#0000005e",
-			var_css: "--newtube-bg-tint-color",
+			var_css: "--nt-bg-main",
 		},
 		{
 			type: "number_slide",
@@ -31,6 +31,8 @@ export const background_category: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
+			var_css: "--nt-bg-opacity",
+			unit: "",
 		},
 		{
 			type: "image_input",
@@ -49,7 +51,7 @@ export const background_category: Category = {
 			min: 0,
 			max: 50,
 			step: 1,
-			var_css: "--newtube-bg-blur",
+			var_css: "--nt-bg-blur-amount",
 		},
 		{
 			type: "number_slide",
@@ -90,8 +92,8 @@ export const background_category: Category = {
 			name: "Repeat background image",
 			description: "Repeat the background image instead of stretching it.",
 			value: false,
-			enable_css: `:root { --newtube-bg-repeat: repeat; }`,
-			disable_css: `:root { --newtube-bg-repeat: no-repeat; }`,
+			enable_css: `:root { --nt-bg-repeat: repeat; }`,
+			disable_css: `:root { --nt-bg-repeat: no-repeat; }`,
 		},
 		{
 			type: "checkbox",

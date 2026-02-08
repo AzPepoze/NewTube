@@ -71,7 +71,7 @@ export async function inject_settings_button() {
 				transition: 0.5s;
 			}
 			#NEWTUBESET:hover {
-				color: var(--theme-color, #6495ED) !important;
+				color: var(--nt-theme-color, #6495ED) !important;
 			}
 			#NEWTUBESET:hover span {
 				padding-right: 20px;

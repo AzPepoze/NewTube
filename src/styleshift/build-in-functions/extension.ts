@@ -8,6 +8,7 @@ import { Category, Setting } from "../types/store";
 import { notification_container, run_animation, create_styleshift_window, show_confirm } from "../ui/extension";
 import { settings_ui } from "../ui/settings/setting-components";
 import { sleep, deep_clone, download_file, get_current_domain, create_unique_id } from "./normal";
+import { logger } from "./logger";
 
 /*
 -------------------------------------------------------
@@ -38,7 +39,7 @@ export function copy_to_clipboard(text: string) {
 			return true;
 		},
 		(err) => {
-			console.error("Failed to copy text: ", err);
+			logger.error("extension-function", "Failed to copy text: ", err);
 			return false;
 		},
 	);
@@ -56,7 +57,7 @@ export function copy_to_clipboard(text: string) {
  * await create_notification({ title: "Hello", content: "This is a notification" });
  */
 export async function create_notification({ icon = null, title = "StyleShift", content = "", timeout = 3000 }) {
-	// console.log(title, content);
+	logger.info("extension", title, content);
 
 	const notification_frame = await settings_ui["setting_frame"](true, false, {
 		x: false,
@@ -162,7 +163,7 @@ export async function create_notification({ icon = null, title = "StyleShift", c
  * await create_error("An error occurred");
  */
 export async function create_error(content, timeout = 0) {
-	console.error("StyleShift - " + content);
+	logger.error("extension", "StyleShift - " + content);
 	return await create_notification({
 		icon: "❌",
 		title: "StyleShift - Error",
@@ -181,7 +182,7 @@ export async function create_error(content, timeout = 0) {
  * await create_warning("This is a warning", { timeout: 5000, show: true });
  */
 export async function create_warning(content, { timeout = 0, show = true } = {}) {
-	console.warn("StyleShift - " + content);
+	logger.warn("extension", "StyleShift - " + content);
 	if (!show) return;
 	return await create_notification({
 		icon: "⚠️",
@@ -199,6 +200,7 @@ export async function create_warning(content, { timeout = 0, show = true } = {})
  * await create_success("Operation completed successfully");
  */
 export async function create_success(content, timeout = 3000) {
+	logger.info("extension", "Success", content);
 	return await create_notification({
 		icon: "✅",
 		title: "StyleShift - Success",
@@ -492,7 +494,7 @@ export async function import_styleshift_zip(zip_file) {
 							setting_property_path.lastIndexOf("."),
 						);
 
-						console.log(setting_property_path);
+						logger.info("extension", setting_property_path);
 
 						setting_data[setting_property_name] = await loaded_zip
 							.file(setting_property_path)
@@ -514,7 +516,7 @@ export async function import_styleshift_zip(zip_file) {
 		custom_styleshift_items,
 	};
 
-	console.log(styleshift_data);
+	logger.info("extension", styleshift_data);
 
 	await import_styleshift_data(styleshift_data);
 }
@@ -528,7 +530,7 @@ export async function import_styleshift_zip(zip_file) {
  * await export_styleshift_zip(data, "styleshift.zip");
  */
 export async function export_styleshift_zip(styleshift_data, zip_file_name) {
-	console.log("Data", styleshift_data);
+	logger.info("extension", "Data", styleshift_data);
 
 	if (!jszip) {
 		throw new Error("JSZip not loaded!");
@@ -555,7 +557,7 @@ export async function export_styleshift_zip(styleshift_data, zip_file_name) {
 
 		if (this_category.settings) {
 			for (const [setting_index, original_setting] of this_category.settings.entries()) {
-				console.log(original_setting);
+				logger.info("extension", original_setting);
 
 				const renamed_setting_name = (
 					original_setting.name ||

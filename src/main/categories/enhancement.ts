@@ -6,17 +6,6 @@ export const enhancement_category: Category = {
 	category: "🎇 Enhancement",
 	settings: [
 		{
-			type: "number_slide",
-			id: "Edge",
-			name: "Round edges amount (Most UI)",
-			description: "Controls the roundness of various ui elements.",
-			value: 10,
-			min: 0,
-			max: 50,
-			step: 1,
-			var_css: "--theme-radius",
-		},
-		{
 			type: "checkbox",
 			id: "SwapRow",
 			name: "Swap left-right row (In watching mode)",

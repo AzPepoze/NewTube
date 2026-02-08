@@ -85,56 +85,54 @@ export function setup_theme_by_video() {
 			const theme_rgb = hsv_to_rgb(hsv);
 			const theme_rgba = (a: number) => `rgba(${theme_rgb.r}, ${theme_rgb.g}, ${theme_rgb.b}, ${a})`;
 
-			set_prop("--newtube-theme", theme_rgba(1));
-			set_prop("--theme-color", theme_rgba(1));
-			set_prop("--theme-transparent-color", theme_rgba(0.3));
-			set_prop("--theme-fort", theme_rgba(0.3));
-			set_prop("--playlist-bg", theme_rgba(0.3));
-			set_prop("--theme-hover-bg-color", theme_rgba(0.3));
-			set_prop("--link-color", theme_rgba(1));
-			set_prop("--channel-name-color", theme_rgba(1));
-			set_prop("--top-bar-and-search-background", theme_rgba(0.3));
-			set_prop("--search-background-hover", theme_rgba(0.3));
+			set_prop("--nt-theme-color", theme_rgba(1));
+			set_prop("--nt-theme-transparent", theme_rgba(0.3));
+			set_prop("--nt-theme-accent", theme_rgba(0.3));
+			set_prop("--nt-playlist-hover-bg", theme_rgba(0.3));
+			set_prop("--nt-text-link", theme_rgba(1));
+			set_prop("--nt-text-channel", theme_rgba(1));
+			set_prop("--nt-topbar-bg", theme_rgba(0.3));
+			set_prop("--nt-search-bg-hover", theme_rgba(0.3));
 
 			// Derived Colors
 			const time_bg_hsv = { ...hsv, v: hsv.v * 0.4 };
 			const time_bg_rgb = hsv_to_rgb(time_bg_hsv);
-			set_prop("--timestamp-bg-color", `rgba(${time_bg_rgb.r}, ${time_bg_rgb.g}, ${time_bg_rgb.b}, 0.8)`);
+			set_prop("--nt-timestamp-bg", `rgba(${time_bg_rgb.r}, ${time_bg_rgb.g}, ${time_bg_rgb.b}, 0.8)`);
 
 			const text2_hsv = { ...hsv, s: hsv.s * 0.8 };
 			const text2_rgb = hsv_to_rgb(text2_hsv);
-			set_prop("--secondary-text-color", `rgba(${text2_rgb.r}, ${text2_rgb.g}, ${text2_rgb.b}, 1)`);
+			set_prop("--nt-text-secondary", `rgba(${text2_rgb.r}, ${text2_rgb.g}, ${text2_rgb.b}, 1)`);
 
 			const timetext_hsv = { ...hsv, s: hsv.s * 0.5 };
 			const timetext_rgb = hsv_to_rgb(timetext_hsv);
-			set_prop("--timestamp-text-color", `rgba(${timetext_rgb.r}, ${timetext_rgb.g}, ${timetext_rgb.b}, 1)`);
+			set_prop("--nt-text-timestamp", `rgba(${timetext_rgb.r}, ${timetext_rgb.g}, ${timetext_rgb.b}, 1)`);
 
 			const text_hsv = { ...hsv, s: hsv.s * 0.4 };
 			const text_rgb = hsv_to_rgb(text_hsv);
-			set_prop("--main-text-color", `rgba(${text_rgb.r}, ${text_rgb.g}, ${text_rgb.b}, 1)`);
+			set_prop("--nt-text-primary", `rgba(${text_rgb.r}, ${text_rgb.g}, ${text_rgb.b}, 1)`);
 
 			// Background Background
 			const bg_hsv = { ...hsv, v: hsv.v * 0.15 };
 			const bg_rgb = hsv_to_rgb(bg_hsv);
 			const is_solid = await load_setting("Solid_BG_Theme_by_video");
 			const bg_opacity = is_solid ? 1 : (await load_setting("BGO")) / 100;
-			set_prop("--newtube-bg-tint-color", `rgba(${bg_rgb.r}, ${bg_rgb.g}, ${bg_rgb.b}, ${bg_opacity})`);
+			set_prop("--nt-bg-main", `rgba(${bg_rgb.r}, ${bg_rgb.g}, ${bg_rgb.b}, ${bg_opacity})`);
 
 			// Timeline
 			const timeline_hsv = { ...hsv, v: hsv.v * 0.4 };
 			const timeline_rgb = hsv_to_rgb(timeline_hsv);
-			set_prop("--timeline-bg-color", `rgba(${timeline_rgb.r}, ${timeline_rgb.g}, ${timeline_rgb.b}, 1)`);
+			set_prop("--nt-timeline-bg", `rgba(${timeline_rgb.r}, ${timeline_rgb.g}, ${timeline_rgb.b}, 1)`);
 
 			const loaded_hsv = { ...hsv, s: hsv.s * 0.5, v: hsv.v * 0.6 };
 			const loaded_rgb = hsv_to_rgb(loaded_hsv);
-			set_prop("--timeline-loaded-color", `rgba(${loaded_rgb.r}, ${loaded_rgb.g}, ${loaded_rgb.b}, 1)`);
+			set_prop("--nt-timeline-load", `rgba(${loaded_rgb.r}, ${loaded_rgb.g}, ${loaded_rgb.b}, 1)`);
 
 			// Control Panel
 			const cp_hsv = { ...hsv, v: hsv.v * 0.2 };
 			const cp_rgb = hsv_to_rgb(cp_hsv);
-			set_prop("--media-bg-color", `rgba(${cp_rgb.r}, ${cp_rgb.g}, ${cp_rgb.b}, 0.7)`);
+			set_prop("--nt-player-bg", `rgba(${cp_rgb.r}, ${cp_rgb.g}, ${cp_rgb.b}, 0.7)`);
 		} catch (_e) {
-			// console.warn("Theme extraction failed", e);
+			// logger.warn("theme", "Theme extraction failed", e);
 		}
 	};
 

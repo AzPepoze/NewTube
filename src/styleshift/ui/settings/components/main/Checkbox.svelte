@@ -26,7 +26,7 @@
 		width: 3.6em;
 		height: 1.8em;
 		background: var(--BG-Input);
-		border-radius: 50px;
+		border-radius: 99px;
 		position: relative;
 		cursor: pointer;
 		outline: none;

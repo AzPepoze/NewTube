@@ -13,24 +13,24 @@ export const borders_shadows_category: Category = {
 				Out: {
 					enable_css: `
                         :root {
-                            --global-style-outline: var(--global-border-width, 1px) solid var(--global-border-color, #099DFF80);
-                            --global-style-shadow: none;
+                            --nt-global-outline: var(--nt-border-width, 1px) solid var(--nt-border-color, #099DFF80);
+                            --nt-global-shadow: none;
                         }
                     `,
 				},
 				Sha: {
 					enable_css: `
                         :root {
-                            --global-style-outline: none;
-                            --global-style-shadow: 0 0 var(--global-border-width, 8px) var(--global-border-color, #099DFF80);
+                            --nt-global-outline: none;
+                            --nt-global-shadow: 0 0 var(--nt-border-width, 8px) var(--nt-border-color, #099DFF80);
                         }
                     `,
 				},
 				None: {
 					enable_css: `
                         :root {
-                            --global-style-outline: none;
-                            --global-style-shadow: none;
+                            --nt-global-outline: none;
+                            --nt-global-shadow: none;
                         }
                     `,
 				},
@@ -45,7 +45,7 @@ export const borders_shadows_category: Category = {
 			min: 1,
 			max: 50,
 			step: 1,
-			var_css: "--global-border-width",
+			var_css: "--nt-border-width",
 		},
 		{
 			type: "color",
@@ -53,7 +53,18 @@ export const borders_shadows_category: Category = {
 			name: "color",
 			description: "The color of the border or shadow.",
 			value: "#099DFF80",
-			var_css: "--global-border-color",
+			var_css: "--nt-border-color",
+		},
+		{
+			type: "number_slide",
+			id: "Edge",
+			name: "Corner Radius",
+			description: "Global corner roundness for UI elements.",
+			value: 10,
+			min: 0,
+			max: 100,
+			step: 1,
+			var_css: "--nt-border-radius",
 		},
 	],
 };

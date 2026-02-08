@@ -1,4 +1,5 @@
 import { load_any } from "@core/save";
+import { logger } from "@functions/logger";
 
 /**
  * Applies the current theme and transparency settings to a specific element.
@@ -17,14 +18,14 @@ export async function apply_theme_to_element(element: HTMLElement) {
  */
 export async function sync_all_themes() {
 	const elements = document.querySelectorAll<HTMLElement>(".STYLESHIFT-Main");
-	
+
 	const is_light_theme = await load_any("App_Light_Theme");
 	const is_transparent = await load_any("Setting_BG_Transparent");
-	
+
 	const theme = is_light_theme ? "light" : "dark";
 	const transparent = is_transparent ? "true" : "false";
 
-	console.log("Syncing all themes...", { theme, transparent });
+	logger.info("theme", "Syncing all themes...", { theme, transparent });
 
 	elements.forEach((el) => {
 		el.setAttribute("data-theme", theme);

@@ -1,4 +1,5 @@
 import { create_error, create_notification } from "./build-in-functions/extension";
+import { logger } from "./build-in-functions/logger";
 import {
 	get_current_domain,
 	get_current_url_parameters,
@@ -26,7 +27,7 @@ export const ver = chrome.runtime.getManifest().version;
 export let styleshift_ready = false;
 
 export const is_firefox = navigator.userAgent.toLowerCase().includes("firefox");
-// console.log("isFirefox", navigator.userAgent.toLowerCase(), isFirefox);
+// logger.info("run", "isFirefox", navigator.userAgent.toLowerCase(), isFirefox);
 
 export const extension_location = chrome.runtime.getURL("").slice(0, -1);
 export const extension_id = extension_location.slice(19, 0);
@@ -37,7 +38,7 @@ if (window.location.origin == extension_location) {
 } else {
 	in_setting_page = false;
 }
-// console.log("In_Setting_Page", In_Setting_Page);
+// logger.info("run", "In_Setting_Page", In_Setting_Page);
 
 export let save_name;
 if (in_setting_page) {
@@ -66,7 +67,7 @@ styleshift_station.style.display = "none";
 -------------------------------------------------------
 */
 export function update_all() {
-	console.log("update_all triggered");
+	logger.info("update", "update_all triggered");
 	update_styleshift_functions_list();
 	update_styleshift_items();
 	update_all_ui();
@@ -96,14 +97,14 @@ async function main_run() {
 
 	// Test
 	// saved_data["custom_styleshift_items"] = Test_editable_items;
-	// console.log("Test", saved_data);
+	// logger.info("Test", saved_data);
 	// await save_all();
 
 	await update_styleshift_functions_list();
 	await create_stylesheet_holder();
 	await update_styleshift_items();
 	await update_save_default();
-	// console.log("Test", get_all_styleshift_items());
+	// logger.info("Test", get_all_styleshift_items());
 
 	//------------------------------------------
 	// Apply settings & save
@@ -157,7 +158,7 @@ try {
 */
 chrome.runtime.onMessage.addListener(async function (message) {
 	try {
-		console.log("Message", message);
+		logger.info("message", "Message", message);
 		if (message == "Developer") {
 			await save("Developer_mode", !(await load("Developer_mode")));
 			if (await load("Developer_mode")) {

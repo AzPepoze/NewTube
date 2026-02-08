@@ -12,8 +12,8 @@ export const thumbnail_category: Category = {
 			min: 0,
 			max: 30,
 			step: 1,
-			var_css: "--thumb-time-radius",
-			constant_css: `ytd-thumbnail-overlay-time-status-renderer { border-radius: var(--thumb-time-radius, 10px) !important; }`,
+			var_css: "--nt-timestamp-radius",
+			constant_css: `ytd-thumbnail-overlay-time-status-renderer { border-radius: var(--nt-timestamp-radius, 10px) !important; }`,
 		},
 		{
 			type: "color",
@@ -21,8 +21,8 @@ export const thumbnail_category: Category = {
 			name: "timestamp Background color",
 			description: "Sets the background color of the video duration timestamp.",
 			value: "#00000080",
-			var_css: "--thumb-time-bg",
-			constant_css: `ytd-thumbnail-overlay-time-status-renderer { background-color: var(--thumb-time-bg, #00000080) !important; }`,
+			var_css: "--nt-timestamp-bg",
+			constant_css: `ytd-thumbnail-overlay-time-status-renderer { background-color: var(--nt-timestamp-bg, #00000080) !important; }`,
 		},
 		{
 			type: "number_slide",
@@ -33,11 +33,11 @@ export const thumbnail_category: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
-			var_css: "--thumb-time-height",
+			var_css: "--nt-timestamp-height",
 			constant_css: `
                 ytd-thumbnail-overlay-time-status-renderer,
                 ytd-thumbnail-overlay-bottom-panel-renderer {
-                    height: var(--thumb-time-height, 12px) !important;
+                    height: var(--nt-timestamp-height, 12px) !important;
                 }
             `,
 		},
@@ -49,8 +49,8 @@ export const thumbnail_category: Category = {
 			value: true,
 			enable_css: `
                 ytd-thumbnail-overlay-time-status-renderer {
-                    box-shadow: var(--global-style-shadow) !important;
-                    border: var(--global-style-outline) !important;
+                    box-shadow: var(--nt-global-shadow) !important;
+                    border: var(--nt-global-outline) !important;
                 }
             `,
 		},
@@ -63,7 +63,7 @@ export const thumbnail_category: Category = {
 			min: 0,
 			max: 10,
 			step: 1,
-			var_css: "--thumb-hover-border-width",
+			var_css: "--nt-hover-border-width",
 		},
 		{
 			type: "color",
@@ -71,7 +71,7 @@ export const thumbnail_category: Category = {
 			name: "Hover Border Color",
 			description: "Color of the border/shadow when hovering.",
 			value: "#659affff",
-			var_css: "--thumb-hover-color",
+			var_css: "--nt-hover-color",
 		},
 		{
 			type: "color",
@@ -79,7 +79,7 @@ export const thumbnail_category: Category = {
 			name: "Click Border Color",
 			description: "Color of the border/shadow when clicked.",
 			value: "#ffffffff",
-			var_css: "--thumb-click-color",
+			var_css: "--nt-click-color",
 		},
 		{
 			type: "checkbox",
@@ -89,20 +89,20 @@ export const thumbnail_category: Category = {
 			value: true,
 			enable_css: `
                 ytd-thumbnail:hover, ytd-playlist-thumbnail:hover {
-                    outline: var(--thumb-hover-border-width, 1px) solid var(--thumb-hover-color) !important;
-                    box-shadow: 0 0 15px var(--thumb-hover-color) !important;
+                    outline: var(--nt-hover-border-width, 1px) solid var(--nt-hover-color) !important;
+                    box-shadow: 0 0 15px var(--nt-hover-color) !important;
                 }
                 ytd-thumbnail:active, ytd-playlist-thumbnail:active {
-                    outline-color: var(--thumb-click-color) !important;
+                    outline-color: var(--nt-click-color) !important;
                 }
                 #thumbnail:hover:after {
                     content: "";
                     position: absolute;
                     top: 0; left: 0; right: 0; bottom: 0;
-                    background: var(--thumb-hover-color);
+                    background: var(--nt-hover-color);
                     opacity: 0.1;
                     pointer-events: none;
-                    border-radius: var(--theme-radius);
+                    border-radius: var(--nt-border-radius);
                 }
             `,
 		},
@@ -131,7 +131,7 @@ export const thumbnail_category: Category = {
 					enable_css: `
                         ytd-thumbnail:not(.ytd-playlist-panel-video-renderer):hover,
                         ytd-playlist-thumbnail:hover {
-                            transform: scale(var(--thumb-zoom-scale, 1.075)) !important;
+                            transform: scale(var(--nt-zoom-scale, 1.075)) !important;
                             z-index: 400;
                         }
                     `,
@@ -150,7 +150,7 @@ export const thumbnail_category: Category = {
                         }
                         ytd-thumbnail:not(.ytd-playlist-panel-video-renderer):hover,
                         ytd-playlist-thumbnail:hover {
-                            transform: scale(var(--thumb-zoom-scale, 1.075)) !important;
+                            transform: scale(var(--nt-zoom-scale, 1.075)) !important;
                             z-index: 400;
                         }
                     `,
@@ -169,7 +169,7 @@ export const thumbnail_category: Category = {
 			min: 1,
 			max: 1.5,
 			step: 0.005,
-			var_css: "--thumb-zoom-scale",
+			var_css: "--nt-zoom-scale",
 		},
 		{
 			type: "checkbox",

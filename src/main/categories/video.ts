@@ -9,6 +9,22 @@ export const video_category: Category = {
 	selector: "#ytd-player",
 	settings: [
 		{
+			type: "checkbox",
+			id: "VBG",
+			name: "Transparent Video Player Background",
+			description: "Makes the video player background transparent (useful for custom backgrounds).",
+			value: true,
+			enable_css: `.html5-video-player { background: transparent !important; }`,
+		},
+		{
+			type: "color",
+			id: "PlaylistBG",
+			name: "Playlist items hover background",
+			description: "Background color of playlist items when you hover over them.",
+			value: "#659aff33",
+			var_css: "--nt-playlist-hover-bg",
+		},
+		{
 			type: "number_slide",
 			id: "PlayerEdge",
 			name: "Round edges amount",
@@ -17,10 +33,10 @@ export const video_category: Category = {
 			min: 0,
 			max: 60,
 			step: 1,
-			var_css: "--player-edge-radius",
+			var_css: "--nt-player-radius",
 			constant_css: `
       .html5-video-player {
-        border-radius: var(--player-edge-radius, 20px) !important;
+        border-radius: var(--nt-player-radius, 20px) !important;
       }
     `,
 		},
@@ -47,10 +63,10 @@ export const video_category: Category = {
 			name: "Time-line background color",
 			description: "color of the timeline background.",
 			value: "#ffffff20",
-			var_css: "--timeline-bg-color",
+			var_css: "--nt-timeline-bg",
 			constant_css: `
       .ytp-progress-bar {
-        background-color: var(--timeline-bg-color, #ffffff20) !important;
+        background-color: var(--nt-timeline-bg, #ffffff20) !important;
       }
     `,
 		},
@@ -60,10 +76,10 @@ export const video_category: Category = {
 			name: "Time-line loaded color",
 			description: "color of the loaded progress on the timeline.",
 			value: "#ffffff50",
-			var_css: "--timeline-load-color",
+			var_css: "--nt-timeline-load",
 			constant_css: `
       .ytp-load-progress {
-        background: var(--timeline-load-color, #ffffff50) !important;
+        background: var(--nt-timeline-load, #ffffff50) !important;
       }
     `,
 		},
@@ -73,10 +89,10 @@ export const video_category: Category = {
 			name: "End of video chanel hover background color",
 			description: "Background color when hovering over suggested videos at the end.",
 			value: "#00000050",
-			var_css: "--end-bg-hover-color",
+			var_css: "--nt-endscreen-hover-bg",
 			constant_css: `
       .ytp-videowall-still:hover .ytp-videowall-still-info-content {
-        background: var(--end-bg-hover-color, #00000050) !important;
+        background: var(--nt-endscreen-hover-bg, #00000050) !important;
       }
     `,
 		},
@@ -161,10 +177,10 @@ export const video_category: Category = {
 			min: 0,
 			max: 200,
 			step: 5,
-			var_css: "--below-video-space",
+			var_css: "--nt-video-bottom-space",
 			constant_css: `
       #below {
-        margin-top: var(--below-video-space, 0px) !important;
+        margin-top: var(--nt-video-bottom-space, 0px) !important;
       }
     `,
 		},
@@ -177,10 +193,10 @@ export const video_category: Category = {
 			min: 0.5,
 			max: 1.5,
 			step: 0.05,
-			var_css: "--watch-page-zoom",
+			var_css: "--nt-watch-zoom",
 			constant_css: `
       #columns.ytd-watch-flexy {
-        zoom: var(--watch-page-zoom, 1) !important;
+        zoom: var(--nt-watch-zoom, 1) !important;
       }
     `,
 		},
@@ -193,10 +209,10 @@ export const video_category: Category = {
 			min: 200,
 			max: 2000,
 			step: 10,
-			var_css: "--playlist-max-height",
+			var_css: "--nt-playlist-height-normal",
 			constant_css: `
       #items.ytd-playlist-panel-renderer {
-        max-height: var(--playlist-max-height, 600px) !important;
+        max-height: var(--nt-playlist-height-normal, 600px) !important;
       }
     `,
 		},
@@ -209,10 +225,10 @@ export const video_category: Category = {
 			min: 200,
 			max: 2000,
 			step: 10,
-			var_css: "--playlist-max-height-theater",
+			var_css: "--nt-playlist-height-theater",
 			constant_css: `
       ytd-watch-flexy[theater] #items.ytd-playlist-panel-renderer {
-        max-height: var(--playlist-max-height-theater, 800px) !important;
+        max-height: var(--nt-playlist-height-theater, 800px) !important;
       }
     `,
 		},

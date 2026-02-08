@@ -7,7 +7,7 @@ export function setup_auto_pip() {
 			try {
 				await video.requestPictureInPicture();
 			} catch (_e) {
-				// console.error("AutoPiP Error:", e);
+				// logger.error("pip", "AutoPiP Error:", _e);
 			}
 		}
 	});
@@ -19,7 +19,7 @@ export function setup_auto_exit_pip() {
 			try {
 				await document.exitPictureInPicture();
 			} catch (_e) {
-				// console.error("AutoExitPiP Error:", e);
+				// logger.error("pip", "AutoExitPiP Error:", _e);
 			}
 		}
 	});

@@ -6,6 +6,7 @@ import { load, save_any } from "../core/save";
 import { update_all } from "../run";
 import { setup_setting_function } from "./functions";
 import { Category, type Setting } from "../types/store";
+import { logger } from "../build-in-functions/logger";
 
 const highlight_colors = [`255, 109, 109`, `167, 242, 255`, `255, 167, 248`, `188, 167, 255`, `255, 241, 167`];
 
@@ -64,7 +65,7 @@ function auto_add_hightlight(array) {
 	for (const category_obj of array) {
 		if (category_obj.Highlight_color == null) {
 			const get_color_id = random_number_in_range(0, highlight_colors.length - 1, category_obj.Category);
-			console.log("random id", category_obj.Category, get_color_id);
+			logger.info("highlight", "random id", category_obj.Category, get_color_id);
 			category_obj.Highlight_color = highlight_colors[get_color_id];
 		}
 	}
@@ -143,7 +144,7 @@ export async function add_setting(category_settings: Setting[], this_setting) {
 		new_preset.id += `_${times}`;
 		new_preset.name += `_${times}`;
 		find_similar = find_exist_settings(new_preset);
-		console.log(find_similar, times, new_preset);
+		logger.info("settings", find_similar, times, new_preset);
 	}
 
 	if (new_preset) {
@@ -151,7 +152,7 @@ export async function add_setting(category_settings: Setting[], this_setting) {
 	}
 
 	category_settings.push(this_setting);
-	console.log("update Category settings", category_settings);
+	logger.info("settings", "update Category settings", category_settings);
 
 	if (this_setting.value) {
 		await save_any(this_setting.id, this_setting.value);
@@ -191,7 +192,7 @@ export async function add_category(category_name: string) {
 		new_category = Object.assign({}, this_category);
 		new_category.category += `_${times}`;
 		find_similar = find_exist_category(new_category);
-		console.log(find_similar, times, new_category);
+		logger.info("category", find_similar, times, new_category);
 	}
 
 	if (new_category) {
@@ -200,7 +201,7 @@ export async function add_category(category_name: string) {
 
 	const custom_items = get_custom_items();
 	custom_items.push(this_category);
-	console.log("Added Category", custom_items);
+	logger.info("category", "Added Category", custom_items);
 
 	save_custom_items_and_update_all(custom_items);
 }
@@ -220,7 +221,7 @@ export async function remove_category(this_category) {
 //-------------------------------------------------
 
 export function get_styleshift_data_type(this_data) {
-	console.log(this_data);
+	logger.info("data", this_data);
 
 	if (this_data.category != null) {
 		return "category";

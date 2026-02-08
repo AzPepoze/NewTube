@@ -80,9 +80,9 @@ async function process_functions(code_path) {
 		code = code
 			.replace(
 				wrap_regex,
-				(_, async_keyword) => `StyleShift["Build-in"]["${name}"] = ${async_keyword || ""}function (`,
+				(_, async_keyword) => `StyleShift["build-in"]["${name}"] = ${async_keyword || ""}function (`,
 			)
-			.replace(call_regex, `StyleShift["Build-in"]["${name}"](`);
+			.replace(call_regex, `StyleShift["build-in"]["${name}"](`);
 	});
 
 	return code;
@@ -101,17 +101,26 @@ async function generate_build_in_functions(build_path) {
 	const functions_list_data = function_names
 		.map(
 			(name) =>
-				`StyleShift["Build-in"]["${name}"] = async function(...args){return await StyleShift["Build-in"]["_Call_Function"]("${name}",...args)};`,
+				`StyleShift["build-in"]["${name}"] = async function(...args){return await StyleShift["build-in"]["_call_function"]("${name}",...args)};`,
 		)
 		.join("");
 
 	const normal_functions = await fs.readFile(path.join(__dirname, "../temp/normal.js"), "utf8");
 	const build_in_functions = await fs.readFile(path.join(build_path, "build-in.js"), "utf8");
 
-	return `StyleShift = {"Build-in":{},"Custom":{}};${normal_functions}${build_in_functions.replace(
-		/\n/g,
-		"",
-	)}${functions_list_data}window['StyleShift'] = StyleShift;`;
+	return `var StyleShift = window.StyleShift || {
+		"build-in":{},
+		"Custom":{},
+		"logger": {
+			info: (category, ...args) => console.log("%c StyleShift %c [INFO] %c [" + category.toUpperCase() + "]", "color: #bada55", "color: #00ffff", "color: #6a6a6a", ...args),
+			warn: (category, ...args) => console.warn("%c StyleShift %c [WARN] %c [" + category.toUpperCase() + "]", "color: #bada55", "color: #ffae00", "color: #6a6a6a", ...args),
+			error: (category, ...args) => console.error("%c StyleShift %c [ERROR] %c [" + category.toUpperCase() + "]", "color: #bada55", "color: #ff0000", "color: #6a6a6a", ...args),
+		}
+	};
+	(() => { ${normal_functions} })();
+	(() => { ${build_in_functions} })();
+	${functions_list_data}
+	window['StyleShift'] = StyleShift;`;
 }
 
 /*
@@ -193,6 +202,7 @@ async function build() {
 		// Build processed functions
 		await esbuild.build({
 			entryPoints: [path.join(temp_path, "normal.ts")],
+			bundle: false,
 			outfile: path.join(temp_path, "normal.js"),
 			platform: "browser",
 			minify: is_production,
@@ -201,6 +211,7 @@ async function build() {
 
 		await esbuild.build({
 			entryPoints: [path.join(__dirname, "../src/styleshift/communication/web-page.ts")],
+			bundle: false,
 			outfile: path.join(build_path, "build-in.js"),
 			platform: "browser",
 		});

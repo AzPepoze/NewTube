@@ -10,13 +10,13 @@ export const hover_click_color_category: Category = {
 			description:
 				"The background color for most elements when you hover over them (e.g., menu items, buttons).",
 			value: "#659aff80",
-			var_css: "--theme-hover-bg-color",
+			var_css: "--nt-hover-bg",
 			constant_css: `
                 ytd-guide-entry-renderer:hover,
                 tp-yt-paper-item:hover,
                 .ytp-menuitem:hover,
                 ytd-menu-popup-renderer:not([disable-upgrade]) tp-yt-paper-listbox.ytd-menu-popup-renderer .yt-spec-touch-feedback-shape--touch-response-inverse {
-                    background-color: var(--theme-hover-bg-color) !important;
+                    background-color: var(--nt-hover-bg) !important;
                 }
             `,
 		},
@@ -26,10 +26,10 @@ export const hover_click_color_category: Category = {
 			name: "Playlist hover Background color",
 			description: "The background color for videos in a playlist when you hover over them.",
 			value: "#659aff80",
-			var_css: "--playlist-hover-bg-color",
+			var_css: "--nt-playlist-hover-bg",
 			constant_css: `
                 ytd-playlist-panel-video-renderer:hover {
-                    background-color: var(--playlist-hover-bg-color) !important;
+                    background-color: var(--nt-playlist-hover-bg) !important;
                 }
             `,
 		},
@@ -39,7 +39,7 @@ export const hover_click_color_category: Category = {
 			name: "Border hover color",
 			description: "The color of the border/shadow when hovering over elements.",
 			value: "#099DFFFF",
-			var_css: "--border-hover-color",
+			var_css: "--nt-hover-color",
 		},
 		{
 			type: "color",
@@ -47,7 +47,7 @@ export const hover_click_color_category: Category = {
 			name: "Border Click color",
 			description: "The color of the border/shadow when clicking on elements.",
 			value: "#ffea00ff",
-			var_css: "--border-click-color",
+			var_css: "--nt-click-color",
 		},
 		{
 			type: "checkbox",
@@ -84,15 +84,15 @@ export const hover_click_color_category: Category = {
                 }
 
                 ytd-menu-renderer .ytd-menu-renderer[style-target=button]:hover yt-icon {
-                    background: var(--theme-fort);
+                    background: var(--nt-theme-accent);
                     transform: scale(1.3);
                 }
 
                 /* Channel Name Hover Background */
                 ytd-video-owner-renderer #text.ytd-channel-name:hover,
                 ytd-video-meta-block #text.ytd-channel-name:hover {
-                    background: var(--theme-transparent-color);
-                    border-radius: var(--theme-radius);
+                    background: var(--nt-theme-transparent);
+                    border-radius: var(--nt-border-radius);
                 }
                 
                 ytd-video-meta-block #text.ytd-channel-name:not(.complex-string):hover,

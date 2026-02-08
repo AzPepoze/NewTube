@@ -9,7 +9,7 @@
 		inherits: false;
 	}
 
-	* {
+	:where(*:not(.cm-editor *)) {
 		user-select: none;
 	}
 

@@ -12,13 +12,13 @@ export const subtitles_category: Category = {
 			enable_css: `
                 .ytp-caption-segment {
                     background: transparent !important;
-                    filter: drop-shadow(0px 0px 1px var(--sub-sha-color, #000)) drop-shadow(0px 0px var(--sub-sha-blur, 2px) var(--sub-sha-color, #000)) drop-shadow(0px 0px 1px var(--sub-sha-color, #000));
-                    font-weight: var(--sub-width, 700);
-                    letter-spacing: var(--sub-space, 2px);
-                    color: var(--sub-color, #fff) !important;
+                    filter: drop-shadow(var(--nt-subtitle-shadow-offset, 0px) var(--nt-subtitle-shadow-offset, 0px) var(--nt-subtitle-shadow-blur, 2px) var(--nt-subtitle-shadow-color, #000));
+                    font-weight: var(--nt-subtitle-font-weight, 700);
+                    letter-spacing: var(--nt-subtitle-letter-spacing, 2px);
+                    color: var(--nt-subtitle-color, #fff) !important;
                 }
                 .captions-text {
-                    background: var(--sub-bg, #00000000) !important;
+                    background: var(--nt-subtitle-bg, #00000000) !important;
                 }
                 .caption-window {
                     background: transparent !important;
@@ -31,7 +31,7 @@ export const subtitles_category: Category = {
 			name: "Subtitle color",
 			description: "The main text color of the subtitles.",
 			value: "#ffffffff",
-			var_css: "--sub-color",
+			var_css: "--nt-subtitle-color",
 		},
 		{
 			type: "color",
@@ -39,7 +39,7 @@ export const subtitles_category: Category = {
 			name: "Subtitle Background color",
 			description: "The background color of the caption box.",
 			value: "#00000000",
-			var_css: "--sub-bg",
+			var_css: "--nt-subtitle-bg",
 		},
 		{
 			type: "number_slide",
@@ -50,7 +50,7 @@ export const subtitles_category: Category = {
 			min: 100,
 			max: 900,
 			step: 100,
-			var_css: "--sub-width",
+			var_css: "--nt-subtitle-font-weight",
 		},
 		{
 			type: "number_slide",
@@ -61,7 +61,7 @@ export const subtitles_category: Category = {
 			min: 0,
 			max: 10,
 			step: 1,
-			var_css: "--sub-space",
+			var_css: "--nt-subtitle-letter-spacing",
 		},
 		{
 			type: "color",
@@ -69,7 +69,7 @@ export const subtitles_category: Category = {
 			name: "Subtitle Shadow color",
 			description: "The color of the drop shadow behind the text.",
 			value: "#000000ff",
-			var_css: "--sub-sha-color",
+			var_css: "--nt-subtitle-shadow-color",
 		},
 		{
 			type: "number_slide",
@@ -80,7 +80,18 @@ export const subtitles_category: Category = {
 			min: 0,
 			max: 20,
 			step: 1,
-			var_css: "--sub-sha-blur",
+			var_css: "--nt-subtitle-shadow-blur",
+		},
+		{
+			type: "number_slide",
+			id: "subShaWidth",
+			name: "Subtitle Shadow Width",
+			description: "Offset/Width of the drop shadow.",
+			value: 0,
+			min: -10,
+			max: 10,
+			step: 1,
+			var_css: "--nt-subtitle-shadow-offset",
 		},
 		{
 			type: "checkbox",
@@ -90,7 +101,7 @@ export const subtitles_category: Category = {
 			value: false,
 			enable_css: `
                 .caption-window.ytp-caption-window-bottom {
-                    backdrop-filter: blur(var(--sub-bg-blur-amount, 5px)) !important;
+                    backdrop-filter: blur(var(--nt-subtitle-blur-amount, 5px)) !important;
                 }
             `,
 		},
@@ -103,7 +114,7 @@ export const subtitles_category: Category = {
 			min: 0,
 			max: 50,
 			step: 1,
-			var_css: "--sub-bg-blur-amount",
+			var_css: "--nt-subtitle-blur-amount",
 		},
 		{
 			type: "checkbox",
@@ -113,8 +124,8 @@ export const subtitles_category: Category = {
 			value: false,
 			enable_css: `
                 .caption-window.ytp-caption-window-bottom {
-                    box-shadow: 0 0 var(--border-width, 8px) var(--border-color, #099DFF80) !important;
-                    border: 1px solid var(--border-color, #099DFF80) !important;
+                    box-shadow: 0 0 var(--nt-border-width, 8px) var(--nt-border-color, #099DFF80) !important;
+                    border: 1px solid var(--nt-border-color, #099DFF80) !important;
                 }
             `,
 		},

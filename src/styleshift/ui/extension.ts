@@ -6,6 +6,7 @@ import { editor_ui } from "./editor";
 import { extension_settings_ui } from "./extension-settings";
 import { settings_ui } from "./settings/setting-components";
 import { apply_theme_to_element } from "./theme";
+import { logger } from "../build-in-functions/logger";
 
 //---------------------------------
 
@@ -14,7 +15,7 @@ export async function create_styleshift_window({ width = "30%", height = "80%", 
 		await load_developer_modules();
 	}
 
-	console.log("Setting up");
+	logger.info("ui/extension", "Setting up");
 
 	await get_document_head();
 	const bg_frame = settings_ui["fill_screen"](false);
@@ -131,20 +132,20 @@ export async function show_confirm(ask: string, title: string = "Confirm Action"
 //---------------------------------
 
 export async function update_all_ui() {
-	console.log("Updating all UI...");
+	logger.info("ui/extension", "Updating all UI...");
 	if ((await load("Developer_mode")) && !loaded_developer_modules) {
-		console.log("Loading developer modules...");
+		logger.info("ui/extension", "Loading developer modules...");
 		await load_developer_modules();
 	}
 
-	console.log("Recreating UI for extension and editor...");
+	logger.info("ui/extension", "Recreating UI for extension and editor...");
 	extension_settings_ui.recreate_ui();
 	editor_ui.recreate_ui();
 	if (!(await load("Developer_mode"))) {
-		console.log("Removing config UI...");
+		logger.info("ui/extension", "Removing config UI...");
 		remove_config_ui();
 	} else {
-		console.log("Recreating config UI...");
+		logger.info("ui/extension", "Recreating config UI...");
 		recreate_config_ui();
 	}
 }

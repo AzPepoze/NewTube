@@ -3,6 +3,7 @@ import { sleep } from "../build-in-functions/normal";
 import { save_name } from "../run";
 import { get_settings_list, update_styleshift_items } from "../settings/items";
 import { show_confirm } from "../ui/extension";
+import { logger } from "../build-in-functions/logger";
 
 //save
 export let saved_data = {};
@@ -23,16 +24,16 @@ export const styleshift_allowed_keys = ["current_settings", "custom_styleshift_i
 export async function load_thisweb_save() {
 	return new Promise((resolve, _reject) => {
 		chrome.storage.local.get(null, function (saved) {
-			console.log("ALL_SAVED", saved);
+			logger.info("save", "ALL_SAVED", saved);
 		});
 
-		console.log("loading", save_name);
+		logger.info("save", "loading", save_name);
 
 		chrome.storage.local.get(save_name, function (saved: object) {
 			if (saved[save_name]) {
 				try {
 					saved_data = saved[save_name];
-					console.log("loaded", save_name, JSON.stringify(saved_data));
+					logger.info("save", "loaded", save_name, JSON.stringify(saved_data));
 				} catch {
 					create_error(`Can't load Data : <b>${save_name}</b>`);
 					saved_data = {};
@@ -52,7 +53,7 @@ export async function save(name, value, pre_save = false) {
 		return save(name, value);
 	}
 	saved_data[name] = value;
-	console.log("save", name, value);
+	logger.info("save", "save", name, value);
 	if (!pre_save) {
 		return await save_all();
 	}
@@ -64,7 +65,7 @@ export async function save_setting(name, value, pre_save = false) {
 		saved_data["current_settings"] = {};
 	}
 	saved_data["current_settings"][name] = value;
-	console.log("save_setting", name, value);
+	logger.info("save", "save_setting", name, value);
 	if (!pre_save) {
 		return await save_all();
 	}
@@ -80,9 +81,9 @@ export async function save_any(name, value, pre_save = false) {
 }
 
 export async function save_all() {
-	console.log("Saving", save_name, saved_data);
+	logger.info("save", "Saving", save_name, saved_data);
 	await chrome.storage.local.set({ [save_name]: saved_data });
-	console.log("saved", save_name, saved_data);
+	logger.info("save", "saved", save_name, saved_data);
 	return true;
 }
 
@@ -127,7 +128,7 @@ export async function update_save_default() {
 	const can_settings = await get_settings_list(true);
 	let current_settings = saved_data["current_settings"];
 
-	// console.log(can_settings);
+	// logger.info("save", can_settings);
 
 	if (current_settings == null) {
 		current_settings = {};
@@ -137,7 +138,7 @@ export async function update_save_default() {
 		const setting = can_settings[id];
 		if ("value" in setting && current_settings[id] == null) {
 			current_settings[id] = setting.value;
-			console.log("Added New Default Setting:", id, setting.value);
+			logger.info("save", "Added New Default Setting:", id, setting.value);
 		}
 	}
 
@@ -154,30 +155,30 @@ export async function clear_unused_save() {
 		saved_data["current_settings"] = {};
 	}
 
-	console.log("Clearing Unnessary save");
+	logger.info("save", "Clearing Unnessary save");
 
 	const can_settings_keys = Object.keys(await get_settings_list(true));
 	const current_settings = saved_data["current_settings"];
 
 	for (const key of Object.keys(current_settings)) {
 		if (!can_settings_keys.includes(key)) {
-			console.log("Removed", key);
+			logger.info("save", "Removed", key);
 			delete current_settings[key];
 		}
 	}
 
 	for (const key of Object.keys(saved_data)) {
 		if (!save_external.includes(key)) {
-			console.log("Removed", key);
+			logger.info("save", "Removed", key);
 			delete saved_data[key];
 		}
 	}
 
-	console.log("Clearing Unnessary save", "Saving");
+	logger.info("save", "Clearing Unnessary save", "Saving");
 
 	await save_all();
 
-	console.log("Cleared Unnessary save");
+	logger.info("save", "Cleared Unnessary save");
 }
 
 export async function load_rgba(text) {
@@ -245,7 +246,7 @@ export async function load_ntube_code(preset) {
 }
 
 export async function load_ntube_code_string(string) {
-	console.log(await convert_string_to_preset(string));
+	logger.info("save", await convert_string_to_preset(string));
 	return await load_ntube_code(await convert_string_to_preset(string));
 }
 
@@ -314,7 +315,7 @@ export async function set_null_save() {
 		if (save_external.includes(id)) continue;
 
 		if (current_settings[id] === undefined || current_settings[id] === null) {
-			console.log("Added New Default Setting:", id, args.value);
+			logger.info("save", "Added New Default Setting:", id, args.value);
 			await save_any(id, args.value, true);
 			settings_changed = true;
 		}
@@ -322,8 +323,8 @@ export async function set_null_save() {
 
 	if (settings_changed) {
 		await save_all();
-		console.log("Finished setting null saves.");
+		logger.info("save", "Finished setting null saves.");
 	} else {
-		console.log("No null saves needed setting.");
+		logger.info("save", "No null saves needed setting.");
 	}
 }

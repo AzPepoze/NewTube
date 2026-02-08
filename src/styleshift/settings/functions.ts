@@ -3,6 +3,7 @@ import { run_text_script_from_setting } from "../core/extension";
 import { load_any } from "../core/save";
 import { Setting } from "../types/store";
 import { create_stylesheet } from "./style-sheet";
+import { logger } from "../build-in-functions/logger";
 
 export const settings_current_state = {};
 const settings_update_function: { [key: string]: Function } = {};
@@ -77,7 +78,7 @@ const settings_function = {
 				style_sheet.textContent = "";
 				style_sheet.textContent += `:root{${
 					this_setting.var_css ? this_setting.var_css : `--${this_setting.id}`
-				}: ${value}${this_setting.unit || "px"}`;
+				}: ${value}${this_setting.unit || "px"}}`;
 				if (this_setting.constant_css) {
 					style_sheet.textContent += this_setting.constant_css;
 				}
@@ -251,7 +252,7 @@ export async function update_setting_function(id) {
 				}
 			}
 
-			console.log("updated", id, current_value);
+			logger.info("settings", "updated", id, current_value);
 			//----------------------
 			await wait_one_frame();
 
@@ -297,7 +298,7 @@ export async function run_setting_init(id) {
 
 export async function run_all_setting_init() {
 	for (const id in settings_on_init) {
-		// console.log("running init", id);
+		logger.info("settings", "running init", id);
 		run_setting_init(id);
 	}
 }

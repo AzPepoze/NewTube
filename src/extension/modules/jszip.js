@@ -5,7 +5,7 @@ import * as jszip from "jszip";
 // 		setTimeout(run, 0);
 // 		return;
 // 	}
-// 	window["StyleShift"]["Build-in"]["jszip"] = jszip;
+// 	window["StyleShift"]["build-in"]["jszip"] = jszip;
 // }
 
 // run();

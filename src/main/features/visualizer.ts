@@ -33,7 +33,7 @@ export function setup_audio_visualizer() {
 			await create_canvas();
 			visualize();
 		} catch {
-			// console.warn("Visualizer setup failed", e);
+			// logger.warn("visualizer", "Visualizer setup failed");
 		}
 	};
 

@@ -3,6 +3,7 @@ import { sleep } from "../build-in-functions/normal";
 import { update_all, in_setting_page } from "../run";
 import { Color_obj } from "../types/store";
 import { save_all } from "./save";
+import { logger } from "../build-in-functions/logger";
 
 export async function save_and_update_all() {
 	await save_all();
@@ -25,7 +26,7 @@ function run_styleshift_functions_list(){
 		Get_functions_list[key] = Object.keys(value);
 	}
 
-	console.log("Avaliable StyleShift functions", Get_functions_list);
+	window["StyleShift"].logger.info("Avaliable StyleShift functions", Get_functions_list);
 
 	window.dispatchEvent(
 		new CustomEvent("Sent_styleshift_functions_list", {
@@ -52,7 +53,7 @@ export async function update_styleshift_functions_list() {
 		window.addEventListener(
 			"Sent_styleshift_functions_list",
 			function (event) {
-				console.log("Recived", event);
+				logger.info("extension", "Recived", event);
 				//@ts-ignore
 				styleshift_functions_list = event.detail;
 				resolve(true);
@@ -67,7 +68,7 @@ export async function update_styleshift_functions_list() {
 	});
 }
 
-export async function get_global_data(mode: "Build-in" | "custom", function_name) {
+export async function get_global_data(mode: "build-in" | "custom", function_name) {
 	if (
 		(window["StyleShift"] && window["StyleShift"][mode] == null) ||
 		window["StyleShift"][mode][function_name] == null
@@ -75,7 +76,7 @@ export async function get_global_data(mode: "Build-in" | "custom", function_name
 		await sleep(0);
 		return await get_global_data(mode, function_name);
 	} else {
-		console.log(window["StyleShift"][mode], window["StyleShift"][mode][function_name]);
+		logger.info("extension", window["StyleShift"][mode], window["StyleShift"][mode][function_name]);
 		return window["StyleShift"][mode][function_name];
 	}
 }
@@ -164,7 +165,7 @@ export function is_safe_code(code: string, code_name: string) {
 					timeout: 0,
 				});
 
-				console.warn(match, pattern);
+				logger.warn("extension", match, pattern);
 			}
 			return false;
 		}
@@ -179,8 +180,8 @@ export async function run_text_script({
 	code_name = "StyleShift",
 	args = "",
 }) {
-	console.log("Trying to run script");
-	console.log(text);
+	logger.info("extension", "Trying to run script");
+	logger.info("extension", text);
 
 	if (typeof text == "function") {
 		text();
@@ -233,6 +234,8 @@ export let try_loaded_developer_modules = false;
 export let jszip: any;
 export let codemirror: any;
 
+export const global_functions_metadata: any[] = [];
+
 export async function load_developer_modules() {
 	if (try_loaded_developer_modules || loaded_developer_modules) {
 		return;
@@ -248,6 +251,12 @@ export async function load_developer_modules() {
 	});
 
 	try {
+		loading_ui.set_content("Preparing : Metadata (Code Autocomplete)");
+		const metadata_res = await fetch(chrome.runtime.getURL("types/StyleShift-Metadata.json"));
+		const metadata_data = await metadata_res.json();
+		global_functions_metadata.length = 0;
+		global_functions_metadata.push(...metadata_data);
+
 		loading_ui.set_content("Preparing : Jzip (Export theme as zip)");
 		const jszip_module = await import(chrome.runtime.getURL("modules/jszip.js"));
 		jszip = jszip_module.default.default || jszip_module.default;
@@ -256,8 +265,8 @@ export async function load_developer_modules() {
 		const codemirror_module = await import(chrome.runtime.getURL("modules/codemirror.js"));
 		codemirror = codemirror_module.default.default || codemirror_module.default;
 
-		console.log("jszip:", jszip);
-		console.log("codemirror:", codemirror);
+		logger.info("extension", "jszip:", jszip);
+		logger.info("extension", "codemirror:", codemirror);
 
 		loading_ui.set_icon("✅");
 		loading_ui.set_title("StyleShift - loaded Developer Modules");
@@ -268,7 +277,7 @@ export async function load_developer_modules() {
 		}, 4000);
 		loaded_developer_modules = true;
 	} catch (error) {
-		console.log(error);
+		logger.error("extension", error);
 		loading_ui.set_icon("⚠️");
 		loading_ui.set_title("StyleShift - Error loading Developer Modules");
 		loading_ui.set_content((error as Error).message);
@@ -290,7 +299,7 @@ export function color_obj_to_hex({ hex, alpha }: Color_obj): string {
 
 export function hex_to_color_obj(hex: string): { hex: string; alpha: number } {
 	if (typeof hex !== "string") {
-		console.warn("hex_to_color_obj received non-string hex value:", hex);
+		logger.warn("extension", "hex_to_color_obj received non-string hex value:", hex);
 		return { hex: "#000000", alpha: 100 };
 	}
 	const clean_hex = hex.startsWith("#") ? hex.slice(1) : hex;

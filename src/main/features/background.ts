@@ -1,6 +1,7 @@
 import { get_document_body } from "../../styleshift/build-in-functions/normal";
 import { load_setting } from "../../styleshift/core/save";
 import { on_setting_update } from "../../styleshift/settings/functions";
+import { logger } from "../../styleshift/build-in-functions/logger";
 
 const bg_tint_id = "newtube-bg-tint";
 const bg_image_id = "newtube-bg-image";
@@ -25,15 +26,14 @@ ytd-app {
 }
 
 #${bg_tint_id}{
-	background: var(--newtube-bg-tint-color);
+	background: var(--nt-bg-main);
+	opacity: calc(var(--nt-bg-opacity) / 100);
 }
 
 #${bg_image_id} {
 	z-index: -10000;
-    background-position-x: var(--newtube-bg-position-x);
-	background-position-y: var(--newtube-bg-position-y);
-	background-repeat: var(--newtube-bg-repeat);
-	filter: blur(var(--newtube-bg-blur));
+	background-repeat: var(--nt-bg-repeat);
+	filter: blur(var(--nt-bg-blur-amount));
 }
 `;
 
@@ -77,7 +77,7 @@ export async function disable_bg() {
 }
 
 export async function update_bg_img() {
-	console.log("BG updated");
+	logger.info("background", "BG updated");
 	const use_thumb = await load_setting("ThumbBG");
 	if (use_thumb) {
 		const video_id = new URLSearchParams(window.location.search).get("v");

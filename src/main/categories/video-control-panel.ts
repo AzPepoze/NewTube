@@ -5,14 +5,22 @@ export const video_control_panel_category: Category = {
 	settings: [
 		{
 			type: "color",
+			id: "TimeBG",
+			name: "Timestamp/Popup Background",
+			description: "Background color for video timestamps, settings popups, and preview tooltips.",
+			value: "#00000080",
+			var_css: "--nt-timestamp-bg",
+		},
+		{
+			type: "color",
 			id: "VDOTEXT",
 			name: "Control Panel text",
 			description: "color of the text on the video control panel (time, etc.).",
 			value: "#ffffffff",
-			var_css: "--control-text-color",
+			var_css: "--nt-text-primary",
 			constant_css: `
-      .ytp-time-display, .ytp-button {
-        color: var(--control-text-color) !important;
+      .ytp-time-current, .ytp-time-separator, .ytp-time-duration, .ytp-button {
+        color: var(--nt-text-primary) !important;
       }
     `,
 		},
@@ -22,10 +30,10 @@ export const video_control_panel_category: Category = {
 			name: "Control Panel hover button",
 			description: "Background color when hovering over buttons on the control panel.",
 			value: "#ffffff20",
-			var_css: "--control-hover-bg-color",
+			var_css: "--nt-theme-transparent",
 			constant_css: `
       .ytp-button:hover {
-        background-color: var(--control-hover-bg-color) !important;
+        background-color: var(--nt-theme-transparent) !important;
       }
     `,
 		},
@@ -37,17 +45,17 @@ export const video_control_panel_category: Category = {
 			value: true,
 			enable_css: `
       #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) {
-        padding-bottom: var(--media-space, 70px);
+        padding-bottom: var(--nt-player-below-space, 70px);
       }
       div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) .ytp-chrome-bottom {
         overflow: visible !important;
         padding-top: 0px !important;
       }
       #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-chrome-bottom {
-        transform: translate(0px, var(--media-space, 70px));
+        transform: translate(0px, var(--nt-player-below-space, 70px));
       }
       #player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)) {
-        margin-bottom: var(--media-space, 70px);
+        margin-bottom: var(--nt-player-below-space, 70px);
       }
     `,
 		},
@@ -60,7 +68,7 @@ export const video_control_panel_category: Category = {
 			min: 30,
 			max: 200,
 			step: 1,
-			var_css: "--media-space",
+			var_css: "--nt-player-below-space",
 		},
 		{
 			type: "checkbox",
@@ -85,10 +93,10 @@ export const video_control_panel_category: Category = {
 			name: "Control Panel Background",
 			description: "Background color of the video control panel.",
 			value: "#00000080",
-			var_css: "--media-bg-color",
+			var_css: "--nt-player-bg",
 			constant_css: `
       .ytp-chrome-bottom, .ytp-gradient-bottom {
-        background-color: var(--media-bg-color) !important;
+        background-color: var(--nt-player-bg) !important;
       }
     `,
 		},
@@ -100,7 +108,7 @@ export const video_control_panel_category: Category = {
 			value: true,
 			enable_css: `
                 .ytp-chrome-bottom, .ytp-gradient-bottom {
-                    backdrop-filter: blur(var(--media-blur-amount, 10px)) !important;
+                    backdrop-filter: blur(var(--nt-player-blur-amount, 10px)) !important;
                 }
             `,
 		},
@@ -113,7 +121,7 @@ export const video_control_panel_category: Category = {
 			min: 0,
 			max: 50,
 			step: 1,
-			var_css: "--media-blur-amount",
+			var_css: "--nt-player-blur-amount",
 		},
 		{
 			type: "checkbox",
@@ -132,9 +140,9 @@ export const video_control_panel_category: Category = {
 			min: 30,
 			max: 150,
 			step: 1,
-			var_css: "--media-height",
+			var_css: "--nt-player-bg-height",
 			constant_css: `
-                .ytp-gradient-bottom { height: var(--media-height, 60px) !important; }
+                .ytp-gradient-bottom { height: var(--nt-player-bg-height, 60px) !important; }
             `,
 		},
 		{
@@ -146,9 +154,9 @@ export const video_control_panel_category: Category = {
 			min: 30,
 			max: 150,
 			step: 1,
-			var_css: "--media-height-full",
+			var_css: "--nt-player-bg-height-full",
 			constant_css: `
-                .ytp-fullscreen .ytp-gradient-bottom { height: var(--media-height-full, 70px) !important; }
+                .ytp-fullscreen .ytp-gradient-bottom { height: var(--nt-player-bg-height-full, 70px) !important; }
             `,
 		},
 		{
@@ -159,8 +167,8 @@ export const video_control_panel_category: Category = {
 			value: false,
 			enable_css: `
                 .ytp-chrome-bottom, .ytp-gradient-bottom {
-                    box-shadow: var(--global-style-shadow) !important;
-                    border-top: var(--global-style-outline) !important;
+                    box-shadow: var(--nt-global-shadow) !important;
+                    border: var(--nt-global-outline) !important;
                 }
             `,
 		},
@@ -173,7 +181,7 @@ export const video_control_panel_category: Category = {
 			min: 0,
 			max: 20,
 			step: 1,
-			var_css: "--player-border-width",
+			var_css: "--nt-player-border-width",
 		},
 		{
 			type: "checkbox",

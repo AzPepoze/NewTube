@@ -2,7 +2,7 @@
 @use "animation";
 
 .STYLESHIFT-Main {
-	* {
+	:where(*:not(.cm-editor *)) {
 		border-radius: var(--Border-Radius);
 		color: var(--Font-Color);
 	}

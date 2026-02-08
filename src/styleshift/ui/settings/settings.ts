@@ -5,11 +5,7 @@ import { loaded_developer_modules } from "../../core/extension";
 import { load } from "../../core/save";
 import { get_styleshift_dev_only_items } from "../../../main/items-styleshift-dev";
 import { in_setting_page } from "../../run";
-import {
-	add_category,
-	get_styleshift_data_type,
-	update_styleshift_items,
-} from "../../settings/items";
+import { add_category, get_styleshift_data_type, update_styleshift_items } from "../../settings/items";
 import { Category } from "../../types/store";
 import { create_styleshift_window } from "../extension";
 import { settings_ui } from "./setting-components";
@@ -338,7 +334,10 @@ export async function create_main_settings_ui({
 
 //------------------------------
 
-export async function create_config_ui_function(editable = false, config_function: Function): Promise<Function | undefined> {
+export async function create_config_ui_function(
+	editable = false,
+	config_function: Function,
+): Promise<Function | undefined> {
 	if (editable && (await load("Developer_mode"))) {
 		return config_function;
 	}

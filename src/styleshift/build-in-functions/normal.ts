@@ -1,3 +1,33 @@
+const logger = (window as any).StyleShift?.logger || {
+	info: (category, ...args: any[]) =>
+		(window as any).StyleShift?.logger?.info(category, ...args) ||
+		console.log(
+			`%c StyleShift %c [INFO] %c [${category}]`,
+			"color: #bada55",
+			"color: #00ffff",
+			"color: #888",
+			...args,
+		),
+	warn: (category, ...args: any[]) =>
+		(window as any).StyleShift?.logger?.warn(category, ...args) ||
+		console.warn(
+			`%c StyleShift %c [WARN] %c [${category}]`,
+			"color: #bada55",
+			"color: #ffae00",
+			"color: #888",
+			...args,
+		),
+	error: (category, ...args: any[]) =>
+		(window as any).StyleShift?.logger?.error(category, ...args) ||
+		console.error(
+			`%c StyleShift %c [ERROR] %c [${category}]`,
+			"color: #bada55",
+			"color: #ff0000",
+			"color: #888",
+			...args,
+		),
+};
+
 /**
  * Pauses execution for a specified delay.
  * @param {number} delay - The delay in milliseconds.
@@ -251,7 +281,7 @@ export async function get_document_head(): Promise<HTMLElement> {
  * @param {HTMLElement} target_element - The target element.
  * @param {Function} callback - The callback function.
  * @example
- * once_element_remove(document.querySelector("#myelement"),() => console.log("element removed"));
+ * once_element_remove(document.querySelector("#myelement"),() => logger.info("element removed"));
  */
 export function once_element_remove(target_element: HTMLElement, callback: Function): void {
 	const observer = new MutationObserver((mutations_list, observer) => {
@@ -259,6 +289,7 @@ export function once_element_remove(target_element: HTMLElement, callback: Funct
 			if (mutation.type === "childList" && mutation.removedNodes.length > 0) {
 				for (const removed_node of Array.from(mutation.removedNodes)) {
 					if (removed_node === target_element) {
+						logger.info("element removed");
 						callback();
 						observer.disconnect();
 						return;
@@ -477,7 +508,7 @@ export async function wait_for_element(selector: string, timeout?: number): Prom
 			return element;
 		}
 		if (timeout && Date.now() - start_time >= timeout) {
-			console.warn(`timeout: element "${selector}" not found within ${timeout}ms`);
+			logger.warn(`timeout: element "${selector}" not found within ${timeout}ms`);
 			return null;
 		}
 		await sleep(100);
@@ -519,7 +550,7 @@ export function input_file(element: HTMLInputElement): void {
 		try {
 			return file;
 		} catch (error) {
-			console.error("Error reading file:", error);
+			logger.error("Error reading file:", error);
 		}
 	});
 }
@@ -558,7 +589,7 @@ export async function fire_function_event(
 	const sent_event = new CustomEvent(`${prefix}_${function_name}`, {
 		detail: { data: args },
 	});
-	console.log("Sent", sent_event);
+	logger.info("Sent", sent_event);
 	window.dispatchEvent(sent_event);
 }
 
@@ -582,7 +613,7 @@ export async function fire_function_event_with_return(
 		detail: JSON.stringify({ remote_id: remote_id, data: args }),
 	});
 
-	console.log("Sent", sent_event);
+	logger.info("Sent", sent_event);
 
 	window.dispatchEvent(sent_event);
 
@@ -592,7 +623,7 @@ export async function fire_function_event_with_return(
 			function (event) {
 				//@ts-ignore
 				const detail = JSON.parse(event.detail);
-				console.log("Return Data", `${prefix}_${function_name}_${remote_id}`, detail);
+				logger.info("Return Data", `${prefix}_${function_name}_${remote_id}`, detail);
 				resolve(detail);
 			},
 			{ once: true },
@@ -607,7 +638,7 @@ export async function fire_function_event_with_return(
  * @param {Function} callback - The callback function.
  * @returns {Promise<{ Cancel: Function }>}
  * @example
- * const listener = await on_function_event("custom", "MyFunction", (data) => console.log(data));
+ * const listener = await on_function_event("custom", "MyFunction", (data) => logger.info(data));
  * listener.Cancel(); // Cancels the event listener
  */
 export async function on_function_event(
@@ -617,7 +648,7 @@ export async function on_function_event(
 ): Promise<{ Cancel: Function }> {
 	const on_event_run_function = async function (event: Event) {
 		const detail = JSON.parse((event as CustomEvent).detail);
-		console.log("Recived", event);
+		logger.info("Recived", event);
 
 		const remote_id = detail.remote_id;
 		let get_return;

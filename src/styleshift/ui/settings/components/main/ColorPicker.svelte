@@ -2,6 +2,7 @@
 	import type { Setting } from "@styleshift/types/store";
 	import Slider from "./Slider.svelte";
 	import Description from "./Description.svelte";
+	import { load } from "@core/save";
 
 	let {
 		setting,
@@ -15,7 +16,13 @@
 		onUpdate: (hex: string, alpha: number) => void;
 	} = $props();
 
-	function handleHexChange() {
+	async function handleInput() {
+		if (await load("Realtime_Extension")) {
+			onUpdate(hex, alpha);
+		}
+	}
+
+	function handleChange() {
 		onUpdate(hex, alpha);
 	}
 
@@ -29,7 +36,13 @@
 	<Description name={setting.name} description={setting.description} />
 	<div class="STYLESHIFT-Color-Preview-Wrapper">
 		<div class="STYLESHIFT-Color-Preview" style="background-color: {hex}; opacity: {alpha / 100}"></div>
-		<input type="color" class="STYLESHIFT-Color-Input" bind:value={hex} oninput={handleHexChange} />
+		<input
+			type="color"
+			class="STYLESHIFT-Color-Input"
+			bind:value={hex}
+			oninput={handleInput}
+			onchange={handleChange}
+		/>
 	</div>
 </div>
 

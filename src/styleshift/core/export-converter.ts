@@ -5,12 +5,17 @@ export async function convert_to_export_setting(
 	this_setting: Setting,
 	create_file_function: (file_name: string, file_data: string) => Promise<void>,
 ) {
-	for (const this_property of styleshift_property_list[this_setting.type]) {
-		if (
-			(this_property.includes("_css") || this_property.includes("_function")) &&
-			!(this_property in this_setting)
-		) {
-			this_setting[this_property] = "";
+	const properties =
+		styleshift_property_list[this_setting.type] ||
+		styleshift_property_list[this_setting.type.charAt(0).toUpperCase() + this_setting.type.slice(1)];
+	if (properties) {
+		for (const this_property of properties) {
+			if (
+				(this_property.includes("_css") || this_property.includes("_function")) &&
+				!(this_property in this_setting)
+			) {
+				this_setting[this_property] = "";
+			}
 		}
 	}
 

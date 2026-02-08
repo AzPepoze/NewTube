@@ -24,11 +24,11 @@ export const other_settings_category: Category = {
 			min: 0,
 			max: 30,
 			step: 1,
-			var_css: "--scrollbar-width",
+			var_css: "--nt-scrollbar-width",
 			constant_css: `
                 ::-webkit-scrollbar {
-                    width: var(--scrollbar-width, 10px) !important;
-                    height: var(--scrollbar-width, 10px) !important;
+                    width: var(--nt-scrollbar-width, 10px) !important;
+                    height: var(--nt-scrollbar-width, 10px) !important;
                 }
             `,
 		},
@@ -38,14 +38,14 @@ export const other_settings_category: Category = {
 			name: "Scrollbar track Background",
 			description: "Changes the color of the scrollbar track (the part behind the handle).",
 			value: "#00000000",
-			var_css: "--scrollbar-track-color",
+			var_css: "--nt-scrollbar-track-color",
 			constant_css: `
                 body::-webkit-scrollbar-track {
-                    background: var(--scrollbar-track-color, #00000000) !important;
+                    background: var(--nt-scrollbar-track-color, #00000000) !important;
                 }
                 @supports (scrollbar-width: thin) {
                     * {
-                        scrollbar-color: var(--theme-color) var(--scrollbar-track-color, transparent) !important;
+                        scrollbar-color: var(--nt-theme-color) var(--nt-scrollbar-track-color, transparent) !important;
                     }
                 }
             `,

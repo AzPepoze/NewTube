@@ -12,7 +12,7 @@ export const blur_category: Category = {
 			min: 0,
 			max: 50,
 			step: 1,
-			var_css: "--global-blur-amount",
+			var_css: "--nt-general-blur-amount",
 		},
 		{
 			type: "dropdown",
@@ -32,7 +32,7 @@ export const blur_category: Category = {
                         .ytp-settings-menu,
                         #chips-wrapper
                         {
-                            backdrop-filter: blur(var(--global-blur-amount)) !important;
+                            backdrop-filter: blur(var(--nt-general-blur-amount)) !important;
                         }
                     `,
 				},
@@ -41,7 +41,7 @@ export const blur_category: Category = {
                         #masthead > #background,
                         #guide-content
                         {
-                            backdrop-filter: blur(var(--global-blur-amount)) !important;
+                            backdrop-filter: blur(var(--nt-general-blur-amount)) !important;
                         }
                     `,
 				},

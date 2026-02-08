@@ -3,7 +3,6 @@
 	import { hex_to_rgb, rgb_to_hsv, hsv_to_rgb } from "../../../../build-in-functions/normal";
 	import Description from "./Description.svelte";
 	import Icon from "./Icon.svelte";
-	import { get_asset_url } from "@ui/utils";
 
 	let {
 		setting,
