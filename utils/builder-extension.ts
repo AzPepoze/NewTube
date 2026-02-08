@@ -146,6 +146,15 @@ async function build() {
 			platform: "browser",
 			minify: is_production,
 			publicPath: "/",
+			external: [
+				"jszip",
+				"codemirror",
+				"@codemirror/view",
+				"@codemirror/state",
+				"@codemirror/lang-javascript",
+				"@codemirror/lang-css",
+				"@codemirror/theme-one-dark",
+			],
 			alias: {
 				"@": path.join(__dirname, "../src"),
 				"@main": path.join(__dirname, "../src/main"),

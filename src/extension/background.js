@@ -1,31 +1,3 @@
-function sleep(delay) {
-	return new Promise((resolve) => setTimeout(resolve, delay));
-}
-
-async function get_now_tab() {
-	let query_options = { active: true, currentwindow_element: true };
-
-	try {
-		let tabs_array = await chrome.tabs.query(query_options);
-
-		if (tabs_array && tabs_array.length > 0) {
-			return tabs_array[0];
-		}
-
-		query_options = { active: true };
-		tabs_array = await chrome.tabs.query(query_options);
-
-		if (tabs_array && tabs_array.length > 0) {
-			return tabs_array[0];
-		}
-
-		return null;
-	} catch (error) {
-		console.error("Failed to get the current active tab:", error);
-		return null;
-	}
-}
-
 chrome.commands.onCommand.addListener(async (command) => {
 	console.log(`Command "${command}" triggered`);
 	const query_options = { active: true, lastFocusedWindow: true };

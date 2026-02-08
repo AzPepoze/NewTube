@@ -52,18 +52,18 @@ const default_styleshift_items: Category[] = [
 				value: false,
 			},
 			{
+				id: "App_Light_Theme",
+				name: "Light Theme",
+				description: "Switch the extension UI to a light theme.",
+				type: "checkbox",
+				value: false,
+			},
+			{
 				type: "checkbox",
 				id: "Setting_BG_Transparent",
 				name: "Enable Blur Background",
 				description: "Makes the settings menu background transparent and blurred.",
 				value: true,
-				enable_css: `
-			      .STYLESHIFT-Window {
-			        background-color: rgba(30, 30, 30, 0.95) !important;
-			        backdrop-filter: blur(var(--setting-bg-blur-amount, 10px)) !important;
-			        transition: background-color 0.3s, backdrop-filter 0.3s;
-			      }
-			    `,
 			},
 			{
 				type: "number_slide",

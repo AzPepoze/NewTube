@@ -133,7 +133,7 @@ export function setup_theme_by_video() {
 			const cp_hsv = { ...hsv, v: hsv.v * 0.2 };
 			const cp_rgb = hsv_to_rgb(cp_hsv);
 			set_prop("--media-bg-color", `rgba(${cp_rgb.r}, ${cp_rgb.g}, ${cp_rgb.b}, 0.7)`);
-		} catch (e) {
+		} catch (_e) {
 			// console.warn("Theme extraction failed", e);
 		}
 	};

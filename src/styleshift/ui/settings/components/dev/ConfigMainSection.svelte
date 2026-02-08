@@ -21,7 +21,7 @@
 			const frame = res.frame || res.button || res;
 			if (frame instanceof HTMLElement) {
 				frame.classList.add("STYLESHIFT-Config-Sub-Frame");
-				node.appendChild(frame);
+				node.replaceWith(frame);
 			}
 		})();
 	}
@@ -32,6 +32,8 @@
 			const text_editor = await settings_ui["setting_developer_text_editor"](node, setting, {
 				[title]: property,
 			});
+			const main_ui = text_editor.main_ui;
+			node.replaceWith(main_ui);
 
 			let update_function;
 			if (typeof update === "function") {
@@ -96,10 +98,34 @@
 						update_function: (val) => handleUpdate("font_size", val),
 					},
 				}}
-				style="width: -webkit-fill-available;"
 			></div>
 		{:else}
-			<div use:renderEditor={{ title, property, update }}></div>
+			<div class="full-width" use:renderEditor={{ title, property, update }}></div>
 		{/if}
 	{/each}
 </div>
+
+<style lang="scss">
+	.STYLESHIFT-Config-Main-Section {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 16px;
+		width: 100%;
+
+		.full-width {
+			grid-column: 1 / -1;
+		}
+
+		:global(.STYLESHIFT-Config-Sub-Frame) {
+			margin-bottom: 0 !important;
+			background: var(--BG-Surface) !important;
+			border: 1px solid var(--Border-Color) !important;
+			box-shadow: none !important;
+			
+			&:focus-within {
+				border-color: var(--Theme-0) !important;
+				background: var(--BG-Surface-Hover) !important;
+			}
+		}
+	}
+</style>

@@ -1,10 +1,13 @@
-import { get_document_body, sleep } from "../build-in-functions/normal";
+import { get_document_body, get_document_head, sleep } from "../build-in-functions/normal";
 import { load_developer_modules, loaded_developer_modules } from "../core/extension";
 import { load } from "../core/save";
 import { remove_config_ui, recreate_config_ui } from "./config";
 import { editor_ui } from "./editor";
 import { extension_settings_ui } from "./extension-settings";
 import { settings_ui } from "./settings/setting-components";
+import { apply_theme_to_element } from "./theme";
+
+//---------------------------------
 
 export async function create_styleshift_window({ width = "30%", height = "80%", skip_animation = false }) {
 	if (await load("Developer_mode")) {
@@ -13,10 +16,12 @@ export async function create_styleshift_window({ width = "30%", height = "80%", 
 
 	console.log("Setting up");
 
-	const bg_frame = await settings_ui["fill_screen"](false);
+	await get_document_head();
+	const bg_frame = settings_ui["fill_screen"](false);
 
 	const window_element = document.createElement("div");
 	window_element.className = "STYLESHIFT-Main STYLESHIFT-Window";
+	await apply_theme_to_element(window_element);
 	window_element.style.pointerEvents = "all";
 	window_element.style.width = width;
 	window_element.style.height = height;
@@ -62,7 +67,10 @@ export async function create_styleshift_window({ width = "30%", height = "80%", 
 export let notification_container;
 
 (async () => {
-	const notification_bg = await settings_ui["fill_screen"](false);
+	await get_document_head();
+	const notification_bg = settings_ui["fill_screen"](false);
+	notification_bg.classList.add("STYLESHIFT-Main");
+	await apply_theme_to_element(notification_bg);
 	setTimeout(async () => {
 		(await get_document_body()).append(notification_bg);
 	}, 1);
@@ -87,26 +95,56 @@ export async function hide_window_animation(target: HTMLDivElement) {
 	await run_animation(target, "Hide-Pop-Animation");
 }
 
+import { unmount } from "svelte";
+
 //---------------------------------
 
-export async function show_confirm(ask) {
-	return new Promise((resolve, reject) => {
-		resolve(confirm(ask));
+export async function show_confirm(ask: string, title: string = "Confirm Action") {
+	return new Promise((resolve) => {
+		const target = document.createElement("div");
+		document.body.appendChild(target);
+
+		const component = settings_ui.confirm(
+			{
+				title: title,
+				message: ask,
+				onConfirm: () => {
+					setTimeout(() => {
+						unmount(component);
+						target.remove();
+					}, 300);
+					resolve(true);
+				},
+				onCancel: () => {
+					setTimeout(() => {
+						unmount(component);
+						target.remove();
+					}, 300);
+					resolve(false);
+				},
+			},
+			target,
+		);
 	});
 }
 
 //---------------------------------
 
 export async function update_all_ui() {
+	console.log("Updating all UI...");
 	if ((await load("Developer_mode")) && !loaded_developer_modules) {
+		console.log("Loading developer modules...");
 		await load_developer_modules();
 	}
 
+	console.log("Recreating UI for extension and editor...");
 	extension_settings_ui.recreate_ui();
 	editor_ui.recreate_ui();
 	if (!(await load("Developer_mode"))) {
+		console.log("Removing config UI...");
 		remove_config_ui();
 	} else {
+		console.log("Recreating config UI...");
 		recreate_config_ui();
 	}
 }

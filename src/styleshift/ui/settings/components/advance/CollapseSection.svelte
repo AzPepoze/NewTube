@@ -1,17 +1,26 @@
 <script lang="ts">
 	import Button from "../main/Button.svelte";
 
-	let { buttonName, color, collapsed = $bindable(true), children } = $props();
+	let { buttonName, color, collapsed = $bindable(true), contentEl } = $props();
 
 	function toggle() {
 		collapsed = !collapsed;
+	}
+
+	function mountContent(node: HTMLElement) {
+		if (contentEl) {
+			node.appendChild(contentEl);
+		}
 	}
 </script>
 
 <div class="STYLESHIFT-Collapse-Wrapper">
 	<Button name={buttonName} {color} onClick={toggle} />
-	<div class="STYLESHIFT-Collapse STYLESHIFT-Collapse-Content STYLESHIFT-All-Transition" class:collapsed>
-		{@render children?.()}
+	<div 
+		use:mountContent
+		class="STYLESHIFT-Collapse STYLESHIFT-Collapse-Content STYLESHIFT-All-Transition" 
+		class:collapsed
+	>
 	</div>
 </div>
 

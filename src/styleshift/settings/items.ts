@@ -41,7 +41,7 @@ export function find_exist_settings(setting: Setting) {
 		(this_setting) =>
 			this_setting.id === setting.id &&
 			//@ts-ignore
-			(this_setting.name == null || this_setting.name === Setting.name),
+			(this_setting.name == null || this_setting.name === setting.name),
 	);
 }
 
@@ -84,13 +84,17 @@ export async function update_styleshift_items() {
 	// Default
 
 	for (const this_category of styleshift_items.Default) {
-		this_category.editable = false;
+		if (this_category.editable !== true) {
+			this_category.editable = false;
+		}
 	}
 
 	for (const this_setting of styleshift_items.Default.flatMap(function (this_setting) {
 		return this_setting.settings;
 	})) {
-		this_setting.editable = false;
+		if (this_setting.editable !== true) {
+			this_setting.editable = false;
+		}
 	}
 
 	// Custom
@@ -104,8 +108,6 @@ export async function update_styleshift_items() {
 	})) {
 		this_setting.editable = true;
 	}
-
-	console.log("updated editable Items", styleshift_items);
 }
 
 let settings_list = {} as { [id: string]: Setting };

@@ -8,17 +8,6 @@
 		onToggle = undefined,
 	} = $props();
 
-	let contentContainer: HTMLDivElement;
-
-	onMount(() => {
-		if (typeof children === "function" && contentContainer) {
-			const result = children();
-			if (result instanceof HTMLElement) {
-				contentContainer.appendChild(result);
-			}
-		}
-	});
-
 	function handleToggle() {
 		collapsed = !collapsed;
 		onToggle?.(collapsed);
@@ -33,9 +22,9 @@
 		</div>
 	</button>
 
-	<div bind:this={contentContainer} class="STYLESHIFT-Dev-Card-Content">
-		{#if typeof children !== "function"}
-			{@render children?.()}
+	<div class="STYLESHIFT-Dev-Card-Content">
+		{#if children}
+			{@render children()}
 		{/if}
 	</div>
 </div>
@@ -44,9 +33,9 @@
 	.STYLESHIFT-Dev-Card {
 		width: 100%;
 		border-radius: 12px;
-		margin-bottom: 12px;
+		margin-bottom: 16px;
 		overflow: hidden;
-		background: var(--White-05);
+		background: rgba(255, 255, 255, 0.02);
 		border: 1px solid var(--White-10);
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -60,9 +49,9 @@
 		}
 
 		&:not(.collapsed) {
-			background: var(--White-08);
+			background: rgba(255, 255, 255, 0.04);
 			border-color: var(--card-color);
-			box-shadow: 0 4px 20px var(--Black-30);
+			box-shadow: 0 8px 30px var(--Black-40);
 		}
 	}
 
@@ -71,7 +60,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 12px 16px;
+		padding: 14px 18px;
 		background: transparent;
 		border: none;
 		color: white;
@@ -80,6 +69,7 @@
 		font-size: 14px;
 		letter-spacing: 0.5px;
 		text-align: left;
+		transition: background 0.2s;
 
 		&:hover {
 			background: var(--White-05);
@@ -88,20 +78,22 @@
 
 	.STYLESHIFT-Dev-Card-Title {
 		border-left: 3px solid var(--card-color);
-		padding-left: 10px;
+		padding-left: 12px;
+		color: var(--White-90);
 	}
 
 	.STYLESHIFT-Dev-Card-Content {
-		padding: 10px;
+		padding: 16px;
 		transition: all 0.3s ease;
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
-		background: var(--Black-20);
+		gap: 16px;
+		background: rgba(0, 0, 0, 0.15);
 	}
 
 	.STYLESHIFT-Dev-Card-Chevron {
 		font-size: 10px;
 		opacity: 0.5;
+		transition: transform 0.3s;
 	}
 </style>

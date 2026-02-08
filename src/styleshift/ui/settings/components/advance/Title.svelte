@@ -26,13 +26,6 @@
 		margin: 3px;
 		user-select: text;
 		transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
-		&[selected] {
-			background: white;
-			box-shadow: 0 4px 15px var(--Black-10);
-			transform: scale(1.02);
-			font-weight: 700;
-		}
 	}
 
 	.STYLESHIFT-Sub-Title {

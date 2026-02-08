@@ -14,8 +14,7 @@ export const developer_setting_ui = {
 		this_property,
 		update_ui = function (_value) {},
 	) {
-		const main_ui = settings_ui["setting_frame"](true, true);
-		main_ui.className += " STYLESHIFT-Config-Sub-Frame";
+		const main_ui = settings_ui["setting_frame"](true, true, { x: false, y: false }, false, "STYLESHIFT-Config-Sub-Frame");
 
 		const text_editors = {};
 
@@ -27,7 +26,9 @@ export const developer_setting_ui = {
 			text_editors[title] = setting_developer_text_editor;
 		}
 
-		parent.appendChild(main_ui);
+		if (parent && parent !== main_ui) {
+			parent.appendChild(main_ui);
+		}
 
 		return { main_ui, text_editors };
 	},
@@ -106,10 +107,15 @@ export const developer_setting_ui = {
 	},
 
 	["add_setting_button"]: async function (category_settings: Setting[]) {
-		const frame = settings_ui.render_component(AddSettingButtonComponent, {
-			categorySettings: category_settings,
-		}) as HTMLDivElement;
+		const target = document.createElement("div");
+		settings_ui.render_component(
+			AddSettingButtonComponent,
+			{
+				categorySettings: category_settings,
+			},
+			target,
+		);
 
-		return { frame };
+		return { frame: (target.firstElementChild as HTMLDivElement) || target };
 	},
 };

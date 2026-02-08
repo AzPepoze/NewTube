@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 	import Icon from "./Icon.svelte";
-	import { getAssetUrl } from "@ui/utils";
+	import { get_asset_url } from "@ui/utils";
 
 	let {
 		name = "",
@@ -31,18 +31,32 @@
 				return undefined;
 		}
 	});
+
+	const flexAlign = $derived.by(() => {
+		switch (align) {
+			case "left":
+				return "flex-start";
+			case "center":
+				return "center";
+			case "right":
+				return "flex-end";
+			default:
+				return undefined;
+		}
+	});
 </script>
 
 <div
 	class="STYLESHIFT-Main-Description"
 	class:no-description={!description && !children && !text}
 	style:text-align={textAlign}
+	style:align-items={flexAlign}
 	{style}
 >
 	{#if name}
-		<div class="setting-name">
+		<div class="setting-name" style:justify-content={flexAlign}>
 			{#if name.includes(".svg") || name.includes("data:image/svg+xml") || name.startsWith("chrome-extension://")}
-				<Icon name={getAssetUrl(name)} className="STYLESHIFT-Description-Icon" applyFilter={true} />
+				<Icon name={get_asset_url(name)} size={20} className="STYLESHIFT-Description-Icon" applyFilter={true} />
 			{:else}
 				{name}
 			{/if}
@@ -83,8 +97,6 @@
 		align-items: center;
 
 		:global(.STYLESHIFT-Description-Icon) {
-			width: 1.2em;
-			height: 1.2em;
 			filter: brightness(0) invert(1);
 		}
 	}

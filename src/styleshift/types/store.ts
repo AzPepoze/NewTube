@@ -187,7 +187,7 @@ export type Setting =
 
 			//--------------
 
-			constant_css?: string;
+			constant_css?: string | ((value: any) => string);
 			setup_function?: string | Function;
 			setup_?: string | Function;
 			ui_function?: string | Function;

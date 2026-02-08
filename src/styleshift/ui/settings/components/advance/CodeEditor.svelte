@@ -1,60 +1,70 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
-	import { monaco as monacoInstance } from "../../../../core/extension";
+	import { codemirror } from "@core/extension";
 
 	let { value = $bindable(""), language = "javascript", height = 400, onBlur, onInput } = $props();
 
 	let container: HTMLDivElement;
-	let editor: any;
-	let model: any;
+	let view: any;
 
 	onMount(() => {
 		if (!container) return;
+		if (!codemirror) {
+			console.error("Codemirror not loaded!");
+			return;
+		}
 
-		model = monacoInstance.editor.createModel(value, language);
-		editor = monacoInstance.editor.create(container, {
-			model: model,
-			automaticLayout: true,
-			theme: "vs-dark",
-			minimap: { enabled: false },
-			fontSize: 14,
-			lineNumbers: "on",
-			roundedSelection: true,
-			scrollBeyondLastLine: false,
-			readOnly: false,
-			cursorStyle: "line",
-			glyphMargin: false,
-			folding: true,
-		});
+		const { EditorView, basicSetup, javascript, css, oneDark, EditorState } = codemirror;
 
-		editor.onDidChangeModelContent(() => {
-			const newVal = editor.getValue();
-			value = newVal;
-			onInput?.(newVal);
-		});
+		const extensions = [
+			basicSetup,
+			oneDark,
+			EditorView.lineWrapping,
+			EditorView.updateListener.of((update: any) => {
+				if (update.docChanged) {
+					const newVal = update.state.doc.toString();
+					value = newVal;
+					onInput?.(newVal);
+				}
+			}),
+			EditorView.domEventHandlers({
+				blur: () => {
+					onBlur?.(view.state.doc.toString());
+				}
+			})
+		];
 
-		editor.onDidBlurEditorWidget(() => {
-			onBlur?.(editor.getValue());
+		if (language === "javascript" || language === "js") {
+			extensions.push(javascript());
+		} else if (language === "css") {
+			extensions.push(css());
+		}
+
+		view = new EditorView({
+			state: EditorState.create({
+				doc: value,
+				extensions
+			}),
+			parent: container
 		});
 	});
 
 	onDestroy(() => {
-		if (editor) {
-			editor.dispose();
-		}
-		if (model) {
-			model.dispose();
+		if (view) {
+			view.destroy();
 		}
 	});
 
 	export function setValue(newVal: string) {
-		if (editor) {
-			editor.setValue(newVal);
+		if (view) {
+			view.dispatch({
+				changes: { from: 0, to: view.state.doc.length, insert: newVal }
+			});
 		}
 	}
 
 	export function getValue() {
-		return editor ? editor.getValue() : value;
+		return view ? view.state.doc.toString() : value;
 	}
 </script>
 
@@ -63,14 +73,24 @@
 <style lang="scss">
 	.STYLESHIFT-Code-Editor-Container {
 		width: 100%;
-		border: 1px solid var(--White-10);
+		box-sizing: border-box;
+		border: 1px solid var(--Border-Color);
 		border-radius: 8px;
 		overflow: hidden;
 		margin-top: 10px;
 		transition: border-color 0.2s;
 
+		:global(.cm-editor) {
+			height: 100%;
+		}
+
+		:global(.cm-scroller) {
+			font-family: "Fira Code", monospace;
+			font-size: 16px;
+		}
+
 		&:focus-within {
-			border-color: var(--theme-color, #ff0000);
+			border-color: var(--Theme-0, #ff0000);
 		}
 	}
 </style>

@@ -98,21 +98,23 @@ export async function start_highlighter() {
 		debounce(async () => {
 			for (const mutation of mutations_list) {
 				if (mutation.type === "childList") {
-					for (const node of mutation.addedNodes as any) {
-						if (node.nodetype === Node.ELEMENT_NODE) {
+					mutation.addedNodes.forEach((node) => {
+						if (node.nodeType === Node.ELEMENT_NODE) {
+							const element = node as HTMLElement;
 							for (const selector_value of [...editable_items.Default, ...editable_items.Custom]) {
 								if (
+									selector_value.selector &&
 									selector_value.selector != "" &&
-									node.matches(selector_value.selector) &&
+									element.matches(selector_value.selector) &&
 									!exept_items.some((item) => item === selector_value.selector)
 								) {
 									console.log("Add New Node", selector_value.selector);
-									add_highlight(node, selector_value);
+									add_highlight(element, selector_value);
 									break;
 								}
 							}
 						}
-					}
+					});
 				}
 			}
 		});
@@ -169,11 +171,15 @@ function stop_highlighter() {
 		watch_body.disconnect();
 	}
 
-	for (const highlight_elements_obj of Object.values(highlight_elements) as any) {
+	interface HighlightObj {
+		stop: () => void;
+	}
+
+	for (const highlight_elements_obj of Object.values(highlight_elements) as HighlightObj[]) {
 		highlight_elements_obj.stop();
 	}
 
-	highlight_elements = [];
+	highlight_elements = {};
 }
 
 let running_customize = false;

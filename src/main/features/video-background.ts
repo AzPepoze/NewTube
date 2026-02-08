@@ -69,7 +69,7 @@ function check_static(ctx: CanvasRenderingContext2D, width: number, height: numb
 			return true;
 		}
 		return false;
-	} catch (e) {
+	} catch (_e) {
 		return false;
 	}
 }

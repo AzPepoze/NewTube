@@ -1,5 +1,6 @@
 @use "editor";
 @use "animation";
+@use "notification";
 
 .STYLESHIFT-Main {
 	@property --angle {
@@ -16,35 +17,41 @@
 		white-space: nowrap !important;
 
 		&::-webkit-scrollbar {
-			width: 10px !important;
-			height: 10px !important;
+			width: 8px !important;
+			height: 8px !important;
 		}
 
 		&::-webkit-scrollbar-track {
 			background: transparent;
-			border-radius: 10px !important;
 		}
 
 		&::-webkit-scrollbar-thumb {
-			background: var(--Grey-Dark) !important;
+			background: var(--White-20) !important;
 			border-radius: 10px !important;
+
+			&:hover {
+				background: var(--White-30) !important;
+			}
 		}
 	}
 
 	.STYLESHIFT-Scrollable {
 		&::-webkit-scrollbar {
 			width: 6px !important;
-			height: 10px !important;
+			height: 6px !important;
 		}
 
 		&::-webkit-scrollbar-track {
 			background: transparent;
-			border-radius: 10px !important;
 		}
 
 		&::-webkit-scrollbar-thumb {
-			background: var(--Grey-Dark) !important;
+			background: var(--White-20) !important;
 			border-radius: 10px !important;
+
+			&:hover {
+				background: var(--White-30) !important;
+			}
 		}
 	}
 
@@ -53,12 +60,45 @@
 	}
 
 	.STYLESHIFT-Config-Sub-Frame {
-		border: white 1px dashed;
-		background: var(--BG-Input);
-		align-items: start !important;
+		border: 1px solid var(--Border-Color);
+		background: var(--BG-Surface);
+		border-radius: 12px;
+		padding: 16px;
+		margin-bottom: 16px;
+		box-shadow: none;
+		align-items: stretch !important;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		box-sizing: border-box;
+		width: -webkit-fill-available;
+		transition: border-color 0.2s, background 0.2s;
+
+		&:focus-within {
+			border-color: var(--Theme-0);
+			background: var(--BG-Surface-Hover);
+		}
 
 		.STYLESHIFT-Main-Description {
 			text-align: left !important;
+			margin-bottom: 8px;
+
+			.setting-name {
+				font-size: 14px;
+				font-weight: 700;
+				color: var(--Theme-1);
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+				opacity: 0.9;
+			}
+		}
+
+		textarea,
+		.STYLESHIFT-Code-Editor-Container {
+			border-color: var(--Border-Color);
+			background: var(--BG-Input);
+			border-radius: 8px;
+			font-size: 13px;
 		}
 	}
 

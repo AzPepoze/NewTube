@@ -96,8 +96,7 @@ const settings_function = {
 		return update_function;
 	},
 	["dropdown"]: async function (this_setting: Partial<Extract<Setting, { type: "dropdown" }>>) {
-		let style_sheet: HTMLElement;
-		style_sheet = create_stylesheet(this_setting.id);
+		const style_sheet = create_stylesheet(this_setting.id);
 		if (this_setting.setup_function) {
 			run_text_script_from_setting(this_setting, "setup_function");
 		}
@@ -109,7 +108,6 @@ const settings_function = {
 
 			//----------------------
 
-			const old_dropdown = this_setting.options[settings_current_state[this_setting.id]];
 			run_text_script_from_setting(this_setting, "disable_function");
 
 			//----------------------
@@ -134,10 +132,8 @@ const settings_function = {
 		return update_function;
 	},
 	["color"]: async function (this_setting: Partial<Extract<Setting, { type: "color" }>>) {
-		let style_sheet: HTMLElement;
-
 		// if (this_setting.constant_css) {
-		style_sheet = create_stylesheet(this_setting.id);
+		const style_sheet = create_stylesheet(this_setting.id);
 		// }
 
 		if (this_setting.setup_function) {
@@ -193,7 +189,11 @@ const settings_function = {
 			//----------------------
 
 			if (style_sheet) {
-				style_sheet.textContent = this_setting.constant_css || ``;
+				if (typeof this_setting.constant_css === "function") {
+					style_sheet.textContent = this_setting.constant_css(value) || ``;
+				} else {
+					style_sheet.textContent = this_setting.constant_css || ``;
+				}
 			}
 		}
 

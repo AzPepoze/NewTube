@@ -242,7 +242,7 @@ export async function get_document_head(): Promise<HTMLElement> {
 		return document_head;
 	} else {
 		await sleep(100);
-		return await get_document_body();
+		return await get_document_head();
 	}
 }
 
@@ -586,7 +586,7 @@ export async function fire_function_event_with_return(
 
 	window.dispatchEvent(sent_event);
 
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve, _reject) => {
 		window.addEventListener(
 			`${prefix}_${function_name}_${remote_id}`,
 			function (event) {

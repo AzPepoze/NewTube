@@ -1,6 +1,6 @@
-import { create_error, create_notification } from "../build-in-functions/extension";
+import { create_notification } from "../build-in-functions/extension";
 import { sleep } from "../build-in-functions/normal";
-import { update_all, in_setting_page, is_firefox } from "../run";
+import { update_all, in_setting_page } from "../run";
 import { Color_obj } from "../types/store";
 import { save_all } from "./save";
 
@@ -48,7 +48,7 @@ export async function update_styleshift_functions_list() {
 		return;
 	}
 
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve, _reject) => {
 		window.addEventListener(
 			"Sent_styleshift_functions_list",
 			function (event) {
@@ -230,9 +230,8 @@ export function run_text_script_from_setting(this_setting, function_name: string
 export let loaded_developer_modules = false;
 export let try_loaded_developer_modules = false;
 
-export let monaco: typeof import("monaco-editor");
-export let monaco_themes;
-export let jszip: typeof import("jszip");
+export let jszip: any;
+export let codemirror: any;
 
 export async function load_developer_modules() {
 	if (try_loaded_developer_modules || loaded_developer_modules) {
@@ -250,47 +249,33 @@ export async function load_developer_modules() {
 
 	try {
 		loading_ui.set_content("Preparing : Jzip (Export theme as zip)");
-		jszip = (await import(chrome.runtime.getURL("modules/jszip.js"))).default.default;
+		const jszip_module = await import(chrome.runtime.getURL("modules/jszip.js"));
+		jszip = jszip_module.default.default || jszip_module.default;
+
+		loading_ui.set_content("Preparing : Codemirror (Code Editor)");
+		const codemirror_module = await import(chrome.runtime.getURL("modules/codemirror.js"));
+		codemirror = codemirror_module.default.default || codemirror_module.default;
 
 		console.log("jszip:", jszip);
+		console.log("codemirror:", codemirror);
 
-		if (!is_firefox || in_setting_page) {
-			loading_ui.set_content("Preparing : monaco editor (Code editor)");
-
-			const monaco_module = await import(chrome.runtime.getURL("modules/monaco.js"));
-
-			console.log(monaco_module);
-
-			monaco = monaco_module.monaco;
-			monaco_themes = monaco_module.monaco_themes;
-
-			for (const [theme_name, theme_content] of Object.entries(monaco_themes) as [string, any][]) {
-				if (theme_name == "themelist") continue;
-				monaco.editor.defineTheme(theme_name.replace(/[^a-zA-Z0-9]|_|-/g, ""), theme_content);
-			}
-
-			monaco.editor.setTheme("Dracula");
-
-			loading_ui.set_icon("✅");
-			loading_ui.set_title("StyleShift - loaded Developer Modules");
-			loading_ui.set_content("");
-		} else {
-			loading_ui.set_icon("⚠️");
-			loading_ui.set_title("StyleShift - Can't monaco editor (Code editor)");
-			loading_ui.set_content(
-				"If you want to use code editor, please consider enter setting page.\n(Firefox security issue!)",
-			);
-		}
+		loading_ui.set_icon("✅");
+		loading_ui.set_title("StyleShift - loaded Developer Modules");
+		loading_ui.set_content("");
 
 		setTimeout(() => {
 			loading_ui.close();
 		}, 4000);
-
 		loaded_developer_modules = true;
 	} catch (error) {
 		console.log(error);
-		loading_ui.close();
-		(await create_error(error)).set_title("StyleShift - Error loading developer modules");
+		loading_ui.set_icon("⚠️");
+		loading_ui.set_title("StyleShift - Error loading Developer Modules");
+		loading_ui.set_content((error as Error).message);
+		setTimeout(() => {
+			loading_ui.close();
+		}, 4000);
+		loaded_developer_modules = true; // Mark as loaded even if it failed
 	}
 }
 

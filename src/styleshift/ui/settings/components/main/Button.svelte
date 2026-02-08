@@ -3,7 +3,7 @@
 	import { hex_to_rgb, rgb_to_hsv, hsv_to_rgb } from "../../../../build-in-functions/normal";
 	import Description from "./Description.svelte";
 	import Icon from "./Icon.svelte";
-	import { getAssetUrl } from "@ui/utils";
+	import { get_asset_url } from "@ui/utils";
 
 	let {
 		setting,
@@ -14,7 +14,7 @@
 		align: alignProp = "center",
 		font_size: fontSizeProp = 15,
 		style = "",
-		onClick = () => {},
+		onClick = (e: MouseEvent) => {},
 	}: {
 		setting?: Extract<Setting, { type: "button" }>;
 		name?: string;
@@ -24,7 +24,7 @@
 		align?: "left" | "center" | "right";
 		font_size?: number;
 		style?: string;
-		onClick?: () => void;
+		onClick?: (e: MouseEvent) => void;
 	} = $props();
 
 	// Derived values that fallback to props if setting object is missing
@@ -61,12 +61,12 @@
 		};
 	});
 
-	function handleClick() {
+	function handleClick(e: MouseEvent) {
 		scale = 0.95;
 		setTimeout(() => {
 			scale = 1;
 		}, 100);
-		onClick();
+		onClick(e);
 	}
 </script>
 
@@ -78,9 +78,14 @@
 	onclick={handleClick}
 >
 	{#if icon}
-		<Icon name={getAssetUrl(icon)} className="STYLESHIFT-Button-Icon" applyFilter={false} />
+		<Icon name={icon} size={50} className="STYLESHIFT-Button-Icon" applyFilter={false} />
 	{/if}
-	<Description {name} {description} style="display: flex; color: {colors.textColor}; font-size: {font_size}px;" />
+	<Description
+		{name}
+		{description}
+		{align}
+		style="display: flex; color: {colors.textColor}; font-size: {font_size}px;"
+	/>
 </div>
 
 <style lang="scss">
@@ -106,8 +111,6 @@
 	}
 
 	:global(.STYLESHIFT-Icon.STYLESHIFT-Button-Icon) {
-		height: 50px !important;
-		width: auto !important;
 		margin-right: 20px !important;
 		object-fit: contain;
 	}

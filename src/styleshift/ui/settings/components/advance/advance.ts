@@ -1,6 +1,5 @@
 import { apply_drag } from "@functions/normal";
 import { save_all } from "@core/save";
-import { is_firefox, in_setting_page } from "@/styleshift/run";
 import { update_setting_function } from "@settings/functions";
 import { Category } from "@styleshift/types/store";
 import { settings_ui } from "@ui/settings/setting-components";
@@ -22,7 +21,7 @@ import BasicNumberInputComponent from "./BasicNumberInput.svelte";
 import FileInputComponent from "./FileInput.svelte";
 import CollapseSectionComponent from "./CollapseSection.svelte";
 import ResizeHandleComponent from "./ResizeHandle.svelte";
-import { unmount } from "svelte";
+import { unmount, mount } from "svelte";
 
 export const advance_setting_ui = {
 	["resize_handle"]: function (target: HTMLElement, position: "top" | "right" | "bottom" | "left" = "right") {
@@ -45,6 +44,7 @@ export const advance_setting_ui = {
 		vertical: boolean = true,
 		center: { x: boolean; y: boolean } = { x: false, y: false },
 		transparent = false,
+		class_name: string = "",
 	) {
 		return settings_ui.render_component(FrameComponent, {
 			padding,
@@ -52,6 +52,7 @@ export const advance_setting_ui = {
 			centerX: center.x,
 			centerY: center.y,
 			transparent,
+			className: class_name,
 		}) as HTMLDivElement;
 	},
 
@@ -84,7 +85,7 @@ export const advance_setting_ui = {
 				}
 				on_change(final_value);
 			},
-		}) as HTMLTextAreaElement;
+		} as any) as HTMLTextAreaElement;
 
 		return {
 			text_editor: text_editor,
@@ -123,38 +124,26 @@ export const advance_setting_ui = {
 			}
 		};
 
-		let code_editor_instance: any;
-
-		if (!is_firefox || in_setting_page) {
-			const target = document.createElement("div");
-			parent.append(target);
-			code_editor_instance = (settings_ui as any).render_component(
-				CodeEditorComponent,
-				{
-					value: obj[key],
-					language: language,
-					height: height,
-					onInput: (val: string) => on_change(val),
-					onBlur: async (val: string) => {
-						let final_value = val;
-						if (rearrange_value) {
-							final_value = await rearrange_value(final_value);
-							code_editor_instance.setValue(final_value);
-						}
-						on_change(final_value);
-					},
+		const target = document.createElement("div");
+		parent.append(target);
+		const code_editor_instance = settings_ui.render_component(
+			CodeEditorComponent as any,
+			{
+				value: obj[key] || "",
+				language: language,
+				height: height,
+				onInput: (val: string) => on_change(val),
+				onBlur: async (val: string) => {
+					let final_value = val;
+					if (rearrange_value) {
+						final_value = await rearrange_value(final_value);
+						(code_editor_instance as any).setValue?.(final_value);
+					}
+					on_change(final_value);
 				},
-				target,
-			);
-		} else {
-			const text_editor = settings_ui["text_editor"](obj, key);
-			(text_editor.text_editor as HTMLElement).style.height = height + "px";
-			parent.append(text_editor.text_editor as HTMLElement);
-
-			text_editor.on_change(async function (value: string) {
-				on_change(value);
-			});
-		}
+			} as any,
+			target,
+		);
 
 		return {
 			on_change: function (callback: (value: string) => void | Promise<void>) {
@@ -180,6 +169,7 @@ export const advance_setting_ui = {
 		const drag = settings_ui.render_component(IconButtonComponent, {
 			icon: dragIcon,
 			className: "STYLESHIFT-Drag-Top",
+			size: 20,
 			onClick: () => {},
 		}) as HTMLDivElement;
 
@@ -191,6 +181,7 @@ export const advance_setting_ui = {
 		return settings_ui.render_component(IconButtonComponent, {
 			icon: closeIcon,
 			className: "STYLESHIFT-Close",
+			size: 20,
 			onClick: () => {},
 		}) as HTMLDivElement;
 	},
@@ -260,33 +251,32 @@ export const advance_setting_ui = {
 			parent.insertBefore(target, target_element);
 		}
 
-		settings_ui.render_component(
+		const _component = settings_ui.render_component(
 			CollapseSectionComponent,
 			{
 				buttonName: button_name,
 				color: color,
-				children: () => {
-					return target_element;
-				},
+				contentEl: target_element,
 			},
 			target,
 		);
 
-		return { button: target.firstElementChild as HTMLDivElement };
+		return { button: (target.firstElementChild as HTMLDivElement) || target };
 	},
 
-	["show_dropdown"]: function (options: any, target: HTMLElement) {
+	["show_dropdown"]: function (options: unknown, target: HTMLElement) {
 		let resolve_selection: (value: string | null) => void;
 		const selection_promise = new Promise<string | null>((resolve) => {
 			resolve_selection = resolve;
 		});
 
 		const container = document.createElement("div");
-		document.body.appendChild(container);
+		const main_window = document.querySelector(".STYLESHIFT-Main.STYLESHIFT-Window");
+		(main_window || document.body).appendChild(container);
 
-		const dropdown = (settings_ui as any).render_component(
-			DropdownComponent,
-			{
+		const dropdown = mount(DropdownComponent as any, {
+			target: container,
+			props: {
 				options,
 				triggerEl: target,
 				isOpen: true,
@@ -300,8 +290,7 @@ export const advance_setting_ui = {
 					remove_dropdown();
 				},
 			},
-			container,
-		);
+		});
 
 		function remove_dropdown() {
 			if (container.parentNode) {
@@ -312,7 +301,10 @@ export const advance_setting_ui = {
 
 		return {
 			Selection: selection_promise,
-			Cancel: remove_dropdown,
+			Cancel: () => {
+				remove_dropdown();
+				resolve_selection(null);
+			},
 		};
 	},
 

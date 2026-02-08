@@ -52,35 +52,3 @@
 		background-position: 0px 0px;
 	}
 }
-
-@keyframes STYLESHIFT-Notification-Hide {
-	0% {
-		opacity: 1;
-		max-height: 1000px;
-		padding: 10px;
-		margin-top: 10px;
-	}
-	100% {
-		opacity: 0;
-		max-height: 0;
-		min-height: 0;
-		height: 0;
-		padding: 0;
-		margin-top: 0;
-	}
-}
-
-@keyframes STYLESHIFT-Notification-Show {
-	0% {
-		opacity: 0;
-		max-height: 0;
-		padding: 0;
-		margin-top: 0;
-	}
-	100% {
-		opacity: 1;
-		max-height: 1000px;
-		padding: 10px;
-		margin-top: 10px;
-	}
-}

@@ -13,6 +13,7 @@
 		tabindex: tabindexProp = undefined,
 		style = "",
 		useAction = undefined,
+		className = "",
 	}: {
 		id?: string;
 		type?: string;
@@ -27,6 +28,7 @@
 		tabindex?: number;
 		style?: string;
 		useAction?: (node: HTMLElement) => any;
+		className?: string;
 	} = $props();
 
 	const role = $derived(roleProp ?? (clickable ? "button" : undefined));
@@ -39,7 +41,7 @@
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
-	class="STYLESHIFT-Setting-Frame"
+	class="STYLESHIFT-Setting-Frame {className}"
 	{id}
 	data-settingtype={type}
 	class:vertical
@@ -67,6 +69,7 @@
 		transition: all 0.3s;
 		user-select: none;
 		border-radius: 20px;
+		position: relative;
 
 		&.no-padding {
 			padding: 0;

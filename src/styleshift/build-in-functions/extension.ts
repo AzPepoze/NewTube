@@ -5,7 +5,7 @@ import { styleshift_station } from "../run";
 import { styleshift_category_list } from "../settings/default-items";
 import { show_stylesheet, hide_stylesheet } from "../settings/style-sheet";
 import { Category, Setting } from "../types/store";
-import { notification_container, run_animation, create_styleshift_window } from "../ui/extension";
+import { notification_container, run_animation, create_styleshift_window, show_confirm } from "../ui/extension";
 import { settings_ui } from "../ui/settings/setting-components";
 import { sleep, deep_clone, download_file, get_current_domain, create_unique_id } from "./normal";
 
@@ -14,6 +14,16 @@ import { sleep, deep_clone, download_file, get_current_domain, create_unique_id 
 For Normal user !!!
 -------------------------------------------------------
 */
+
+/**
+ * Shows a custom confirmation dialog.
+ * @param {string} ask - The question to ask.
+ * @param {string} [title="Confirm Action"] - The dialog title.
+ * @returns {Promise<boolean>}
+ */
+export async function show_confirm_prompt(ask: string, title: string = "Confirm Action") {
+	return await show_confirm(ask, title);
+}
 
 /**
  * Copies text to the clipboard.
@@ -161,12 +171,37 @@ export async function create_error(content, timeout = 0) {
 	});
 }
 
+/** Creates a warning notification.
+ * @param {string} content - The warning content.
+ * @param {Object} options - Additional options.
+ * @param {number} [options.timeout=0] - The timeout in milliseconds.
+ * @param {boolean} [options.show=true] - Whether to show the warning.
+ * @returns {Promise<Object>}
+ * @example
+ * await create_warning("This is a warning", { timeout: 5000, show: true });
+ */
 export async function create_warning(content, { timeout = 0, show = true } = {}) {
 	console.warn("StyleShift - " + content);
 	if (!show) return;
 	return await create_notification({
 		icon: "⚠️",
 		title: "StyleShift - Warning",
+		content: content,
+		timeout: timeout,
+	});
+}
+
+/** Creates a success notification.
+ * @param {string} content - The success content.
+ * @param {number} [timeout=3000] - The timeout in milliseconds.
+ * @returns {Promise<Object>}
+ * @example
+ * await create_success("Operation completed successfully");
+ */
+export async function create_success(content, timeout = 3000) {
+	return await create_notification({
+		icon: "✅",
+		title: "StyleShift - Success",
 		content: content,
 		timeout: timeout,
 	});
@@ -401,7 +436,10 @@ export function export_styleshift_json_text() {
  * const data = await import_styleshift_zip(file);
  */
 export async function import_styleshift_zip(zip_file) {
-	const zip = new jszip();
+	if (!jszip) {
+		throw new Error("JSZip not loaded!");
+	}
+	const zip = new (jszip as any)();
 
 	const loaded_zip = await zip.loadAsync(zip_file, {
 		createFolders: true,
@@ -492,7 +530,10 @@ export async function import_styleshift_zip(zip_file) {
 export async function export_styleshift_zip(styleshift_data, zip_file_name) {
 	console.log("Data", styleshift_data);
 
-	const zip = new jszip();
+	if (!jszip) {
+		throw new Error("JSZip not loaded!");
+	}
+	const zip = new (jszip as any)();
 
 	for (const [category_index, this_category] of styleshift_data.entries()) {
 		const renamed_category = (this_category.Category || "Untitled Category").replace(/\/|\n/g, "_");

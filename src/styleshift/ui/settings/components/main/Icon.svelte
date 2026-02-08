@@ -5,8 +5,12 @@
 	import drag from "@ui/assets/icons/drag.svg";
 	import add from "@ui/assets/icons/add.svg";
 	import close from "@ui/assets/icons/close.svg";
+	import settings from "@ui/assets/icons/settings.svg";
+	import code from "@ui/assets/icons/code.svg";
+	import arrow_up from "@ui/assets/icons/arrow_up.svg";
+	import arrow_down from "@ui/assets/icons/arrow_down.svg";
 
-	import { getAssetUrl } from "@ui/utils";
+	import { get_asset_url } from "@ui/utils";
 
 	const icons: Record<string, string> = {
 		search,
@@ -15,6 +19,10 @@
 		drag,
 		add,
 		close,
+		settings,
+		code,
+		arrow_up,
+		arrow_down,
 	};
 
 	let {
@@ -23,15 +31,17 @@
 		style = "",
 		color = "",
 		applyFilter = true,
+		size = 20,
 	}: {
 		name: string;
 		className?: string;
 		style?: string;
 		color?: string;
 		applyFilter?: boolean;
+		size?: number;
 	} = $props();
 
-	const src = $derived(getAssetUrl(icons[name] || name));
+	const src = $derived(get_asset_url(icons[name] || name));
 </script>
 
 {#if src}
@@ -40,15 +50,13 @@
 		alt={name}
 		class="STYLESHIFT-Icon {className}"
 		class:with-filter={applyFilter && !color}
-		style="{color ? `filter: none;` : ''}{style}"
+		style="width: {size}px; height: {size}px; {color ? `filter: none;` : ''}{style}"
 		style:color={color || undefined}
 	/>
 {/if}
 
 <style lang="scss">
 	.STYLESHIFT-Icon {
-		width: 1.2em;
-		height: 1.2em;
 		display: inline-block;
 		vertical-align: middle;
 		pointer-events: none;

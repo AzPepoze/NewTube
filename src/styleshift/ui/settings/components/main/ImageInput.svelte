@@ -2,7 +2,7 @@
 	import type { Setting } from "@styleshift/types/store";
 	import PreviewImage from "./PreviewImage.svelte";
 	import Button from "./Button.svelte";
-	import { getAssetUrl } from "@ui/utils";
+	import { get_asset_url } from "@ui/utils";
 
 	import Description from "./Description.svelte";
 
@@ -105,7 +105,7 @@
 			onkeydown={(e) => e.key === "Enter" && fileInput?.click()}
 			title="Click or Drag & Drop image to upload"
 		>
-			<img class="STYLESHIFT-Upload-Icon" src={getAssetUrl("asset/upload.svg")} alt="Upload" />
+			<img class="STYLESHIFT-Upload-Icon" src={get_asset_url("asset/upload.svg")} alt="Upload" />
 			<span class="STYLESHIFT-Upload-Text">Upload</span>
 		</div>
 
@@ -153,23 +153,6 @@
 		align-items: flex-start;
 		width: 100%;
 		margin-bottom: 10px;
-	}
-
-	.STYLESHIFT-Label-Container {
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
-	}
-
-	.STYLESHIFT-Label {
-		font-size: 15px;
-		opacity: 0.9;
-		font-weight: 600;
-	}
-
-	.STYLESHIFT-Description {
-		font-size: 12px;
-		opacity: 0.5;
 	}
 
 	.STYLESHIFT-File-Name {

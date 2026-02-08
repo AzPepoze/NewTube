@@ -1,5 +1,12 @@
 <script lang="ts">
-	let { value = $bindable(""), onInput, onBlur, className = "" } = $props();
+	interface Props {
+		value?: string;
+		onInput?: (value: string) => void;
+		onBlur?: (value: string) => void;
+		className?: string;
+	}
+
+	let { value = $bindable(""), onInput, onBlur, className = "" }: Props = $props();
 </script>
 
 <textarea
@@ -12,6 +19,7 @@
 <style lang="scss">
 	.STYLESHIFT-Text-Editor {
 		width: 100%;
+		box-sizing: border-box;
 		min-height: 100px;
 		background: var(--White-05);
 		border: 1px solid var(--White-10);

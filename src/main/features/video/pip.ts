@@ -6,7 +6,7 @@ export function setup_auto_pip() {
 		if (document.hidden && !video.paused && !document.pictureInPictureElement) {
 			try {
 				await video.requestPictureInPicture();
-			} catch (e) {
+			} catch (_e) {
 				// console.error("AutoPiP Error:", e);
 			}
 		}
@@ -18,7 +18,7 @@ export function setup_auto_exit_pip() {
 		if (!document.hidden && document.pictureInPictureElement) {
 			try {
 				await document.exitPictureInPicture();
-			} catch (e) {
+			} catch (_e) {
 				// console.error("AutoExitPiP Error:", e);
 			}
 		}

@@ -3,16 +3,18 @@ import {
 	get_current_domain,
 	get_current_url_parameters,
 	get_document_body,
+	get_document_head,
 	rearrange_selector,
 	sleep,
 } from "./build-in-functions/normal";
 import { run_text_script, update_styleshift_functions_list } from "./core/extension";
 import { clear_unused_save, load, load_thisweb_save, save, save_all, update_save_default } from "./core/save";
-import { run_all_setting_init, setup_setting_function } from "./settings/functions";
+import { on_setting_update, run_all_setting_init, setup_setting_function } from "./settings/functions";
 import { create_stylesheet_holder } from "./settings/style-sheet";
 import { get_all_styleshift_items, get_all_styleshift_settings, update_styleshift_items } from "./settings/items";
-import * as global from "./communication/extension";
+import "./communication/extension";
 import { update_all_ui } from "./ui/extension";
+import { sync_all_themes } from "./ui/theme";
 import { extension_settings_ui } from "./ui/extension-settings";
 import { toggle_customize } from "./ui/highlight";
 
@@ -25,16 +27,6 @@ export let styleshift_ready = false;
 
 export const is_firefox = navigator.userAgent.toLowerCase().includes("firefox");
 // console.log("isFirefox", navigator.userAgent.toLowerCase(), isFirefox);
-
-let is_in_iframe;
-try {
-	is_in_iframe = window.self !== window.top;
-} catch (e: any) {
-	is_in_iframe = true;
-}
-
-const default_yt_logo = `https://www.youtube.com/s/desktop/6588612c/img/favicon.ico`;
-const default_nt_logo = `https://i.ibb.co/tD2VTyg/1705431438657.png`;
 
 export const extension_location = chrome.runtime.getURL("").slice(0, -1);
 export const extension_id = extension_location.slice(19, 0);
@@ -59,8 +51,6 @@ if (in_setting_page) {
 	save_name = get_current_domain();
 }
 
-global; // This important don't delete
-
 /*
 -------------------------------------------------------
  Global Variables & Constants
@@ -76,12 +66,15 @@ styleshift_station.style.display = "none";
 -------------------------------------------------------
 */
 export function update_all() {
+	console.log("update_all triggered");
 	update_styleshift_functions_list();
 	update_styleshift_items();
 	update_all_ui();
 }
 
 async function main_run() {
+	await get_document_head();
+
 	// Append StyleShift Station to the body
 	setTimeout(async () => {
 		(await get_document_body()).append(styleshift_station);
@@ -115,6 +108,9 @@ async function main_run() {
 	//------------------------------------------
 	// Apply settings & save
 	//------------------------------------------
+	on_setting_update("App_Light_Theme", sync_all_themes);
+	on_setting_update("Setting_BG_Transparent", sync_all_themes);
+
 	for (const this_setting of await get_all_styleshift_settings()) {
 		if (this_setting.id == "Themes") {
 			continue;

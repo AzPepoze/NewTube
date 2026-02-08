@@ -24,6 +24,6 @@
 			"@functions/*": ["src/styleshift/build-in-functions/*"]
 		}
 	},
-	"include": ["src/**/*.ts", "utils/**/*.ts", "eslint.config.mts"],
+	"include": ["src/**/*.ts", "src/**/*.svelte", "src/**/*.svelte.ts", "utils/**/*.ts", "eslint.config.mts"],
 	"exclude": ["node_modules"]
 }

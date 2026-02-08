@@ -22,11 +22,12 @@
 	} from "@core/extension";
 	import { remove_setting } from "@settings/items";
 	import { update_all } from "@/styleshift/run";
-	import { show_config_ui } from "@ui/config";
+	import { show_config_ui, remove_config_ui } from "@ui/config";
 	import { create_unique_id } from "@functions/normal";
 	import Description from "./Description.svelte";
 	import { highlight as highlightAction } from "@ui/settings/highlight";
 	import SettingFrame from "../SettingFrame.svelte";
+	import { add_drag, add_drop_target } from "../../reorder";
 
 	let {
 		setting,
@@ -41,6 +42,7 @@
 	// State for reactive values
 	let value = $state<any>(null);
 	let isDeveloperMode = $state(false);
+	let domNode = $state<HTMLElement | null>(null);
 
 	// Initialize value from storage
 	async function init() {
@@ -68,7 +70,13 @@
 
 	async function handleEdit() {
 		show_config_ui(async (parent: HTMLElement) => {
-			settings_ui.config_editor_renderer({ setting, parent }, parent);
+			settings_ui.config_editor_renderer(
+				{
+					setting,
+					onClose: () => remove_config_ui(),
+				},
+				parent,
+			);
 		});
 	}
 
@@ -86,37 +94,42 @@
 			}
 		}
 	}
-</script>
 
-{#snippet config_buttons()}
-	{#if isDeveloperMode}
-		<div class="STYLESHIFT-Config-Frame">
-			<button class="STYLESHIFT-Config-Button drag"><Icon name="drag" /></button>
-			<button class="STYLESHIFT-Config-Button edit" onclick={handleEdit}><Icon name="edit" /></button>
-			<button
-				class="STYLESHIFT-Config-Button delete"
-				onclick={() => {
-					remove_setting(setting);
-					update_all();
-				}}><Icon name="delete" /></button
-			>
-		</div>
-	{/if}
-{/snippet}
+	function dragAction(node: HTMLElement) {
+		if (isDeveloperMode) {
+			add_drag(node, null, null, setting);
+		}
+	}
+
+	$effect(() => {
+		if (isDeveloperMode && domNode && domNode.parentElement) {
+			add_drop_target(domNode, domNode.parentElement, setting, "setting");
+		}
+	});
+</script>
 
 <SettingFrame
 	id={setting.id}
 	type={setting.type}
-	style={isDeveloperMode ? "gap: 10px; background: rgba(255, 255, 255, 0.03);" : ""}
-	useAction={(node) => highlightAction(node, highlight)}
-	padding={setting.type !== "button"}
-	transparent={setting.type === "button"}
+	className={isDeveloperMode ? "developer-mode" : ""}
+	style={isDeveloperMode && setting.type !== "sub_text" && setting.type !== "text" ? "gap: 10px;" : ""}
+	useAction={(node) => {
+		domNode = node;
+		highlightAction(node, highlight);
+	}}
+	padding={setting.type !== "button" && setting.type !== "sub_text"}
+	transparent={setting.type === "button" || setting.type === "sub_text" || setting.type === "text"}
 	vertical={setting.type === "number_slide" ||
 		setting.type === "color" ||
 		setting.type === "custom" ||
 		setting.type === "image_input"}
 >
-	{@render config_buttons()}
+	{#if isDeveloperMode}
+		<button class="STYLESHIFT-Config-Button drag-handle" use:dragAction>
+			<Icon name="drag" size={16} />
+		</button>
+	{/if}
+
 	{#if setting.type === "checkbox"}
 		<Checkbox {setting} bind:value onUpdate={handleUpdate} />
 	{:else if (setting.type as any) === "search"}
@@ -170,42 +183,24 @@
 	{:else if setting.type === "combine_settings"}
 		<Description name={setting.name} description={setting.description} />
 	{/if}
+
+	{#if isDeveloperMode}
+		<div class="STYLESHIFT-Config-Actions-Overlay">
+			<button class="STYLESHIFT-Config-Button edit" onclick={handleEdit}>
+				<Icon name="edit" size={16} />
+			</button>
+			<button
+				class="STYLESHIFT-Config-Button delete"
+				onclick={() => {
+					remove_setting(setting);
+					update_all();
+				}}
+			>
+				<Icon name="delete" size={16} />
+			</button>
+		</div>
+	{/if}
 </SettingFrame>
 
 <style lang="scss">
-	.STYLESHIFT-Config-Frame {
-		display: flex;
-		flex-direction: column;
-		gap: 5px;
-		opacity: 0;
-		transition: opacity 0.2s;
-		padding-left: 10px;
-	}
-
-	:global(.STYLESHIFT-Setting-Frame:hover) .STYLESHIFT-Config-Frame {
-		opacity: 1;
-	}
-
-	.STYLESHIFT-Config-Button {
-		background: var(--White-10);
-		border: 1px solid var(--White-20);
-		border-radius: 8px;
-		width: 30px;
-		height: 30px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-		transition: all 0.2s;
-
-		&:hover {
-			background: var(--White-20);
-			transform: scale(1.1);
-		}
-
-		&.delete:hover {
-			background: rgba(255, 0, 0, 0.3);
-			border-color: red;
-		}
-	}
 </style>

@@ -7,44 +7,60 @@ import SettingsWindow from "./components/main/SettingsWindow.svelte";
 import ConfigWindow from "./components/dev/ConfigWindow.svelte";
 import SettingRenderer from "./components/main/SettingRenderer.svelte";
 import ConfigEditorRenderer from "./components/dev/ConfigEditorRenderer.svelte";
+import Confirm from "../components/general/Confirm.svelte";
+import type { Setting } from "../../types/store";
 
-export async function set_and_save(this_setting, value) {
-	// this_setting.value = value;
-	// await save_all();
-	await save_any(this_setting.id, value);
+export async function set_and_save(this_setting: Setting, value: any) {
+	if ("id" in this_setting && this_setting.id) {
+		await save_any(this_setting.id, value);
+	}
 }
 
 export const settings_ui = {
 	...main_setting_ui,
 	...advance_setting_ui,
 	...developer_setting_ui,
-	render_setting: function (setting, on_update?, target: HTMLElement = document.createElement("div")) {
+	render_setting: function (
+		setting: Setting,
+		on_update?: (value: any) => void,
+		target: HTMLElement = document.createElement("div"),
+	) {
 		mount(SettingRenderer as any, {
 			target,
-			props: { setting, onUpdate: on_update },
+			props: { setting, onUpdate: on_update } as any,
 		});
-		return target.firstElementChild as HTMLElement;
+		return (target.firstElementChild as HTMLElement) || target;
 	},
-	render_component: function (component, props = {}, target: HTMLElement = document.createElement("div")) {
-		mount(component as any, {
+	render_component: function (
+		component: any,
+		props: any = {},
+		target: HTMLElement = document.createElement("div"),
+	) {
+		mount(component, {
 			target,
 			props,
 		});
-		return target.firstElementChild as HTMLElement;
+		return (target.firstElementChild as HTMLElement) || target;
 	},
-	settings_window: function (props, target) {
+	confirm: function (props: any, target: HTMLElement = document.createElement("div")) {
+		return mount(Confirm as any, {
+			target,
+			props,
+		});
+	},
+	settings_window: function (props: any, target: HTMLElement) {
 		return mount(SettingsWindow as any, {
 			target,
 			props,
 		});
 	},
-	config_window: function (props, target) {
+	config_window: function (props: any, target: HTMLElement) {
 		return mount(ConfigWindow as any, {
 			target,
 			props,
 		});
 	},
-	config_editor_renderer: function (props, target) {
+	config_editor_renderer: function (props: any, target: HTMLElement) {
 		return mount(ConfigEditorRenderer as any, {
 			target,
 			props,

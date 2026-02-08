@@ -22,8 +22,8 @@ export function highlight(node: HTMLElement, query: string) {
 		}
 
 		// Escape special regex characters
-		const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-		const regex = new RegExp(`(${escapedQuery})`, "gi");
+		const escaped_query = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		const regex = new RegExp(`(${escaped_query})`, "gi");
 
 		original_content_map.forEach((text, node) => {
 			if (!node.parentNode) return;

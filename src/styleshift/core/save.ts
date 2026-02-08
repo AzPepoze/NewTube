@@ -21,7 +21,7 @@ export const save_external = [
 export const styleshift_allowed_keys = ["current_settings", "custom_styleshift_items"];
 
 export async function load_thisweb_save() {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve, _reject) => {
 		chrome.storage.local.get(null, function (saved) {
 			console.log("ALL_SAVED", saved);
 		});
@@ -202,7 +202,7 @@ export async function load_ntube_code(preset) {
 					if (try_to_parse != null) {
 						value = try_to_parse;
 					}
-				} catch (error) {}
+				} catch (_error) {}
 			}
 
 			if (key == "ADDScript" && typeof value === "string" && value.trim() !== "") {
@@ -232,7 +232,7 @@ export async function load_ntube_code(preset) {
 					if (try_to_parse != null) {
 						value = try_to_parse;
 					}
-				} catch (error) {}
+				} catch (_error) {}
 			}
 			await save_setting(key, value, true);
 			changes_made = true;

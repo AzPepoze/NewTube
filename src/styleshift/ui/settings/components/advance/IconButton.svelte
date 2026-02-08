@@ -1,23 +1,24 @@
 <script lang="ts">
 	import Icon from "../main/Icon.svelte";
-	import { getAssetUrl } from "@ui/utils";
 
 	let {
 		icon,
 		onClick = () => {},
 		className = "",
 		style = "",
+		size = 20,
 	}: {
 		icon: any;
 		onClick?: (event: MouseEvent) => void;
 		className?: string;
 		style?: string;
+		size?: number;
 	} = $props();
 </script>
 
 <button class="STYLESHIFT-Icon-Button STYLESHIFT-Glow-Hover {className}" onclick={onClick} {style} type="button">
-	{#if typeof icon === "string" && (icon.includes(".svg") || icon.includes("data:image/svg+xml") || icon.startsWith("/"))}
-		<Icon name={getAssetUrl(icon)} />
+	{#if typeof icon === "string" && icon !== ""}
+		<Icon name={icon} {size} />
 	{:else}
 		{icon}
 	{/if}

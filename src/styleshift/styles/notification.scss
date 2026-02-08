@@ -1,0 +1,123 @@
+@use "variables";
+
+@keyframes STYLESHIFT-Notification-Hide {
+	0% {
+		opacity: 1;
+		max-height: 1000px;
+		padding: 10px;
+		margin-top: 10px;
+	}
+	100% {
+		opacity: 0;
+		max-height: 0;
+		min-height: 0;
+		height: 0;
+		padding: 0;
+		margin-top: 0;
+	}
+}
+
+@keyframes STYLESHIFT-Notification-Show {
+	0% {
+		opacity: 0;
+		max-height: 0;
+		padding: 0;
+		margin-top: 0;
+	}
+	100% {
+		opacity: 1;
+		max-height: 1000px;
+		padding: 10px;
+		margin-top: 10px;
+	}
+}
+
+.STYLESHIFT-Main {
+	.STYLESHIFT-Notification-Container {
+		right: 0;
+		position: absolute;
+		width: 400px;
+		height: 100%;
+		pointer-events: none;
+		display: flex;
+		flex-direction: column-reverse;
+		padding: 10px;
+		bottom: 0;
+		overflow-y: auto;
+	}
+
+	.STYLESHIFT-Notification {
+		background: var(--Window-BG);
+		border: 1px solid var(--Border-Color);
+		box-shadow: 0px 4px 15px var(--Shadow-Color);
+		border-radius: 10px;
+		width: 350px;
+		gap: 10px;
+		display: flex;
+		flex-direction: row !important;
+		align-items: center !important;
+		pointer-events: all;
+		height: max-content;
+		overflow: hidden;
+		min-height: fit-content;
+		color: var(--Font-Color);
+		backdrop-filter: var(--Window-Blur) var(--Window-Saturate);
+		transition: background-color 0.3s, backdrop-filter 0.3s;
+
+		&.STYLESHIFT-Notification-error {
+			border-left: 4px solid #ff4444;
+		}
+		&.STYLESHIFT-Notification-warning {
+			border-left: 4px solid #ffbb33;
+		}
+		&.STYLESHIFT-Notification-success {
+			border-left: 4px solid #00c851;
+		}
+
+		.STYLESHIFT-Notification-Icon {
+			font-size: 30px;
+			width: 50px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.STYLESHIFT-Notification-Content-Frame {
+			display: flex;
+			flex-direction: column !important;
+			gap: 2px;
+			flex: 1;
+			align-items: flex-start !important;
+		}
+
+		.STYLESHIFT-Notification-Title {
+			font-size: 15px;
+			font-weight: 1000;
+			color: var(--Theme-0);
+			padding: 0 !important;
+			text-align: left !important;
+		}
+
+		.STYLESHIFT-Notification-Content {
+			font-size: 13px;
+			color: var(--Font-Color);
+			padding: 0 !important;
+			text-align: left !important;
+			white-space: pre;
+			text-wrap: auto;
+		}
+
+		.STYLESHIFT-Notification-Close {
+			cursor: pointer;
+			width: 30px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			color: var(--Font-Color);
+			user-select: none;
+			&:hover {
+				background: red;
+			}
+		}
+	}
+}

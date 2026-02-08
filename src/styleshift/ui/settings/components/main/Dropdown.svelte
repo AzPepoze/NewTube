@@ -6,6 +6,7 @@
 
 	let {
 		setting,
+		options,
 		value = $bindable(""),
 		onUpdate = () => {},
 		isOpen = $bindable(false),
@@ -13,7 +14,8 @@
 		justMenu = false,
 		onClose = () => {},
 	}: {
-		setting: Extract<Setting, { type: "dropdown" }>;
+		setting?: Extract<Setting, { type: "dropdown" }>;
+		options?: string[] | { [key: string]: any };
 		value: string;
 		onUpdate: (val: string) => void;
 		isOpen?: boolean;
@@ -21,6 +23,13 @@
 		justMenu?: boolean;
 		onClose?: () => void;
 	} = $props();
+
+	const optionsList = $derived.by(() => {
+		if (Array.isArray(options)) return options;
+		if (options) return Object.keys(options);
+		if (setting?.options) return Object.keys(setting.options);
+		return [];
+	});
 
 	let menuEl = $state<HTMLElement | null>(null);
 
@@ -32,9 +41,9 @@
 
 	function handleSelect(option: string) {
 		value = option;
-		onUpdate(option);
+		if (onUpdate) onUpdate(option);
 		isOpen = false;
-		onClose();
+		if (onClose) onClose();
 	}
 
 	// Close on click outside
@@ -90,25 +99,35 @@
 		if (!menuEl) return;
 
 		menuWidth = triggerEl.offsetWidth;
-		menuLeft = triggerEl.offsetLeft;
 
-		const parentRect = scrollParent?.getBoundingClientRect() || { bottom: window.innerHeight, top: 0 };
-		const spaceBelow = parentRect.bottom - triggerRect.bottom;
+		// Calculate position relative to the offsetParent of menuEl
+		// Since STYLESHIFT-Dropdown-Menu is position: absolute, we need to find its offsetParent
+		// If it's in the body container, we should use coordinates relative to that container
+		const menuOffsetParent = menuEl.offsetParent as HTMLElement || document.body;
+		const parentRect = menuOffsetParent.getBoundingClientRect();
+		const scrollLeft = menuOffsetParent === document.body ? window.scrollX : menuOffsetParent.scrollLeft;
+		const scrollTop = menuOffsetParent === document.body ? window.scrollY : menuOffsetParent.scrollTop;
+
+		menuLeft = triggerRect.left - parentRect.left + scrollLeft;
+
+		const spaceBelow = window.innerHeight - triggerRect.bottom;
 		const menuHeight = menuEl.offsetHeight;
 
-		if (spaceBelow < menuHeight && triggerRect.top - parentRect.top > menuHeight) {
+		if (spaceBelow < menuHeight && triggerRect.top > menuHeight) {
 			isMenuAbove = true;
-			menuTop = triggerEl.offsetTop - menuHeight - 8;
+			menuTop = triggerRect.top - parentRect.top + scrollTop - menuHeight - 8;
 		} else {
 			isMenuAbove = false;
-			menuTop = triggerEl.offsetTop + triggerEl.offsetHeight + 8;
+			menuTop = triggerRect.bottom - parentRect.top + scrollTop + 8;
 		}
 		isReady = true;
 	}
 
 	function menuAction(node: HTMLElement) {
 		menuEl = node;
-		updatePosition();
+		requestAnimationFrame(() => {
+			updatePosition();
+		});
 
 		window.addEventListener("scroll", updatePosition, true);
 		window.addEventListener("resize", updatePosition);
@@ -130,7 +149,7 @@
 </script>
 
 {#if !justMenu}
-	<Description name={setting.name} description={setting.description} />
+	<Description name={setting?.name || ""} description={setting?.description || ""} />
 	<div class="STYLESHIFT-Dropdown-Wrapper">
 		<button
 			bind:this={triggerEl}
@@ -162,7 +181,7 @@
 		class:above={isMenuAbove}
 		transition:scale={{ duration: 300, start: 0.9, opacity: 0, easing: quintOut }}
 	>
-		{#each Object.keys(setting.options) as option, i}
+		{#each optionsList as option, i}
 			<button
 				class="STYLESHIFT-Dropdown-Item"
 				class:selected={option === value}

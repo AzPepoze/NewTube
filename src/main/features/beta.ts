@@ -1,4 +1,4 @@
-function set_youtube_layout(use_new: boolean) {}
+function set_youtube_layout(_use_new: boolean) {}
 
 export function enable_new_youtube_layout() {
 	set_youtube_layout(true);

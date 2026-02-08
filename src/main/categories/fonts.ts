@@ -1,4 +1,6 @@
 import { Category } from "../../styleshift/types/store";
+import { settings_ui } from "../../styleshift/ui/settings/setting-components";
+import FontManager from "../features/fonts/FontManager.svelte";
 
 export const fonts_category: Category = {
 	category: "🔠 Fonts",
@@ -6,94 +8,38 @@ export const fonts_category: Category = {
 		{
 			type: "custom",
 			id: "FontManager",
-			ui_function: async function (frame: HTMLElement) {
-				frame.innerHTML = ""; // Clear previous ui
-				frame.style.display = "flex";
-				frame.style.flexDirection = "column";
-				frame.style.gap = "10px";
-
-				const font_name_label = document.createElement("label");
-				font_name_label.textContent = 'Font name (e.g., "Roboto"):';
-				const font_name_input = document.createElement("input");
-				font_name_input.className = "STYLESHIFT-Text_input";
-				font_name_input.placeholder = "Roboto";
-
-				const font_url_label = document.createElement("label");
-				font_url_label.textContent = "Font URL (e.g., from Google Fonts):";
-				const font_url_input = document.createElement("input");
-				font_url_input.className = "STYLESHIFT-Text_input";
-				font_url_input.placeholder = "https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff2";
-
-				const apply_button = document.createElement("div");
-				apply_button.className = "STYLESHIFT-button";
-				apply_button.textContent = "Apply Font";
-				apply_button.style.textAlign = "center";
-
-				frame.append(font_name_label, font_name_input, font_url_label, font_url_input, apply_button);
-
-				apply_button.addEventListener("click", () => {
-					const font_name = font_name_input.value;
-					const font_url = font_url_input.value;
-
-					if (!font_name || !font_url) {
-						alert("Please provide both a font name and a URL.");
-						return;
-					}
-
-					const style_id = "styleshift-custom-font-style";
-					let style_tag = document.getElementById(style_id) as HTMLStyleElement;
-					if (!style_tag) {
-						style_tag = document.createElement("style");
-						style_tag.id = style_id;
-						document.head.appendChild(style_tag);
-					}
-
-					style_tag.innerHTML = `
-                        @font-face {
-                            font-family: '${font_name}';
-                            src: url('${font_url}');
-                        }
-                        body, #masthead, .ytd-app, button, input, textarea, select {
-                            font-family: '${font_name}', Roboto, Arial, sans-serif !important;
-                        }
-                    `;
-					alert("Font applied!");
-				});
+			ui_function: function (frame: HTMLElement) {
+				settings_ui.render_component(FontManager, { setting: this }, frame);
 			},
-		},
-		{
-			type: "dropdown",
-			id: "PredefinedFonts",
-			name: "Select Popular Fonts",
-			description: "Quickly apply popular fonts.",
-			value: "Default",
-			options: {
-				Default: { enable_css: "" },
-				"Noto Sans Thai": {
-					enable_css: `
-                        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;700&display=swap');
-                        * { font-family: 'Noto Sans Thai', sans-serif !important; }
-                    `,
-				},
-				"Noto Sans JP": {
-					enable_css: `
-                        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
-                        * { font-family: 'Noto Sans JP', sans-serif !important; }
-                    `,
-				},
-				"Noto Sans KR": {
-					enable_css: `
-                        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-                        * { font-family: 'Noto Sans KR', sans-serif !important; }
-                    `,
-				},
-				"Roboto Mono": {
-					enable_css: `
-                        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;700&display=swap');
-                        * { font-family: 'Roboto Mono', monospace !important; }
-                    `,
-				},
+			constant_css: (value) => {
+				if (!Array.isArray(value)) return "";
+				const enabled_fonts = value.filter((f) => f.enabled && f.fontName && f.importUrl);
+				if (enabled_fonts.length === 0) return "";
+
+				// Deduplicate imports by URL
+				const unique_urls = [...new Set(enabled_fonts.map((f) => f.importUrl))];
+				const imports = unique_urls.map((url) => `@import url('${url}');`).join("\n");
+				
+				// Generate font stack.
+				const font_stack = enabled_fonts
+					.map((f) =>
+						f.fontName
+							.split(",")
+							.map((name) => {
+								const trimmed = name.trim();
+								return trimmed.startsWith("'") || trimmed.startsWith('"') ? trimmed : `'${trimmed}'`;
+							})
+							.join(", "),
+					)
+					.join(", ");
+
+				return `
+                    ${imports}
+                    body, #masthead, .ytd-app, button, input, textarea, select, * { 
+                        font-family: ${font_stack}, Roboto, Arial, sans-serif !important; 
+                    }
+                `;
 			},
-		},
+		}
 	],
 };
