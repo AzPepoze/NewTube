@@ -30,7 +30,7 @@ import { get_all_styleshift_items, get_all_styleshift_settings, update_styleshif
 import "./communication/extension";
 import { update_all_ui_components } from "./ui/extension";
 import { sync_all_themes } from "./ui/theme";
-import { extension_settings_ui } from "./ui/extension-settings";
+import { extension_settings_ui, extension_settings_ui_promise } from "./ui/extension-settings";
 import { toggle_customize } from "./ui/highlight";
 import { app_bootstrap } from "@main/bootstrap";
 
@@ -127,6 +127,8 @@ async function bootstrap_extension(): Promise<void> {
 
 	await persist_cached_data_to_storage();
 
+	await extension_settings_ui_promise;
+
 	if (IS_IN_EXTENSION_SETTINGS_PAGE) {
 		extension_settings_ui.create_ui();
 	}
@@ -193,6 +195,7 @@ chrome.runtime.onMessage.addListener(async (message) => {
 				wait_notification.close();
 			}
 
+			await extension_settings_ui_promise;
 			extension_settings_ui.toggle();
 		}
 	} catch (error) {

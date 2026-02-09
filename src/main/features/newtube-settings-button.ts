@@ -1,4 +1,4 @@
-import { extension_settings_ui } from "../../styleshift/ui/extension-settings";
+import { extension_settings_ui, extension_settings_ui_promise } from "../../styleshift/ui/extension-settings";
 import { wait_for_element } from "../../styleshift/build-in-functions/normal";
 
 /**
@@ -84,9 +84,10 @@ export async function inject_settings_button() {
 		document.head.appendChild(style);
 	}
 
-	btn.onclick = (e) => {
+	btn.onclick = async (e) => {
 		e.preventDefault();
 		e.stopPropagation();
+		await extension_settings_ui_promise;
 		if (extension_settings_ui) {
 			extension_settings_ui.toggle();
 		}

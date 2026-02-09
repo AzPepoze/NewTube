@@ -96,6 +96,7 @@
 			color: var(--Theme-0);
 			padding: 0 !important;
 			text-align: left !important;
+			user-select: text;
 		}
 
 		.STYLESHIFT-Notification-Content {
@@ -105,6 +106,7 @@
 			text-align: left !important;
 			white-space: pre;
 			text-wrap: auto;
+			user-select: text;
 		}
 
 		.STYLESHIFT-Notification-Close {
