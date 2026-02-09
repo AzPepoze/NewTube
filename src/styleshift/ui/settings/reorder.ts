@@ -1,5 +1,5 @@
 import { insert_after } from "../../build-in-functions/normal";
-import { logger } from "../../build-in-functions/logger";
+import { logger } from "../../utils/logger";
 import { save_to_storage } from "../../core/storage-manager";
 import { get_setting_category, get_custom_items } from "../../settings/items";
 import type { Category, Setting } from "../../types/store";

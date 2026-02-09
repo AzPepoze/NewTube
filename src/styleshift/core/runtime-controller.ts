@@ -1,14 +1,20 @@
 import { create_notification } from "../build-in-functions/extension";
 import { sleep } from "../build-in-functions/normal";
 import { refresh_extension_state, IS_IN_EXTENSION_SETTINGS_PAGE } from "../run";
-import { persist_cached_data_to_storage } from "./storage-manager";
-import { logger } from "../build-in-functions/logger";
+import { get_custom_items } from "../settings/items";
+import { persist_cached_data_to_storage, save_to_storage } from "./storage-manager";
 import { is_safe_code } from "../utils/security";
+import { logger } from "../utils/logger";
 
 /**
  * Persists all cached data and triggers a global UI/state refresh.
  */
 export async function persist_and_refresh_all(): Promise<void> {
+	logger.info("STORAGE", "Persisting structure and refreshing all...");
+	const custom_items = get_custom_items();
+	if (custom_items && custom_items.length > 0) {
+		await save_to_storage("custom_styleshift_items", custom_items, true);
+	}
 	await persist_cached_data_to_storage();
 	refresh_extension_state();
 }

@@ -1,5 +1,5 @@
 import { create_error, create_notification } from "./build-in-functions/extension";
-import { logger } from "./build-in-functions/logger";
+import { logger } from "./utils/logger";
 import {
 	get_current_domain,
 	get_current_url_parameters,
@@ -15,7 +15,11 @@ import {
 	save_root_value,
 	persist_cached_data_to_storage,
 } from "./core/storage-manager";
-import { perform_storage_garbage_collection, populate_missing_default_settings } from "./core/storage-maintenance";
+import {
+	perform_storage_garbage_collection,
+	populate_missing_default_settings,
+	initialize_default_custom_items,
+} from "./core/storage-maintenance";
 import {
 	register_setting_listener,
 	initialize_all_active_settings,
@@ -92,6 +96,7 @@ async function bootstrap_extension(): Promise<void> {
 
 	// Initialize storage and sync functions
 	await initialize_storage_connection();
+	await initialize_default_custom_items();
 	await synchronize_available_functions();
 	await create_stylesheet_holder();
 	await update_styleshift_items();

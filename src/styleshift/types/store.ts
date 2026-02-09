@@ -120,6 +120,8 @@ export type Setting =
 
 			setup_function?: string | Function;
 
+			update_function?: string | Function;
+
 			options: { [key: string]: Option };
 
 			//--------------

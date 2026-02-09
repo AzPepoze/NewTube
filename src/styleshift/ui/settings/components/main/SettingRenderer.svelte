@@ -10,14 +10,10 @@
 	import ImageInput from "./ImageInput.svelte";
 	import PreviewImage from "./PreviewImage.svelte";
 	import Icon from "./Icon.svelte";
-	import Search from "./Search.svelte";
 	import { get_from_storage, get_root_value } from "@/styleshift/core/storage-manager";
 	import { settings_ui, set_and_save } from "@ui/settings/setting-components";
 	import { trigger_setting_update } from "@settings/functions";
-	import {
-		execute_setting_script,
-		execute_script_string,
-	} from "@/styleshift/core/runtime-controller";
+	import { execute_setting_script, execute_script_string } from "@/styleshift/core/runtime-controller";
 	import { color_obj_to_hex, hex_to_color_obj } from "@styleshift/utils/colors";
 	import { remove_setting } from "@settings/items";
 	import { refresh_extension_state } from "@/styleshift/run";
@@ -27,6 +23,7 @@
 	import { highlight as highlightAction } from "@ui/settings/highlight";
 	import SettingFrame from "../SettingFrame.svelte";
 	import { add_drag, add_drop_target } from "../../reorder";
+	import { get_text_align } from "../../utils";
 
 	let {
 		setting,
@@ -38,10 +35,11 @@
 		onUpdate?: (value: any) => void;
 	} = $props();
 
-	// State for reactive values
 	let value = $state<any>(null);
 	let isDeveloperMode = $state(false);
 	let domNode = $state<HTMLElement | null>(null);
+
+	const textAlign = $derived(get_text_align((setting as any).align));
 
 	// Initialize value from storage
 	async function init() {
@@ -71,7 +69,7 @@
 		show_config_ui(async (parent: HTMLElement) => {
 			settings_ui.config_editor_renderer(
 				{
-					setting,
+					setting: setting,
 					onClose: () => remove_config_ui(),
 				},
 				parent,
@@ -130,51 +128,29 @@
 	{/if}
 
 	{#if setting.type === "checkbox"}
-		<Checkbox {setting} bind:value onUpdate={handleUpdate} />
-	{:else if (setting.type as any) === "search"}
-		<Search onInput={externalOnUpdate} />
+		<Checkbox {setting} />
 	{:else if setting.type === "button"}
-		<Button
-			{setting}
-			onClick={() => {
-				if (!setting.click_function) return;
-				if (typeof setting.click_function === "string") {
-					execute_setting_script(setting, "click_function");
-				} else {
-					(setting.click_function as Function)();
-				}
-			}}
-		/>
+		<Button {setting} />
 	{:else if setting.type === "number_slide"}
-		<Slider {setting} bind:value onUpdate={handleUpdate} />
+		<Slider {setting} />
 	{:else if setting.type === "text_input"}
-		<TextInput {setting} bind:value onUpdate={handleUpdate} />
+		<TextInput {setting} />
 	{:else if setting.type === "color"}
-		{@const colorObj = hex_to_color_obj(value || "#ffffff")}
-		<ColorPicker
-			{setting}
-			hex={colorObj.hex}
-			alpha={colorObj.alpha}
-			onUpdate={(hex, alpha) => handleUpdate(color_obj_to_hex({ hex, alpha }))}
-		/>
+		<ColorPicker {setting} />
 	{:else if setting.type === "dropdown"}
-		<Dropdown {setting} bind:value onUpdate={handleUpdate} />
+		<Dropdown {setting} />
 	{:else if setting.type === "text"}
-		<Text
-			html={setting.html}
-			fontSize={setting.font_size}
-			textAlign={setting.align === "left" ? "start" : setting.align === "right" ? "end" : "center"}
-		/>
+		<Text html={setting.html} fontSize={setting.font_size} {textAlign} />
 	{:else if setting.type === "sub_text"}
 		<Text
 			text={setting.text}
 			fontSize={setting.font_size}
 			color={setting.color}
-			textAlign={setting.align === "left" ? "start" : setting.align === "right" ? "end" : "center"}
+			{textAlign}
 			className="STYLESHIFT-Setting-Sub-Title"
 		/>
 	{:else if setting.type === "image_input"}
-		<ImageInput {setting} bind:value onFileSelect={() => {}} onUrlUpdate={handleUpdate} />
+		<ImageInput {setting} />
 	{:else if setting.type === "preview_image"}
 		<PreviewImage src={value} />
 	{:else if setting.type === "custom"}

@@ -3,7 +3,7 @@ import { execute_setting_script } from "../core/runtime-controller";
 import { get_from_storage } from "../core/storage-manager";
 import { Setting } from "../types/store";
 import { create_stylesheet } from "./style-sheet";
-import { logger } from "../build-in-functions/logger";
+import { logger } from "../utils/logger";
 
 export const active_settings_state: Record<string, any> = {};
 const setting_update_handlers: Record<string, Function> = {};

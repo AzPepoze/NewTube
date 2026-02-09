@@ -1,4 +1,4 @@
-import { logger } from "../build-in-functions/logger";
+import { logger } from "../utils/logger";
 import { show_user_confirmation } from "../ui/extension";
 import { persist_cached_data_to_storage, save_user_setting, get_root_value } from "./storage-manager";
 import { update_styleshift_items } from "../settings/items";

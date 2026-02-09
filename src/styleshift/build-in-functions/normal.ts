@@ -1,32 +1,98 @@
-const logger = (window as any).StyleShift?.logger || {
-	info: (category, ...args: any[]) =>
-		(window as any).StyleShift?.logger?.info(category, ...args) ||
+const category_palette = [
+	"#ff6d6d", "#a7f2ff", "#ffa7f8", "#bca7ff",
+	"#fff1a7", "#a7ffb5", "#ffc4a7", "#a7d1ff",
+];
+
+function string_to_color(str: string) {
+	if (str.toUpperCase() === "STORAGE") return "color: #ffca28; font-weight: bold;";
+	let hash = 0;
+	for (let i = 0; i < str.length; i++) {
+		hash = str.charCodeAt(i) + ((hash << 5) - hash);
+	}
+	const index = Math.abs(hash) % category_palette.length;
+	return `color: ${category_palette[index]}; font-weight: bold;`;
+}
+
+const logger = {
+	info: (category, ...args: any[]) => {
+		if ((window as any).StyleShift?.logger?.info) {
+			return (window as any).StyleShift.logger.info(category, ...args);
+		}
 		console.log(
 			`%c StyleShift %c [INFO] %c [${category}]`,
 			"color: #bada55",
 			"color: #00ffff",
-			"color: #888",
+			string_to_color(category),
 			...args,
-		),
-	warn: (category, ...args: any[]) =>
-		(window as any).StyleShift?.logger?.warn(category, ...args) ||
+		);
+	},
+	warn: (category, ...args: any[]) => {
+		if ((window as any).StyleShift?.logger?.warn) {
+			return (window as any).StyleShift.logger.warn(category, ...args);
+		}
 		console.warn(
 			`%c StyleShift %c [WARN] %c [${category}]`,
 			"color: #bada55",
 			"color: #ffae00",
-			"color: #888",
+			string_to_color(category),
 			...args,
-		),
-	error: (category, ...args: any[]) =>
-		(window as any).StyleShift?.logger?.error(category, ...args) ||
+		);
+	},
+	error: (category, ...args: any[]) => {
+		if ((window as any).StyleShift?.logger?.error) {
+			return (window as any).StyleShift.logger.error(category, ...args);
+		}
 		console.error(
 			`%c StyleShift %c [ERROR] %c [${category}]`,
 			"color: #bada55",
 			"color: #ff0000",
-			"color: #888",
+			string_to_color(category),
 			...args,
-		),
+		);
+	},
 };
+
+/**
+ * Creates a runner that ensures only one async task runs at a time.
+ * If tasks are requested while one is running, it will run exactly once more
+ * with the latest state after the current task finishes.
+ */
+export function sequenced_task(task: Function): Function {
+	let is_running = false;
+	let has_pending = false;
+
+	return async function (...args: any[]) {
+		if (is_running) {
+			has_pending = true;
+			return;
+		}
+
+		is_running = true;
+		try {
+			await task(...args);
+			while (has_pending) {
+				has_pending = false;
+				await task(...args);
+			}
+		} finally {
+			is_running = false;
+		}
+	};
+}
+
+/**
+ * Debounces a function call.
+ * @param {Function} func - The function to debounce.
+ * @param {number} wait - The delay in milliseconds.
+ * @returns {Function} The debounced function.
+ */
+export function debounce(func: Function, wait: number): Function {
+	let timeout: any;
+	return function (...args: any[]) {
+		clearTimeout(timeout);
+		timeout = setTimeout(() => func(...args), wait);
+	};
+}
 
 /**
  * Pauses execution for a specified delay.

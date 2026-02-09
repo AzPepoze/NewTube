@@ -1,5 +1,6 @@
 import { create_styleshift_window } from "@ui/extension";
 import { settings_ui } from "@ui/settings/setting-components";
+import { unmount } from "svelte";
 
 export let config_window: Awaited<ReturnType<typeof create_styleshift_window>>;
 let svelte_instance;
@@ -31,8 +32,7 @@ export async function recreate_config_ui() {
 	if (!config_window) return;
 
 	if (svelte_instance) {
-		// If we already have an instance, we might need to remount or update
-		// For simplicity, we'll remount if content function changes
+		unmount(svelte_instance);
 	}
 
 	svelte_instance = settings_ui.config_window(
@@ -46,13 +46,22 @@ export async function recreate_config_ui() {
 
 export function remove_config_ui(skip_animation = false) {
 	if (config_window) {
-		if (skip_animation) {
-			config_window.overlay_frame.remove();
-		} else {
-			config_window.close_button.click();
-		}
+		const target_window = config_window;
+		const target_instance = svelte_instance;
+
+		// Clear state before acting to prevent recursion
 		config_window = null;
 		svelte_instance = null;
 		current_content_function = null;
+
+		if (target_instance) {
+			unmount(target_instance);
+		}
+
+		if (skip_animation) {
+			target_window.overlay_frame.remove();
+		} else {
+			target_window.close_button.click();
+		}
 	}
 }

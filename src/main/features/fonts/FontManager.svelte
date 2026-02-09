@@ -131,8 +131,13 @@
 		<TextEditor bind:value={pasteText} />
 		<div class="add-button-container">
 			<Button
-				setting={{ type: "button", name: "Add Font", color: "#7f5db7", align: "center" } as any}
-				onClick={handleAdd}
+				setting={{ 
+					type: "button", 
+					name: "Add Font", 
+					color: "#7f5db7", 
+					align: "center",
+					click_function: handleAdd
+				}}
 			/>
 		</div>
 	</div>
@@ -145,8 +150,18 @@
 				{#each fonts as font, i (font.id)}
 					<div class="font-item" class:disabled={!font.enabled}>
 						<div class="sort-buttons">
-							<IconButton icon="arrow_up" onClick={() => moveUp(i)} className="sort-btn" size={14} />
-							<IconButton icon="arrow_down" onClick={() => moveDown(i)} className="sort-btn" size={14} />
+							<IconButton
+								icon="arrow_up"
+								onClick={() => moveUp(i)}
+								className="sort-btn"
+								size={14}
+							/>
+							<IconButton
+								icon="arrow_down"
+								onClick={() => moveDown(i)}
+								className="sort-btn"
+								size={14}
+							/>
 						</div>
 						<div class="font-info">
 							<span class="name">{font.fontName}</span>
@@ -155,12 +170,12 @@
 							<Checkbox
 								setting={{
 									type: "checkbox",
-									id: "check_" + font.id,
+									id: "", // Empty ID to use bind:value and avoid global storage
 									name: "",
 									value: font.enabled,
+									update_function: () => handleToggle(font.id)
 								} as any}
 								bind:value={font.enabled}
-								onUpdate={() => handleToggle(font.id)}
 							/>
 							<IconButton
 								icon="delete"

@@ -32,7 +32,7 @@
 		transition: border-color 0.2s;
 
 		&:focus {
-			border-color: var(--theme-color, #ff0000);
+			border-color: var(--theme-color, var(--Theme-0));
 		}
 	}
 </style>

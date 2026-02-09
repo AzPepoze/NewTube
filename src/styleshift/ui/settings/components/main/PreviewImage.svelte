@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { get_asset_url } from "@ui/utils";
-	import { logger } from "@functions/logger";
+	import { logger } from "@/styleshift/utils/logger";
 
 	let { src = "" } = $props();
 

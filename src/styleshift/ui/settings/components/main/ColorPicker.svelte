@@ -2,38 +2,67 @@
 	import type { Setting } from "@styleshift/types/store";
 	import Slider from "./Slider.svelte";
 	import Description from "./Description.svelte";
-	import { get_root_value } from "@/styleshift/core/storage-manager";
+	import { get_from_storage, get_root_value } from "@/styleshift/core/storage-manager";
+	import { set_and_save } from "@ui/settings/setting-components";
+	import { trigger_setting_update } from "@settings/functions";
+	import { hex_to_color_obj, color_obj_to_hex } from "@styleshift/utils/colors";
+	import { sequenced_task } from "@functions/normal";
 
 	let {
 		setting,
-		hex = $bindable("#ffffff"),
-		alpha = $bindable(100),
-		onUpdate = () => {},
 	}: {
 		setting: Extract<Setting, { type: "color" }>;
-		hex: string;
-		alpha: number;
-		onUpdate: (hex: string, alpha: number) => void;
 	} = $props();
 
-	async function handleInput() {
-		if (await get_root_value("Realtime_Extension")) {
-			onUpdate(hex, alpha);
+	let hex = $state("#ffffff");
+	let alpha = $state(100);
+
+	async function init() {
+		let value;
+		if (setting.id) {
+			value = await get_from_storage(setting.id);
+		} else {
+			value = setting.value;
+		}
+		const colorObj = hex_to_color_obj(value || "#ffffff");
+		hex = colorObj.hex;
+		alpha = colorObj.alpha;
+	}
+	init();
+
+	const name = $derived(setting.name);
+	const description = $derived(setting.description);
+
+	async function handleUpdate() {
+		const hexValue = color_obj_to_hex({ hex, alpha });
+		if (setting.id) {
+			await set_and_save(setting, hexValue);
+			await trigger_setting_update(setting.id);
+		} else if (typeof (setting as any).update_function === "function") {
+			await (setting as any).update_function(hexValue);
 		}
 	}
 
-	function handleChange() {
-		onUpdate(hex, alpha);
+	const sequencedUpdate = sequenced_task(handleUpdate);
+
+	async function handleInput() {
+		if (await get_root_value("Realtime_Extension")) {
+			sequencedUpdate();
+		}
 	}
 
-	function handleAlphaChange(newAlpha: number) {
+	async function handleChange() {
+		await sequencedUpdate();
+	}
+
+	async function handleAlphaChange(newAlpha: number) {
 		alpha = newAlpha;
-		onUpdate(hex, alpha);
+		await sequencedUpdate();
 	}
 </script>
 
 <div class="STYLESHIFT-Color-Top-Section">
-	<Description name={setting.name} description={setting.description} />
+	<Description {name} {description} />
 	<div class="STYLESHIFT-Color-Preview-Wrapper">
 		<div class="STYLESHIFT-Color-Preview" style="background-color: {hex}; opacity: {alpha / 100}"></div>
 		<input
@@ -56,9 +85,8 @@
 			unit: "%",
 			value: alpha,
 			id: "",
+			update_function: handleAlphaChange,
 		}}
-		bind:value={alpha}
-		onUpdate={handleAlphaChange}
 	/>
 </div>
 

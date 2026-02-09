@@ -28,18 +28,26 @@
 
 <div bind:this={triggerEl} class="STYLESHIFT-Add-Setting-Button-Wrapper">
 	<Button
-		name="+"
-		color="#FFFFFF"
-		onClick={() => (isOpen = !isOpen)}
+		setting={{
+			type: "button",
+			name: "+",
+			color: "#FFFFFF",
+			click_function: () => (isOpen = !isOpen)
+		}}
 		style="border-radius: 1000px; padding: 10px; width: 100%;"
 	/>
 	<Dropdown
 		justMenu={true}
 		bind:isOpen
 		{triggerEl}
-		{options}
-		onUpdate={handleSelect}
-		value=""
+		setting={{
+			type: "dropdown",
+			id: "add_setting_dropdown",
+			name: "Add Setting",
+			value: "",
+			options: Object.fromEntries(options.map(opt => [opt, {}])),
+			update_function: handleSelect
+		}}
 	/>
 </div>
 

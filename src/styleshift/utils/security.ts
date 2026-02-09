@@ -1,5 +1,5 @@
 import { create_notification } from "../build-in-functions/extension";
-import { logger } from "../build-in-functions/logger";
+import { logger } from "./logger";
 
 export const dangerous_patterns = [
 	/eval/i,

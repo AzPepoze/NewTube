@@ -1,12 +1,12 @@
 import { get_document_body, get_document_head, sleep } from "../build-in-functions/normal";
 import { initialize_developer_environment, is_dev_modules_loaded } from "../core/runtime-controller";
 import { get_root_value } from "../core/storage-manager";
-import { remove_config_ui, recreate_config_ui } from "./config";
+import { remove_config_ui } from "./config";
 import { editor_ui } from "./editor";
 import { extension_settings_ui } from "./extension-settings";
 import { settings_ui } from "./settings/setting-components";
 import { apply_theme_to_element } from "./theme";
-import { logger } from "../build-in-functions/logger";
+import { logger } from "../utils/logger";
 import { unmount } from "svelte";
 
 /**
@@ -152,12 +152,10 @@ export async function update_all_ui_components(): Promise<void> {
 		await initialize_developer_environment();
 	}
 
-	extension_settings_ui.recreate_ui();
-	editor_ui.recreate_ui();
+	if (extension_settings_ui) extension_settings_ui.recreate_ui();
+	if (editor_ui) editor_ui.recreate_ui();
 
 	if (!is_dev_mode) {
 		remove_config_ui();
-	} else {
-		recreate_config_ui();
 	}
 }

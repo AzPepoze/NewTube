@@ -4,6 +4,8 @@
 	import { fly, fade } from "svelte/transition";
 	import { untrack } from "svelte";
 	import CapsuleTabs from "../../../components/general/CapsuleTabs.svelte";
+	import { execute_script_string } from "@/styleshift/core/runtime-controller";
+	import Icon from "../main/Icon.svelte";
 
 	let {
 		setting,
@@ -40,13 +42,27 @@
 		id: ext,
 		label: ext === "function" ? "JS" : ext === "css" ? "CSS" : ext
 	})));
+	
 	$effect(() => {
 		if (!extArray.includes(activeExt)) {
 			activeExt = extArray[0];
 		}
 	});
+	
 	let title = $derived(runTypeNameMap[runType as keyof typeof runTypeNameMap] || runType);
 	let color = $derived(colorMap[runType as keyof typeof colorMap] || "#999999");
+
+	function handleRunScript() {
+		const property = `${runType}_${activeExt}`;
+		const script = setting[property];
+		if (script) {
+			execute_script_string({
+				script_content: script,
+				should_sanitize: true,
+				source_identifier: `Manual Run: ${property}`,
+			});
+		}
+	}
 
 	function renderEditor(node: HTMLElement, ext: string) {
 		const div = node as HTMLDivElement;
@@ -55,13 +71,16 @@
 
 		(async () => {
 			div.innerHTML = "";
-			await settings_ui["code_editor"](
+			const editor = await settings_ui["code_editor"](
 				div,
 				setting,
 				runType + "_" + ext,
 				typeLangMap[typeName] || typeLangMap[ext] || typeName,
 				isWorkspace ? 550 : runType == "var" ? 100 : 400,
 			);
+			if (onUpdateConfig) {
+				editor.additinal_onchange(onUpdateConfig);
+			}
 		})();
 	}
 
@@ -75,13 +94,16 @@
 				div.appendChild(item);
 				
 				const typeLangMap: Record<string, string> = { JS: "javascript", CSS: "css" };
-				await settings_ui["code_editor"](
+				const editor = await settings_ui["code_editor"](
 					item,
 					setting,
 					runType + "_" + ext,
-					typeLangMap[typeName] || typeName,
+					typeLangMap[typeName] || typeLangMap[ext] || typeName,
 					runType == "var" ? 100 : 400,
 				);
+				if (onUpdateConfig) {
+					editor.additinal_onchange(onUpdateConfig);
+				}
 			}
 		})();
 	}
@@ -93,6 +115,12 @@
 			<div class="section-title-group">
 				<span class="section-title">{title}</span>
 				<div class="section-status-dot"></div>
+				{#if activeExt === "function"}
+					<button class="run-script-btn" onclick={handleRunScript} title="Run Script">
+						<Icon name="code" size={14} />
+						Run
+					</button>
+				{/if}
 			</div>
 			
 			{#if extArray.length > 1}
@@ -151,6 +179,32 @@
 		font-weight: 700;
 		color: var(--Font-Color);
 		letter-spacing: -0.5px;
+	}
+
+	.run-script-btn {
+		margin-left: 10px;
+		background: var(--Theme-0-20);
+		border: 1px solid var(--Theme-0);
+		color: var(--Theme-1);
+		padding: 4px 12px;
+		border-radius: 6px;
+		font-size: 12px;
+		font-weight: 700;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		transition: all 0.2s;
+
+		&:hover {
+			background: var(--Theme-0);
+			color: white;
+			box-shadow: 0 0 10px var(--Theme-0);
+		}
+
+		&:active {
+			transform: scale(0.95);
+		}
 	}
 
 	.section-status-dot {

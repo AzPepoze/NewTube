@@ -6,19 +6,31 @@
 
 	import Description from "./Description.svelte";
 
+	import { get_from_storage } from "@/styleshift/core/storage-manager";
+	import { set_and_save } from "@ui/settings/setting-components";
+	import { trigger_setting_update } from "@settings/functions";
+
 	let {
 		setting,
-		onFileSelect,
-		onUrlUpdate,
-		value = $bindable(""),
 		placeholder = "https://example.com/image.png",
 	}: {
 		setting: Extract<Setting, { type: "image_input" }>;
-		onFileSelect: (file: File) => void;
-		onUrlUpdate: (val: string) => void;
-		value: string;
 		placeholder?: string;
 	} = $props();
+
+	let value = $state("");
+
+	async function init() {
+		if (setting.id) {
+			value = await get_from_storage(setting.id);
+		} else {
+			value = setting.value;
+		}
+	}
+	init();
+
+	const name = $derived(setting.name);
+	const description = $derived(setting.description);
 
 	let fileInput = $state<HTMLInputElement | null>(null);
 	let fileName = $state("");
@@ -38,18 +50,35 @@
 		}
 	}
 
+	async function handleUpdate(newValue: string) {
+		value = newValue;
+		if (setting.id) {
+			await set_and_save(setting, value);
+			trigger_setting_update(setting.id);
+		}
+	}
+
 	function handleFileChange(event: Event) {
 		const file = (event.target as HTMLInputElement).files?.[0];
 		if (file) {
 			fileName = file.name;
-			onFileSelect(file);
+			// Convert file to base64 or similar if needed, 
+			// for now we'll assume the external handler was doing something with it
+			// but we need to satisfy the self-management requirement.
+			const reader = new FileReader();
+			reader.onload = async (e) => {
+				const result = e.target?.result as string;
+				await handleUpdate(result);
+			};
+			reader.readAsDataURL(file);
+			
 			if (fileInput) fileInput.value = "";
 		}
 	}
 
-	function handleUrlInput(e: Event) {
+	async function handleUrlInput(e: Event) {
 		const val = (e.target as HTMLInputElement).value;
-		onUrlUpdate(val);
+		await handleUpdate(val);
 		fileName = getFileNameFromUrl(val);
 	}
 
@@ -68,7 +97,12 @@
 		const file = e.dataTransfer?.files?.[0];
 		if (file && file.type.startsWith("image/")) {
 			fileName = file.name;
-			onFileSelect(file);
+			const reader = new FileReader();
+			reader.onload = async (event) => {
+				const result = event.target?.result as string;
+				await handleUpdate(result);
+			};
+			reader.readAsDataURL(file);
 		}
 	}
 
@@ -130,9 +164,12 @@
 			{/if}
 			<div class="STYLESHIFT-Button-Center-Wrapper">
 				<Button
-					name="View Original Image"
-					onClick={openImage}
-					font_size={12}
+					setting={{
+						type: "button",
+						name: "View Original Image",
+						font_size: 12,
+						click_function: openImage
+					}}
 					style="padding: 5px 10px; width: auto; margin-top: 5px; height: 25px; border-radius: 15px;"
 				/>
 			</div>

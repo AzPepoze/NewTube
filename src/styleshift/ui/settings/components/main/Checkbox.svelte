@@ -1,22 +1,47 @@
 <script lang="ts">
 	import type { Setting } from "@styleshift/types/store";
 	import Description from "./Description.svelte";
+	import { get_from_storage } from "@/styleshift/core/storage-manager";
+	import { set_and_save } from "@ui/settings/setting-components";
+	import { trigger_setting_update } from "@settings/functions";
+
 	let {
 		setting,
 		value = $bindable(false),
-		onUpdate = () => {},
 	}: {
 		setting: Extract<Setting, { type: "checkbox" }>;
-		value: boolean;
-		onUpdate: (val: boolean) => void;
+		value?: boolean;
 	} = $props();
 
-	function handleChange() {
-		onUpdate(value);
+	async function init() {
+		if (setting.id) {
+			value = await get_from_storage(setting.id);
+		} else {
+			value = setting.value;
+		}
+	}
+	init();
+
+	$effect(() => {
+		if (!setting.id && setting.value !== undefined) {
+			value = setting.value;
+		}
+	});
+
+	const name = $derived(setting.name || "");
+	const description = $derived(setting.description || "");
+
+	async function handleChange() {
+		if (setting.id) {
+			await set_and_save(setting, value);
+			trigger_setting_update(setting.id);
+		} else if (typeof (setting as any).update_function === "function") {
+			(setting as any).update_function(value);
+		}
 	}
 </script>
 
-<Description name={setting.name} description={setting.description} />
+<Description {name} {description} />
 <input type="checkbox" class="STYLESHIFT-Checkbox" bind:checked={value} onchange={handleChange} />
 
 <style lang="scss">

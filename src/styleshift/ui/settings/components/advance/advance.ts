@@ -1,5 +1,6 @@
-import { apply_drag } from "@functions/normal";
-import { persist_cached_data_to_storage } from "@/styleshift/core/storage-manager";
+import { apply_drag, sequenced_task } from "@functions/normal";
+import { persist_and_refresh_all } from "../../../../core/runtime-controller";
+import { get_root_value } from "@/styleshift/core/storage-manager";
 import { trigger_setting_update } from "@settings/functions";
 import { Category } from "@styleshift/types/store";
 import { settings_ui } from "@ui/settings/setting-components";
@@ -67,17 +68,21 @@ export const advance_setting_ui = {
 		let additinal_onchange: ((value: string) => void) | null = null;
 		let rearrange_value: ((value: string) => Promise<string> | string) | null = null;
 
-		let on_change = async function (value: string) {
+		let on_change = sequenced_task(async function (value: string) {
 			obj[key] = value;
-			persist_cached_data_to_storage();
+			await persist_and_refresh_all();
 			if (additinal_onchange) {
 				additinal_onchange(value);
 			}
-		};
+		});
 
 		const text_editor = settings_ui.render_component(TextEditorComponent, {
 			value: obj[key] || "",
-			onInput: (val: string) => on_change(val),
+			onInput: async (val: string) => {
+				if (await get_root_value("Realtime_Extension")) {
+					on_change(val);
+				}
+			},
 			onBlur: async (val: string) => {
 				let final_value = val;
 				if (rearrange_value) {
@@ -111,9 +116,9 @@ export const advance_setting_ui = {
 		let additinal_onchange: ((value: string) => void) | null = null;
 		let rearrange_value: ((value: string) => Promise<string> | string) | null = null;
 
-		let on_change = async function (value: string) {
+		let on_change = sequenced_task(async function (value: string) {
 			obj[key] = value;
-			persist_cached_data_to_storage();
+			await persist_and_refresh_all();
 
 			if (obj["id"]) {
 				trigger_setting_update(obj["id"]);
@@ -122,7 +127,7 @@ export const advance_setting_ui = {
 			if (additinal_onchange) {
 				additinal_onchange(value);
 			}
-		};
+		});
 
 		const target = document.createElement("div");
 		parent.append(target);
@@ -132,7 +137,11 @@ export const advance_setting_ui = {
 				value: obj[key] || "",
 				language: language,
 				height: height,
-				onInput: (val: string) => on_change(val),
+				onInput: async (val: string) => {
+					if (await get_root_value("Realtime_Extension")) {
+						on_change(val);
+					}
+				},
 				onBlur: async (val: string) => {
 					let final_value = val;
 					if (rearrange_value) {

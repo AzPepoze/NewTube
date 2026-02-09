@@ -38,12 +38,10 @@
 	</div>
 	<div class="footer">
 		<Button
-			setting={{ type: "button", name: "Cancel", color: "#444" } as any}
-			onClick={handleCancel}
+			setting={{ type: "button", name: "Cancel", color: "#444", click_function: handleCancel } as any}
 		/>
 		<Button
-			setting={{ type: "button", name: "Confirm", color: "#ff4444" } as any}
-			onClick={handleConfirm}
+			setting={{ type: "button", name: "Confirm", color: "#ff4444", click_function: handleConfirm } as any}
 		/>
 	</div>
 </Modal>

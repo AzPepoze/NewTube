@@ -1,7 +1,7 @@
 import { get_document_body } from "../../styleshift/build-in-functions/normal";
 import { get_user_setting } from "../../styleshift/core/storage-manager";
 import { register_setting_listener } from "../../styleshift/settings/functions";
-import { logger } from "../../styleshift/build-in-functions/logger";
+import { logger } from "../../styleshift/utils/logger";
 
 const bg_tint_id = "newtube-bg-tint";
 const bg_image_id = "newtube-bg-image";

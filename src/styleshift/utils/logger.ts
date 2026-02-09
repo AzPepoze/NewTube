@@ -1,6 +1,9 @@
+import { string_to_color } from "./log-format";
+
 const log_colors = {
 	main: "color: #bada55",
 	info: "color: #00ffff",
+	debug: "color: #d1d1ff",
 	warn: "color: #ffae00",
 	error: "color: #ff0000",
 	category: "color: #6a6a6a",
@@ -18,6 +21,10 @@ const debug_config: LogConfig = {
 		save_root_value: true,
 		drag: true,
 		ui: true,
+		storage: true,
+	},
+	debug: {
+		all: true,
 	},
 	error: {
 		all: true,
@@ -42,22 +49,31 @@ export const logger = {
 		if (should_log(level, category)) {
 			const prefix = `%c StyleShift %c [${level.toUpperCase()}] %c [${category.toUpperCase()}]`;
 			const style_main = log_colors.main;
-			let style_level = log_colors[level.toLowerCase()] || log_colors.info;
-			const style_category = log_colors.category;
+			const style_level = log_colors[level.toLowerCase()] || log_colors.info;
+			const style_category = string_to_color(category);
 
-			if (level.toLowerCase() === "error") {
-				style_level = "color: #ff0000";
-				console.error(prefix, style_main, style_level, style_category, ...args);
-			} else if (level.toLowerCase() === "warn") {
-				style_level = "color: #ffae00";
-				console.warn(prefix, style_main, style_level, style_category, ...args);
-			} else {
-				console.log(prefix, style_main, style_level, style_category, ...args);
+			switch (level.toLowerCase()) {
+				case "error":
+					console.error(prefix, style_main, style_level, style_category, ...args);
+					break;
+				case "warn":
+					console.warn(prefix, style_main, style_level, style_category, ...args);
+					break;
+				case "info":
+					console.info(prefix, style_main, style_level, style_category, ...args);
+					break;
+				case "debug":
+					console.debug(prefix, style_main, style_level, style_category, ...args);
+					break;
+				default:
+					console.log(prefix, style_main, style_level, style_category, ...args);
+					break;
 			}
 		}
 	},
 
 	info: (category: string, ...args: any[]) => logger.log("info", category, ...args),
+	debug: (category: string, ...args: any[]) => logger.log("debug", category, ...args),
 	error: (category: string, ...args: any[]) => logger.log("error", category, ...args),
 	warn: (category: string, ...args: any[]) => logger.log("warn", category, ...args),
 };

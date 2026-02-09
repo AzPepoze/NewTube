@@ -2,8 +2,8 @@
 	import type { Setting } from "@styleshift/types/store";
 	import { settings_ui } from "@ui/settings/setting-components";
 	import { fly, fade } from "svelte/transition";
-	import Icon from "../main/Icon.svelte";
 	import CapsuleTabs from "../../../components/general/CapsuleTabs.svelte";
+	import { refresh_extension_state } from "@/styleshift/run";
 
 	let { setting }: { setting: Setting } = $props();
 
@@ -21,49 +21,132 @@
 		mainSectionContainer.innerHTML = "";
 		const mainProps: any = {
 			Id: "id",
-			name: ["name"],
+			Name: "name",
 			Description: "description",
 		};
 
-		if (setting.type === "button") {
-			Object.assign(mainProps, { icon: "icon", color: "color" });
-		} else if (setting.type === "number_slide") {
-			Object.assign(mainProps, { Min: "min", Max: "max", Step: "step" });
-		} else if (setting.type === "image_input" || setting.type === "preview_image") {
-			delete mainProps.name;
-			delete mainProps.Description;
-			mainProps["Soruce setting Id"] = "id";
-		} else if (setting.type === "custom") {
-			delete mainProps.name;
-			delete mainProps.Description;
-		} else if (setting.type === "combine_settings") {
-			mainProps["Sync IDs"] = ["sync_id"];
+		const type = setting.type;
+
+		switch (type) {
+			case "text":
+				Object.assign(mainProps, {
+					HTML: "html",
+					"Font Size": "font_size",
+					Align: ["align", ["left", "center", "right"]],
+				});
+				break;
+			case "sub_text":
+				Object.assign(mainProps, {
+					Text: "text",
+					Color: "color",
+					"Font Size": "font_size",
+					Align: ["align", ["left", "center", "right"]],
+				});
+				break;
+			case "button":
+				Object.assign(mainProps, {
+					Icon: "icon",
+					Color: "color",
+					"Font Size": "font_size",
+					Align: ["align", ["left", "center", "right"]],
+				});
+				break;
+			case "checkbox":
+				Object.assign(mainProps, {
+					Default: "value",
+				});
+				break;
+			case "number_slide":
+				Object.assign(mainProps, {
+					Default: "value",
+					Min: "min",
+					Max: "max",
+					Step: "step",
+					Unit: "unit",
+				});
+				break;
+			case "dropdown":
+				Object.assign(mainProps, {
+					Default: "value",
+					Options: [
+						"options",
+						(val) => {
+							try {
+								setting.options = JSON.parse(val);
+							} catch (e) {
+								console.error("Invalid JSON for options", e);
+							}
+						},
+					],
+				});
+				break;
+			case "color":
+				Object.assign(mainProps, {
+					Default: "value",
+					"Show Alpha": "show_alpha_slider",
+				});
+				break;
+			case "text_input":
+				Object.assign(mainProps, {
+					Default: "value",
+				});
+				break;
+			case "image_input":
+				Object.assign(mainProps, {
+					Default: "value",
+					"Max MB": "max_file_size",
+				});
+				break;
+			case "preview_image":
+			case "custom":
+				delete mainProps.Name;
+				delete mainProps.Description;
+				break;
+			case "combine_settings":
+				mainProps["Sync IDs"] = [
+					"sync_id",
+					(val) => {
+						try {
+							setting.sync_id = JSON.parse(val);
+						} catch (e) {
+							setting.sync_id = val.split(",").map((s) => s.trim());
+						}
+					},
+				];
+				break;
 		}
 
-		await settings_ui["Config_Main_Section"](mainSectionContainer, setting, mainProps);
+		await settings_ui["Config_Main_Section"](mainSectionContainer, setting, mainProps, refresh_extension_state);
 	}
 
 	async function mountSub() {
 		if (!subSectionContainer) return;
 		subSectionContainer.innerHTML = "";
-		const subProps: any = {};
+		const subProps: any = {
+			update_config: refresh_extension_state,
+		};
 
-		if (setting.type === "checkbox") {
-			Object.assign(subProps, { constant: 2, setup: 3, enable: 0, disable: 0 });
-		} else if (setting.type === "button") {
-			Object.assign(subProps, { click: 3 });
-		} else if (setting.type === "number_slide") {
-			Object.assign(subProps, { var: 2, constant: 2, setup: 3, update: 3 });
-		} else if (setting.type === "color") {
-			Object.assign(subProps, { var: 2, constant: 2, setup: 3, update: 3 });
-		} else if (setting.type === "dropdown") {
-			Object.assign(subProps, { constant: 2, setup: 3, enable: 0, disable: 0 });
-		} else if (setting.type === "text_input") {
-			Object.assign(subProps, { var: 2, constant: 2, setup: 3, update: 3 });
-		} else if (setting.type === "custom") {
-			Object.assign(subProps, { constant: 2, setup: 3, ui: ["function"] });
-		} else if (setting.type === "combine_settings") {
-			Object.assign(subProps, { update: 3 });
+		const type = setting.type;
+
+		switch (type) {
+			case "checkbox":
+			case "dropdown":
+				Object.assign(subProps, { constant: 2, setup: 3, update: 3, enable: 0, disable: 0 });
+				break;
+			case "button":
+				Object.assign(subProps, { click: 3 });
+				break;
+			case "number_slide":
+			case "color":
+			case "text_input":
+				Object.assign(subProps, { var: 2, constant: 2, setup: 3, update: 3 });
+				break;
+			case "custom":
+				Object.assign(subProps, { constant: 2, setup: 3, ui: ["function"] });
+				break;
+			case "combine_settings":
+				Object.assign(subProps, { update: 3 });
+				break;
 		}
 
 		await settings_ui["Config_Sub_Section"](subSectionContainer, setting, subProps);
@@ -143,7 +226,7 @@
 	}
 
 	.STYLESHIFT-Config-Type-Badge {
-		font-size: 9px;
+		font-size: 15px;
 		text-transform: uppercase;
 		background: var(--Theme-0);
 		color: white;

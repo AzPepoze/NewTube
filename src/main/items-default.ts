@@ -41,27 +41,6 @@ const default_styleshift_items: Category[] = [
 	other_settings_category,
 	fonts_category,
 	beta_features_category,
-	{
-		category: "🧪 Test Custom Category",
-		editable: true,
-		settings: [
-			{
-				id: "test_custom_checkbox",
-				name: "Test Editable Checkbox",
-				description: "This is a custom setting for testing developer mode buttons.",
-				type: "checkbox",
-				value: true,
-				editable: true,
-			},
-			{
-				id: "test_custom_button",
-				name: "Test Editable Button",
-				type: "button",
-				align: "center",
-				editable: true,
-			},
-		],
-	},
 ];
 
 export function get_default_items() {

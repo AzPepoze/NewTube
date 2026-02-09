@@ -1,12 +1,13 @@
 import { get_default_items } from "../../main/items-default";
 import { get_styleshift_default_items } from "../../main/items-styleshift-default";
+import { get_styleshift_custom_items } from "../../main/items-styleshift-custom";
 import { random_number_in_range } from "../build-in-functions/normal";
 import { persist_and_refresh_all } from "../core/runtime-controller";
 import { get_root_value, save_to_storage } from "../core/storage-manager";
 import { refresh_extension_state } from "../run";
 import { attach_behavior_to_setting } from "./functions";
 import { Category, type Setting } from "../types/store";
-import { logger } from "../build-in-functions/logger";
+import { logger } from "../utils/logger";
 
 const highlight_colors = [`255, 109, 109`, `167, 242, 255`, `255, 167, 248`, `188, 167, 255`, `255, 241, 167`];
 
@@ -78,7 +79,15 @@ function save_custom_items_and_refresh_extension_state(custom_items) {
 
 export async function update_styleshift_items() {
 	styleshift_items.Default = [...get_styleshift_default_items(), ...get_default_items()];
-	styleshift_items.Custom = (await get_root_value("custom_styleshift_items")) || [];
+	
+	const stored_custom = await get_root_value("custom_styleshift_items");
+	if (stored_custom && Array.isArray(stored_custom) && stored_custom.length > 0) {
+		logger.debug("settings", "Loading custom items from storage");
+		styleshift_items.Custom = stored_custom;
+	} else {
+		logger.debug("settings", "No custom items in storage, using defaults");
+		styleshift_items.Custom = get_styleshift_custom_items();
+	}
 
 	auto_add_hightlight(get_all_styleshift_items());
 

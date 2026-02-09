@@ -1,7 +1,7 @@
 import { create_error } from "../build-in-functions/extension";
 import { sleep } from "../build-in-functions/normal";
 import { current_context_domain } from "../run";
-import { logger } from "../build-in-functions/logger";
+import { logger } from "../utils/logger";
 
 export let cached_storage_data: any = {};
 let is_storage_initialized = false;
@@ -24,16 +24,16 @@ export const ALLOWED_DATA_KEYS = ["current_settings", "custom_styleshift_items"]
 export async function initialize_storage_connection(): Promise<void> {
 	return new Promise((resolve) => {
 		chrome.storage.local.get(null, (all_data) => {
-			logger.info("storage", "RAW_STORAGE_DUMP", all_data);
+			logger.info("STORAGE", "RAW_STORAGE_DUMP", all_data);
 		});
 
-		logger.info("storage", "Attempting to get_root_value data for domain:", current_context_domain);
+		logger.info("STORAGE", "Attempting to get_root_value data for domain:", current_context_domain);
 
 		chrome.storage.local.get(current_context_domain, (result: Record<string, any>) => {
 			if (result[current_context_domain]) {
 				try {
 					cached_storage_data = result[current_context_domain];
-					logger.info("storage", "Data successfully loaded:", current_context_domain);
+					logger.info("STORAGE", "Data successfully loaded:", current_context_domain);
 				} catch (_error) {
 					create_error(`Failed to parse storage data for: <b>${current_context_domain}</b>`);
 					cached_storage_data = {};
@@ -56,8 +56,8 @@ export async function save_root_value(key: string, value: any, delay_persistence
 		return save_root_value(key, value, delay_persistence);
 	}
 	cached_storage_data[key] = value;
-	logger.info("storage", "Updating root key:", key, value);
-	
+	logger.info("STORAGE", "Updating root key:", key, value);
+
 	if (!delay_persistence) {
 		return await persist_cached_data_to_storage();
 	}
@@ -72,8 +72,8 @@ export async function save_user_setting(setting_id: string, value: any, delay_pe
 		cached_storage_data["current_settings"] = {};
 	}
 	cached_storage_data["current_settings"][setting_id] = value;
-	logger.info("storage", "Updating user setting:", setting_id, value);
-	
+	logger.info("STORAGE", "Updating user setting:", setting_id, value);
+
 	if (!delay_persistence) {
 		return await persist_cached_data_to_storage();
 	}
@@ -95,7 +95,7 @@ export async function save_to_storage(key: string, value: any, delay_persistence
  * Writes the entire cached data object to Chrome local storage.
  */
 export async function persist_cached_data_to_storage(): Promise<boolean> {
-	logger.info("storage", "Persisting data to disk:", current_context_domain);
+	logger.info("STORAGE", "Persisting data to disk:", current_context_domain);
 	await chrome.storage.local.set({ [current_context_domain]: cached_storage_data });
 	return true;
 }

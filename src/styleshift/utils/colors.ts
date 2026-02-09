@@ -1,5 +1,5 @@
 import { Color_obj } from "../types/store";
-import { logger } from "../build-in-functions/logger";
+import { logger } from "./logger";
 
 export function color_obj_to_hex({ hex, alpha }: Color_obj): string {
 	const processed_alpha = Math.round((alpha / 100) * 255)

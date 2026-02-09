@@ -15,7 +15,14 @@
 </script>
 
 <div class="STYLESHIFT-Collapse-Wrapper">
-	<Button name={buttonName} {color} onClick={toggle} />
+	<Button 
+		setting={{
+			type: "button",
+			name: buttonName,
+			color: color,
+			click_function: toggle
+		}} 
+	/>
 	<div 
 		use:mountContent
 		class="STYLESHIFT-Collapse STYLESHIFT-Collapse-Content STYLESHIFT-All-Transition" 

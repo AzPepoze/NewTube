@@ -1,6 +1,6 @@
 import { create_notification } from "../build-in-functions/extension";
 import { sleep } from "../build-in-functions/normal";
-import { logger } from "../build-in-functions/logger";
+import { logger } from "../utils/logger";
 import { is_safe_code } from "../utils/security";
 import { IS_IN_EXTENSION_SETTINGS_PAGE } from "../run";
 

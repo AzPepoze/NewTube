@@ -7,18 +7,27 @@ export const main_setting_ui = {
 		return settings_ui.render_setting({ type: "search" } as unknown as Setting, on_input);
 	},
 
-	["text"]: async function (this_setting: Partial<Extract<Setting, { type: "text" }>>) {
-		const frame = settings_ui.render_setting(this_setting as any);
+	["text"]: async function (
+		this_setting: Partial<Extract<Setting, { type: "text" }>>,
+		update_function?: (value: any) => void,
+	) {
+		const frame = settings_ui.render_setting(this_setting as any, update_function);
 		return { frame };
 	},
 
-	["sub_text"]: async function (this_setting: Partial<Extract<Setting, { type: "sub_text" }>>) {
-		const frame = settings_ui.render_setting(this_setting as any);
+	["sub_text"]: async function (
+		this_setting: Partial<Extract<Setting, { type: "sub_text" }>>,
+		update_function?: (value: any) => void,
+	) {
+		const frame = settings_ui.render_setting(this_setting as any, update_function);
 		return { frame };
 	},
 
-	["button"]: async function (this_setting: Partial<Extract<Setting, { type: "button" }>>) {
-		const button = settings_ui.render_setting(this_setting as any);
+	["button"]: async function (
+		this_setting: Partial<Extract<Setting, { type: "button" }>>,
+		update_function?: (value: any) => void,
+	) {
+		const button = settings_ui.render_setting(this_setting as any, update_function);
 		return { button };
 	},
 
@@ -30,43 +39,67 @@ export const main_setting_ui = {
 		return { frame };
 	},
 
-	["number_slide"]: async function (this_setting: Partial<Extract<Setting, { type: "number_slide" }>>) {
-		const frame = settings_ui.render_setting(this_setting as any);
+	["number_slide"]: async function (
+		this_setting: Partial<Extract<Setting, { type: "number_slide" }>>,
+		update_function?: (value: any) => void,
+	) {
+		const frame = settings_ui.render_setting(this_setting as any, update_function);
 		return { frame };
 	},
 
-	["dropdown"]: async function (this_setting: Partial<Extract<Setting, { type: "dropdown" }>>) {
-		const frame = settings_ui.render_setting(this_setting as any);
+	["dropdown"]: async function (
+		this_setting: Partial<Extract<Setting, { type: "dropdown" }>>,
+		update_function?: (value: any) => void,
+	) {
+		const frame = settings_ui.render_setting(this_setting as any, update_function);
 		return { frame };
 	},
 
-	["color"]: async function (this_setting: Partial<Extract<Setting, { type: "color" }>>) {
-		const frame = settings_ui.render_setting(this_setting as any);
+	["color"]: async function (
+		this_setting: Partial<Extract<Setting, { type: "color" }>>,
+		update_function?: (value: any) => void,
+	) {
+		const frame = settings_ui.render_setting(this_setting as any, update_function);
 		return { frame };
 	},
 
-	["text_input"]: async function (this_setting: Partial<Extract<Setting, { type: "text_input" }>>) {
-		const frame = settings_ui.render_setting(this_setting as any);
+	["text_input"]: async function (
+		this_setting: Partial<Extract<Setting, { type: "text_input" }>>,
+		update_function?: (value: any) => void,
+	) {
+		const frame = settings_ui.render_setting(this_setting as any, update_function);
 		return { frame };
 	},
 
-	["image_input"]: async function (this_setting: Partial<Extract<Setting, { type: "image_input" }>>) {
-		const frame = settings_ui.render_setting(this_setting as any);
+	["image_input"]: async function (
+		this_setting: Partial<Extract<Setting, { type: "image_input" }>>,
+		update_function?: (value: any) => void,
+	) {
+		const frame = settings_ui.render_setting(this_setting as any, update_function);
 		return { frame };
 	},
 
-	["preview_image"]: async function (this_setting: Partial<Extract<Setting, { type: "preview_image" }>>) {
-		const frame = settings_ui.render_setting(this_setting as any);
+	["preview_image"]: async function (
+		this_setting: Partial<Extract<Setting, { type: "preview_image" }>>,
+		update_function?: (value: any) => void,
+	) {
+		const frame = settings_ui.render_setting(this_setting as any, update_function);
 		return { frame };
 	},
 
-	["custom"]: async function (this_setting: Partial<Extract<Setting, { type: "custom" }>>) {
-		const frame = settings_ui.render_setting(this_setting as any);
+	["custom"]: async function (
+		this_setting: Partial<Extract<Setting, { type: "custom" }>>,
+		update_function?: (value: any) => void,
+	) {
+		const frame = settings_ui.render_setting(this_setting as any, update_function);
 		return { frame };
 	},
 
-	["combine_settings"]: async function (this_setting: Partial<Extract<Setting, { type: "combine_settings" }>>) {
-		const frame = settings_ui.render_setting(this_setting as any);
+	["combine_settings"]: async function (
+		this_setting: Partial<Extract<Setting, { type: "combine_settings" }>>,
+		update_function?: (value: any) => void,
+	) {
+		const frame = settings_ui.render_setting(this_setting as any, update_function);
 		return { frame };
 	},
 };

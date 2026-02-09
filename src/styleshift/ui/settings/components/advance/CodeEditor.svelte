@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { codemirror_instance, global_metadata_cache } from "@/styleshift/core/runtime-controller";
-	import { logger } from "@functions/logger";
+	import { logger } from "@/styleshift/utils/logger";
 
 	let { value = $bindable(""), language = "javascript", height = 400, onBlur, onInput } = $props();
 
@@ -76,7 +76,7 @@
 						title.className = "cm-tooltip-title";
 						title.style.fontWeight = "bold";
 						title.style.fontSize = "16px";
-						title.style.color = "var(--Theme-0, #ff0000)";
+						title.style.color = "var(--Theme-0)";
 						title.style.borderBottom = "1px solid var(--White-10)";
 						title.style.marginBottom = "8px";
 						title.style.paddingBottom = "4px";
@@ -137,7 +137,7 @@
 
 			view = new EditorView({
 				state: EditorState.create({
-					doc: value,
+					doc: typeof value === "string" ? value : String(value || ""),
 					extensions,
 				}),
 				parent: container,
@@ -188,7 +188,7 @@
 		}
 
 		&:focus-within {
-			border-color: var(--Theme-0, #ff0000);
+			border-color: var(--Theme-0);
 		}
 	}
 

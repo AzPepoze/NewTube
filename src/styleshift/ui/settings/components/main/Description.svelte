@@ -2,6 +2,7 @@
 	import type { Snippet } from "svelte";
 	import Icon from "./Icon.svelte";
 	import { get_asset_url } from "@ui/utils";
+	import { get_text_align, get_flex_align } from "../../utils";
 
 	let {
 		name = "",
@@ -19,31 +20,8 @@
 		children?: Snippet;
 	} = $props();
 
-	const textAlign = $derived.by(() => {
-		switch (align) {
-			case "left":
-				return "start";
-			case "center":
-				return "center";
-			case "right":
-				return "end";
-			default:
-				return undefined;
-		}
-	});
-
-	const flexAlign = $derived.by(() => {
-		switch (align) {
-			case "left":
-				return "flex-start";
-			case "center":
-				return "center";
-			case "right":
-				return "flex-end";
-			default:
-				return undefined;
-		}
-	});
+	const textAlign = $derived(get_text_align(align));
+	const flexAlign = $derived(get_flex_align(align));
 </script>
 
 <div
@@ -56,7 +34,12 @@
 	{#if name}
 		<div class="setting-name" style:justify-content={flexAlign}>
 			{#if name.includes(".svg") || name.includes("data:image/svg+xml") || name.startsWith("chrome-extension://")}
-				<Icon name={get_asset_url(name)} size={20} className="STYLESHIFT-Description-Icon" applyFilter={true} />
+				<Icon
+					name={get_asset_url(name)}
+					size={20}
+					className="STYLESHIFT-Description-Icon"
+					applyFilter={true}
+				/>
 			{:else}
 				{name}
 			{/if}

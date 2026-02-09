@@ -3,45 +3,67 @@
 	import Description from "./Description.svelte";
 	import { scale } from "svelte/transition";
 	import { quintOut } from "svelte/easing";
+	import { logger } from "@/styleshift/utils/logger";
+
+	import { get_from_storage } from "@/styleshift/core/storage-manager";
+	import { set_and_save } from "@ui/settings/setting-components";
+	import { trigger_setting_update } from "@settings/functions";
 
 	let {
 		setting,
-		options,
-		value = $bindable(""),
-		onUpdate = () => {},
 		isOpen = $bindable(false),
 		triggerEl = $bindable<HTMLElement | null>(null),
 		justMenu = false,
 		onClose = () => {},
 	}: {
-		setting?: Extract<Setting, { type: "dropdown" }>;
-		options?: string[] | { [key: string]: any };
-		value: string;
-		onUpdate: (val: string) => void;
+		setting: Extract<Setting, { type: "dropdown" }>;
 		isOpen?: boolean;
 		triggerEl?: HTMLElement | null;
 		justMenu?: boolean;
 		onClose?: () => void;
 	} = $props();
 
+	let value = $state("");
+
+	async function init() {
+		if (setting.id) {
+			value = await get_from_storage(setting.id);
+		} else {
+			value = setting.value;
+		}
+	}
+	init();
+
+	const name = $derived(setting.name);
+	const description = $derived(setting.description);
+
 	const optionsList = $derived.by(() => {
-		if (Array.isArray(options)) return options;
-		if (options) return Object.keys(options);
-		if (setting?.options) return Object.keys(setting.options);
+		if (setting.options) return Object.keys(setting.options);
 		return [];
 	});
 
 	let menuEl = $state<HTMLElement | null>(null);
 
 	function toggleDropdown(e: MouseEvent) {
+		logger.info("ui", "Toggling dropdown");
 		e.stopPropagation();
 		isOpen = !isOpen;
 		if (!isOpen) onClose();
 	}
 
-	function handleSelect(option: string) {
+	async function handleSelect(e: MouseEvent, option: string) {
+		logger.debug("ui", `[Dropdown] Option selected: "${option}" for setting:`, setting.id || "no-id");
+		e.stopPropagation();
 		value = option;
-		if (onUpdate) onUpdate(option);
+		
+		if (setting.id) {
+			await set_and_save(setting, value);
+			trigger_setting_update(setting.id);
+		} else if (typeof setting.update_function === "function") {
+			logger.debug("ui", `[Dropdown] Executing update_function for non-id setting`);
+			(setting.update_function as Function)(value);
+		}
+
 		isOpen = false;
 		if (onClose) onClose();
 	}
@@ -56,12 +78,13 @@
 					triggerEl &&
 					!triggerEl.contains(event.target as Node)
 				) {
+					logger.info("ui", "Closing dropdown");
 					isOpen = false;
 					onClose();
 				}
 			};
-			window.addEventListener("click", handleClickOutside, true);
-			return () => window.removeEventListener("click", handleClickOutside, true);
+			window.addEventListener("click", handleClickOutside);
+			return () => window.removeEventListener("click", handleClickOutside);
 		}
 	});
 
@@ -74,7 +97,7 @@
 	let scrollParent = $state<HTMLElement | null>(null);
 
 	function updatePosition() {
-		if (!triggerEl) return;
+		if (!triggerEl || !menuEl) return;
 
 		if (!scrollParent) {
 			scrollParent = triggerEl.closest(".STYLESHIFT-Scrollable") as HTMLElement;
@@ -84,7 +107,6 @@
 
 		if (scrollParent) {
 			const parentRect = scrollParent.getBoundingClientRect();
-			// If trigger is fully outside the scrollable area (with some padding), close it
 			if (
 				triggerRect.bottom < parentRect.top ||
 				triggerRect.top > parentRect.bottom ||
@@ -96,31 +118,37 @@
 			}
 		}
 
-		if (!menuEl) return;
-
 		menuWidth = triggerEl.offsetWidth;
 
-		// Calculate position relative to the offsetParent of menuEl
-		// Since STYLESHIFT-Dropdown-Menu is position: absolute, we need to find its offsetParent
-		// If it's in the body container, we should use coordinates relative to that container
-		const menuOffsetParent = menuEl.offsetParent as HTMLElement || document.body;
-		const parentRect = menuOffsetParent.getBoundingClientRect();
-		const scrollLeft = menuOffsetParent === document.body ? window.scrollX : menuOffsetParent.scrollLeft;
-		const scrollTop = menuOffsetParent === document.body ? window.scrollY : menuOffsetParent.scrollTop;
+		// Since we're teleporting to document.body, coordinates are relative to the viewport
+		// plus current scroll position
+		const scrollX = window.scrollX;
+		const scrollY = window.scrollY;
 
-		menuLeft = triggerRect.left - parentRect.left + scrollLeft;
+		menuLeft = triggerRect.left + scrollX;
 
 		const spaceBelow = window.innerHeight - triggerRect.bottom;
 		const menuHeight = menuEl.offsetHeight;
 
 		if (spaceBelow < menuHeight && triggerRect.top > menuHeight) {
 			isMenuAbove = true;
-			menuTop = triggerRect.top - parentRect.top + scrollTop - menuHeight - 8;
+			menuTop = triggerRect.top + scrollY - menuHeight - 8;
 		} else {
 			isMenuAbove = false;
-			menuTop = triggerRect.bottom - parentRect.top + scrollTop + 8;
+			menuTop = triggerRect.bottom + scrollY + 8;
 		}
 		isReady = true;
+	}
+
+	function portal(node: HTMLElement) {
+		document.body.appendChild(node);
+		return {
+			destroy() {
+				if (node.parentNode) {
+					node.parentNode.removeChild(node);
+				}
+			},
+		};
 	}
 
 	function menuAction(node: HTMLElement) {
@@ -149,7 +177,7 @@
 </script>
 
 {#if !justMenu}
-	<Description name={setting?.name || ""} description={setting?.description || ""} />
+	<Description {name} {description} />
 	<div class="STYLESHIFT-Dropdown-Wrapper">
 		<button
 			bind:this={triggerEl}
@@ -171,8 +199,9 @@
 
 {#snippet menu()}
 	<div
+		use:portal
 		use:menuAction
-		class="STYLESHIFT-Dropdown-Menu"
+		class="STYLESHIFT-Dropdown-Menu STYLESHIFT-Main"
 		style:top="{menuTop}px"
 		style:left="{menuLeft}px"
 		style:width="{menuWidth}px"
@@ -185,7 +214,7 @@
 			<button
 				class="STYLESHIFT-Dropdown-Item"
 				class:selected={option === value}
-				onclick={() => handleSelect(option)}
+				onclick={(e) => handleSelect(e, option)}
 				style="animation-delay: {i * 50}ms"
 			>
 				{option}

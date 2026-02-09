@@ -1,26 +1,65 @@
 <script lang="ts">
 	import type { Setting } from "@styleshift/types/store";
 	import Description from "./Description.svelte";
+	import { get_from_storage, get_root_value } from "@/styleshift/core/storage-manager";
+	import { set_and_save } from "@ui/settings/setting-components";
+	import { trigger_setting_update } from "@settings/functions";
+	import { sequenced_task } from "@functions/normal";
+
 	let {
 		setting,
 		placeholder = "Type here...",
-		value = $bindable(""),
-		onUpdate = () => {},
 	}: {
 		setting: Extract<Setting, { type: "text_input" }>;
 		placeholder?: string;
-		value: string;
-		onUpdate?: (val: string) => void;
 	} = $props();
 
-	function handleChange() {
-		onUpdate(value);
+	let value = $state("");
+
+	async function init() {
+		if (setting.id) {
+			value = await get_from_storage(setting.id);
+		} else {
+			value = setting.value;
+		}
+	}
+	init();
+
+	const name = $derived(setting.name);
+	const description = $derived(setting.description);
+
+	async function handleUpdate() {
+		if (setting.id) {
+			await set_and_save(setting, value);
+			await trigger_setting_update(setting.id);
+		} else if (typeof setting.update_function === "function") {
+			await setting.update_function(value);
+		}
+	}
+
+	const sequencedUpdate = sequenced_task(handleUpdate);
+
+	async function handleInput() {
+		if (await get_root_value("Realtime_Extension")) {
+			sequencedUpdate();
+		}
+	}
+
+	async function handleChange() {
+		await sequencedUpdate();
 	}
 </script>
 
-<Description name={setting.name} description={setting.description} />
+<Description {name} {description} />
 <div class="STYLESHIFT-Input-Wrapper">
-	<input type="text" class="STYLESHIFT-Input" {placeholder} bind:value onchange={handleChange} />
+	<input
+		type="text"
+		class="STYLESHIFT-Input"
+		{placeholder}
+		bind:value
+		oninput={handleInput}
+		onchange={handleChange}
+	/>
 </div>
 
 <style lang="scss">

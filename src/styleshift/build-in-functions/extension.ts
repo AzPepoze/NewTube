@@ -19,7 +19,7 @@ import {
 } from "../ui/extension";
 import { settings_ui } from "../ui/settings/setting-components";
 import { sleep, deep_clone, download_file, get_current_domain, create_unique_id } from "./normal";
-import { logger } from "./logger";
+import { logger } from "../utils/logger";
 
 /*
 -------------------------------------------------------

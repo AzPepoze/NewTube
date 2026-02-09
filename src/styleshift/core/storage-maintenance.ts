@@ -1,5 +1,6 @@
-import { logger } from "../build-in-functions/logger";
+import { logger } from "../utils/logger";
 import { get_settings_list } from "../settings/items";
+import { get_styleshift_custom_items } from "../../main/items-styleshift-custom";
 import {
 	persist_cached_data_to_storage,
 	save_to_storage,
@@ -8,6 +9,18 @@ import {
 	cached_storage_data,
 	EXTERNAL_STORAGE_KEYS,
 } from "./storage-manager";
+
+/**
+ * Ensures custom items are initialized for new users.
+ */
+export async function initialize_default_custom_items(): Promise<void> {
+	const current_custom = await get_root_value("custom_styleshift_items");
+	if (current_custom == null || (Array.isArray(current_custom) && current_custom.length === 0)) {
+		logger.info("maintenance", "Initializing default custom items for new user");
+		await save_root_value("custom_styleshift_items", get_styleshift_custom_items(), true);
+		await persist_cached_data_to_storage();
+	}
+}
 
 /**
  * Ensures all available settings have a value in storage, applying defaults where missing.

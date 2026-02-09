@@ -2,7 +2,7 @@ import { create_unique_id, once_element_remove, wait_document_loaded } from "../
 import { get_styleshift_items } from "../settings/items";
 import { create_editor_ui, editor_ui } from "./editor";
 import { show_user_confirmation } from "./extension";
-import { logger } from "../build-in-functions/logger";
+import { logger } from "../utils/logger";
 
 let highlight_elements = {};
 let debounce_timer: NodeJS.Timeout;

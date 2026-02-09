@@ -1,45 +1,55 @@
 <script lang="ts">
 	import type { Setting } from "@styleshift/types/store";
 	import Description from "./Description.svelte";
-	import { get_root_value } from "@/styleshift/core/storage-manager";
+	import { get_from_storage, get_root_value } from "@/styleshift/core/storage-manager";
+	import { set_and_save } from "@ui/settings/setting-components";
+	import { trigger_setting_update } from "@settings/functions";
+	import { sequenced_task } from "@functions/normal";
+
 	let {
 		setting,
-		name: nameProp = "",
-		description: descriptionProp = "",
-		min: minProp = 0,
-		max: maxProp = 100,
-		step: stepProp = 1,
-		unit: unitProp = "",
-		value = $bindable(0),
-		onUpdate = () => {},
 	}: {
-		setting?: Extract<Setting, { type: "number_slide" }>;
-		name?: string;
-		description?: string;
-		min?: number;
-		max?: number;
-		step?: number;
-		unit?: string;
-		value: number;
-		onUpdate?: (val: number) => void;
+		setting: Extract<Setting, { type: "number_slide" }>;
 	} = $props();
 
-	// Derived values that fallback to props if setting object is missing
-	const name = $derived(setting?.name ?? nameProp);
-	const description = $derived(setting?.description ?? descriptionProp);
-	const min = $derived(setting?.min ?? minProp);
-	const max = $derived(setting?.max ?? maxProp);
-	const step = $derived(setting?.step ?? stepProp);
-	const unit = $derived(setting?.unit ?? unitProp);
+	let value = $state(0);
 
-	async function handleInput() {
-		if (await get_root_value("Realtime_Extension")) {
-			onUpdate(value);
+	async function init() {
+		if (setting.id) {
+			value = await get_from_storage(setting.id);
+		} else {
+			value = setting.value;
+		}
+	}
+	init();
+
+	// Derived values that fallback to defaults if setting properties are missing
+	const name = $derived(setting.name);
+	const description = $derived(setting.description);
+	const min = $derived(setting.min ?? 0);
+	const max = $derived(setting.max ?? 100);
+	const step = $derived(setting.step ?? 1);
+	const unit = $derived(setting.unit ?? "");
+
+	async function handleUpdate() {
+		if (setting.id) {
+			await set_and_save(setting, value);
+			await trigger_setting_update(setting.id);
+		} else if (typeof setting.update_function === "function") {
+			await setting.update_function(value);
 		}
 	}
 
-	function handleChange() {
-		onUpdate(value);
+	const sequencedUpdate = sequenced_task(handleUpdate);
+
+	async function handleInput() {
+		if (await get_root_value("Realtime_Extension")) {
+			sequencedUpdate();
+		}
+	}
+
+	async function handleChange() {
+		await sequencedUpdate();
 	}
 </script>
 

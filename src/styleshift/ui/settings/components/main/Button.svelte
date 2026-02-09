@@ -3,36 +3,26 @@
 	import { hex_to_rgb, rgb_to_hsv, hsv_to_rgb } from "../../../../build-in-functions/normal";
 	import Description from "./Description.svelte";
 	import Icon from "./Icon.svelte";
+	import { get_justify_content } from "../../utils";
+
+	import { execute_setting_script } from "@/styleshift/core/runtime-controller";
 
 	let {
 		setting,
-		name: nameProp = "",
-		description: descriptionProp = "",
-		icon: iconProp = "",
-		color: colorProp = "#ffffff",
-		align: alignProp = "center",
-		font_size: fontSizeProp = 15,
 		style = "",
-		onClick = (e: MouseEvent) => {},
 	}: {
-		setting?: Extract<Setting, { type: "button" }>;
-		name?: string;
-		description?: string;
-		icon?: string;
-		color?: string;
-		align?: "left" | "center" | "right";
-		font_size?: number;
+		setting: Extract<Setting, { type: "button" }>;
 		style?: string;
-		onClick?: (e: MouseEvent) => void;
 	} = $props();
 
-	// Derived values that fallback to props if setting object is missing
-	const name = $derived(setting?.name ?? nameProp);
-	const description = $derived(setting?.description ?? descriptionProp);
-	const icon = $derived(setting?.icon ?? iconProp);
-	const color = $derived(setting?.color ?? colorProp);
-	const align = $derived(setting?.align ?? alignProp);
-	const font_size = $derived(setting?.font_size ?? fontSizeProp);
+	// Derived values that rely on the setting object
+	const name = $derived(setting.name);
+	const description = $derived(setting.description);
+	const icon = $derived(setting.icon);
+	const color = $derived(setting.color || "#ffffff");
+	const align = $derived(setting.align || "center");
+	const font_size = $derived(setting.font_size || 15);
+	const justifyContent = $derived(get_justify_content(align));
 
 	let scale = $state(1);
 
@@ -65,7 +55,13 @@
 		setTimeout(() => {
 			scale = 1;
 		}, 100);
-		onClick(e);
+
+		if (!setting.click_function) return;
+		if (typeof setting.click_function === "string") {
+			execute_setting_script(setting, "click_function");
+		} else {
+			(setting.click_function as Function)();
+		}
 	}
 </script>
 
@@ -73,7 +69,7 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="STYLESHIFT-Button"
-	style="justify-content: {align}; background: {colors.background}; border: 1px solid {colors.borderColor}; transform: scale({scale}); {style}"
+	style="justify-content: {justifyContent}; background: {colors.background}; border: 1px solid {colors.borderColor}; transform: scale({scale}); {style}"
 	onclick={handleClick}
 >
 	{#if icon}
