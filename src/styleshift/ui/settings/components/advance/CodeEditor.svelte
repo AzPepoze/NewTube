@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
-	import { codemirror, global_functions_metadata } from "@core/extension";
+	import { codemirror_instance, global_metadata_cache } from "@/styleshift/core/runtime-controller";
 	import { logger } from "@functions/logger";
 
 	let { value = $bindable(""), language = "javascript", height = 400, onBlur, onInput } = $props();
@@ -12,7 +12,7 @@
 		if (!container) return;
 
 		const init = () => {
-			if (!codemirror) {
+			if (!codemirror_instance) {
 				setTimeout(init, 100);
 				return;
 			}
@@ -27,7 +27,7 @@
 				autocompletion,
 				hoverTooltip,
 				tooltips,
-			} = codemirror;
+			} = codemirror_instance;
 
 			function styleshiftCompletions(context: any) {
 				const word = context.matchBefore(/[\w$]*/);
@@ -38,12 +38,12 @@
 					"Providing completions for:",
 					word.text,
 					"Metadata count:",
-					global_functions_metadata.length,
+					global_metadata_cache.length,
 				);
 
 				return {
 					from: word.from,
-					options: global_functions_metadata.map((m) => ({
+					options: global_metadata_cache.map((m) => ({
 						label: m.label,
 						type: m.type,
 						detail: m.detail,
@@ -61,7 +61,7 @@
 				if ((start == pos && side < 0) || (end == pos && side > 0)) return null;
 
 				const word = text.slice(start - from, end - from);
-				const metadata = global_functions_metadata.find((m) => m.label === word);
+				const metadata = global_metadata_cache.find((m) => m.label === word);
 				if (!metadata) return null;
 
 				return {

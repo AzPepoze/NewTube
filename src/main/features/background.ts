@@ -1,6 +1,6 @@
 import { get_document_body } from "../../styleshift/build-in-functions/normal";
-import { load_setting } from "../../styleshift/core/save";
-import { on_setting_update } from "../../styleshift/settings/functions";
+import { get_user_setting } from "../../styleshift/core/storage-manager";
+import { register_setting_listener } from "../../styleshift/settings/functions";
 import { logger } from "../../styleshift/build-in-functions/logger";
 
 const bg_tint_id = "newtube-bg-tint";
@@ -78,7 +78,7 @@ export async function disable_bg() {
 
 export async function update_bg_img() {
 	logger.info("background", "BG updated");
-	const use_thumb = await load_setting("ThumbBG");
+	const use_thumb = await get_user_setting("ThumbBG");
 	if (use_thumb) {
 		const video_id = new URLSearchParams(window.location.search).get("v");
 		if (video_id) {
@@ -86,14 +86,14 @@ export async function update_bg_img() {
 			return;
 		}
 	}
-	const url = await load_setting("BGIMG");
+	const url = await get_user_setting("BGIMG");
 	bg_image.src = url;
 }
 
 export async function update_bg_img_size() {
 	const bg_bound = bg_image_element.getBoundingClientRect();
 	const imagine_background_height = (bg_image.height / bg_image.width) * window.innerWidth;
-	const zoom_value = await load_setting("BackgroundS");
+	const zoom_value = await get_user_setting("BackgroundS");
 
 	if (imagine_background_height < bg_bound.height) {
 		bg_image_element.style.backgroundSize = `${(bg_bound.height / imagine_background_height) * zoom_value}%`;
@@ -103,8 +103,8 @@ export async function update_bg_img_size() {
 }
 
 export async function update_bg_img_position() {
-	bg_image_element.style.backgroundPositionX = (await load_setting("BackgroundX")) + "%";
-	bg_image_element.style.backgroundPositionY = (await load_setting("BackgroundY")) + "%";
+	bg_image_element.style.backgroundPositionX = (await get_user_setting("BackgroundX")) + "%";
+	bg_image_element.style.backgroundPositionY = (await get_user_setting("BackgroundY")) + "%";
 }
 
 bg_image.onload = function () {
@@ -113,4 +113,4 @@ bg_image.onload = function () {
 	update_bg_img_size();
 };
 
-on_setting_update("BGIMG", update_bg_img, true);
+register_setting_listener("BGIMG", update_bg_img, true);

@@ -1,11 +1,22 @@
 import { convert_to_export_setting } from "../core/export-converter";
-import { save_and_update_all, jszip } from "../core/extension";
-import { styleshift_allowed_keys, saved_data, set_null_save, load, save } from "../core/save";
-import { styleshift_station } from "../run";
+import { persist_and_refresh_all, jszip_instance as jszip } from "../core/runtime-controller";
+import {
+	EXTERNAL_STORAGE_KEYS as styleshift_allowed_keys,
+	cached_storage_data as saved_data,
+	get_root_value,
+	save_root_value,
+} from "../core/storage-manager";
+import { initialize_required_storage_structures as set_null_save } from "../core/storage-maintenance";
+import { styleshift_container } from "../run";
 import { styleshift_category_list } from "../settings/default-items";
 import { show_stylesheet, hide_stylesheet } from "../settings/style-sheet";
 import { Category, Setting } from "../types/store";
-import { notification_container, run_animation, create_styleshift_window, show_confirm } from "../ui/extension";
+import {
+	create_styleshift_window,
+	global_notification_container,
+	play_ui_animation,
+	show_user_confirmation,
+} from "../ui/extension";
 import { settings_ui } from "../ui/settings/setting-components";
 import { sleep, deep_clone, download_file, get_current_domain, create_unique_id } from "./normal";
 import { logger } from "./logger";
@@ -22,8 +33,8 @@ For Normal user !!!
  * @param {string} [title="Confirm Action"] - The dialog title.
  * @returns {Promise<boolean>}
  */
-export async function show_confirm_prompt(ask: string, title: string = "Confirm Action") {
-	return await show_confirm(ask, title);
+export async function show_user_confirmation_prompt(ask: string, title: string = "Confirm Action") {
+	return await show_user_confirmation(ask, title);
 }
 
 /**
@@ -66,7 +77,7 @@ export async function create_notification({ icon = null, title = "StyleShift", c
 
 	notification_frame.className = "STYLESHIFT-Notification";
 	setTimeout(() => {
-		notification_container.append(notification_frame);
+		global_notification_container.append(notification_frame);
 	}, 1);
 
 	let icon_ui;
@@ -112,7 +123,7 @@ export async function create_notification({ icon = null, title = "StyleShift", c
 	//---------------------------------
 
 	async function close() {
-		await run_animation(notification_frame, "Notification-Hide");
+		await play_ui_animation(notification_frame, "Notification-Hide");
 		notification_frame.remove();
 	}
 
@@ -133,7 +144,7 @@ export async function create_notification({ icon = null, title = "StyleShift", c
 
 	//---------------------------------
 
-	await run_animation(notification_frame, "Notification-Show");
+	await play_ui_animation(notification_frame, "Notification-Show");
 	setTimeout(async () => {
 		if (timeout > 0) {
 			await sleep(timeout);
@@ -227,9 +238,9 @@ export async function enter_text_prompt({ title = "Enter text", placeholder = ""
 		height: "70%",
 	});
 
-	styleshift_window.bg_frame.style.background = "";
-	styleshift_window.bg_frame.style.pointerEvents = "";
-	styleshift_window.bg_frame.style.zIndex = "10001";
+	styleshift_window.overlay_frame.style.background = "";
+	styleshift_window.overlay_frame.style.pointerEvents = "";
+	styleshift_window.overlay_frame.style.zIndex = "10001";
 
 	const content_window = styleshift_window.window_element;
 
@@ -296,11 +307,11 @@ export async function enter_text_prompt({ title = "Enter text", placeholder = ""
 
 	return new Promise((resolve, reject) => {
 		ok_button.button.addEventListener("click", () => {
-			styleshift_window.run_close();
+			styleshift_window.close_window_handler();
 			resolve(text_input.text_editor.value);
 		});
 		cancel_button.button.addEventListener("click", () => {
-			styleshift_window.run_close();
+			styleshift_window.close_window_handler();
 			reject();
 		});
 	});
@@ -357,7 +368,7 @@ export async function import_styleshift_data(styleshift_data: object) {
 		}
 
 		await set_null_save();
-		save_and_update_all();
+		persist_and_refresh_all();
 
 		notification.set_icon("✅");
 		notification.set_title("StyleShift - Imported data");
@@ -648,18 +659,18 @@ Danger Zone !!!
 /**
  * Enables the extension.
  * @example
- * enable_extension_function();
+ * enable_extension();
  */
-export async function enable_extension_function() {
+export async function enable_extension() {
 	show_stylesheet();
 }
 
 /**
  * Disables the extension.
  * @example
- * disable_extension_function();
+ * disable_extension();
  */
-export async function disable_extension_function() {
+export async function disable_extension() {
 	hide_stylesheet();
 }
 
@@ -673,7 +684,7 @@ export async function disable_extension_function() {
  * @returns {Promise<string>} The JSON string representation of the retrieved data.
  */
 export async function load_styleshift_value(id) {
-	return JSON.stringify(await load(id));
+	return JSON.stringify(await get_root_value(id));
 }
 
 /**
@@ -686,16 +697,15 @@ export async function load_styleshift_value(id) {
  * @param {string} value - The JSON string representing the data to be saved.
  * @returns {Promise<any>} The result of the save operation.
  */
-
 export async function save_styleshift_value(id, value: string) {
-	return await save(id, JSON.parse(value));
+	return await save_root_value(id, JSON.parse(value));
 }
 
 /**
  * Creates a setting ui element from the given type and setting.
  *
  * This function will create a ui element using the provided type and setting.
- * The ui element will be appended to the `styleshift_station` element and
+ * The ui element will be appended to the `styleshift_container` element and
  * assigned a unique "styleshift-ui-id" attribute.
  *
  * @param {string} type - The type of the setting ui element.
@@ -716,7 +726,7 @@ export async function create_styleshift_setting_ui(type: string, this_setting: S
 	const id = create_unique_id(10);
 	ui_element.setAttribute("styleshift-ui-id", id);
 
-	styleshift_station.append(ui_element);
+	styleshift_container.append(ui_element);
 
 	return id;
 }

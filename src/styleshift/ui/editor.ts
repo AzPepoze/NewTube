@@ -52,14 +52,14 @@ let resize_observer: ResizeObserver | null = null;
 			});
 			resize_observer.observe(target_element);
 
-			styleshift_window.drag_top.addEventListener("mousedown", () => {
+			styleshift_window.drag_handle.addEventListener("mousedown", () => {
 				if (animation_frame_id) {
 					cancelAnimationFrame(animation_frame_id);
 					animation_frame_id = null;
 				}
 			});
 
-			styleshift_window.close.addEventListener("click", () => {
+			styleshift_window.close_button.addEventListener("click", () => {
 				if (animation_frame_id) {
 					cancelAnimationFrame(animation_frame_id);
 					animation_frame_id = null;

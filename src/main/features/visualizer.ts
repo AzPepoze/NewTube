@@ -1,6 +1,6 @@
-import { load_any, load_setting } from "../../styleshift/core/save";
-import { on_setting_update } from "../../styleshift/settings/functions";
-import { get_ytd_app } from "../modules/main";
+import { get_from_storage, get_user_setting } from "../../styleshift/core/storage-manager";
+import { register_setting_listener } from "../../styleshift/settings/functions";
+import { get_ytd_app } from "../modules/youtube";
 
 let audio_ctx: AudioContext | null = null;
 let analyser: AnalyserNode | null = null;
@@ -11,7 +11,7 @@ let animation_frame: number | null = null;
 
 export function setup_audio_visualizer() {
 	const init = async () => {
-		if ((await load_any("Enable_Extension")) === false) return;
+		if ((await get_from_storage("Enable_Extension")) === false) return;
 		if (audio_ctx) return; // Already running
 
 		const video = document.querySelector("video");
@@ -152,11 +152,11 @@ export function destroy_audio_visualizer() {
 	animation_frame = null;
 }
 
-on_setting_update("Enable_Extension", (val) => {
+register_setting_listener("Enable_Extension", (val) => {
 	if (!val) {
 		destroy_audio_visualizer();
 	} else {
-		load_setting("AudioVisualizer").then((enabled) => {
+		get_user_setting("AudioVisualizer").then((enabled) => {
 			if (enabled) {
 				setup_audio_visualizer();
 			}

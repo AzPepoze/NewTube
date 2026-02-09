@@ -1,5 +1,5 @@
-import { load } from "../../styleshift/core/save";
-import { on_setting_update } from "../../styleshift/settings/functions";
+import { get_root_value } from "../../styleshift/core/storage-manager";
+import { register_setting_listener } from "../../styleshift/settings/functions";
 
 let original_favicon: string | null = null;
 
@@ -29,12 +29,12 @@ function revert_favicon() {
 }
 
 async function update_icon() {
-	const use_custom_icon = await load("CustomIcon");
+	const use_custom_icon = await get_root_value("CustomIcon");
 	if (!use_custom_icon) {
 		revert_favicon();
 		return;
 	}
-	const icon_url = (await load("iconURL")) as string;
+	const icon_url = (await get_root_value("iconURL")) as string;
 	if (icon_url) {
 		change_favicon(icon_url);
 	}
@@ -49,4 +49,4 @@ export function disable_tab_icon_changer() {
 	revert_favicon();
 }
 
-on_setting_update("iconURL", update_icon);
+register_setting_listener("iconURL", update_icon);

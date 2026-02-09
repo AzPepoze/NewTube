@@ -1,4 +1,4 @@
-import { save_any } from "@core/save";
+import { save_to_storage } from "@/styleshift/core/storage-manager";
 import { advance_setting_ui } from "./components/advance/advance";
 import { developer_setting_ui } from "./components/dev/dev";
 import { main_setting_ui } from "./components/main/main";
@@ -12,7 +12,7 @@ import type { Setting } from "../../types/store";
 
 export async function set_and_save(this_setting: Setting, value: any) {
 	if ("id" in this_setting && this_setting.id) {
-		await save_any(this_setting.id, value);
+		await save_to_storage(this_setting.id, value);
 	}
 }
 
@@ -31,11 +31,7 @@ export const settings_ui = {
 		});
 		return (target.firstElementChild as HTMLElement) || target;
 	},
-	render_component: function (
-		component: any,
-		props: any = {},
-		target: HTMLElement = document.createElement("div"),
-	) {
+	render_component: function (component: any, props: any = {}, target: HTMLElement = document.createElement("div")) {
 		mount(component, {
 			target,
 			props,

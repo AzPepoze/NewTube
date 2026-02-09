@@ -1,6 +1,6 @@
 import { get_document_body } from "../../styleshift/build-in-functions/normal";
-import { load_setting } from "../../styleshift/core/save";
-import { on_setting_update } from "../../styleshift/settings/functions";
+import { get_user_setting } from "../../styleshift/core/storage-manager";
+import { register_setting_listener } from "../../styleshift/settings/functions";
 
 let video_bg_enabled = false;
 let video_bg_canvas: HTMLCanvasElement | null = null;
@@ -22,12 +22,12 @@ let static_frame_counter = 0;
 let is_static = false;
 
 export async function update_video_bg_settings() {
-	const blur = await load_setting("VideoBGBlur");
-	const qual = await load_setting("VideoBGQuality");
-	const brit = await load_setting("VideoBGBrightness");
-	const cont = await load_setting("VideoBGContrast");
-	const scale = await load_setting("VideoBGSize");
-	const smooth = await load_setting("VideoBGSmooth");
+	const blur = await get_user_setting("VideoBGBlur");
+	const qual = await get_user_setting("VideoBGQuality");
+	const brit = await get_user_setting("VideoBGBrightness");
+	const cont = await get_user_setting("VideoBGContrast");
+	const scale = await get_user_setting("VideoBGSize");
+	const smooth = await get_user_setting("VideoBGSmooth");
 
 	if (blur !== undefined) bg_blur = blur;
 	if (qual !== undefined) bg_quality = qual / 100;
@@ -58,7 +58,7 @@ function check_static(ctx: CanvasRenderingContext2D, width: number, height: numb
 		}
 
 		let diff = 0;
-		// Check every 4th pixel to save cpu
+		// Check every 4th pixel to save_root_value cpu
 		for (let i = 0; i < frame_data.length; i += 16) {
 			diff += Math.abs(frame_data[i] - last_frame_data[i]);
 		}
@@ -160,9 +160,9 @@ export function disable_video_background() {
 	is_static = false;
 }
 
-on_setting_update("VideoBGBlur", update_video_bg_settings);
-on_setting_update("VideoBGQuality", update_video_bg_settings);
-on_setting_update("VideoBGBrightness", update_video_bg_settings);
-on_setting_update("VideoBGContrast", update_video_bg_settings);
-on_setting_update("VideoBGSize", update_video_bg_settings);
-on_setting_update("VideoBGSmooth", update_video_bg_settings);
+register_setting_listener("VideoBGBlur", update_video_bg_settings);
+register_setting_listener("VideoBGQuality", update_video_bg_settings);
+register_setting_listener("VideoBGBrightness", update_video_bg_settings);
+register_setting_listener("VideoBGContrast", update_video_bg_settings);
+register_setting_listener("VideoBGSize", update_video_bg_settings);
+register_setting_listener("VideoBGSmooth", update_video_bg_settings);

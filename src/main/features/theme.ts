@@ -1,7 +1,7 @@
-import { get_ytd_app } from "../modules/main";
+import { get_ytd_app } from "../modules/youtube";
 import ColorThief from "colorthief";
 import { rgb_to_hsv, hsv_to_rgb } from "../../styleshift/build-in-functions/normal";
-import { load_setting } from "../../styleshift/core/save";
+import { get_user_setting } from "../../styleshift/core/storage-manager";
 
 function get_sorted_palette(palette: [number, number, number][]) {
 	function cal_score(color: [number, number, number]) {
@@ -114,8 +114,8 @@ export function setup_theme_by_video() {
 			// Background Background
 			const bg_hsv = { ...hsv, v: hsv.v * 0.15 };
 			const bg_rgb = hsv_to_rgb(bg_hsv);
-			const is_solid = await load_setting("Solid_BG_Theme_by_video");
-			const bg_opacity = is_solid ? 1 : (await load_setting("BGO")) / 100;
+			const is_solid = await get_user_setting("Solid_BG_Theme_by_video");
+			const bg_opacity = is_solid ? 1 : (await get_user_setting("BGO")) / 100;
 			set_prop("--nt-bg-main", `rgba(${bg_rgb.r}, ${bg_rgb.g}, ${bg_rgb.b}, ${bg_opacity})`);
 
 			// Timeline

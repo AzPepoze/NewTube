@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { save_all } from "../../../../core/save";
+	import { persist_cached_data_to_storage } from "../../../../core/storage-manager";
 	import { settings_ui } from "../../setting-components";
 
 	let { setting, props, updateUI = () => {} } = $props();
@@ -11,7 +11,7 @@
 		} else {
 			updateUI();
 		}
-		await save_all();
+		await persist_cached_data_to_storage();
 	}
 
 	function mountWrapper(node: HTMLElement, params: { type: string; config: any; update_fn?: any }) {
@@ -42,7 +42,7 @@
 				update_function = (value: any) => {
 					setting[property] = value;
 					updateUI();
-					save_all();
+					persist_cached_data_to_storage();
 				};
 			}
 			text_editor.text_editors[title].additinal_onchange(update_function);

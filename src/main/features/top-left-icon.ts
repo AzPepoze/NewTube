@@ -1,8 +1,8 @@
-import { load_setting } from "../../styleshift/core/save";
-import { on_setting_update } from "../../styleshift/settings/functions";
+import { get_user_setting } from "../../styleshift/core/storage-manager";
+import { register_setting_listener } from "../../styleshift/settings/functions";
 
 async function update_logo_url() {
-	const url = await load_setting("ReplaceYTURL");
+	const url = await get_user_setting("ReplaceYTURL");
 	if (url) {
 		document.documentElement.style.setProperty("--nt-top-icon-url", `url("${url}")`);
 	}
@@ -12,4 +12,4 @@ async function update_logo_url() {
 update_logo_url();
 
 // Listener
-on_setting_update("ReplaceYTURL", update_logo_url);
+register_setting_listener("ReplaceYTURL", update_logo_url);

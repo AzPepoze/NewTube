@@ -8,7 +8,7 @@ let current_content_function;
 export async function create_config_ui(skip_animation = false) {
 	config_window = await create_styleshift_window({ width: "60%", height: "85%", skip_animation });
 
-	config_window.close.addEventListener(
+	config_window.close_button.addEventListener(
 		"click",
 		function () {
 			remove_config_ui();
@@ -47,9 +47,9 @@ export async function recreate_config_ui() {
 export function remove_config_ui(skip_animation = false) {
 	if (config_window) {
 		if (skip_animation) {
-			config_window.bg_frame.remove();
+			config_window.overlay_frame.remove();
 		} else {
-			config_window.close.click();
+			config_window.close_button.click();
 		}
 		config_window = null;
 		svelte_instance = null;

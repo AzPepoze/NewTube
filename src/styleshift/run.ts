@@ -8,197 +8,179 @@ import {
 	rearrange_selector,
 	sleep,
 } from "./build-in-functions/normal";
-import { run_text_script, update_styleshift_functions_list } from "./core/extension";
-import { clear_unused_save, load, load_thisweb_save, save, save_all, update_save_default } from "./core/save";
-import { on_setting_update, run_all_setting_init, setup_setting_function } from "./settings/functions";
+import { execute_script_string, synchronize_available_functions } from "./core/runtime-controller";
+import {
+	initialize_storage_connection,
+	get_root_value,
+	save_root_value,
+	persist_cached_data_to_storage,
+} from "./core/storage-manager";
+import { perform_storage_garbage_collection, populate_missing_default_settings } from "./core/storage-maintenance";
+import {
+	register_setting_listener,
+	initialize_all_active_settings,
+	attach_behavior_to_setting,
+} from "./settings/functions";
 import { create_stylesheet_holder } from "./settings/style-sheet";
 import { get_all_styleshift_items, get_all_styleshift_settings, update_styleshift_items } from "./settings/items";
 import "./communication/extension";
-import { update_all_ui } from "./ui/extension";
+import { update_all_ui_components } from "./ui/extension";
 import { sync_all_themes } from "./ui/theme";
 import { extension_settings_ui } from "./ui/extension-settings";
 import { toggle_customize } from "./ui/highlight";
 
 //-------------------------------------------------------
-// Global Variables & Constants
+// Configuration & State
 //-------------------------------------------------------
 
-export const ver = chrome.runtime.getManifest().version;
-export let styleshift_ready = false;
+export const EXTENSION_VERSION = chrome.runtime.getManifest().version;
+export let is_extension_ready = false;
 
-export const is_firefox = navigator.userAgent.toLowerCase().includes("firefox");
-// logger.info("run", "isFirefox", navigator.userAgent.toLowerCase(), isFirefox);
+export const IS_FIREFOX = navigator.userAgent.toLowerCase().includes("firefox");
+export const EXTENSION_BASE_URL = chrome.runtime.getURL("").slice(0, -1);
+export const IS_IN_EXTENSION_SETTINGS_PAGE = window.location.origin === EXTENSION_BASE_URL;
 
-export const extension_location = chrome.runtime.getURL("").slice(0, -1);
-export const extension_id = extension_location.slice(19, 0);
-
-export let in_setting_page;
-if (window.location.origin == extension_location) {
-	in_setting_page = true;
+// Identify the current domain context for storage
+export let current_context_domain: string;
+if (IS_IN_EXTENSION_SETTINGS_PAGE) {
+	const params = get_current_url_parameters();
+	current_context_domain = params.domain || "youtube.com";
 } else {
-	in_setting_page = false;
+	current_context_domain = get_current_domain();
 }
-// logger.info("run", "In_Setting_Page", In_Setting_Page);
 
-export let save_name;
-if (in_setting_page) {
-	const url_parameters = get_current_url_parameters();
-	if (url_parameters.domain) {
-		save_name = url_parameters.domain;
-	} else {
-		save_name = "youtube.com";
-	}
-} else {
-	save_name = get_current_domain();
-}
+// Global container for StyleShift elements that shouldn't be directly in the body
+export const styleshift_container: HTMLElement = document.createElement("div");
+styleshift_container.className = "StyleShift-Station";
+styleshift_container.style.display = "none";
 
 /*
 -------------------------------------------------------
- Global Variables & Constants
+ Core Lifecycle Functions
 -------------------------------------------------------
 */
-export const styleshift_station: HTMLElement = document.createElement("div");
-styleshift_station.className = "StyleShift-Station";
-styleshift_station.style.display = "none";
 
-/*
--------------------------------------------------------
- Core Functions
--------------------------------------------------------
-*/
-export function update_all() {
-	logger.info("update", "update_all triggered");
-	update_styleshift_functions_list();
+/**
+ * Refreshes the internal state and updates all UI components.
+ */
+export function refresh_extension_state(): void {
+	logger.info("lifecycle", "Refreshing extension state...");
+	synchronize_available_functions();
 	update_styleshift_items();
-	update_all_ui();
+	update_all_ui_components();
 }
 
-async function main_run() {
+/**
+ * Main entry point for the extension logic.
+ */
+async function bootstrap_extension(): Promise<void> {
 	await get_document_head();
 
-	// Append StyleShift Station to the body
+	// Inject StyleShift container
 	setTimeout(async () => {
-		(await get_document_body()).append(styleshift_station);
+		(await get_document_body()).append(styleshift_container);
 	}, 1);
 
-	// Inject build-in functions if not in the settings page
-	if (!in_setting_page) {
-		const build_in_functions = await (await fetch(chrome.runtime.getURL("build-in.js"))).text();
-		run_text_script({
-			text: build_in_functions,
-			replace: false,
+	// Inject built-in functions into the page context
+	if (!IS_IN_EXTENSION_SETTINGS_PAGE) {
+		const builtin_code = await (await fetch(chrome.runtime.getURL("build-in.js"))).text();
+		execute_script_string({
+			script_content: builtin_code,
+			should_sanitize: false,
 		});
 	}
 
-	//------------------------------------------
-	// Initialization Steps
-	//------------------------------------------
-	await load_thisweb_save();
-
-	// Test
-	// saved_data["custom_styleshift_items"] = Test_editable_items;
-	// logger.info("Test", saved_data);
-	// await save_all();
-
-	await update_styleshift_functions_list();
+	// Initialize storage and sync functions
+	await initialize_storage_connection();
+	await synchronize_available_functions();
 	await create_stylesheet_holder();
 	await update_styleshift_items();
-	await update_save_default();
-	// logger.info("Test", get_all_styleshift_items());
+	await populate_missing_default_settings();
 
-	//------------------------------------------
-	// Apply settings & save
-	//------------------------------------------
-	on_setting_update("App_Light_Theme", sync_all_themes);
-	on_setting_update("Setting_BG_Transparent", sync_all_themes);
+	// Set up global theme listeners
+	register_setting_listener("App_Light_Theme", sync_all_themes);
+	register_setting_listener("Setting_BG_Transparent", sync_all_themes);
 
-	for (const this_setting of await get_all_styleshift_settings()) {
-		if (this_setting.id == "Themes") {
-			continue;
+	// Initialize individual setting behaviors
+	const all_settings = await get_all_styleshift_settings();
+	for (const setting of all_settings) {
+		if (setting.id === "Themes") continue;
+		attach_behavior_to_setting(setting);
+	}
+
+	initialize_all_active_settings();
+	await perform_storage_garbage_collection();
+
+	// Normalize CSS selectors for all items
+	const items = get_all_styleshift_items();
+	for (const category of items) {
+		if (category.selector) {
+			category.selector = rearrange_selector(category.selector);
 		}
-		setup_setting_function(this_setting);
 	}
-	run_all_setting_init();
-	await clear_unused_save();
 
-	// ReArrange Selectors
-	for (const this_category of get_all_styleshift_items()) {
-		if (this_category.selector == null) continue;
-		this_category.selector = rearrange_selector(this_category.selector);
-	}
-	await save_all();
+	await persist_cached_data_to_storage();
 
-	//------------------------------------------
-	// settings Page Specific ui
-	//------------------------------------------
-	if (in_setting_page) {
+	if (IS_IN_EXTENSION_SETTINGS_PAGE) {
 		extension_settings_ui.create_ui();
 	}
 
-	styleshift_ready = true;
+	is_extension_ready = true;
+	logger.info("lifecycle", "StyleShift bootstrap complete.");
 }
 
 /*
 -------------------------------------------------------
- Main Execution & Error Handling
+ Execution & Event Handling
 -------------------------------------------------------
 */
+
 try {
-	main_run();
+	bootstrap_extension();
 } catch (error) {
 	create_error(error).then((notification) => {
-		notification.set_title("StyleShift - Main run error");
+		notification.set_title("StyleShift - Bootstrap Failure");
 	});
 }
 
-/*
--------------------------------------------------------
- Chrome Message Listener
--------------------------------------------------------
-*/
-chrome.runtime.onMessage.addListener(async function (message) {
+/**
+ * Handle messages from the background script or popup.
+ */
+chrome.runtime.onMessage.addListener(async (message) => {
 	try {
-		logger.info("message", "Message", message);
-		if (message == "Developer") {
-			await save("Developer_mode", !(await load("Developer_mode")));
-			if (await load("Developer_mode")) {
-				await create_notification({
-					icon: "🔨",
-					title: "Enabled Developer mode",
-					timeout: 4000,
-				});
-			} else {
-				await create_notification({
-					icon: "✨",
-					title: "Disabled Developer mode",
-					timeout: 4000,
-				});
-			}
-			update_all_ui();
+		logger.info("lifecycle", "Incoming message:", message);
+
+		if (message === "Developer") {
+			const is_dev = await get_root_value("Developer_mode");
+			await save_root_value("Developer_mode", !is_dev);
+
+			await create_notification({
+				icon: !is_dev ? "🔨" : "✨",
+				title: !is_dev ? "Developer Mode Enabled" : "Developer Mode Disabled",
+				timeout: 3000,
+			});
+
+			update_all_ui_components();
 		}
 
-		//----------------------------------------------
-		// Actions only outside settings page
-		//----------------------------------------------
-		if (in_setting_page) return;
+		if (IS_IN_EXTENSION_SETTINGS_PAGE) return;
 
-		if (message == "Customize") {
+		if (message === "Customize") {
 			toggle_customize();
 		}
 
-		if (message == "Setting") {
-			if (!styleshift_ready) {
-				const loading_notification = await create_notification({
+		if (message === "Setting") {
+			if (!is_extension_ready) {
+				const wait_notification = await create_notification({
 					icon: "⏳",
-					title: "StyleShift is loading! please wait...",
+					title: "StyleShift is initializing...",
 					timeout: -1,
 				});
 
-				while (!styleshift_ready) {
+				while (!is_extension_ready) {
 					await sleep(100);
 				}
-
-				loading_notification.close();
+				wait_notification.close();
 			}
 
 			extension_settings_ui.toggle();

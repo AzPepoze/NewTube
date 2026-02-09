@@ -24,9 +24,13 @@ export default defineConfig([
 			"@typescript-eslint/naming-convention": [
 				"error",
 				{
-					selector: "variableLike",
-					format: ["snake_case"],
+					selector: "variable",
+					format: ["snake_case", "UPPER_CASE"],
 					leadingUnderscore: "allow",
+				},
+				{
+					selector: "function",
+					format: ["snake_case"],
 				},
 				{
 					selector: "parameter",

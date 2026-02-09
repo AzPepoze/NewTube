@@ -1,9 +1,9 @@
 import { insert_after } from "../../build-in-functions/normal";
 import { logger } from "../../build-in-functions/logger";
-import { save_any } from "../../core/save";
-import { update_all } from "../../run";
+import { save_to_storage } from "../../core/storage-manager";
 import { get_setting_category, get_custom_items } from "../../settings/items";
 import type { Category, Setting } from "../../types/store";
+import { refresh_extension_state } from "@/styleshift/run";
 
 let draging_setting: { size: number; Data: Setting | Category } | null = null;
 const drop_targets = new Map<HTMLElement, { data: Setting | Category; data_type: string }>();
@@ -133,7 +133,7 @@ export async function add_drag(
 			for (const [target_el, info] of drop_targets.entries()) {
 				if (info.data === this_data && info.data_type === "setting") continue;
 
-				const target_category: Category | 0 =
+				const target_category: Category | null =
 					info.data_type === "category"
 						? (info.data as Category)
 						: get_setting_category(info.data as Setting);
@@ -204,17 +204,17 @@ export async function add_drag(
 					if (info) {
 						const item_to_move = draging_setting!.Data as Setting;
 						const source_category = get_setting_category(item_to_move);
-						if (source_category !== 0) {
+						if (source_category !== null) {
 							const idx = source_category.settings.indexOf(item_to_move);
 							if (idx > -1) source_category.settings.splice(idx, 1);
 						}
 
-						const target_category: Category | 0 =
+						const target_category: Category | null =
 							info.data_type === "category"
 								? (info.data as Category)
 								: get_setting_category(info.data as Setting);
 
-						if (target_category !== 0 && target_category.editable) {
+						if (target_category !== null && target_category.editable) {
 							let drop_index = 0;
 							if (info.data_type !== "category") {
 								drop_index =
@@ -223,14 +223,14 @@ export async function add_drag(
 							}
 							target_category.settings.splice(drop_index, 0, item_to_move);
 
-							await save_any("custom_styleshift_items", get_custom_items());
+							await save_to_storage("custom_styleshift_items", get_custom_items());
 						}
 					}
 				}
 
 				draging_setting = null;
 				logger.info("drag", "Ended");
-				update_all();
+				refresh_extension_state();
 			},
 			{ once: true },
 		);

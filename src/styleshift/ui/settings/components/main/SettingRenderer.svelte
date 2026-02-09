@@ -11,17 +11,16 @@
 	import PreviewImage from "./PreviewImage.svelte";
 	import Icon from "./Icon.svelte";
 	import Search from "./Search.svelte";
-	import { load_any, load } from "@core/save";
+	import { get_from_storage, get_root_value } from "@/styleshift/core/storage-manager";
 	import { settings_ui, set_and_save } from "@ui/settings/setting-components";
-	import { update_setting_function } from "@settings/functions";
+	import { trigger_setting_update } from "@settings/functions";
 	import {
-		run_text_script_from_setting,
-		hex_to_color_obj,
-		color_obj_to_hex,
-		run_text_script,
-	} from "@core/extension";
+		execute_setting_script,
+		execute_script_string,
+	} from "@/styleshift/core/runtime-controller";
+	import { color_obj_to_hex, hex_to_color_obj } from "@styleshift/utils/colors";
 	import { remove_setting } from "@settings/items";
-	import { update_all } from "@/styleshift/run";
+	import { refresh_extension_state } from "@/styleshift/run";
 	import { show_config_ui, remove_config_ui } from "@ui/config";
 	import { create_unique_id } from "@functions/normal";
 	import Description from "./Description.svelte";
@@ -46,9 +45,9 @@
 
 	// Initialize value from storage
 	async function init() {
-		isDeveloperMode = (await load("Developer_mode")) && (setting.editable ?? false);
+		isDeveloperMode = (await get_root_value("Developer_mode")) && (setting.editable ?? false);
 		if ("id" in setting && setting.id) {
-			value = await load_any(setting.id);
+			value = await get_from_storage(setting.id);
 		} else if ("value" in setting) {
 			value = setting.value;
 		}
@@ -62,7 +61,7 @@
 
 		if ("id" in setting && setting.id) {
 			await set_and_save(setting, newValue);
-			update_setting_function(setting.id);
+			trigger_setting_update(setting.id);
 		} else if ("update_function" in setting && typeof setting.update_function === "function") {
 			(setting.update_function as Function)(newValue);
 		}
@@ -86,10 +85,10 @@
 			if (typeof setting.ui_function === "function") {
 				setting.ui_function(node);
 			} else if (typeof setting.ui_function === "string") {
-				run_text_script({
-					text: setting.ui_function,
-					code_name: `${setting.id} : ui_function`,
-					args: JSON.stringify({ setting_id: node.id }),
+				execute_script_string({
+					script_content: setting.ui_function,
+					source_identifier: `${setting.id} : ui_function`,
+					execution_arguments: JSON.stringify({ setting_id: node.id }),
 				});
 			}
 		}
@@ -140,7 +139,7 @@
 			onClick={() => {
 				if (!setting.click_function) return;
 				if (typeof setting.click_function === "string") {
-					run_text_script_from_setting(setting, "click_function");
+					execute_setting_script(setting, "click_function");
 				} else {
 					(setting.click_function as Function)();
 				}
@@ -193,7 +192,7 @@
 				class="STYLESHIFT-Config-Button delete"
 				onclick={() => {
 					remove_setting(setting);
-					update_all();
+					refresh_extension_state();
 				}}
 			>
 				<Icon name="delete" size={16} />

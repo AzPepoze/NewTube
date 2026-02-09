@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Setting } from "@styleshift/types/store";
 	import Description from "./Description.svelte";
-	import { load } from "@core/save";
+	import { get_root_value } from "@/styleshift/core/storage-manager";
 	let {
 		setting,
 		name: nameProp = "",
@@ -33,7 +33,7 @@
 	const unit = $derived(setting?.unit ?? unitProp);
 
 	async function handleInput() {
-		if (await load("Realtime_Extension")) {
+		if (await get_root_value("Realtime_Extension")) {
 			onUpdate(value);
 		}
 	}

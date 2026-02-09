@@ -1,4 +1,4 @@
-import { load_any } from "@core/save";
+import { get_from_storage } from "@/styleshift/core/storage-manager";
 import { logger } from "@functions/logger";
 
 /**
@@ -6,8 +6,8 @@ import { logger } from "@functions/logger";
  * @param element The HTMLElement to apply attributes to.
  */
 export async function apply_theme_to_element(element: HTMLElement) {
-	const is_light_theme = await load_any("App_Light_Theme");
-	const is_transparent = await load_any("Setting_BG_Transparent");
+	const is_light_theme = await get_from_storage("App_Light_Theme");
+	const is_transparent = await get_from_storage("Setting_BG_Transparent");
 
 	element.setAttribute("data-theme", is_light_theme ? "light" : "dark");
 	element.setAttribute("data-transparent", is_transparent ? "true" : "false");
@@ -19,8 +19,8 @@ export async function apply_theme_to_element(element: HTMLElement) {
 export async function sync_all_themes() {
 	const elements = document.querySelectorAll<HTMLElement>(".STYLESHIFT-Main");
 
-	const is_light_theme = await load_any("App_Light_Theme");
-	const is_transparent = await load_any("Setting_BG_Transparent");
+	const is_light_theme = await get_from_storage("App_Light_Theme");
+	const is_transparent = await get_from_storage("Setting_BG_Transparent");
 
 	const theme = is_light_theme ? "light" : "dark";
 	const transparent = is_transparent ? "true" : "false";

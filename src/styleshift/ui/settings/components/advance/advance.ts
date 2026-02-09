@@ -1,6 +1,6 @@
 import { apply_drag } from "@functions/normal";
-import { save_all } from "@core/save";
-import { update_setting_function } from "@settings/functions";
+import { persist_cached_data_to_storage } from "@/styleshift/core/storage-manager";
+import { trigger_setting_update } from "@settings/functions";
 import { Category } from "@styleshift/types/store";
 import { settings_ui } from "@ui/settings/setting-components";
 import { create_config_ui_function, setup_left_title_animation } from "@ui/settings/settings";
@@ -69,7 +69,7 @@ export const advance_setting_ui = {
 
 		let on_change = async function (value: string) {
 			obj[key] = value;
-			save_all();
+			persist_cached_data_to_storage();
 			if (additinal_onchange) {
 				additinal_onchange(value);
 			}
@@ -113,10 +113,10 @@ export const advance_setting_ui = {
 
 		let on_change = async function (value: string) {
 			obj[key] = value;
-			save_all();
+			persist_cached_data_to_storage();
 
 			if (obj["id"]) {
-				update_setting_function(obj["id"]);
+				trigger_setting_update(obj["id"]);
 			}
 
 			if (additinal_onchange) {

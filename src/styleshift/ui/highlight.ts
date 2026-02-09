@@ -1,7 +1,7 @@
 import { create_unique_id, once_element_remove, wait_document_loaded } from "../build-in-functions/normal";
 import { get_styleshift_items } from "../settings/items";
 import { create_editor_ui, editor_ui } from "./editor";
-import { show_confirm } from "./extension";
+import { show_user_confirmation } from "./extension";
 import { logger } from "../build-in-functions/logger";
 
 let highlight_elements = {};
@@ -144,7 +144,7 @@ export async function start_highlighter() {
 
 		if (
 			selector_found.length >= 1000 &&
-			!(await show_confirm(
+			!(await show_user_confirmation(
 				`StyleShift : I found ${selector_found.length} elements on selector "${selector_value.selector}"\n\nAre you wish to continue??`,
 			))
 		) {

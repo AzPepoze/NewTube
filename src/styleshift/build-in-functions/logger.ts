@@ -15,7 +15,7 @@ export interface LogConfig {
 // Default configuration
 const debug_config: LogConfig = {
 	info: {
-		save: true,
+		save_root_value: true,
 		drag: true,
 		ui: true,
 	},

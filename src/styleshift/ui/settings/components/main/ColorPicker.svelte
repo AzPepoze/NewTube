@@ -2,7 +2,7 @@
 	import type { Setting } from "@styleshift/types/store";
 	import Slider from "./Slider.svelte";
 	import Description from "./Description.svelte";
-	import { load } from "@core/save";
+	import { get_root_value } from "@/styleshift/core/storage-manager";
 
 	let {
 		setting,
@@ -17,7 +17,7 @@
 	} = $props();
 
 	async function handleInput() {
-		if (await load("Realtime_Extension")) {
+		if (await get_root_value("Realtime_Extension")) {
 			onUpdate(hex, alpha);
 		}
 	}

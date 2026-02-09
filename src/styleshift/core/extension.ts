@@ -1,14 +1,8 @@
 import { create_notification } from "../build-in-functions/extension";
 import { sleep } from "../build-in-functions/normal";
-import { update_all, in_setting_page } from "../run";
-import { Color_obj } from "../types/store";
-import { save_all } from "./save";
 import { logger } from "../build-in-functions/logger";
-
-export async function save_and_update_all() {
-	await save_all();
-	update_all();
-}
+import { is_safe_code } from "../utils/security";
+import { IS_IN_EXTENSION_SETTINGS_PAGE } from "../run";
 
 let styleshift_functions_list = {};
 
@@ -38,7 +32,7 @@ function run_styleshift_functions_list(){
 run_styleshift_functions_list();`;
 
 export async function update_styleshift_functions_list() {
-	if (in_setting_page) {
+	if (IS_IN_EXTENSION_SETTINGS_PAGE) {
 		while (window["StyleShift"] == null) {
 			await sleep(1);
 		}
@@ -81,99 +75,6 @@ export async function get_global_data(mode: "build-in" | "custom", function_name
 	}
 }
 
-export function is_safe_code(code: string, code_name: string) {
-	if (!code) return false;
-	const lowered_case_code = code.toLowerCase();
-
-	const dangerous_patterns = [
-		/eval/i,
-		/new function/i,
-		/(?<!@)\bimport\b/i,
-		/fetch/i,
-		/xmlhttprequest/i,
-		/xhr/i,
-		/<\/?script>/i,
-		/document\.createElement\s*\(\s*['"]script['"]\s*\)/i,
-		/\.write\s*\(/i,
-		/\.execcommand\s*\(/i,
-		/\.cookie\s*=/i,
-		/localstorage/i,
-		/sessionstorage/i,
-		/indexeddb/i,
-		/opendatabase/i,
-		/postmessage/i,
-		/sendbeacon/i,
-		/importscripts/i,
-		/createobjecturl/i,
-		/revokeobjecturl/i,
-		/webkitrequestfilesystem/i,
-		/webkitresolvelocalfilesystemurl/i,
-		/showopenfilepicker/i,
-		/showsavefilepicker/i,
-		/showdirectorypicker/i,
-		/new\s+worker\s*\(/i,
-		/new\s+sharedworker\s*\(/i,
-		/new\s+blob\s*\(/i,
-		/url\.createobjecturl\s*\(/i,
-		/\.__proto__\s*=/i,
-		/\.constructor\s*=/i,
-		/javascript:/i,
-		/reflect\.(apply|construct|defineproperty|get|set|deleteproperty|ownkeys)/i,
-		/globalthis\./i,
-		/window\[(["'`"]).*\1\]/i,
-		/new\s+eventsource\s*\(/i,
-		/webassembly\./i,
-		/\.contenteditable\s*=/i,
-		/\?callback=/i,
-		/new\s+proxy\s*\(/i,
-		/function\.prototype\.tostring/i,
-		/intl\./i,
-		/symbol\./i,
-	];
-
-	for (const pattern of dangerous_patterns) {
-		if (pattern.test(lowered_case_code)) {
-			const match = lowered_case_code.match(pattern);
-			if (match) {
-				const match_index = match.index;
-
-				const before_match = lowered_case_code.slice(0, match_index);
-				const line_number = before_match.split("\n").length;
-				const char_position = match_index - before_match.lastIndexOf("\n");
-
-				const code_lines = lowered_case_code.split("\n");
-				const error_line = code_lines[line_number - 1];
-
-				const is_comment = error_line.replaceAll(" ", "").replaceAll("\t", "").startsWith("//");
-				if (is_comment) {
-					continue;
-				}
-
-				const start_context = Math.max(0, char_position - 15);
-				const end_context = Math.min(error_line.length, char_position + match[0].length + 15);
-				const context_snippet = error_line.slice(start_context, end_context);
-
-				const highlighted_error = context_snippet.replace(
-					match[0],
-					`<span style="color: red; text-decoration: underline;">${match[0]}</span>`,
-				);
-
-				create_notification({
-					icon: "🚫",
-					title: "StyleShift - Error",
-					content: `<b>"${match[0]}"</b> is not allowed.<br>Found at line: <b>${line_number}</b>, character: <b>${char_position}</b><br>From: <b>${code_name}</b><br><br><pre>${highlighted_error}</pre>`,
-					timeout: 0,
-				});
-
-				logger.warn("extension", match, pattern);
-			}
-			return false;
-		}
-	}
-
-	return true;
-}
-
 export async function run_text_script({
 	text = null as string | Function,
 	replace = true,
@@ -209,7 +110,7 @@ export async function run_text_script({
 
 			//--------------------------------
 
-			if (!in_setting_page) {
+			if (!IS_IN_EXTENSION_SETTINGS_PAGE) {
 				chrome.runtime.sendMessage({
 					Command: "runScript",
 					Script: text,
@@ -286,28 +187,4 @@ export async function load_developer_modules() {
 		}, 4000);
 		loaded_developer_modules = true; // Mark as loaded even if it failed
 	}
-}
-
-//----------------------------------------------
-
-export function color_obj_to_hex({ hex, alpha }: Color_obj): string {
-	const processed_alpha = Math.round((alpha / 100) * 255)
-		.toString(16)
-		.padStart(2, "0");
-	return `${hex}${processed_alpha}`;
-}
-
-export function hex_to_color_obj(hex: string): { hex: string; alpha: number } {
-	if (typeof hex !== "string") {
-		logger.warn("extension", "hex_to_color_obj received non-string hex value:", hex);
-		return { hex: "#000000", alpha: 100 };
-	}
-	const clean_hex = hex.startsWith("#") ? hex.slice(1) : hex;
-	const rgb_hex = clean_hex.length === 8 ? clean_hex.slice(0, 6) : clean_hex;
-	const alpha_hex = clean_hex.length === 8 ? clean_hex.slice(6) : "FF";
-
-	return {
-		hex: `#${rgb_hex}`,
-		alpha: Math.round((parseInt(alpha_hex, 16) / 255) * 100),
-	};
 }

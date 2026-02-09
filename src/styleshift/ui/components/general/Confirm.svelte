@@ -19,7 +19,7 @@
 
 	function handleConfirm() {
 		isOpen = false;
-		// Wait for transition if needed, but show_confirm handles unmount
+		// Wait for transition if needed, but show_user_confirmation handles unmount
 		onConfirm();
 	}
 

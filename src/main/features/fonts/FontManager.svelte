@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { set_and_save } from "@ui/settings/setting-components";
 	import TextEditor from "@ui/settings/components/advance/TextEditor.svelte";
-	import { update_setting_function } from "@settings/functions";
+	import { trigger_setting_update } from "@settings/functions";
 	import type { Setting } from "@styleshift/types/store";
 	import Button from "@ui/settings/components/main/Button.svelte";
 	import Description from "@ui/settings/components/main/Description.svelte";
 	import IconButton from "@ui/settings/components/advance/IconButton.svelte";
 	import Checkbox from "@ui/settings/components/main/Checkbox.svelte";
 	import { create_unique_id } from "@functions/normal";
-	import { load_any } from "@core/save";
-	import { show_confirm } from "@ui/extension";
+	import { get_from_storage } from "@/styleshift/core/storage-manager";
+	import { show_user_confirmation } from "@ui/extension";
 
 	type FontEntry = {
 		id: string;
@@ -87,7 +87,7 @@
 	}
 
 	async function handleRemove(id: string, name: string) {
-		if (await show_confirm(`Are you sure you want to remove the font "${name}"?`, "Remove Font")) {
+		if (await show_user_confirmation(`Are you sure you want to remove the font "${name}"?`, "Remove Font")) {
 			fonts = fonts.filter((f) => f.id !== id);
 			await saveFonts();
 		}
@@ -112,11 +112,11 @@
 	async function saveFonts() {
 		const plainFonts = JSON.parse(JSON.stringify(fonts));
 		await set_and_save(setting, plainFonts);
-		update_setting_function(setting.id);
+		trigger_setting_update(setting.id);
 	}
 
 	async function init() {
-		const val = await load_any(setting.id);
+		const val = await get_from_storage(setting.id);
 		if (Array.isArray(val)) {
 			fonts = val;
 		}

@@ -1,6 +1,6 @@
 import { wait_one_frame } from "../../styleshift/build-in-functions/normal";
-import { load_any, load_setting } from "../../styleshift/core/save";
-import { on_setting_update } from "../../styleshift/settings/functions";
+import { get_from_storage, get_user_setting } from "../../styleshift/core/storage-manager";
+import { register_setting_listener } from "../../styleshift/settings/functions";
 
 let video: HTMLVideoElement | null = null;
 let canvas: HTMLCanvasElement | null = null;
@@ -67,7 +67,7 @@ async function check_black_bars() {
 
 	is_checking = true;
 
-	const debug = await load_setting("DelBarDebug");
+	const debug = await get_user_setting("DelBarDebug");
 
 	if (!canvas) {
 		canvas = document.createElement("canvas");
@@ -122,8 +122,8 @@ async function check_black_bars() {
 	const [s_r, s_g, s_b] = [sample_color[0], sample_color[1], sample_color[2]];
 	const threshold = 20;
 
-	const drop_frame = await load_setting("DropFrame");
-	const lazy_amount = await load_setting("LazyAmount");
+	const drop_frame = await get_user_setting("DropFrame");
+	const lazy_amount = await get_user_setting("LazyAmount");
 	const check_step = drop_frame ? Math.max(1, Math.floor(lazy_amount / 10)) : 1;
 
 	for (let x = 0; x < 5; x++) {
@@ -205,7 +205,7 @@ async function check_black_bars() {
 		ctx.fillRect(0, v_height - last_height, 5, 1);
 	}
 
-	const ultra_wide_enabled = await load_setting("UltraWide");
+	const ultra_wide_enabled = await get_user_setting("UltraWide");
 	if (ultra_wide_enabled) {
 		check_ultra_wide();
 	} else {
@@ -304,7 +304,7 @@ function apply_crop(bar_height: number, total_height: number) {
 }
 
 export async function setup_remove_black_bars() {
-	if ((await load_any("Enable_Extension")) === false) return;
+	if ((await get_from_storage("Enable_Extension")) === false) return;
 	if (enabled) return;
 	enabled = true;
 	const find_video = async () => {
@@ -346,11 +346,11 @@ export function destroy_remove_black_bars() {
 	disable_ultra_wide();
 }
 
-on_setting_update("Enable_Extension", (val) => {
+register_setting_listener("Enable_Extension", (val) => {
 	if (!val) {
 		destroy_remove_black_bars();
 	} else {
-		load_setting("DelBar").then((enabled) => {
+		get_user_setting("DelBar").then((enabled) => {
 			if (enabled) {
 				setup_remove_black_bars();
 			}

@@ -1,15 +1,15 @@
 import { dynamic_append, create_error } from "../../build-in-functions/extension";
 import { scroll_on_click } from "../../build-in-functions/normal";
 import { logger } from "../../build-in-functions/logger";
-import { loaded_developer_modules } from "../../core/extension";
-import { load } from "../../core/save";
+import { is_dev_modules_loaded } from "../../core/runtime-controller";
 import { get_styleshift_dev_only_items } from "../../../main/items-styleshift-dev";
-import { in_setting_page } from "../../run";
+import { IS_IN_EXTENSION_SETTINGS_PAGE } from "../../run";
 import { add_category, get_styleshift_data_type, update_styleshift_items } from "../../settings/items";
 import { Category } from "../../types/store";
 import { create_styleshift_window } from "../extension";
 import { settings_ui } from "./setting-components";
 import { add_drop_target, clear_drop_targets } from "./reorder";
+import { get_root_value } from "@/styleshift/core/storage-manager";
 
 export function setup_left_title_animation(title: HTMLElement) {
 	title.style.transform = "translateY(40px)";
@@ -18,10 +18,10 @@ export function setup_left_title_animation(title: HTMLElement) {
 
 interface SettingsWindow {
 	window_element: HTMLElement;
-	close: HTMLElement;
-	bg_frame: HTMLElement;
-	drag_top: HTMLElement;
-	run_close: () => Promise<void>;
+	close_button: HTMLElement;
+	overlay_frame: HTMLElement;
+	drag_handle: HTMLElement;
+	close_window_handler: () => Promise<void>;
 }
 
 export async function create_main_settings_ui({
@@ -30,7 +30,7 @@ export async function create_main_settings_ui({
 	get_category = null as (() => Category[] | Promise<Category[]>) | null,
 }) {
 	let settings_window: SettingsWindow | null = null;
-	let update_setting_interval: NodeJS.Timeout | number | null = null;
+	let update_setting_interval: any = null;
 	let scroll_category: HTMLElement | null = null;
 	let settings_container: HTMLElement | null = null;
 
@@ -43,6 +43,7 @@ export async function create_main_settings_ui({
 				return;
 			}
 
+			// @ts-ignore
 			settings_window = await create_styleshift_window({
 				skip_animation,
 			});
@@ -55,7 +56,7 @@ export async function create_main_settings_ui({
 			window_element.style.minWidth = "600px";
 			window_element.style.minHeight = "250px";
 
-			if (in_setting_page) {
+			if (IS_IN_EXTENSION_SETTINGS_PAGE) {
 				window_element.style.width = "100%";
 				window_element.style.height = "100%";
 				window_element.style.resize = "none";
@@ -104,7 +105,7 @@ export async function create_main_settings_ui({
 
 			//---------------------------------------------------
 
-			settings_window.close.addEventListener(
+			settings_window.close_button.addEventListener(
 				"click",
 				() => {
 					return_obj.remove_ui();
@@ -140,7 +141,7 @@ export async function create_main_settings_ui({
 
 				//------------------------------
 
-				if (loaded_developer_modules) {
+				if (is_dev_modules_loaded) {
 					const get_dev_only_category = get_styleshift_dev_only_items().find(
 						(x) => x.category == this_category.category,
 					);
@@ -159,7 +160,7 @@ export async function create_main_settings_ui({
 
 				//------------------------------
 
-				if (this_category.editable && (await load("Developer_mode"))) {
+				if (this_category.editable && (await get_root_value("Developer_mode"))) {
 					dynamic_append(
 						category_frame,
 						await settings_ui["add_setting_button"](this_category.settings),
@@ -171,7 +172,7 @@ export async function create_main_settings_ui({
 				//------------------------------------------------------
 			}
 
-			if (await load("Developer_mode")) {
+			if (await get_root_value("Developer_mode")) {
 				for (const this_category of get_styleshift_dev_only_items()) {
 					if (!created_dev_only_category.includes(this_category.category)) {
 						await create_category_ui(settings_container, this_category);
@@ -179,7 +180,7 @@ export async function create_main_settings_ui({
 				}
 			}
 
-			if (show_category_list && (await load("Developer_mode"))) {
+			if (show_category_list && (await get_root_value("Developer_mode"))) {
 				const add_button = (
 					await settings_ui["button"]({
 						name: "+",
@@ -266,12 +267,12 @@ export async function create_main_settings_ui({
 			if (settings_window) {
 				if (update_setting_interval) clearInterval(update_setting_interval);
 				if (skip_animation) {
-					const bg_frame = settings_window.bg_frame;
+					const overlay_frame = settings_window.overlay_frame;
 					requestAnimationFrame(() => {
-						bg_frame.remove();
+						overlay_frame.remove();
 					});
 				} else {
-					settings_window.run_close();
+					settings_window.close_window_handler();
 				}
 				settings_window = null;
 			}
@@ -338,7 +339,7 @@ export async function create_config_ui_function(
 	editable = false,
 	config_function: Function,
 ): Promise<Function | undefined> {
-	if (editable && (await load("Developer_mode"))) {
+	if (editable && (await get_root_value("Developer_mode"))) {
 		return config_function;
 	}
 }

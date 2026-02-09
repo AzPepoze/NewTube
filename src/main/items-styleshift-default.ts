@@ -41,8 +41,8 @@ const default_styleshift_items: Category[] = [
 				name: "Enable",
 				type: "checkbox",
 				value: true,
-				disable_function: "disable_extension_function()",
-				enable_function: "enable_extension_function()",
+				disable_function: "disable_extension()",
+				enable_function: "enable_extension()",
 				// enable_css: main_css,
 			},
 			{

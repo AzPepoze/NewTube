@@ -1,10 +1,10 @@
 import { get_default_items } from "../../main/items-default";
 import { get_styleshift_default_items } from "../../main/items-styleshift-default";
 import { random_number_in_range } from "../build-in-functions/normal";
-import { save_and_update_all } from "../core/extension";
-import { load, save_any } from "../core/save";
-import { update_all } from "../run";
-import { setup_setting_function } from "./functions";
+import { persist_and_refresh_all } from "../core/runtime-controller";
+import { get_root_value, save_to_storage } from "../core/storage-manager";
+import { refresh_extension_state } from "../run";
+import { attach_behavior_to_setting } from "./functions";
 import { Category, type Setting } from "../types/store";
 import { logger } from "../build-in-functions/logger";
 
@@ -54,7 +54,7 @@ export function get_setting_category(setting: Setting) {
 			}
 		}
 	}
-	return 0;
+	return null;
 }
 
 export function find_exist_category(category: Category) {
@@ -71,14 +71,14 @@ function auto_add_hightlight(array) {
 	}
 }
 
-function save_custom_items_and_update_all(custom_items) {
-	save_any("custom_styleshift_items", custom_items);
-	update_all();
+function save_custom_items_and_refresh_extension_state(custom_items) {
+	save_to_storage("custom_styleshift_items", custom_items);
+	refresh_extension_state();
 }
 
 export async function update_styleshift_items() {
 	styleshift_items.Default = [...get_styleshift_default_items(), ...get_default_items()];
-	styleshift_items.Custom = (await load("custom_styleshift_items")) || [];
+	styleshift_items.Custom = (await get_root_value("custom_styleshift_items")) || [];
 
 	auto_add_hightlight(get_all_styleshift_items());
 
@@ -155,12 +155,12 @@ export async function add_setting(category_settings: Setting[], this_setting) {
 	logger.info("settings", "update Category settings", category_settings);
 
 	if (this_setting.value) {
-		await save_any(this_setting.id, this_setting.value);
+		await save_to_storage(this_setting.id, this_setting.value);
 	}
 
-	setup_setting_function(this_setting);
+	attach_behavior_to_setting(this_setting);
 
-	save_and_update_all();
+	persist_and_refresh_all();
 }
 
 export async function remove_setting(this_setting) {
@@ -172,7 +172,7 @@ export async function remove_setting(this_setting) {
 		}
 	}
 
-	save_and_update_all();
+	persist_and_refresh_all();
 }
 
 //--------------------------------------------------
@@ -203,7 +203,7 @@ export async function add_category(category_name: string) {
 	custom_items.push(this_category);
 	logger.info("category", "Added Category", custom_items);
 
-	save_custom_items_and_update_all(custom_items);
+	save_custom_items_and_refresh_extension_state(custom_items);
 }
 
 export async function remove_category(this_category) {
@@ -215,7 +215,7 @@ export async function remove_category(this_category) {
 		custom_items.splice(index, 1);
 	}
 
-	save_custom_items_and_update_all(custom_items);
+	save_custom_items_and_refresh_extension_state(custom_items);
 }
 
 //-------------------------------------------------
