@@ -115,18 +115,18 @@ const default_styleshift_items: Category[] = [
 		settings: [
 			{
 				click_function:
-					'await copy_to_clipboard(await export_styleshift_json_text());\n\ncreate_notification({\nicon : "✅",\ntitle : "StyleShift",\ncontent : "Copied to clipboard!"\n})',
+					'await copy_to_clipboard(await export_styleshift_json_text());\n\ncreate_notification({\nicon : "✅",\ntitle : "NewTube",\ncontent : "Copied to clipboard!"\n})',
 				color: "#1932ffff",
 				description: "",
 				font_size: 15,
 				icon: "",
 				id: "",
-				name: 'Export "StyleShift Data" (Clipboard)',
+				name: 'Export "NewTube Data" (Clipboard)',
 				align: "center",
 				type: "button",
 			},
 			{
-				click_function: `const Data = await enter_text_prompt({ title : 'Import_StyleShift Data', placeholder : 'Paste StyleShift data text here.'});
+				click_function: `const Data = await enter_text_prompt({ title : 'Import_NewTube Data', placeholder : 'Paste NewTube data text here.'});
                     await import_styleshift_json_text(Data);
                     `,
 				color: "#1932ffff",
@@ -134,7 +134,7 @@ const default_styleshift_items: Category[] = [
 				font_size: 15,
 				icon: "",
 				id: "",
-				name: 'Import "StyleShift Data"',
+				name: 'Import "NewTube Data"',
 				align: "center",
 				type: "button",
 			},

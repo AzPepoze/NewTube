@@ -41,24 +41,28 @@ export const settings_ui = {
 	confirm: function (props: any, target: HTMLElement = document.createElement("div")) {
 		return mount(Confirm as any, {
 			target,
+			intro: true,
 			props,
 		});
 	},
 	settings_window: function (props: any, target: HTMLElement) {
 		return mount(SettingsWindow as any, {
 			target,
+			intro: true,
 			props,
 		});
 	},
 	config_window: function (props: any, target: HTMLElement) {
 		return mount(ConfigWindow as any, {
 			target,
+			intro: true,
 			props,
 		});
 	},
 	config_editor_renderer: function (props: any, target: HTMLElement) {
 		return mount(ConfigEditorRenderer as any, {
 			target,
+			intro: true,
 			props,
 		});
 	},

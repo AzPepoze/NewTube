@@ -27,6 +27,16 @@
 	let scale = $state(1);
 
 	const colors = $derived.by(() => {
+		const isHex = color.startsWith("#");
+
+		if (!isHex) {
+			return {
+				background: color,
+				borderColor: "var(--Border-Color)",
+				textColor: "var(--Font-Color)",
+			};
+		}
+
 		const { r, g, b } = hex_to_rgb(color);
 
 		const bg_hsv = rgb_to_hsv({ r, g, b });

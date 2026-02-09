@@ -124,7 +124,7 @@
 	init();
 </script>
 
-<div class="STYLESHIFT-FontManager">
+<div class="NEWTUBE-FontManager">
 	<!-- 1. Paste Section -->
 	<div class="section paste-section">
 		<Description name="Paste Section" description="Paste Google Fonts style or URL here." />
@@ -194,7 +194,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-FontManager {
+	.NEWTUBE-FontManager {
 		display: flex;
 		flex-direction: column;
 		gap: 30px;

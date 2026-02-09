@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fade, scale } from "svelte/transition";
 	import { backOut } from "svelte/easing";
+	import { onMount } from "svelte";
 
 	let {
 		children,
@@ -13,12 +14,17 @@
 		width?: string;
 		isOpen?: boolean;
 	} = $props();
+
+	let mounted = $state(false);
+	onMount(() => {
+		mounted = true;
+	});
 </script>
 
-{#if isOpen}
+{#if isOpen && mounted}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="STYLESHIFT-Modal-Overlay" transition:fade={{ duration: 200 }} onclick={onClose}>
+	<div class="STYLESHIFT-Modal-Overlay STYLESHIFT-Main" transition:fade={{ duration: 200 }} onclick={onClose}>
 		<div
 			class="STYLESHIFT-Modal-Content"
 			style="width: {width};"
@@ -46,7 +52,7 @@
 	}
 
 	.STYLESHIFT-Modal-Content {
-		background: var(--BG-Main, #1a1a1a);
+		background: var(--Window-BG, var(--BG-Dark));
 		border: 1px solid var(--White-10);
 		border-radius: 25px;
 		padding: 30px;

@@ -32,6 +32,7 @@ import { update_all_ui_components } from "./ui/extension";
 import { sync_all_themes } from "./ui/theme";
 import { extension_settings_ui } from "./ui/extension-settings";
 import { toggle_customize } from "./ui/highlight";
+import { app_bootstrap } from "@main/bootstrap";
 
 //-------------------------------------------------------
 // Configuration & State
@@ -132,6 +133,10 @@ async function bootstrap_extension(): Promise<void> {
 
 	is_extension_ready = true;
 	logger.info("lifecycle", "StyleShift bootstrap complete.");
+
+	if (!IS_IN_EXTENSION_SETTINGS_PAGE) {
+		app_bootstrap();
+	}
 }
 
 /*

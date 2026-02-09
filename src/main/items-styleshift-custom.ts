@@ -83,7 +83,7 @@ const custom_styleshift_items: Category[] = [
 				id: "Test_text_input",
 				name: "Text Input Test",
 				description: "Testing simple text input",
-				value: "Hello StyleShift",
+				value: "Hello NewTube",
 				editable: true,
 			},
 			{

@@ -14,6 +14,7 @@ export const EXTERNAL_STORAGE_KEYS = [
 	"Enabled_Extension",
 	"Realtime_Extension",
 	"Developer_mode",
+	"Welcome_Shown",
 ];
 
 export const ALLOWED_DATA_KEYS = ["current_settings", "custom_styleshift_items"];

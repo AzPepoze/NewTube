@@ -110,7 +110,16 @@ export async function trigger_window_hide_animation(target: HTMLElement): Promis
 /**
  * Displays a confirmation dialog to the user.
  */
-export async function show_user_confirmation(message: string, title: string = "Confirm Action"): Promise<boolean> {
+export async function show_user_confirmation(
+	message: string,
+	title: string = "Confirm Action",
+	options: {
+		confirmLabel?: string;
+		cancelLabel?: string;
+		confirmColor?: string;
+		cancelColor?: string;
+	} = {},
+): Promise<boolean> {
 	return new Promise((resolve) => {
 		const mount_point = document.createElement("div");
 		document.body.appendChild(mount_point);
@@ -119,23 +128,30 @@ export async function show_user_confirmation(message: string, title: string = "C
 			{
 				title,
 				message,
-				onConfirm: () => {
-					setTimeout(() => {
-						unmount(component);
-						mount_point.remove();
-					}, 300);
-					resolve(true);
-				},
-				onCancel: () => {
-					setTimeout(() => {
-						unmount(component);
-						mount_point.remove();
-					}, 300);
-					resolve(false);
-				},
+				buttons: [
+					{
+						label: options.confirmLabel || "Confirm",
+						color: options.confirmColor || "#4caf50",
+						onClick: () => handle_resolve(true),
+					},
+					{
+						label: options.cancelLabel || "Cancel",
+						color: options.cancelColor || "#f44336",
+						onClick: () => handle_resolve(false),
+					},
+				],
+				onClose: () => handle_resolve(false),
 			},
 			mount_point,
 		);
+
+		function handle_resolve(val: boolean) {
+			resolve(val);
+			setTimeout(() => {
+				unmount(component);
+				mount_point.remove();
+			}, 400);
+		}
 	});
 }
 

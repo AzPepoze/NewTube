@@ -2,51 +2,88 @@
 	import Button from "../../settings/components/main/Button.svelte";
 	import Description from "../../settings/components/main/Description.svelte";
 	import Modal from "./Modal.svelte";
+	import type { Snippet } from "svelte";
+	import { fly } from "svelte/transition";
+	import { quintOut } from "svelte/easing";
 
 	let {
 		title = "Confirm Action",
-		message = "Are you sure you want to proceed?",
+		message = "",
 		onConfirm,
 		onCancel,
+		footer,
+		buttons,
+		onClose,
 	}: {
 		title?: string;
 		message?: string;
-		onConfirm: () => void;
-		onCancel: () => void;
+		onConfirm?: () => void;
+		onCancel?: () => void;
+		footer?: Snippet;
+		buttons?: { label: string; color: string; onClick: () => void }[];
+		onClose?: () => void;
 	} = $props();
 
 	let isOpen = $state(true);
 
-	function handleConfirm() {
+	function handleAction(callback?: () => void) {
 		isOpen = false;
-		// Wait for transition if needed, but show_user_confirmation handles unmount
-		onConfirm();
-	}
-
-	function handleCancel() {
-		isOpen = false;
-		onCancel();
+		if (callback) callback();
 	}
 </script>
 
-<Modal {isOpen} onClose={handleCancel} width="400px">
-	<div class="header">
-		<Description name={title} align="center" style="font-size: 20px; font-weight: 700;" />
+<Modal {isOpen} onClose={() => handleAction(onClose || onCancel)} width="400px">
+	<div class="header" in:fly={{ y: 20, duration: 600, easing: quintOut, delay: 100 }}>
+		{title}
 	</div>
-	<div class="body">
-		<Description name={message} align="center" style="font-size: 15px; color: var(--White-70);" />
-	</div>
-	<div class="footer">
-		<Button
-			setting={{ type: "button", name: "Cancel", color: "#444", click_function: handleCancel } as any}
-		/>
-		<Button
-			setting={{ type: "button", name: "Confirm", color: "#ff4444", click_function: handleConfirm } as any}
-		/>
+	{#if message}
+		<div class="body" in:fly={{ y: 20, duration: 600, easing: quintOut, delay: 200 }}>
+			<Description name={message} align="center" />
+		</div>
+	{/if}
+	<div class="footer" in:fly={{ y: 20, duration: 600, easing: quintOut, delay: 300 }}>
+		{#if footer}
+			{@render footer()}
+		{:else if buttons}
+			{#each buttons as btn}
+				<Button
+					setting={{
+						type: "button",
+						name: btn.label,
+						color: btn.color,
+						click_function: () => handleAction(btn.onClick),
+					} as any}
+				/>
+			{/each}
+		{:else}
+			<Button
+				setting={{
+					type: "button",
+					name: "Confirm",
+					color: "#7f5db7",
+					click_function: () => handleAction(onConfirm),
+				} as any}
+			/>
+			<Button
+				setting={{
+					type: "button",
+					name: "Cancel",
+					color: "#646464",
+					click_function: () => handleAction(onCancel),
+				} as any}
+			/>
+		{/if}
 	</div>
 </Modal>
 
 <style lang="scss">
+	.header {
+		font-size: 24px;
+		font-weight: 900;
+		text-align: center;
+		color: var(--Font-Color);
+	}
+
 	.footer {
 		display: flex;
 		gap: 15px;
