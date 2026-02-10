@@ -7,13 +7,7 @@
 	import { execute_script_string } from "@/styleshift/core/runtime-controller";
 	import Icon from "../main/Icon.svelte";
 
-	let {
-		setting,
-		runType,
-		extArray = ["function", "css"],
-		onUpdateConfig,
-		isWorkspace = false,
-	} = $props();
+	let { setting, runType, extArray = ["function", "css"], onUpdateConfig, isWorkspace = false } = $props();
 
 	const runTypeNameMap = {
 		var: "Variable",
@@ -38,17 +32,19 @@
 	};
 
 	let activeExt = $state(untrack(() => extArray[0]));
-	const extOptions = $derived(extArray.map(ext => ({
-		id: ext,
-		label: ext === "function" ? "JS" : ext === "css" ? "CSS" : ext
-	})));
-	
+	const extOptions = $derived(
+		extArray.map((ext) => ({
+			id: ext,
+			label: ext === "function" ? "JS" : ext === "css" ? "CSS" : ext,
+		})),
+	);
+
 	$effect(() => {
 		if (!extArray.includes(activeExt)) {
 			activeExt = extArray[0];
 		}
 	});
-	
+
 	let title = $derived(runTypeNameMap[runType as keyof typeof runTypeNameMap] || runType);
 	let color = $derived(colorMap[runType as keyof typeof colorMap] || "#999999");
 
@@ -71,7 +67,7 @@
 
 		(async () => {
 			div.innerHTML = "";
-			const editor = await settings_ui["code_editor"](
+			const editor = await settings_ui.code_editor(
 				div,
 				setting,
 				runType + "_" + ext,
@@ -79,7 +75,7 @@
 				isWorkspace ? 550 : runType == "var" ? 100 : 400,
 			);
 			if (onUpdateConfig) {
-				editor.additinal_onchange(onUpdateConfig);
+				editor.more_onchange(onUpdateConfig);
 			}
 		})();
 	}
@@ -92,9 +88,9 @@
 				const item = document.createElement("div");
 				item.style.marginBottom = "20px";
 				div.appendChild(item);
-				
+
 				const typeLangMap: Record<string, string> = { JS: "javascript", CSS: "css" };
-				const editor = await settings_ui["code_editor"](
+				const editor = await settings_ui.code_editor(
 					item,
 					setting,
 					runType + "_" + ext,
@@ -102,7 +98,7 @@
 					runType == "var" ? 100 : 400,
 				);
 				if (onUpdateConfig) {
-					editor.additinal_onchange(onUpdateConfig);
+					editor.more_onchange(onUpdateConfig);
 				}
 			}
 		})();
@@ -110,7 +106,7 @@
 </script>
 
 {#if isWorkspace}
-	<div class="STYLESHIFT-Dev-Modern-Section" style:--section-color={color}>
+	<div class="STYLESHIFT-Dev-Section" style:--section-color={color}>
 		<header class="section-header">
 			<div class="section-title-group">
 				<span class="section-title">{title}</span>
@@ -122,7 +118,7 @@
 					</button>
 				{/if}
 			</div>
-			
+
 			{#if extArray.length > 1}
 				<CapsuleTabs options={extOptions} bind:activeId={activeExt} />
 			{:else}
@@ -131,12 +127,12 @@
 				</span>
 			{/if}
 		</header>
-		
+
 		<div class="section-editor-area">
 			{#each extArray as ext}
 				{#if activeExt === ext}
-					<div 
-						class="editor-mount" 
+					<div
+						class="editor-mount"
 						use:renderEditor={ext}
 						in:fly={{ y: 5, duration: 200, delay: 100 }}
 						out:fade={{ duration: 100 }}
@@ -154,7 +150,7 @@
 {/if}
 
 <style lang="scss">
-	.STYLESHIFT-Dev-Modern-Section {
+	.STYLESHIFT-Dev-Section {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
@@ -232,7 +228,7 @@
 
 	.editor-mount {
 		width: 100%;
-		
+
 		:global(.STYLESHIFT-Code-Editor-Container) {
 			border: 1px solid var(--Border-Color) !important;
 			background: var(--BG-Input) !important;

@@ -7,7 +7,12 @@ let svelte_instance;
 let current_content_function;
 
 export async function create_config_ui(skip_animation = false) {
-	config_window = await create_styleshift_window({ width: "60%", height: "85%", skip_animation });
+	config_window = await create_styleshift_window({ 
+		width: "60%", 
+		height: "85%", 
+		skip_animation,
+		title: "Config Editor"
+	});
 
 	config_window.close_button.addEventListener(
 		"click",
@@ -40,7 +45,7 @@ export async function recreate_config_ui() {
 			innerContentFunction: current_content_function,
 			onClose: () => remove_config_ui(),
 		},
-		config_window.window_element,
+		config_window.content_element,
 	);
 }
 

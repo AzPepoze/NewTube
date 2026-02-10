@@ -9,6 +9,8 @@
 	import { get_from_storage } from "@/styleshift/core/storage-manager";
 	import { set_and_save } from "@ui/settings/setting-components";
 	import { trigger_setting_update } from "@settings/functions";
+	import { logger } from "@/styleshift/utils/logger";
+	import { show_user_confirmation } from "@ui/extension";
 
 	let {
 		setting,
@@ -31,6 +33,9 @@
 
 	const name = $derived(setting.name);
 	const description = $derived(setting.description);
+	const isBase64 = $derived(value?.startsWith("data:") ?? false);
+	const inputValue = $derived(isBase64 ? "" : value);
+	const inputPlaceholder = $derived(isBase64 ? "Stored Image (Base64 Data)" : placeholder);
 
 	let fileInput = $state<HTMLInputElement | null>(null);
 	let fileName = $state("");
@@ -58,21 +63,72 @@
 		}
 	}
 
-	function handleFileChange(event: Event) {
-		const file = (event.target as HTMLInputElement).files?.[0];
-		if (file) {
-			fileName = file.name;
-			// Convert file to base64 or similar if needed, 
-			// for now we'll assume the external handler was doing something with it
-			// but we need to satisfy the self-management requirement.
-			const reader = new FileReader();
-			reader.onload = async (e) => {
-				const result = e.target?.result as string;
-				await handleUpdate(result);
+	const getWarningMessage = (fileSize: number, maxSize: number) => {
+		const fileSizeMB = (fileSize / 1024 / 1024).toFixed(1);
+		const maxSizeMB = (maxSize / 1024 / 1024).toFixed(1);
+
+		return `Your file size : ${fileSize.toLocaleString()} bytes. (${fileSizeMB} MB)\n` +
+			`Recommend file size : lower than ${maxSize.toLocaleString()} bytes. (${maxSizeMB} MB)\n\n` +
+			`Your file is quite large. (It may cause lag!)\n\n` +
+			`I recommend do one of these.\n` +
+			`- compress file\n` +
+			`- (image) resize it\n` +
+			`- (image) Use image URL instead \n` +
+			`- Use Upload api (Make this is the last choice)\n\n` +
+			`Are you want to continue?`;
+	};
+
+	async function processFile(file: File) {
+		const fileName = file.name;
+		const fileSize = file.size;
+		const fileType = file.type;
+		const maxSize = setting.max_file_size || 10000000;
+
+		logger.info("UI", `File selected: ${fileName} (${fileSize.toLocaleString()} bytes, type: ${fileType})`);
+
+		if (fileSize > maxSize) {
+			logger.info("UI", `File size exceeds limit (${maxSize} bytes). Showing confirmation.`);
+
+			const warningTitle = "⚠️NEWTUBE WARNING!⚠️";
+			const warningMessage = getWarningMessage(fileSize, maxSize);
+			const confirmOptions = {
+				confirmLabel: "Continue anyway",
+				cancelLabel: "Cancel",
+				confirmColor: "#7f5db7",
+				align: "left" as const
 			};
-			reader.readAsDataURL(file);
-			
-			if (fileInput) fileInput.value = "";
+
+			const confirmed = await show_user_confirmation(warningMessage, warningTitle, confirmOptions);
+
+			if (confirmed) {
+				logger.info("UI", "User confirmed large file upload.");
+				uploadFile(file);
+			} else {
+				logger.info("UI", "User cancelled large file upload.");
+			}
+			return;
+		}
+
+		uploadFile(file);
+	}
+
+	function uploadFile(file: File) {
+		fileName = file.name;
+		const reader = new FileReader();
+		reader.onload = async (e) => {
+			const result = e.target?.result as string;
+			await handleUpdate(result);
+			logger.info("UI", `File uploaded successfully: ${file.name}`);
+		};
+		reader.readAsDataURL(file);
+	}
+
+	function handleFileChange(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const file = target.files?.[0];
+		if (file) {
+			processFile(file);
+			target.value = ""; // Clear to allow re-selection of same file
 		}
 	}
 
@@ -96,19 +152,31 @@
 		isDragging = false;
 		const file = e.dataTransfer?.files?.[0];
 		if (file && file.type.startsWith("image/")) {
-			fileName = file.name;
-			const reader = new FileReader();
-			reader.onload = async (event) => {
-				const result = event.target?.result as string;
-				await handleUpdate(result);
-			};
-			reader.readAsDataURL(file);
+			processFile(file);
 		}
 	}
 
 	function openImage() {
 		if (value) {
 			window.open(value);
+		}
+	}
+
+	async function removeImage() {
+		const confirmed = await show_user_confirmation(
+			"Are you sure you want to remove this image?",
+			"Remove Image",
+			{
+				confirmLabel: "Remove",
+				cancelLabel: "Cancel",
+				confirmColor: "#f44336"
+			}
+		);
+
+		if (confirmed) {
+			await handleUpdate("");
+			fileName = "";
+			logger.info("UI", "Image removed by user");
 		}
 	}
 
@@ -152,7 +220,13 @@
 		/>
 
 		<div class="STYLESHIFT-Url-Input-Wrapper">
-			<input type="text" {value} {placeholder} oninput={handleUrlInput} class="STYLESHIFT-Url-Input" />
+			<input
+				type="text"
+				value={inputValue}
+				placeholder={inputPlaceholder}
+				oninput={handleUrlInput}
+				class="STYLESHIFT-Url-Input"
+			/>
 		</div>
 	</div>
 
@@ -167,10 +241,21 @@
 					setting={{
 						type: "button",
 						name: "View Original Image",
-						font_size: 12,
+						color: "#ffffff",
+						font_size: 11,
 						click_function: openImage
 					}}
-					style="padding: 5px 10px; width: auto; margin-top: 5px; height: 25px; border-radius: 15px;"
+					style="padding: 5px 12px; width: auto; height: 26px;"
+				/>
+				<Button
+					setting={{
+						type: "button",
+						name: "Remove",
+						color: "#ff4444",
+						font_size: 11,
+						click_function: removeImage
+					}}
+					style="padding: 5px 12px; width: auto; height: 26px;"
 				/>
 			</div>
 		</div>
@@ -181,7 +266,9 @@
 	.STYLESHIFT-Button-Center-Wrapper {
 		display: flex;
 		justify-content: center;
+		gap: 10px;
 		width: 100%;
+		margin-top: 5px;
 	}
 	.STYLESHIFT-Image-Input-Header {
 		display: flex;
@@ -193,17 +280,20 @@
 	}
 
 	.STYLESHIFT-File-Name {
-		font-size: 11px;
-		opacity: 0.6;
+		font-size: 13px;
+		font-weight: 600;
+		color: white;
 		background: var(--White-05);
-		padding: 4px 12px;
-		border-radius: 10px;
-		max-width: 90%;
+		padding: 8px 20px;
+		border-radius: 20px;
+		max-width: 92%;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		margin-top: 5px;
+		margin-top: 10px;
 		border: 1px solid var(--White-10);
+		box-shadow: 0 4px 15px var(--Black-30);
+		backdrop-filter: blur(8px);
 	}
 
 	.STYLESHIFT-Image-Input-Controls {

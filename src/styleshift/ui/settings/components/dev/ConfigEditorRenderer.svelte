@@ -94,7 +94,7 @@
 			case "image_input":
 				Object.assign(mainProps, {
 					Default: "value",
-					"Max MB": "max_file_size",
+					"Max File Size (Bytes)": "max_file_size",
 				});
 				break;
 			case "preview_image":
@@ -116,7 +116,7 @@
 				break;
 		}
 
-		await settings_ui["Config_Main_Section"](mainSectionContainer, setting, mainProps, refresh_extension_state);
+		await settings_ui.config_main_section(mainSectionContainer, setting, mainProps, refresh_extension_state);
 	}
 
 	async function mountSub() {
@@ -149,7 +149,7 @@
 				break;
 		}
 
-		await settings_ui["Config_Sub_Section"](subSectionContainer, setting, subProps);
+		await settings_ui.config_sub_section(subSectionContainer, setting, subProps);
 	}
 
 	$effect(() => {

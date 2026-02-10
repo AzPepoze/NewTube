@@ -32,7 +32,7 @@ import { update_all_ui_components } from "./ui/extension";
 import { sync_all_themes } from "./ui/theme";
 import { extension_settings_ui, extension_settings_ui_promise } from "./ui/extension-settings";
 import { toggle_customize } from "./ui/highlight";
-import { app_bootstrap } from "@main/bootstrap";
+import { app_bootstrap } from "@/main/main";
 
 //-------------------------------------------------------
 // Configuration & State
@@ -104,8 +104,8 @@ async function bootstrap_extension(): Promise<void> {
 	await populate_missing_default_settings();
 
 	// Set up global theme listeners
-	register_setting_listener("App_Light_Theme", sync_all_themes);
-	register_setting_listener("Setting_BG_Transparent", sync_all_themes);
+	register_setting_listener("App_Light_Theme", sync_all_themes, true);
+	register_setting_listener("Setting_BG_Transparent", sync_all_themes, true);
 
 	// Initialize individual setting behaviors
 	const all_settings = await get_all_styleshift_settings();

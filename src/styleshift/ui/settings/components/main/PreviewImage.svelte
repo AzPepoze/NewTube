@@ -47,7 +47,7 @@
 		};
 		img.onerror = () => {
 			isLoading = false;
-			logger.warn("ui", "Failed to get_root_value image for preview:", url);
+			logger.warn("ui", "Failed to load image for preview:", url);
 			// Optionally clear canvas or show error
 		};
 		img.src = get_asset_url(url);

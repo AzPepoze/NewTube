@@ -70,12 +70,12 @@ export function copy_to_clipboard(text: string) {
 export async function create_notification({ icon = null, title = "StyleShift", content = "", timeout = 3000 }) {
 	logger.info("extension", title, content);
 
-	const notification_frame = await settings_ui["setting_frame"](true, false, {
+	const notification_frame = await settings_ui.setting_frame(true, false, {
 		x: false,
 		y: true,
 	});
 
-	notification_frame.className = "STYLESHIFT-Notification";
+	notification_frame.classList.add("STYLESHIFT-Notification");
 	setTimeout(() => {
 		global_notification_container.append(notification_frame);
 	}, 1);
@@ -83,34 +83,34 @@ export async function create_notification({ icon = null, title = "StyleShift", c
 	let icon_ui;
 
 	if (icon) {
-		icon_ui = await settings_ui["setting_frame"](true, false, {
+		icon_ui = await settings_ui.setting_frame(true, false, {
 			x: true,
 			y: true,
 		});
-		icon_ui.className += " STYLESHIFT-Notification-Icon";
+		icon_ui.classList.add("STYLESHIFT-Notification-Icon");
 		icon_ui.textContent = icon;
 		notification_frame.append(icon_ui);
 	}
 
 	//---------------------------------
 
-	const notification_content_frame = await settings_ui["setting_frame"](false, true);
-	notification_content_frame.className += " STYLESHIFT-Notification-Content-Frame";
+	const notification_content_frame = await settings_ui.setting_frame(false, true);
+	notification_content_frame.classList.add("STYLESHIFT-Notification-Content-Frame");
 	notification_frame.append(notification_content_frame);
 
-	const title_ui = await settings_ui["setting_frame"](true, false, {
+	const title_ui = await settings_ui.setting_frame(true, false, {
 		x: false,
 		y: true,
 	});
-	title_ui.className += " STYLESHIFT-Notification-Title";
+	title_ui.classList.add("STYLESHIFT-Notification-Title");
 	title_ui.textContent = title;
 	notification_content_frame.append(title_ui);
 
-	const content_ui = await settings_ui["setting_frame"](true, false, {
+	const content_ui = await settings_ui.setting_frame(true, false, {
 		x: false,
 		y: true,
 	});
-	content_ui.className += " STYLESHIFT-Notification-Content";
+	content_ui.classList.add("STYLESHIFT-Notification-Content");
 	notification_content_frame.append(content_ui);
 
 	const set_content = (new_content) => {
@@ -128,7 +128,7 @@ export async function create_notification({ icon = null, title = "StyleShift", c
 	}
 
 	if (timeout == 0) {
-		const close_ui = await settings_ui["setting_frame"](true, false, {
+		const close_ui = await settings_ui.setting_frame(true, false, {
 			x: true,
 			y: true,
 		});
@@ -246,7 +246,7 @@ export async function enter_text_prompt({ title = "Enter text", placeholder = ""
 
 	//---------------------------------
 
-	const header = await settings_ui["text"]({
+	const header = await settings_ui.text({
 		type: "text",
 		html: title,
 		font_size: 20,
@@ -257,7 +257,7 @@ export async function enter_text_prompt({ title = "Enter text", placeholder = ""
 	//---------------------------------
 
 	if (content) {
-		const description = await settings_ui["sub_text"]({
+		const description = await settings_ui.sub_text({
 			type: "sub_text",
 			text: content,
 			font_size: 14,
@@ -268,7 +268,7 @@ export async function enter_text_prompt({ title = "Enter text", placeholder = ""
 
 	//---------------------------------
 
-	const text_input_factory = settings_ui["text_editor"] as unknown as () => {
+	const text_input_factory = settings_ui.text_editor as unknown as () => {
 		text_editor: HTMLTextAreaElement;
 		on_change: (callback: (value: string) => void) => void;
 	};
@@ -283,13 +283,13 @@ export async function enter_text_prompt({ title = "Enter text", placeholder = ""
 
 	//---------------------------------
 
-	const button_frame = (await settings_ui["setting_frame"](true, false)) as HTMLDivElement;
+	const button_frame = (await settings_ui.setting_frame(true, false)) as HTMLDivElement;
 	button_frame.style.gap = "10px";
 	dynamic_append(content_window, button_frame);
 
 	//---------------------------------
 
-	const ok_button = (await settings_ui["button"]({
+	const ok_button = (await settings_ui.button({
 		name: "OK",
 		color: "#00ff00",
 		align: "center",
@@ -298,7 +298,7 @@ export async function enter_text_prompt({ title = "Enter text", placeholder = ""
 
 	//---------------------------------
 
-	const cancel_button = (await settings_ui["button"]({
+	const cancel_button = (await settings_ui.button({
 		name: "Cancel",
 		color: "#ff0000",
 		align: "center",
@@ -603,7 +603,7 @@ export async function export_styleshift_zip(styleshift_data, zip_file_name) {
  * @param {HTMLElement} parent - The parent element to which the child will be appended.
  * @param {unknown} child - The child element or object with specific properties (`frame` or `button`).
  */
-export function dynamic_append(parent: HTMLDivElement, child: unknown) {
+export function dynamic_append(parent: HTMLElement, child: unknown) {
 	const element = dynamic_get_element(child);
 	if (element) {
 		parent.appendChild(element);

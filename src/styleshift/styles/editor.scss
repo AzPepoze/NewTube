@@ -330,13 +330,10 @@
 	background-color: var(--Window-BG);
 	backdrop-filter: var(--Window-Blur) var(--Window-Saturate);
 	z-index: 10000;
-	padding: 10px;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
+	align-items: stretch;
 	gap: 10px;
-	resize: both;
-	overflow: auto;
 	box-shadow: 0 10px 50px var(--Shadow-Color);
 	color: var(--Font-Color);
 	transition: background-color 0.3s, backdrop-filter 0.3s;

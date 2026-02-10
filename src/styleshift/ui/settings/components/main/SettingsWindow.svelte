@@ -137,6 +137,7 @@
 		gap: 10px;
 		height: 100%;
 		overflow: hidden;
+		min-width: 0;
 	}
 
 	.STYLESHIFT-Settings-List {
@@ -144,6 +145,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 20px;
+		overflow-y: auto;
 	}
 
 	.STYLESHIFT-Category-Title {

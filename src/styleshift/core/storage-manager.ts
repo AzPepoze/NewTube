@@ -28,7 +28,7 @@ export async function initialize_storage_connection(): Promise<void> {
 			logger.info("STORAGE", "RAW_STORAGE_DUMP", all_data);
 		});
 
-		logger.info("STORAGE", "Attempting to get_root_value data for domain:", current_context_domain);
+		logger.info("STORAGE", "Attempting to load data for domain:", current_context_domain);
 
 		chrome.storage.local.get(current_context_domain, (result: Record<string, any>) => {
 			if (result[current_context_domain]) {

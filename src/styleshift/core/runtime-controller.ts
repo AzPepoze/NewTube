@@ -11,12 +11,19 @@ import { logger } from "../utils/logger";
  */
 export async function persist_and_refresh_all(): Promise<void> {
 	logger.info("STORAGE", "Persisting structure and refreshing all...");
+	await persist_items();
+	refresh_extension_state();
+}
+
+/**
+ * Persists custom items and cached data to storage without a full UI refresh.
+ */
+export async function persist_items(): Promise<void> {
 	const custom_items = get_custom_items();
 	if (custom_items && custom_items.length > 0) {
 		await save_to_storage("custom_styleshift_items", custom_items, true);
 	}
 	await persist_cached_data_to_storage();
-	refresh_extension_state();
 }
 
 let active_styleshift_functions: Record<string, string[]> = {};
@@ -169,20 +176,31 @@ export async function initialize_developer_environment(): Promise<void> {
 	});
 
 	try {
+		logger.info("runtime", "Loading developer environment...");
 		loader_ui.set_content("Fetching Metadata...");
-		const metadata_response = await fetch(chrome.runtime.getURL("types/StyleShift-Metadata.json"));
+		const metadata_url = chrome.runtime.getURL("types/StyleShift-Metadata.json");
+		logger.debug("runtime", "Fetching metadata from:", metadata_url);
+		
+		const metadata_response = await fetch(metadata_url);
 		const metadata_data = await metadata_response.json();
 		global_metadata_cache.length = 0;
 		global_metadata_cache.push(...metadata_data);
 
 		loader_ui.set_content("Loading JSZip...");
-		const jszip_module = await import(chrome.runtime.getURL("modules/jszip.js"));
+		const jszip_url = chrome.runtime.getURL("modules/jszip.js");
+		logger.debug("runtime", "Importing JSZip from:", jszip_url);
+		
+		const jszip_module = await import(jszip_url);
 		jszip_instance = jszip_module.default.default || jszip_module.default;
 
 		loader_ui.set_content("Loading CodeMirror...");
-		const codemirror_module = await import(chrome.runtime.getURL("modules/codemirror.js"));
+		const codemirror_url = chrome.runtime.getURL("modules/codemirror.js");
+		logger.debug("runtime", "Importing CodeMirror from:", codemirror_url);
+		
+		const codemirror_module = await import(codemirror_url);
 		codemirror_instance = codemirror_module.default.default || codemirror_module.default;
 
+		logger.info("runtime", "Developer environment loaded successfully.");
 		loader_ui.set_icon("✅");
 		loader_ui.set_title("Developer Environment Ready");
 		loader_ui.set_content("");
@@ -190,11 +208,22 @@ export async function initialize_developer_environment(): Promise<void> {
 		setTimeout(() => loader_ui.close(), 2000);
 		is_dev_modules_loaded = true;
 	} catch (error) {
-		logger.error("runtime", "Failed to get_root_value dev modules:", error);
+		const error_name = (error as any)?.name;
+		const is_abort = error_name === "AbortError" || error_name === "NS_ERROR_ABORT";
+		
+		logger.error("runtime", "Failed to load developer modules:", error);
+
 		loader_ui.set_icon("⚠️");
-		loader_ui.set_title("Developer Module Error");
-		loader_ui.set_content((error as Error).message);
+		if (is_abort) {
+			loader_ui.set_title("Load Aborted");
+			loader_ui.set_content("The operation was aborted by the browser. (This often happens if the page is navigated or reloaded during loading)");
+		} else {
+			loader_ui.set_title("Developer Module Error");
+			const message = error instanceof Error ? error.message : String(error);
+			loader_ui.set_content(`${message}\n(Check console for details)`);
+		}
+		
 		setTimeout(() => loader_ui.close(), 5000);
-		is_dev_modules_loaded = true;
+		has_attempted_dev_module_load = false;
 	}
 }

@@ -43,7 +43,7 @@ export async function import_preset_to_settings(preset_data: any): Promise<void>
 This preset/Theme contains JS code.
 You could be compromised if you continue.
 
-Do you want to get_root_value the JS code?`,
+Do you want to execute the JS code?`,
 			);
 			await save_user_setting(key, user_approved ? processed_value : "", true);
 		} else {

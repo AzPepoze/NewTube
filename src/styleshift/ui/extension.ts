@@ -12,7 +12,12 @@ import { unmount } from "svelte";
 /**
  * Creates and appends the main StyleShift window to the document.
  */
-export async function create_styleshift_window({ width = "30%", height = "80%", skip_animation = false }) {
+export async function create_styleshift_window({
+	width = "50%",
+	height = "80%",
+	skip_animation = false,
+	title = "StyleShift",
+}) {
 	// Ensure developer tools are ready if mode is enabled
 	if (await get_root_value("Developer_mode")) {
 		await initialize_developer_environment();
@@ -21,49 +26,55 @@ export async function create_styleshift_window({ width = "30%", height = "80%", 
 	logger.info("ui", "Initializing main window");
 
 	await get_document_head();
-	const overlay_frame = settings_ui["fill_screen"](false);
+	const overlay_frame = settings_ui.fill_screen(false);
+	overlay_frame.style.pointerEvents = "none"; // Let window handle events
 
-	const window_element = document.createElement("div");
-	window_element.className = "STYLESHIFT-Main STYLESHIFT-Window";
-	await apply_theme_to_element(window_element);
+	const mount_point = document.createElement("div");
+	overlay_frame.appendChild(mount_point);
 
-	window_element.style.pointerEvents = "all";
-	window_element.style.width = width;
-	window_element.style.height = height;
-
-	if (!skip_animation) {
-		trigger_window_show_animation(window_element);
-	}
-
-	overlay_frame.appendChild(window_element);
-
-	const topbar = document.createElement("div");
-	topbar.className = "STYLESHIFT-Topbar";
-	window_element.append(topbar);
-
-	const drag_handle = await settings_ui["drag"](window_element);
-	drag_handle.style.width = "calc(100% - 32px)";
-	topbar.append(drag_handle);
-
-	const close_button = await settings_ui["close"]();
-	topbar.append(close_button);
+	let window_instance: any;
 
 	const close_window_handler = async () => {
-		await trigger_window_hide_animation(window_element);
+		if (window_instance) {
+			await trigger_window_hide_animation(window_container);
+			await sleep(300);
+			unmount(window_instance);
+		}
 		overlay_frame.remove();
 	};
 
-	close_button.addEventListener("click", close_window_handler, { once: true });
+	window_instance = settings_ui.render_window(
+		{
+			title,
+			width,
+			height,
+			onClose: close_window_handler,
+			children: (_target: HTMLElement) => {
+				return "";
+			},
+		},
+		mount_point,
+	);
+
+	const window_container = mount_point.querySelector(".STYLESHIFT-Window-Container") as HTMLElement;
+	await apply_theme_to_element(window_container);
+	const content_element = window_container.querySelector(".STYLESHIFT-Window-Content") as HTMLElement;
+	const topbar = window_container.querySelector(".STYLESHIFT-Window-Topbar") as HTMLElement;
+	const close_button = window_container.querySelector(".control-btn.close") as HTMLElement;
 
 	requestAnimationFrame(async () => {
 		(await get_document_body()).appendChild(overlay_frame);
+		if (!skip_animation) {
+			trigger_window_show_animation(window_container);
+		}
 	});
 
 	return {
 		overlay_frame,
-		window_element,
+		window_element: window_container,
+		content_element,
 		topbar,
-		drag_handle,
+		drag_handle: topbar,
 		close_button,
 		close_window_handler,
 	};
@@ -76,7 +87,7 @@ export let global_notification_container: HTMLElement;
  */
 (async () => {
 	await get_document_head();
-	const notification_overlay = settings_ui["fill_screen"](false);
+	const notification_overlay = settings_ui.fill_screen(false);
 	notification_overlay.classList.add("STYLESHIFT-Main");
 	await apply_theme_to_element(notification_overlay);
 
@@ -87,6 +98,10 @@ export let global_notification_container: HTMLElement;
 	global_notification_container = document.createElement("div");
 	global_notification_container.className = "STYLESHIFT-Notification-Container";
 	notification_overlay.append(global_notification_container);
+
+	const taskbar_mount_point = document.createElement("div");
+	notification_overlay.append(taskbar_mount_point);
+	settings_ui.render_taskbar(taskbar_mount_point);
 })();
 
 export const DEFAULT_ANIMATION_DURATION_MS = 250;
@@ -95,8 +110,22 @@ export const DEFAULT_ANIMATION_DURATION_MS = 250;
  * Plays a CSS animation on a target element and waits for it to complete.
  */
 export async function play_ui_animation(target: HTMLElement, animation_name: string): Promise<void> {
+	if (animation_name.includes("Show")) {
+		target.style.opacity = "0";
+		target.style.transform = "scale(0.95)";
+		await sleep(10); // Give browser time to register initial state
+	}
+
 	target.style.animation = `STYLESHIFT-${animation_name} ${DEFAULT_ANIMATION_DURATION_MS / 1000}s forwards`;
+
 	await sleep(DEFAULT_ANIMATION_DURATION_MS);
+
+	// Cleanup to let transitions take over
+	if (animation_name.includes("Show")) {
+		target.style.opacity = "1";
+		target.style.transform = "scale(1)";
+		target.style.animation = "";
+	}
 }
 
 export async function trigger_window_show_animation(target: HTMLElement): Promise<void> {
@@ -118,6 +147,7 @@ export async function show_user_confirmation(
 		cancelLabel?: string;
 		confirmColor?: string;
 		cancelColor?: string;
+		align?: "left" | "center" | "right";
 	} = {},
 ): Promise<boolean> {
 	return new Promise((resolve) => {
@@ -128,6 +158,7 @@ export async function show_user_confirmation(
 			{
 				title,
 				message,
+				align: options.align || "center",
 				buttons: [
 					{
 						label: options.confirmLabel || "Confirm",

@@ -9,6 +9,9 @@
 	import code from "@ui/assets/icons/code.svg";
 	import arrow_up from "@ui/assets/icons/arrow_up.svg";
 	import arrow_down from "@ui/assets/icons/arrow_down.svg";
+	import minimize from "@ui/assets/icons/minimize.svg";
+	import maximize from "@ui/assets/icons/maximize.svg";
+	import restore from "@ui/assets/icons/restore.svg";
 
 	import { get_asset_url } from "@ui/utils";
 
@@ -23,6 +26,9 @@
 		code,
 		arrow_up,
 		arrow_down,
+		minimize,
+		maximize,
+		restore,
 	};
 
 	let {

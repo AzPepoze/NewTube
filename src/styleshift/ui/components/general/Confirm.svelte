@@ -9,6 +9,7 @@
 	let {
 		title = "Confirm Action",
 		message = "",
+		align = "center",
 		onConfirm,
 		onCancel,
 		footer,
@@ -17,6 +18,7 @@
 	}: {
 		title?: string;
 		message?: string;
+		align?: "left" | "center" | "right";
 		onConfirm?: () => void;
 		onCancel?: () => void;
 		footer?: Snippet;
@@ -38,7 +40,7 @@
 	</div>
 	{#if message}
 		<div class="body" in:fly={{ y: 20, duration: 600, easing: quintOut, delay: 200 }}>
-			<Description name={message} align="center" />
+			<Description name={message} {align} />
 		</div>
 	{/if}
 	<div class="footer" in:fly={{ y: 20, duration: 600, easing: quintOut, delay: 300 }}>

@@ -9,7 +9,7 @@ export default defineConfig([
 		ignores: ["node_modules"],
 		languageOptions: { globals: { ...globals.browser, ...globals.node } },
 		rules: {
-			"prefer-const": "warn",
+			"prefer-const": "off",
 			"no-unused-vars": "off",
 			"@typescript-eslint/no-unused-vars": [
 				"warn",

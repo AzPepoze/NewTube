@@ -1,40 +1,73 @@
 <script lang="ts">
-	import { persist_and_refresh_all } from "../../../../core/runtime-controller";
+	import { persist_items } from "../../../../core/runtime-controller";
 	import { settings_ui } from "../../setting-components";
 	import { trigger_setting_update } from "@settings/functions";
 	import { logger } from "@/styleshift/utils/logger";
 	import { refresh_setting_ui } from "../../settings";
+	import { get_settings_list } from "@settings/items";
 
 	let { setting, props, updateUI = () => {} } = $props();
 
 	/**
 	 * Centralized handler for all property updates in the config UI.
+	 * Handles persistence, UI refresh, and optional custom callbacks.
 	 */
-	async function processPropertyChange(property: string, value: any, customUpdate?: Function) {
-		logger.debug("config", `[ConfigMainSection] Property Change Attempt: "${property}" ->`, value);
-		
-		setting[property] = value;
-		
-		if (typeof customUpdate === "function") {
-			customUpdate(value);
-		} else {
-			if (setting.id) {
-				await refresh_setting_ui(setting.id);
-			} else {
-				updateUI();
+	async function applyPropertyUpdate(property: string, newValue: any, customCallback?: Function) {
+		let finalValue = newValue;
+
+		// Handle JSON parsing if the original value was an object and the new value is a string
+		if (typeof setting[property] === "object" && setting[property] !== null && typeof newValue === "string") {
+			try {
+				finalValue = JSON.parse(newValue);
+			} catch (e) {
+				logger.warn("config", `[ConfigMainSection] JSON parse failed for ${property}, using raw string`, e);
 			}
 		}
-		
-		if (setting.id) {
-			await trigger_setting_update(setting.id);
+
+		// Check if the value has actually changed to avoid unnecessary updates/refreshes
+		const isObject = typeof finalValue === "object" && finalValue !== null;
+		const hasChanged = isObject
+			? JSON.stringify(setting[property]) !== JSON.stringify(finalValue)
+			: setting[property] !== finalValue;
+
+		if (!hasChanged) {
+			logger.debug(
+				"config",
+				`[ConfigMainSection] No change detected for property "${property}", skipping update.`,
+			);
+			return;
 		}
 
-		await persist_and_refresh_all();
-		logger.info("STORAGE", `[ConfigMainSection] Property update and persistence complete for: ${setting.id || 'custom-item'}`);
-	}
+		logger.debug("config", `[ConfigMainSection] Property Change: "${property}" ->`, finalValue);
 
-	async function handleUpdate(property: string, value: any, customUpdate?: Function) {
-		await processPropertyChange(property, value, customUpdate);
+		const oldId = setting.id;
+		setting[property] = finalValue;
+
+		// If the ID was changed, we need to rebuild the internal settings list cache
+		if (property === "id" && oldId !== finalValue) {
+			await get_settings_list(true);
+		}
+
+		// Execute custom callback if provided and it's not the default updateUI
+		if (typeof customCallback === "function" && customCallback !== updateUI) {
+			await customCallback(finalValue);
+		}
+
+		// Refresh the setting UI or call the general updateUI fallback
+		if (setting.id) {
+			await refresh_setting_ui(setting.id);
+			await trigger_setting_update(setting.id);
+		} else if (typeof updateUI === "function") {
+			updateUI();
+		}
+
+		// Persist items without triggering a full UI refresh (to avoid lag)
+		await persist_items();
+
+		logger.info(
+			"STORAGE",
+			`[ConfigMainSection] Property update and persistence complete for: ${setting.id || "custom-item"}`,
+		);
 	}
 
 	function mountWrapper(node: HTMLElement, params: { type: string; config: any; update_function?: any }) {
@@ -60,8 +93,12 @@
 			property === "step" ||
 			(property === "value" && setting.type === "number_slide");
 
+		// Helper to create update function with optional custom callback
+		const createUpdateFunc = (prop: string) => (val: any) =>
+			applyPropertyUpdate(prop, val, typeof update === "function" ? update : undefined);
+
 		if (Array.isArray(update)) {
-			const update_func = (val) => handleUpdate(property, val);
+			const update_func = (val) => applyPropertyUpdate(property, val);
 			return {
 				type: "dropdown",
 				config: {
@@ -76,7 +113,7 @@
 		}
 
 		if (property === "Rainbow" || isBooleanValue) {
-			const update_func = (val) => handleUpdate(property, val);
+			const update_func = createUpdateFunc(property);
 			return {
 				type: "checkbox",
 				config: { type: "checkbox", name: title, value: propertyValue, update_function: update_func },
@@ -85,7 +122,7 @@
 		}
 
 		if (isColorValue) {
-			const update_func = (val) => handleUpdate(property, val);
+			const update_func = createUpdateFunc(property);
 			return {
 				type: "color",
 				config: {
@@ -100,7 +137,7 @@
 		}
 
 		if (isNumberValue) {
-			const update_func = (val) => handleUpdate(property, val);
+			const update_func = createUpdateFunc(property);
 			return {
 				type: "number_slide",
 				config: {
@@ -135,21 +172,32 @@
 				temp_obj[property] = JSON.stringify(temp_obj[property], null, 2);
 			}
 
-			const text_editor = await settings_ui["setting_developer_text_editor"](node, temp_obj, {
+			const text_editor = await settings_ui.setting_developer_text_editor(node, temp_obj, {
 				[title]: property,
 			});
 			const main_ui = text_editor.main_ui;
 			node.replaceWith(main_ui);
 
-			let update_function;
-			if (typeof update === "function") {
-				update_function = update;
-			} else {
-				update_function = async (value: any) => {
-					await processPropertyChange(property, value);
-				};
-			}
-			text_editor.text_editors[title].additinal_onchange(update_function);
+			const editorWrapper = text_editor.text_editors[title];
+			const textarea = editorWrapper.text_editor;
+
+			// Add focus and blur logging
+			textarea.addEventListener("focus", () => {
+				logger.debug("ui", `[ConfigMainSection] Text editor focused for property "${property}"`);
+			});
+
+			textarea.addEventListener("blur", () => {
+				logger.debug("ui", `[ConfigMainSection] Text editor blurred for property "${property}"`);
+			});
+
+			// Centralized update function for the text editor
+			const onUpdate = async (value: any) => {
+				logger.debug("ui", `[ConfigMainSection] Text editor update for "${property}":`, value);
+				temp_obj[property] = value;
+				await applyPropertyUpdate(property, value, typeof update === "function" ? update : undefined);
+			};
+
+			editorWrapper.on_change(onUpdate);
 		})();
 	}
 </script>

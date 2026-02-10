@@ -50,22 +50,32 @@
 	}
 </script>
 
-<Description {name} {description} />
-<div class="STYLESHIFT-Input-Wrapper">
-	<input
-		type="text"
-		class="STYLESHIFT-Input"
-		{placeholder}
-		bind:value
-		oninput={handleInput}
-		onchange={handleChange}
-	/>
+<div class="STYLESHIFT-Text-Input-Container">
+	<Description {name} {description} />
+	<div class="STYLESHIFT-Input-Wrapper">
+		<input
+			type="text"
+			class="STYLESHIFT-Input"
+			{placeholder}
+			bind:value
+			oninput={handleInput}
+			onchange={handleChange}
+		/>
+	</div>
 </div>
 
 <style lang="scss">
+	.STYLESHIFT-Text-Input-Container {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 10px;
+		width: 100%;
+	}
+
 	.STYLESHIFT-Input-Wrapper {
 		flex: 1;
-		max-width: 250px;
+		min-width: 200px;
 	}
 
 	.STYLESHIFT-Input {

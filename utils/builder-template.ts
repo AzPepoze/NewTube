@@ -16,8 +16,10 @@ const SETTINGS_OUT_DIR = path.join(TEMPLATE_DIR, "settings");
 const TYPES_OUT_DIR = path.join(TEMPLATE_DIR, "types");
 const PROD_TYPES_DIR = path.join(OUT_DIR, "types");
 
-const TYPE_FILE_NAME = "StyleShift.d.ts";
-const METADATA_FILE_NAME = "StyleShift-Metadata.json";
+const config = JSON.parse(fs.readFileSync(path.join(__dirname, "../extension.config.json"), "utf8"));
+
+const TYPE_FILE_NAME = `${config.name}.d.ts`;
+const METADATA_FILE_NAME = `${config.name}-Metadata.json`;
 
 /*
 -------------------------------------------------------
@@ -84,7 +86,7 @@ Main Runner
 -------------------------------------------------------
 */
 (async () => {
-	console.log("🚀 Starting StyleShift Builder...");
+	console.log(`🚀 Starting ${config.name} Builder...`);
 
 	// 1. Build Templates
 	console.log("📦 Generating UI Templates...");
@@ -118,13 +120,13 @@ Main Runner
 			label: "set_value",
 			type: "function",
 			detail: "(id: string, value: any) => void",
-			info: "Sets a value in the StyleShift storage.",
+			info: `Sets a value in the ${config.name} storage.`,
 		},
 		{
 			label: "get_value",
 			type: "function",
 			detail: "(id: string) => any",
-			info: "Gets a value from the StyleShift storage.",
+			info: `Gets a value from the ${config.name} storage.`,
 		},
 	);
 
@@ -133,7 +135,7 @@ Main Runner
 		.map((m) => `    /** ${m.info || m.label} */\n    function ${m.label}${m.detail.replace(" => ", ": ")};`)
 		.join("\n");
 
-	const d_ts_content = `/**\n * StyleShift Global API\n * These functions are available in the advanced script editor.\n */\ndeclare global {\n${combined_signatures}\n}\nexport {};`;
+	const d_ts_content = `/**\n * ${config.name} Global API\n * These functions are available in the advanced script editor.\n */\ndeclare global {\n${combined_signatures}\n}\nexport {};`;
 
 	// 3. Write Output Files
 	const metadata_json = JSON.stringify(all_metadata, null, 2);

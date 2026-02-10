@@ -8,10 +8,10 @@
 	--Theme-1: rgb(246, 196, 255);
 
 	/* --- Default Dark Theme --- */
-	--BG-Dark: rgb(15, 15, 15);
+	--BG-Dark: rgba(43, 43, 43, 1);
 	--BG-Surface: rgba(255, 255, 255, 0.03);
 	--BG-Surface-Hover: rgba(255, 255, 255, 0.06);
-	--BG-Input: rgb(24, 24, 24);
+	--BG-Input: rgba(43, 43, 43, 0.8);
 	--Font-Color: #ffffff;
 	--Font-Color-Dim: rgba(255, 255, 255, 0.5);
 	--Border-Color: rgba(255, 255, 255, 0.08);
@@ -69,7 +69,7 @@
 }
 
 .STYLESHIFT-Main[data-transparent="true"] {
-	--Window-BG: rgba(15, 15, 15, 0.8);
+	--Window-BG: rgba(43, 43, 43, 0.8);
 	--Window-Blur: blur(var(--setting-bg-blur-amount, 10px));
 	--Window-Saturate: saturate(180%);
 

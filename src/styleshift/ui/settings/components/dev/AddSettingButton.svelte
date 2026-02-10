@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ui_preset } from "../../../../settings/default-items";
 	import { add_setting } from "../../../../settings/items";
-	import { main_setting_ui } from "../main/main";
+	import * as main_setting_ui from "../main/main";
 	import Button from "../main/Button.svelte";
 	import Dropdown from "../main/Dropdown.svelte";
 

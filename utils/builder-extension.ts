@@ -6,6 +6,8 @@ const path = require("path");
 const dotenv = require("dotenv");
 dotenv.config();
 
+const config = require("../extension.config.json");
+
 /*
 -------------------------------------------------------
 Configuration
@@ -23,6 +25,12 @@ Utils Functions
 function get_file_name_from_path(file_path) {
 	const parts = file_path.split("/");
 	return parts[parts.length - 1];
+}
+
+async function replace_branding(content: string): Promise<string> {
+	return content
+		.replace(/STYLESHIFT/g, config.code_name)
+		.replace(/StyleShift/g, config.name);
 }
 
 /*
@@ -43,20 +51,26 @@ async function replace_for_firefox_text(content: string): Promise<string> {
 	return replacements.reduce((text, { from, to }) => text.replace(from, to), content);
 }
 
-async function replace_for_firefox(file_path) {
+async function process_file_replacements(file_path, is_firefox = false) {
 	try {
-		const data = await fs.readFile(file_path, "utf8");
+		let content = await fs.readFile(file_path, "utf8");
 
-		if (!file_path.endsWith(".css") && !file_path.endsWith(".js")) {
-			console.log(`Skipping file '${file_path}'`);
+		if (!file_path.endsWith(".css") && !file_path.endsWith(".js") && !file_path.endsWith(".json") && !file_path.endsWith(".html")) {
 			return;
 		}
 
-		const modified_content = await replace_for_firefox_text(data);
-		await fs.writeFile(file_path, modified_content, "utf8");
-		console.log(`File '${get_file_name_from_path(file_path)}' updated successfully!`);
+		// Always replace branding
+		content = await replace_branding(content);
+
+		// Firefox specific
+		if (is_firefox && (file_path.endsWith(".css") || file_path.endsWith(".js"))) {
+			content = await replace_for_firefox_text(content);
+		}
+
+		await fs.writeFile(file_path, content, "utf8");
+		console.log(`Processed: ${get_file_name_from_path(file_path)} ${is_firefox ? "(Firefox)" : ""}`);
 	} catch (err: any) {
-		console.error("Error:", err.message);
+		console.error("Error processing file:", err.message);
 	}
 }
 
@@ -224,15 +238,24 @@ async function build() {
 		const chromium_path = path.join(__dirname, "../out/dist/chromium");
 		const firefox_path = path.join(__dirname, "../out/dist/firefox");
 
-		// fs.removeSync(chromium_path);
-		// fs.removeSync(firefox_path);
-
 		fs.copySync(build_path, chromium_path);
 		fs.copySync(build_path, firefox_path);
 
-		// Process Firefox-specific files
-		await replace_for_firefox(path.join(firefox_path, "style.css"));
-		await replace_for_firefox(path.join(firefox_path, "styleshift.js"));
+		// Post-process distribution files
+		async function process_dir(dir, is_firefox) {
+			const files = fs.readdirSync(dir);
+			for (const file of files) {
+				const full_path = path.join(dir, file);
+				if (fs.statSync(full_path).isDirectory()) {
+					await process_dir(full_path, is_firefox);
+				} else {
+					await process_file_replacements(full_path, is_firefox);
+				}
+			}
+		}
+
+		await process_dir(chromium_path, false);
+		await process_dir(firefox_path, true);
 
 		console.log("Built!");
 		console.log("--------------------------------");
