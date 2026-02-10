@@ -1,25 +1,22 @@
 <script lang="ts">
 	import type { Setting } from "@styleshift/types/store";
-	import { settings_ui } from "@ui/settings/setting-components";
 	import { fly, fade } from "svelte/transition";
 	import CapsuleTabs from "../../../components/general/CapsuleTabs.svelte";
-	import { refresh_extension_state } from "@/styleshift/run";
+	import { refreshExtensionState } from "@/styleshift/run";
+	import ConfigMainSection from "./ConfigMainSection.svelte";
+	import ConfigSubSection from "./ConfigSubSection.svelte";
 
 	let { setting }: { setting: Setting } = $props();
 
 	let activeTab = $state("general");
-	let mainSectionContainer = $state<HTMLElement | null>(null);
-	let subSectionContainer = $state<HTMLElement | null>(null);
 
 	const tabs = [
 		{ id: "general", label: "General", icon: "settings" },
 		{ id: "logic", label: "Logic & Code", icon: "code" },
 	];
 
-	async function mountMain() {
-		if (!mainSectionContainer) return;
-		mainSectionContainer.innerHTML = "";
-		const mainProps: any = {
+	const mainProps = $derived.by(() => {
+		const props: any = {
 			Id: "id",
 			Name: "name",
 			Description: "description",
@@ -29,35 +26,35 @@
 
 		switch (type) {
 			case "text":
-				Object.assign(mainProps, {
+				Object.assign(props, {
 					HTML: "html",
-					"Font Size": "font_size",
+					"Font Size": "fontSize",
 					Align: ["align", ["left", "center", "right"]],
 				});
 				break;
-			case "sub_text":
-				Object.assign(mainProps, {
+			case "subText":
+				Object.assign(props, {
 					Text: "text",
 					Color: "color",
-					"Font Size": "font_size",
+					"Font Size": "fontSize",
 					Align: ["align", ["left", "center", "right"]],
 				});
 				break;
 			case "button":
-				Object.assign(mainProps, {
+				Object.assign(props, {
 					Icon: "icon",
 					Color: "color",
-					"Font Size": "font_size",
+					"Font Size": "fontSize",
 					Align: ["align", ["left", "center", "right"]],
 				});
 				break;
 			case "checkbox":
-				Object.assign(mainProps, {
+				Object.assign(props, {
 					Default: "value",
 				});
 				break;
-			case "number_slide":
-				Object.assign(mainProps, {
+			case "numberSlide":
+				Object.assign(props, {
 					Default: "value",
 					Min: "min",
 					Max: "max",
@@ -66,64 +63,61 @@
 				});
 				break;
 			case "dropdown":
-				Object.assign(mainProps, {
+				Object.assign(props, {
 					Default: "value",
 					Options: [
 						"options",
-						(val) => {
+						(val: string) => {
 							try {
 								setting.options = JSON.parse(val);
-							} catch (e) {
-								console.error("Invalid JSON for options", e);
+							} catch (_e) {
+								console.error("Invalid JSON for options");
 							}
 						},
 					],
 				});
 				break;
 			case "color":
-				Object.assign(mainProps, {
+				Object.assign(props, {
 					Default: "value",
-					"Show Alpha": "show_alpha_slider",
+					"Show Alpha": "showAlphaSlider",
 				});
 				break;
-			case "text_input":
-				Object.assign(mainProps, {
+			case "textInput":
+				Object.assign(props, {
 					Default: "value",
 				});
 				break;
-			case "image_input":
-				Object.assign(mainProps, {
+			case "imageInput":
+				Object.assign(props, {
 					Default: "value",
-					"Max File Size (Bytes)": "max_file_size",
+					"Max File Size (Bytes)": "maxFileSize",
 				});
 				break;
-			case "preview_image":
+			case "previewImage":
 			case "custom":
-				delete mainProps.Name;
-				delete mainProps.Description;
+				delete props.Name;
+				delete props.Description;
 				break;
-			case "combine_settings":
-				mainProps["Sync IDs"] = [
-					"sync_id",
-					(val) => {
+			case "combineSettings":
+				props["Sync IDs"] = [
+					"syncId",
+					(val: string) => {
 						try {
-							setting.sync_id = JSON.parse(val);
-						} catch (e) {
-							setting.sync_id = val.split(",").map((s) => s.trim());
+							setting.syncId = JSON.parse(val);
+						} catch (_e) {
+							setting.syncId = val.split(",").map((s) => s.trim());
 						}
 					},
 				];
 				break;
 		}
+		return props;
+	});
 
-		await settings_ui.config_main_section(mainSectionContainer, setting, mainProps, refresh_extension_state);
-	}
-
-	async function mountSub() {
-		if (!subSectionContainer) return;
-		subSectionContainer.innerHTML = "";
-		const subProps: any = {
-			update_config: refresh_extension_state,
+	const subProps = $derived.by(() => {
+		const props: any = {
+			updateConfig: refreshExtensionState,
 		};
 
 		const type = setting.type;
@@ -131,37 +125,24 @@
 		switch (type) {
 			case "checkbox":
 			case "dropdown":
-				Object.assign(subProps, { constant: 2, setup: 3, update: 3, enable: 0, disable: 0 });
+				Object.assign(props, { constant: 2, setup: 3, update: 3, enable: 0, disable: 0 });
 				break;
 			case "button":
-				Object.assign(subProps, { click: 3 });
+				Object.assign(props, { click: 3 });
 				break;
-			case "number_slide":
+			case "numberSlide":
 			case "color":
-			case "text_input":
-				Object.assign(subProps, { var: 2, constant: 2, setup: 3, update: 3 });
+			case "textInput":
+				Object.assign(props, { var: 2, constant: 2, setup: 3, update: 3 });
 				break;
 			case "custom":
-				Object.assign(subProps, { constant: 2, setup: 3, ui: ["function"] });
+				Object.assign(props, { constant: 2, setup: 3, ui: ["function"] });
 				break;
-			case "combine_settings":
-				Object.assign(subProps, { update: 3 });
+			case "combineSettings":
+				Object.assign(props, { update: 3 });
 				break;
 		}
-
-		await settings_ui.config_sub_section(subSectionContainer, setting, subProps);
-	}
-
-	$effect(() => {
-		if (activeTab === "general" && mainSectionContainer) {
-			mountMain();
-		}
-	});
-
-	$effect(() => {
-		if (activeTab === "logic" && subSectionContainer) {
-			mountSub();
-		}
+		return props;
 	});
 </script>
 
@@ -186,7 +167,7 @@
 				in:fly={{ y: 10, duration: 300, delay: 150 }}
 				out:fade={{ duration: 150 }}
 			>
-				<div bind:this={mainSectionContainer}></div>
+				<ConfigMainSection {setting} props={mainProps} updateUi={refreshExtensionState} />
 			</div>
 		{:else if activeTab === "logic"}
 			<div
@@ -194,7 +175,9 @@
 				in:fly={{ y: 10, duration: 300, delay: 150 }}
 				out:fade={{ duration: 150 }}
 			>
-				<div bind:this={subSectionContainer} class="logic-container-wrapper"></div>
+				<div class="logic-container-wrapper">
+					<ConfigSubSection {setting} props={subProps} />
+				</div>
 			</div>
 		{/if}
 	</main>

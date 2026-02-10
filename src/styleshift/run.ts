@@ -1,63 +1,63 @@
-import { create_error, create_notification } from "./build-in-functions/extension";
+import { createError, createNotification } from "./buildInFunctions/extension";
 import { logger } from "./utils/logger";
 import {
-	get_current_domain,
-	get_current_url_parameters,
-	get_document_body,
-	get_document_head,
-	rearrange_selector,
+	getCurrentDomain,
+	getCurrentUrlParameters,
+	getDocumentBody,
+	getDocumentHead,
+	rearrangeSelector,
 	sleep,
-} from "./build-in-functions/normal";
-import { execute_script_string, synchronize_available_functions } from "./core/runtime-controller";
+} from "./buildInFunctions/normal";
+import { executeScriptString, synchronizeAvailableFunctions } from "./core/runtimeController";
 import {
-	initialize_storage_connection,
-	get_root_value,
-	save_root_value,
-	persist_cached_data_to_storage,
-} from "./core/storage-manager";
+	initializeStorageConnection,
+	getRootValue,
+	saveRootValue,
+	persistCachedDataToStorage,
+} from "./core/storageManager";
 import {
-	perform_storage_garbage_collection,
-	populate_missing_default_settings,
-	initialize_default_custom_items,
-} from "./core/storage-maintenance";
+	performStorageGarbageCollection,
+	populateMissingDefaultSettings,
+	initializeDefaultCustomItems,
+} from "./core/storageMaintenance";
 import {
-	register_setting_listener,
-	initialize_all_active_settings,
-	attach_behavior_to_setting,
+	registerSettingListener,
+	initializeAllActiveSettings,
+	attachBehaviorToSetting,
 } from "./settings/functions";
-import { create_stylesheet_holder } from "./settings/style-sheet";
-import { get_all_styleshift_items, get_all_styleshift_settings, update_styleshift_items } from "./settings/items";
+import { createStylesheetHolder } from "./settings/styleSheet";
+import { getAllStyleshiftItems, getAllStyleshiftSettings, updateStyleshiftItems } from "./settings/items";
 import "./communication/extension";
-import { update_all_ui_components } from "./ui/extension";
-import { sync_all_themes } from "./ui/theme";
-import { extension_settings_ui, extension_settings_ui_promise } from "./ui/extension-settings";
-import { toggle_customize } from "./ui/highlight";
-import { app_bootstrap } from "@/main/main";
+import { updateAllUiComponents } from "./ui/extension";
+import { syncAllThemes } from "./ui/theme";
+import { extensionSettingsUi, extensionSettingsUiPromise } from "./ui/extensionSettings";
+import { toggleCustomize } from "./ui/highlight";
+import { appBootstrap } from "@/main/main";
 
 //-------------------------------------------------------
 // Configuration & State
 //-------------------------------------------------------
 
 export const EXTENSION_VERSION = chrome.runtime.getManifest().version;
-export let is_extension_ready = false;
+export let isExtensionReady = false;
 
 export const IS_FIREFOX = navigator.userAgent.toLowerCase().includes("firefox");
 export const EXTENSION_BASE_URL = chrome.runtime.getURL("").slice(0, -1);
 export const IS_IN_EXTENSION_SETTINGS_PAGE = window.location.origin === EXTENSION_BASE_URL;
 
 // Identify the current domain context for storage
-export let current_context_domain: string;
+export let currentContextDomain: string;
 if (IS_IN_EXTENSION_SETTINGS_PAGE) {
-	const params = get_current_url_parameters();
-	current_context_domain = params.domain || "youtube.com";
+	const params = getCurrentUrlParameters();
+	currentContextDomain = params.domain || "youtube.com";
 } else {
-	current_context_domain = get_current_domain();
+	currentContextDomain = getCurrentDomain();
 }
 
 // Global container for StyleShift elements that shouldn't be directly in the body
-export const styleshift_container: HTMLElement = document.createElement("div");
-styleshift_container.className = "StyleShift-Station";
-styleshift_container.style.display = "none";
+export const styleshiftContainer: HTMLElement = document.createElement("div");
+styleshiftContainer.className = "StyleShift-Station";
+styleshiftContainer.style.display = "none";
 
 /*
 -------------------------------------------------------
@@ -68,76 +68,76 @@ styleshift_container.style.display = "none";
 /**
  * Refreshes the internal state and updates all UI components.
  */
-export function refresh_extension_state(): void {
+export function refreshExtensionState(): void {
 	logger.info("lifecycle", "Refreshing extension state...");
-	synchronize_available_functions();
-	update_styleshift_items();
-	update_all_ui_components();
+	synchronizeAvailableFunctions();
+	updateStyleshiftItems();
+	updateAllUiComponents();
 }
 
 /**
  * Main entry point for the extension logic.
  */
-async function bootstrap_extension(): Promise<void> {
-	await get_document_head();
+async function bootstrapExtension(): Promise<void> {
+	await getDocumentHead();
 
 	// Inject StyleShift container
 	setTimeout(async () => {
-		(await get_document_body()).append(styleshift_container);
+		(await getDocumentBody()).append(styleshiftContainer);
 	}, 1);
 
 	// Inject built-in functions into the page context
 	if (!IS_IN_EXTENSION_SETTINGS_PAGE) {
-		const builtin_code = await (await fetch(chrome.runtime.getURL("build-in.js"))).text();
-		execute_script_string({
-			script_content: builtin_code,
-			should_sanitize: false,
+		const builtinCode = await (await fetch(chrome.runtime.getURL("build-in.js"))).text();
+		executeScriptString({
+			scriptContent: builtinCode,
+			shouldSanitize: false,
 		});
 	}
 
 	// Initialize storage and sync functions
-	await initialize_storage_connection();
-	await initialize_default_custom_items();
-	await synchronize_available_functions();
-	await create_stylesheet_holder();
-	await update_styleshift_items();
-	await populate_missing_default_settings();
+	await initializeStorageConnection();
+	await initializeDefaultCustomItems();
+	await synchronizeAvailableFunctions();
+	await createStylesheetHolder();
+	await updateStyleshiftItems();
+	await populateMissingDefaultSettings();
 
 	// Set up global theme listeners
-	register_setting_listener("App_Light_Theme", sync_all_themes, true);
-	register_setting_listener("Setting_BG_Transparent", sync_all_themes, true);
+	registerSettingListener("App_Light_Theme", syncAllThemes, true);
+	registerSettingListener("Setting_BG_Transparent", syncAllThemes, true);
 
 	// Initialize individual setting behaviors
-	const all_settings = await get_all_styleshift_settings();
-	for (const setting of all_settings) {
+	const allSettings = await getAllStyleshiftSettings();
+	for (const setting of allSettings) {
 		if (setting.id === "Themes") continue;
-		attach_behavior_to_setting(setting);
+		attachBehaviorToSetting(setting);
 	}
 
-	initialize_all_active_settings();
-	await perform_storage_garbage_collection();
+	initializeAllActiveSettings();
+	await performStorageGarbageCollection();
 
 	// Normalize CSS selectors for all items
-	const items = get_all_styleshift_items();
+	const items = getAllStyleshiftItems();
 	for (const category of items) {
 		if (category.selector) {
-			category.selector = rearrange_selector(category.selector);
+			category.selector = rearrangeSelector(category.selector);
 		}
 	}
 
-	await persist_cached_data_to_storage();
+	await persistCachedDataToStorage();
 
-	await extension_settings_ui_promise;
+	await extensionSettingsUiPromise;
 
 	if (IS_IN_EXTENSION_SETTINGS_PAGE) {
-		extension_settings_ui.create_ui();
+		extensionSettingsUi.createUi();
 	}
 
-	is_extension_ready = true;
+	isExtensionReady = true;
 	logger.info("lifecycle", "StyleShift bootstrap complete.");
 
 	if (!IS_IN_EXTENSION_SETTINGS_PAGE) {
-		app_bootstrap();
+		appBootstrap();
 	}
 }
 
@@ -148,10 +148,10 @@ async function bootstrap_extension(): Promise<void> {
 */
 
 try {
-	bootstrap_extension();
+	bootstrapExtension();
 } catch (error) {
-	create_error(error).then((notification) => {
-		notification.set_title("StyleShift - Bootstrap Failure");
+	createError(error).then((notification) => {
+		notification.setTitle("StyleShift - Bootstrap Failure");
 	});
 }
 
@@ -163,42 +163,42 @@ chrome.runtime.onMessage.addListener(async (message) => {
 		logger.info("lifecycle", "Incoming message:", message);
 
 		if (message === "Developer") {
-			const is_dev = await get_root_value("Developer_mode");
-			await save_root_value("Developer_mode", !is_dev);
+			const isDev = await getRootValue("Developer_mode");
+			await saveRootValue("Developer_mode", !isDev);
 
-			await create_notification({
-				icon: !is_dev ? "🔨" : "✨",
-				title: !is_dev ? "Developer Mode Enabled" : "Developer Mode Disabled",
+			await createNotification({
+				icon: !isDev ? "🔨" : "✨",
+				title: !isDev ? "Developer Mode Enabled" : "Developer Mode Disabled",
 				timeout: 3000,
 			});
 
-			update_all_ui_components();
+			updateAllUiComponents();
 		}
 
 		if (IS_IN_EXTENSION_SETTINGS_PAGE) return;
 
 		if (message === "Customize") {
-			toggle_customize();
+			toggleCustomize();
 		}
 
 		if (message === "Setting") {
-			if (!is_extension_ready) {
-				const wait_notification = await create_notification({
+			if (!isExtensionReady) {
+				const waitNotification = await createNotification({
 					icon: "⏳",
 					title: "StyleShift is initializing...",
 					timeout: -1,
 				});
 
-				while (!is_extension_ready) {
+				while (!isExtensionReady) {
 					await sleep(100);
 				}
-				wait_notification.close();
+				waitNotification.close();
 			}
 
-			await extension_settings_ui_promise;
-			extension_settings_ui.toggle();
+			await extensionSettingsUiPromise;
+			extensionSettingsUi.toggle();
 		}
 	} catch (error) {
-		create_error(error);
+		createError(error);
 	}
 });

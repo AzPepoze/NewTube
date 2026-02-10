@@ -1,8 +1,8 @@
 import { Category } from "../../styleshift/types/store";
-import { setup_flyout } from "../features/video/flyout";
-import { setup_auto_show_chat_replay } from "../features/video/chat";
+import { setupFlyout } from "../features/video/flyout";
+import { setupAutoShowChatReplay } from "../features/video/chat";
 
-export const enhancement_category: Category = {
+export const enhancementCategory: Category = {
 	category: "🎇 Enhancement",
 	settings: [
 		{
@@ -11,7 +11,7 @@ export const enhancement_category: Category = {
 			name: "Swap left-right row (In watching mode)",
 			description: "Moves the sidebar (recommendations/chat) to the left side.",
 			value: false,
-			enable_css: `
+			enableCss: `
                 #columns {
                     display: flex !important;
                     flex-direction: row-reverse !important;
@@ -29,7 +29,7 @@ export const enhancement_category: Category = {
 			description:
 				"Allows the sidebar and comments to scroll independently from the video player. (Flyout will not working)",
 			value: false,
-			enable_css: `
+			enableCss: `
                 html, body {
                     overflow: hidden !important;
                 }
@@ -60,8 +60,8 @@ export const enhancement_category: Category = {
 			name: "Enable Flyout Video (Show video after scroll down)",
 			description: "Keeps the video player visible in the corner when scrolling down.",
 			value: false,
-			enable_function: setup_flyout,
-			enable_css: `
+			enableFunction: setupFlyout,
+			enableCss: `
       .newtube-flyout-mode {
         position: fixed !important;
         z-index: 2000 !important;
@@ -111,7 +111,7 @@ export const enhancement_category: Category = {
 			name: "Auto show chat replay",
 			description: "Automatically expands the chat replay on videos.",
 			value: false,
-			enable_function: setup_auto_show_chat_replay,
+			enableFunction: setupAutoShowChatReplay,
 		},
 	],
 };

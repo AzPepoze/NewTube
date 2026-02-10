@@ -1,11 +1,24 @@
 import globals from "globals";
 import tseslint from "typescript-eslint";
 import { defineConfig } from "eslint/config";
+import sveltePlugin from "eslint-plugin-svelte";
+import svelteParser from "svelte-eslint-parser";
 
 export default defineConfig([
 	tseslint.configs.recommended,
+	...sveltePlugin.configs["flat/recommended"],
 	{
-		files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
+		files: ["**/*.svelte", "**/*.svelte.ts"],
+		languageOptions: {
+			parser: svelteParser,
+			parserOptions: {
+				parser: tseslint.parser,
+				extraFileExtensions: [".svelte", ".svelte.ts"],
+			},
+		},
+	},
+	{
+		files: ["**/*.{js,mjs,cjs,ts,mts,cts,svelte}"],
 		ignores: ["node_modules"],
 		languageOptions: { globals: { ...globals.browser, ...globals.node } },
 		rules: {
@@ -25,22 +38,23 @@ export default defineConfig([
 				"error",
 				{
 					selector: "variable",
-					format: ["snake_case", "UPPER_CASE"],
+					format: ["camelCase", "UPPER_CASE"],
 					leadingUnderscore: "allow",
 				},
 				{
 					selector: "function",
-					format: ["snake_case"],
+					format: ["camelCase"],
 				},
 				{
 					selector: "parameter",
-					format: ["snake_case"],
+					format: ["camelCase"],
 					leadingUnderscore: "allow",
 				},
 			],
 			"@typescript-eslint/no-unused-expressions": "warn",
 			"@typescript-eslint/ban-ts-comment": "off",
 			"@typescript-eslint/no-require-imports": "off",
+			"svelte/no-at-html-tags": "off",
 		},
 	},
 ]);

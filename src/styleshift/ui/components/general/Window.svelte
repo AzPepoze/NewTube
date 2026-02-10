@@ -2,9 +2,9 @@
 	import { onMount, onDestroy } from "svelte";
 	import WindowResizer from "./WindowResizer.svelte";
 	import Icon from "@ui/settings/components/main/Icon.svelte";
-	import { get_asset_url } from "@ui/utils";
-	import { apply_theme_to_element } from "../../theme";
-	import { window_manager } from "../../window-manager.svelte";
+	import { getAssetUrl } from "@ui/utils";
+	import { applyThemeToElement } from "../../theme";
+	import { windowManager } from "../../windowManager.svelte";
 
 	let {
 		title = "StyleShift",
@@ -20,14 +20,13 @@
 		children: any;
 	} = $props();
 
-	const window_id = Math.random().toString(36).substring(2, 9);
+	const windowId = Math.random().toString(36).substring(2, 9);
 	let windowEl = $state<HTMLElement | null>(null);
 	let contentEl = $state<HTMLElement | null>(null);
 	let isMaximized = $state(false);
 	let isMinimized = $state(false);
 	let isDragging = $state(false);
 	let previousRect = $state({ top: "10%", left: "25%", width: "50%", height: "80%" });
-	let lastNormalRect = $state({ top: "10%", left: "25%", width: "50%", height: "80%" });
 
 	function handleClose(e?: MouseEvent) {
 		if (e) e.stopPropagation();
@@ -60,17 +59,9 @@
 
 	function toggleMinimize(e?: MouseEvent) {
 		if (e) e.stopPropagation();
-		if (windowEl && !isMaximized) {
-			lastNormalRect = {
-				top: windowEl.style.top,
-				left: windowEl.style.left,
-				width: windowEl.style.width,
-				height: windowEl.style.height,
-			};
-		}
 		isMinimized = true;
-		window_manager.add_window({
-			id: window_id,
+		windowManager.addWindow({
+			id: windowId,
 			title,
 			restore: () => restoreFromTaskbar(),
 		});
@@ -79,7 +70,7 @@
 	function restoreFromTaskbar(e?: MouseEvent) {
 		if (e) e.stopPropagation();
 		isMinimized = false;
-		window_manager.remove_window(window_id);
+		windowManager.removeWindow(windowId);
 	}
 
 	function handleDrag(e: MouseEvent) {
@@ -134,12 +125,12 @@
 			windowEl.style.height = height;
 			windowEl.style.top = "10%";
 			windowEl.style.left = "25%";
-			apply_theme_to_element(windowEl);
+			applyThemeToElement(windowEl);
 		}
 	});
 
 	onDestroy(() => {
-		window_manager.remove_window(window_id);
+		windowManager.removeWindow(windowId);
 	});
 
 	$effect(() => {
@@ -162,7 +153,7 @@
 
 	<div class="STYLESHIFT-Window-Topbar" onmousedown={handleDrag} ondblclick={toggleMaximize} role="presentation">
 		<div class="STYLESHIFT-Window-Title">
-			<img src={get_asset_url("icon/32.png")} alt="" class="title-icon" />
+			<img src={getAssetUrl("icon/32.png")} alt="" class="title-icon" />
 			<span>{title}</span>
 		</div>
 		<div class="STYLESHIFT-Window-Controls">

@@ -2,11 +2,11 @@
 	import type { Setting } from "@styleshift/types/store";
 	import Slider from "./Slider.svelte";
 	import Description from "./Description.svelte";
-	import { get_from_storage, get_root_value } from "@/styleshift/core/storage-manager";
-	import { set_and_save } from "@ui/settings/setting-components";
-	import { trigger_setting_update } from "@settings/functions";
-	import { hex_to_color_obj, color_obj_to_hex } from "@styleshift/utils/colors";
-	import { sequenced_task } from "@functions/normal";
+	import { getFromStorage, getRootValue } from "@/styleshift/core/storageManager";
+	import { setAndSave } from "@ui/settings/settingComponents";
+	import { triggerSettingUpdate } from "@settings/functions";
+	import { hexToColorObj, colorObjToHex } from "@styleshift/utils/colors";
+	import { sequencedTask } from "@functions/normal";
 
 	let {
 		setting,
@@ -20,11 +20,11 @@
 	async function init() {
 		let value;
 		if (setting.id) {
-			value = await get_from_storage(setting.id);
+			value = await getFromStorage(setting.id);
 		} else {
 			value = setting.value;
 		}
-		const colorObj = hex_to_color_obj(value || "#ffffff");
+		const colorObj = hexToColorObj(value || "#ffffff");
 		hex = colorObj.hex;
 		alpha = colorObj.alpha;
 	}
@@ -34,19 +34,19 @@
 	const description = $derived(setting.description);
 
 	async function handleUpdate() {
-		const hexValue = color_obj_to_hex({ hex, alpha });
+		const hexValue = colorObjToHex({ hex, alpha });
 		if (setting.id) {
-			await set_and_save(setting, hexValue);
-			await trigger_setting_update(setting.id);
-		} else if (typeof (setting as any).update_function === "function") {
-			await (setting as any).update_function(hexValue);
+			await setAndSave(setting, hexValue);
+			await triggerSettingUpdate(setting.id);
+		} else if (typeof (setting as any).updateFunction === "function") {
+			await (setting as any).updateFunction(hexValue);
 		}
 	}
 
-	const sequencedUpdate = sequenced_task(handleUpdate);
+	const sequencedUpdate = sequencedTask(handleUpdate);
 
 	async function handleInput() {
-		if (await get_root_value("Realtime_Extension")) {
+		if (await getRootValue("Realtime_Extension")) {
 			sequencedUpdate();
 		}
 	}
@@ -78,14 +78,14 @@
 <div class="STYLESHIFT-Color-Alpha-Section">
 	<Slider
 		setting={{
-			type: "number_slide",
+			type: "numberSlide",
 			name: "Opacity",
 			min: 0,
 			max: 100,
 			unit: "%",
 			value: alpha,
 			id: "",
-			update_function: handleAlphaChange,
+			updateFunction: handleAlphaChange,
 		}}
 	/>
 </div>

@@ -1,4 +1,4 @@
-export function setup_auto_pip() {
+export function setupAutoPip() {
 	document.addEventListener("visibilitychange", async () => {
 		const video = document.querySelector("video") as HTMLVideoElement;
 		if (!video) return;
@@ -13,7 +13,7 @@ export function setup_auto_pip() {
 	});
 }
 
-export function setup_auto_exit_pip() {
+export function setupAutoExitPip() {
 	document.addEventListener("visibilitychange", async () => {
 		if (!document.hidden && document.pictureInPictureElement) {
 			try {

@@ -1,12 +1,12 @@
-export function setup_video_animations() {
-	const add_vol_indicator = () => {
+export function setupVideoAnimations() {
+	const addVolIndicator = () => {
 		const container = document.querySelector(".html5-video-container");
 		if (!container || container.querySelector(".newtube-vol-indicator")) return;
 
-		const vol_display = document.createElement("div");
-		vol_display.className = "newtube-vol-indicator";
-		vol_display.innerHTML = "100%";
-		container.appendChild(vol_display);
+		const volDisplay = document.createElement("div");
+		volDisplay.className = "newtube-vol-indicator";
+		volDisplay.innerHTML = "100%";
+		container.appendChild(volDisplay);
 
 		let timer: number | undefined;
 		const video = document.querySelector("video");
@@ -14,20 +14,20 @@ export function setup_video_animations() {
 		if (video) {
 			video.addEventListener("volumechange", () => {
 				const vol = Math.round(video.volume * 100);
-				vol_display.innerHTML = video.muted ? "Muted" : vol + "%";
+				volDisplay.innerHTML = video.muted ? "Muted" : vol + "%";
 
-				vol_display.classList.add("show");
+				volDisplay.classList.add("show");
 
 				clearTimeout(timer);
 				timer = setTimeout(() => {
-					vol_display.classList.remove("show");
+					volDisplay.classList.remove("show");
 				}, 1000) as unknown as number;
 			});
 		}
 	};
 
 	window.addEventListener("yt-navigate-finish", () => {
-		setTimeout(add_vol_indicator, 1000);
+		setTimeout(addVolIndicator, 1000);
 	});
-	setTimeout(add_vol_indicator, 2000);
+	setTimeout(addVolIndicator, 2000);
 }

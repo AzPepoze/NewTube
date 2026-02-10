@@ -1,107 +1,107 @@
-import { get_document_body, get_document_head, sleep } from "../build-in-functions/normal";
-import { initialize_developer_environment, is_dev_modules_loaded } from "../core/runtime-controller";
-import { get_root_value } from "../core/storage-manager";
-import { remove_config_ui } from "./config";
-import { editor_ui } from "./editor";
-import { extension_settings_ui } from "./extension-settings";
-import { settings_ui } from "./settings/setting-components";
-import { apply_theme_to_element } from "./theme";
+import { getDocumentBody, getDocumentHead, sleep } from "../buildInFunctions/normal";
+import { initializeDeveloperEnvironment, isDevModulesLoaded } from "../core/runtimeController";
+import { getRootValue } from "../core/storageManager";
+import { removeConfigUi } from "./config";
+import { editorUi } from "./editor";
+import { extensionSettingsUi } from "./extensionSettings";
+import { settingsUi } from "./settings/settingComponents";
+import { applyThemeToElement } from "./theme";
 import { logger } from "../utils/logger";
 import { unmount } from "svelte";
 
 /**
  * Creates and appends the main StyleShift window to the document.
  */
-export async function create_styleshift_window({
+export async function createStyleshiftWindow({
 	width = "50%",
 	height = "80%",
-	skip_animation = false,
+	skipAnimation = false,
 	title = "StyleShift",
 }) {
 	// Ensure developer tools are ready if mode is enabled
-	if (await get_root_value("Developer_mode")) {
-		await initialize_developer_environment();
+	if (await getRootValue("Developer_mode")) {
+		await initializeDeveloperEnvironment();
 	}
 
 	logger.info("ui", "Initializing main window");
 
-	await get_document_head();
-	const overlay_frame = settings_ui.fill_screen(false);
-	overlay_frame.style.pointerEvents = "none"; // Let window handle events
+	await getDocumentHead();
+	const overlayFrame = settingsUi.fillScreen(false);
+	overlayFrame.style.pointerEvents = "none"; // Let window handle events
 
-	const mount_point = document.createElement("div");
-	overlay_frame.appendChild(mount_point);
+	const mountPoint = document.createElement("div");
+	overlayFrame.appendChild(mountPoint);
 
-	let window_instance: any;
+	let windowInstance: any;
 
-	const close_window_handler = async () => {
-		if (window_instance) {
-			await trigger_window_hide_animation(window_container);
+	const closeWindowHandler = async () => {
+		if (windowInstance) {
+			await triggerWindowHideAnimation(windowContainer);
 			await sleep(300);
-			unmount(window_instance);
+			unmount(windowInstance);
 		}
-		overlay_frame.remove();
+		overlayFrame.remove();
 	};
 
-	window_instance = settings_ui.render_window(
+	windowInstance = settingsUi.renderWindow(
 		{
 			title,
 			width,
 			height,
-			onClose: close_window_handler,
+			onClose: closeWindowHandler,
 			children: (_target: HTMLElement) => {
 				return "";
 			},
 		},
-		mount_point,
+		mountPoint,
 	);
 
-	const window_container = mount_point.querySelector(".STYLESHIFT-Window-Container") as HTMLElement;
-	await apply_theme_to_element(window_container);
-	const content_element = window_container.querySelector(".STYLESHIFT-Window-Content") as HTMLElement;
-	const topbar = window_container.querySelector(".STYLESHIFT-Window-Topbar") as HTMLElement;
-	const close_button = window_container.querySelector(".control-btn.close") as HTMLElement;
+	const windowContainer = mountPoint.querySelector(".STYLESHIFT-Window-Container") as HTMLElement;
+	await applyThemeToElement(windowContainer);
+	const contentElement = windowContainer.querySelector(".STYLESHIFT-Window-Content") as HTMLElement;
+	const topbar = windowContainer.querySelector(".STYLESHIFT-Window-Topbar") as HTMLElement;
+	const closeButton = windowContainer.querySelector(".control-btn.close") as HTMLElement;
 
 	requestAnimationFrame(async () => {
-		(await get_document_body()).appendChild(overlay_frame);
-		if (!skip_animation) {
-			trigger_window_show_animation(window_container);
+		(await getDocumentBody()).appendChild(overlayFrame);
+		if (!skipAnimation) {
+			triggerWindowShowAnimation(windowContainer);
 		}
 	});
 
 	return {
-		overlay_frame,
-		window_element: window_container,
-		content_element,
+		overlayFrame,
+		windowElement: windowContainer,
+		contentElement,
 		topbar,
-		drag_handle: topbar,
-		close_button,
-		close_window_handler,
+		dragHandle: topbar,
+		closeButton,
+		closeWindowHandler,
 	};
 }
 
-export let global_notification_container: HTMLElement;
+export let globalNotificationContainer: HTMLElement;
 
 /**
  * Self-initializing notification layer.
  */
 (async () => {
-	await get_document_head();
-	const notification_overlay = settings_ui.fill_screen(false);
-	notification_overlay.classList.add("STYLESHIFT-Main");
-	await apply_theme_to_element(notification_overlay);
+	await getDocumentHead();
+	const notificationOverlay = settingsUi.fillScreen(false);
+	notificationOverlay.classList.add("STYLESHIFT-Main");
+	await applyThemeToElement(notificationOverlay);
 
 	setTimeout(async () => {
-		(await get_document_body()).append(notification_overlay);
+		(await getDocumentBody()).append(notificationOverlay);
 	}, 1);
 
-	global_notification_container = document.createElement("div");
-	global_notification_container.className = "STYLESHIFT-Notification-Container";
-	notification_overlay.append(global_notification_container);
+	globalNotificationContainer = document.createElement("div");
+	globalNotificationContainer.className = "STYLESHIFT-Notification-Container";
+	notificationOverlay.append(globalNotificationContainer);
 
-	const taskbar_mount_point = document.createElement("div");
-	notification_overlay.append(taskbar_mount_point);
-	settings_ui.render_taskbar(taskbar_mount_point);
+	const taskbarMountPoint = document.createElement("div");
+	notificationOverlay.append(taskbarMountPoint);
+	settingsUi.renderTaskbar(taskbarMountPoint);
 })();
 
 export const DEFAULT_ANIMATION_DURATION_MS = 250;
@@ -109,37 +109,37 @@ export const DEFAULT_ANIMATION_DURATION_MS = 250;
 /**
  * Plays a CSS animation on a target element and waits for it to complete.
  */
-export async function play_ui_animation(target: HTMLElement, animation_name: string): Promise<void> {
-	if (animation_name.includes("Show")) {
+export async function playUiAnimation(target: HTMLElement, animationName: string): Promise<void> {
+	if (animationName.includes("Show")) {
 		target.style.opacity = "0";
 		target.style.transform = "scale(0.95)";
 		await sleep(10); // Give browser time to register initial state
 	}
 
-	target.style.animation = `STYLESHIFT-${animation_name} ${DEFAULT_ANIMATION_DURATION_MS / 1000}s forwards`;
+	target.style.animation = `STYLESHIFT-${animationName} ${DEFAULT_ANIMATION_DURATION_MS / 1000}s forwards`;
 
 	await sleep(DEFAULT_ANIMATION_DURATION_MS);
 
 	// Cleanup to let transitions take over
-	if (animation_name.includes("Show")) {
+	if (animationName.includes("Show")) {
 		target.style.opacity = "1";
 		target.style.transform = "scale(1)";
 		target.style.animation = "";
 	}
 }
 
-export async function trigger_window_show_animation(target: HTMLElement): Promise<void> {
-	await play_ui_animation(target, "Show-Pop-Animation");
+export async function triggerWindowShowAnimation(target: HTMLElement): Promise<void> {
+	await playUiAnimation(target, "Show-Pop-Animation");
 }
 
-export async function trigger_window_hide_animation(target: HTMLElement): Promise<void> {
-	await play_ui_animation(target, "Hide-Pop-Animation");
+export async function triggerWindowHideAnimation(target: HTMLElement): Promise<void> {
+	await playUiAnimation(target, "Hide-Pop-Animation");
 }
 
 /**
  * Displays a confirmation dialog to the user.
  */
-export async function show_user_confirmation(
+export async function showUserConfirmation(
 	message: string,
 	title: string = "Confirm Action",
 	options: {
@@ -151,10 +151,10 @@ export async function show_user_confirmation(
 	} = {},
 ): Promise<boolean> {
 	return new Promise((resolve) => {
-		const mount_point = document.createElement("div");
-		document.body.appendChild(mount_point);
+		const mountPoint = document.createElement("div");
+		document.body.appendChild(mountPoint);
 
-		const component = settings_ui.confirm(
+		const component = settingsUi.confirm(
 			{
 				title,
 				message,
@@ -163,24 +163,24 @@ export async function show_user_confirmation(
 					{
 						label: options.confirmLabel || "Confirm",
 						color: options.confirmColor || "#4caf50",
-						onClick: () => handle_resolve(true),
+						onClick: () => handleResolve(true),
 					},
 					{
 						label: options.cancelLabel || "Cancel",
 						color: options.cancelColor || "#f44336",
-						onClick: () => handle_resolve(false),
+						onClick: () => handleResolve(false),
 					},
 				],
-				onClose: () => handle_resolve(false),
+				onClose: () => handleResolve(false),
 			},
-			mount_point,
+			mountPoint,
 		);
 
-		function handle_resolve(val: boolean) {
+		function handleResolve(val: boolean) {
 			resolve(val);
 			setTimeout(() => {
 				unmount(component);
-				mount_point.remove();
+				mountPoint.remove();
 			}, 400);
 		}
 	});
@@ -189,20 +189,20 @@ export async function show_user_confirmation(
 /**
  * Re-renders all visible UI components to reflect state changes.
  */
-export async function update_all_ui_components(): Promise<void> {
+export async function updateAllUiComponents(): Promise<void> {
 	logger.info("ui", "Refreshing all UI components...");
 
-	const is_dev_mode = await get_root_value("Developer_mode");
+	const isDevMode = await getRootValue("Developer_mode");
 
-	if (is_dev_mode && !is_dev_modules_loaded) {
+	if (isDevMode && !isDevModulesLoaded) {
 		logger.info("ui", "Initializing developer environment...");
-		await initialize_developer_environment();
+		await initializeDeveloperEnvironment();
 	}
 
-	if (extension_settings_ui) extension_settings_ui.recreate_ui();
-	if (editor_ui) editor_ui.recreate_ui();
+	if (extensionSettingsUi) extensionSettingsUi.recreateUi();
+	if (editorUi) editorUi.recreateUi();
 
-	if (!is_dev_mode) {
-		remove_config_ui();
+	if (!isDevMode) {
+		removeConfigUi();
 	}
 }

@@ -1,10 +1,10 @@
 import { Category } from "../../styleshift/types/store";
-import { setup_auto_theater, setup_remove_ambient } from "../features/video/general";
-import { setup_auto_pip, setup_auto_exit_pip } from "../features/video/pip";
-import { setup_update_timestamp } from "../features/video/timestamp";
-import { setup_video_animations } from "../features/video/animations";
+import { setupAutoTheater, setupRemoveAmbient } from "../features/video/general";
+import { setupAutoPip, setupAutoExitPip } from "../features/video/pip";
+import { setupUpdateTimestamp } from "../features/video/timestamp";
+import { setupVideoAnimations } from "../features/video/animations";
 
-export const video_category: Category = {
+export const videoCategory: Category = {
 	category: "📺 Video",
 	selector: "#ytd-player",
 	settings: [
@@ -14,7 +14,7 @@ export const video_category: Category = {
 			name: "Transparent Video Player Background",
 			description: "Makes the video player background transparent (useful for custom backgrounds).",
 			value: true,
-			enable_css: `.html5-video-player { background: transparent !important; }`,
+			enableCss: `.html5-video-player { background: transparent !important; }`,
 		},
 		{
 			type: "color",
@@ -22,10 +22,10 @@ export const video_category: Category = {
 			name: "Playlist items hover background",
 			description: "Background color of playlist items when you hover over them.",
 			value: "#659aff33",
-			var_css: "--nt-playlist-hover-bg",
+			varCss: "--nt-playlist-hover-bg",
 		},
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "PlayerEdge",
 			name: "Round edges amount",
 			description: "Controls the roundness of the video player's corners.",
@@ -33,8 +33,8 @@ export const video_category: Category = {
 			min: 0,
 			max: 60,
 			step: 1,
-			var_css: "--nt-player-radius",
-			constant_css: `
+			varCss: "--nt-player-radius",
+			constantCss: `
       .html5-video-player {
         border-radius: var(--nt-player-radius, 20px) !important;
       }
@@ -46,7 +46,7 @@ export const video_category: Category = {
 			name: "Enable Chaning Video transition",
 			description: "Enable transition animation when the video starts.",
 			value: true,
-			enable_css: `
+			enableCss: `
       div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed) .html5-video-container {
         transition: all 1s, background 0.1s;
       }
@@ -63,8 +63,8 @@ export const video_category: Category = {
 			name: "Time-line background color",
 			description: "color of the timeline background.",
 			value: "#ffffff20",
-			var_css: "--nt-timeline-bg",
-			constant_css: `
+			varCss: "--nt-timeline-bg",
+			constantCss: `
       .ytp-progress-bar {
         background-color: var(--nt-timeline-bg, #ffffff20) !important;
       }
@@ -76,8 +76,8 @@ export const video_category: Category = {
 			name: "Time-line loaded color",
 			description: "color of the loaded progress on the timeline.",
 			value: "#ffffff50",
-			var_css: "--nt-timeline-load",
-			constant_css: `
+			varCss: "--nt-timeline-load",
+			constantCss: `
       .ytp-load-progress {
         background: var(--nt-timeline-load, #ffffff50) !important;
       }
@@ -89,8 +89,8 @@ export const video_category: Category = {
 			name: "End of video chanel hover background color",
 			description: "Background color when hovering over suggested videos at the end.",
 			value: "#00000050",
-			var_css: "--nt-endscreen-hover-bg",
-			constant_css: `
+			varCss: "--nt-endscreen-hover-bg",
+			constantCss: `
       .ytp-videowall-still:hover .ytp-videowall-still-info-content {
         background: var(--nt-endscreen-hover-bg, #00000050) !important;
       }
@@ -102,7 +102,7 @@ export const video_category: Category = {
 			name: "(Under Video) Move tittle to the center",
 			description: "Moves the video title to the center when in normal view.",
 			value: true,
-			enable_css: `
+			enableCss: `
       #title.ytd-watch-metadata, #container.ytd-video-primary-info-renderer {
         display: flex;
         flex-direction: column;
@@ -124,7 +124,7 @@ export const video_category: Category = {
 			name: "(Fullscreen) Move tittle to the center",
 			description: "Moves the video title to the center when in fullscreen/theater mode.",
 			value: true,
-			enable_css: `
+			enableCss: `
       .ytp-big-mode .ytp-title-text {
         text-align: center;
       }
@@ -137,7 +137,7 @@ export const video_category: Category = {
 			description:
 				"Automatically enters theater mode when you open a video. (May require a page reload to take effect)",
 			value: false,
-			enable_function: setup_auto_theater,
+			enableFunction: setupAutoTheater,
 		},
 		{
 			type: "checkbox",
@@ -145,7 +145,7 @@ export const video_category: Category = {
 			name: "Enable Full Theater (In Theater Mode)",
 			description: "Makes the video player take up the full height of the screen in theater mode.",
 			value: false,
-			enable_css: `
+			enableCss: `
       ytd-watch-flexy[theater] #full-bleed-container.ytd-watch-flexy {
         height: calc(100vh - 56px) !important;
         max-height: unset !important;
@@ -158,7 +158,7 @@ export const video_category: Category = {
 			name: "Auto Pictue In Pictue mode",
 			description: "Automatically enters Picture-in-Picture mode when you switch tabs or minimize the window.",
 			value: true,
-			enable_function: setup_auto_pip,
+			enableFunction: setupAutoPip,
 		},
 		{
 			type: "checkbox",
@@ -166,10 +166,10 @@ export const video_category: Category = {
 			name: "Auto exit Pictue In Pictue mode",
 			description: "Automatically exits Picture-in-Picture mode when you return to the tab.",
 			value: true,
-			enable_function: setup_auto_exit_pip,
+			enableFunction: setupAutoExitPip,
 		},
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "BelowSpace",
 			name: "Space at Under of video",
 			description: "Adds extra space below the video player.",
@@ -177,15 +177,15 @@ export const video_category: Category = {
 			min: 0,
 			max: 200,
 			step: 5,
-			var_css: "--nt-video-bottom-space",
-			constant_css: `
+			varCss: "--nt-video-bottom-space",
+			constantCss: `
       #below {
         margin-top: var(--nt-video-bottom-space, 0px) !important;
       }
     `,
 		},
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "WatchZoom",
 			name: "Watch page zoom",
 			description: "Zooms in or out on the watch page (video and details).",
@@ -193,15 +193,15 @@ export const video_category: Category = {
 			min: 0.5,
 			max: 1.5,
 			step: 0.05,
-			var_css: "--nt-watch-zoom",
-			constant_css: `
+			varCss: "--nt-watch-zoom",
+			constantCss: `
       #columns.ytd-watch-flexy {
         zoom: var(--nt-watch-zoom, 1) !important;
       }
     `,
 		},
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "PlaylistH",
 			name: "Playlist panel max height",
 			description: "Sets the maximum height of the playlist item list on the watch page.",
@@ -209,15 +209,15 @@ export const video_category: Category = {
 			min: 200,
 			max: 2000,
 			step: 10,
-			var_css: "--nt-playlist-height-normal",
-			constant_css: `
+			varCss: "--nt-playlist-height-normal",
+			constantCss: `
       #items.ytd-playlist-panel-renderer {
         max-height: var(--nt-playlist-height-normal, 600px) !important;
       }
     `,
 		},
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "PlaylistHFull",
 			name: "Playlist panel max height (Theater)",
 			description: "Sets the maximum height of the playlist item list when in theater mode.",
@@ -225,8 +225,8 @@ export const video_category: Category = {
 			min: 200,
 			max: 2000,
 			step: 10,
-			var_css: "--nt-playlist-height-theater",
-			constant_css: `
+			varCss: "--nt-playlist-height-theater",
+			constantCss: `
       ytd-watch-flexy[theater] #items.ytd-playlist-panel-renderer {
         max-height: var(--nt-playlist-height-theater, 800px) !important;
       }
@@ -238,7 +238,7 @@ export const video_category: Category = {
 			name: "Auto Remove YouTube's Ambient Mode",
 			description: "Automatically turns off YouTube's built-in ambient mode feature.",
 			value: true,
-			enable_function: setup_remove_ambient,
+			enableFunction: setupRemoveAmbient,
 		},
 		// Kept these as they fit in Video or can be moved to Enhancement if strict strict
 		{
@@ -247,7 +247,7 @@ export const video_category: Category = {
 			name: "Update URL Timestamp",
 			description: "Updates the URL with the current video timestamp every 10 seconds and on pause.",
 			value: false,
-			enable_function: setup_update_timestamp,
+			enableFunction: setupUpdateTimestamp,
 		},
 		{
 			type: "checkbox",
@@ -255,8 +255,8 @@ export const video_category: Category = {
 			name: "New video animation (Volume, Play/Pause)",
 			description: "Custom volume indicator and enhanced play/pause animations.",
 			value: true,
-			enable_function: setup_video_animations,
-			enable_css: `
+			enableFunction: setupVideoAnimations,
+			enableCss: `
       .newtube-vol-indicator {
         position: absolute;
         top: 10%;

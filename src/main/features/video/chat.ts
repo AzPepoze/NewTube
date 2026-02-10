@@ -1,15 +1,15 @@
-export function setup_auto_show_chat_replay() {
-	const try_click_chat = (attempts = 10) => {
+export function setupAutoShowChatReplay() {
+	const tryClickChat = (attempts = 10) => {
 		if (attempts <= 0) return;
 
-		const replay_button = document.querySelector("ytd-live-chat-frame[collapsed] button") as HTMLElement;
-		if (replay_button) {
-			replay_button.click();
+		const replayButton = document.querySelector("ytd-live-chat-frame[collapsed] button") as HTMLElement;
+		if (replayButton) {
+			replayButton.click();
 		} else {
-			setTimeout(() => try_click_chat(attempts - 1), 1000);
+			setTimeout(() => tryClickChat(attempts - 1), 1000);
 		}
 	};
 
-	try_click_chat();
-	window.addEventListener("yt-navigate-finish", () => setTimeout(() => try_click_chat(), 1000));
+	tryClickChat();
+	window.addEventListener("yt-navigate-finish", () => setTimeout(() => tryClickChat(), 1000));
 }

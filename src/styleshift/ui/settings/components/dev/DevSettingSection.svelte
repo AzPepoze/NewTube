@@ -1,11 +1,12 @@
 <script lang="ts">
 	import DevCard from "./DevCard.svelte";
-	import { settings_ui } from "../../setting-components";
+	import { settingsUi } from "../../settingComponents";
 	import { fly, fade } from "svelte/transition";
 	import { untrack } from "svelte";
 	import CapsuleTabs from "../../../components/general/CapsuleTabs.svelte";
-	import { execute_script_string } from "@/styleshift/core/runtime-controller";
+	import { executeScriptString } from "@/styleshift/core/runtimeController";
 	import Icon from "../main/Icon.svelte";
+	import { handleLogicUpdate } from "./handler";
 
 	let { setting, runType, extArray = ["function", "css"], onUpdateConfig, isWorkspace = false } = $props();
 
@@ -35,7 +36,7 @@
 	const extOptions = $derived(
 		extArray.map((ext) => ({
 			id: ext,
-			label: ext === "function" ? "JS" : ext === "css" ? "CSS" : ext,
+			label: ext.toLowerCase() === "function" ? "JS" : ext.toLowerCase() === "css" ? "CSS" : ext,
 		})),
 	);
 
@@ -49,34 +50,32 @@
 	let color = $derived(colorMap[runType as keyof typeof colorMap] || "#999999");
 
 	function handleRunScript() {
-		const property = `${runType}_${activeExt}`;
+		const property = runType + activeExt;
 		const script = setting[property];
 		if (script) {
-			execute_script_string({
-				script_content: script,
-				should_sanitize: true,
-				source_identifier: `Manual Run: ${property}`,
+			executeScriptString({
+				scriptContent: script,
+				shouldSanitize: true,
+				sourceIdentifier: `Manual Run: ${property}`,
 			});
 		}
 	}
 
 	function renderEditor(node: HTMLElement, ext: string) {
 		const div = node as HTMLDivElement;
-		let typeName = ext === "function" ? "JS" : ext === "css" ? "CSS" : ext;
+		let typeName = ext.toLowerCase() === "function" ? "JS" : ext.toLowerCase() === "css" ? "CSS" : ext;
 		const typeLangMap: Record<string, string> = { JS: "javascript", CSS: "css" };
 
 		(async () => {
 			div.innerHTML = "";
-			const editor = await settings_ui.code_editor(
+			const editor = await settingsUi.codeEditor(
 				div,
 				setting,
-				runType + "_" + ext,
+				runType + ext,
 				typeLangMap[typeName] || typeLangMap[ext] || typeName,
 				isWorkspace ? 550 : runType == "var" ? 100 : 400,
 			);
-			if (onUpdateConfig) {
-				editor.more_onchange(onUpdateConfig);
-			}
+			editor.afterOnChange(() => handleLogicUpdate(onUpdateConfig));
 		})();
 	}
 
@@ -84,22 +83,20 @@
 		const div = node as HTMLDivElement;
 		(async () => {
 			for (const ext of extArray) {
-				let typeName = ext === "function" ? "JS" : ext === "css" ? "CSS" : ext;
+				let typeName = ext.toLowerCase() === "function" ? "JS" : ext.toLowerCase() === "css" ? "CSS" : ext;
 				const item = document.createElement("div");
 				item.style.marginBottom = "20px";
 				div.appendChild(item);
 
 				const typeLangMap: Record<string, string> = { JS: "javascript", CSS: "css" };
-				const editor = await settings_ui.code_editor(
+				const editor = await settingsUi.codeEditor(
 					item,
 					setting,
-					runType + "_" + ext,
+					runType + ext,
 					typeLangMap[typeName] || typeLangMap[ext] || typeName,
 					runType == "var" ? 100 : 400,
 				);
-				if (onUpdateConfig) {
-					editor.more_onchange(onUpdateConfig);
-				}
+				editor.afterOnChange(() => handleLogicUpdate(onUpdateConfig));
 			}
 		})();
 	}
@@ -111,7 +108,7 @@
 			<div class="section-title-group">
 				<span class="section-title">{title}</span>
 				<div class="section-status-dot"></div>
-				{#if activeExt === "function"}
+				{#if activeExt.toLowerCase() === "function"}
 					<button class="run-script-btn" onclick={handleRunScript} title="Run Script">
 						<Icon name="code" size={14} />
 						Run
@@ -129,7 +126,7 @@
 		</header>
 
 		<div class="section-editor-area">
-			{#each extArray as ext}
+			{#each extArray as ext (ext)}
 				{#if activeExt === ext}
 					<div
 						class="editor-mount"
@@ -143,9 +140,7 @@
 	</div>
 {:else}
 	<DevCard {title} {color}>
-		{#snippet children()}
-			<div use:renderLegacyContent></div>
-		{/snippet}
+		<div use:renderLegacyContent></div>
 	</DevCard>
 {/if}
 

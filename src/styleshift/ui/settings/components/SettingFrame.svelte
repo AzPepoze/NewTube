@@ -31,32 +31,43 @@
 		className?: string;
 	} = $props();
 
-	const role = $derived(roleProp ?? (clickable ? "button" : undefined));
-	const tabindex = $derived(tabindexProp ?? (clickable ? 0 : undefined));
+	const isButton = $derived(clickable);
+	const role = $derived(roleProp ?? (isButton ? "button" : (tabindexProp !== undefined ? "region" : undefined)));
+	const tabindex = $derived(tabindexProp ?? (isButton ? 0 : undefined));
+
+	function handleKeyDown(e: KeyboardEvent) {
+		if (onKeyDown) {
+			onKeyDown(e);
+		} else if (isButton && (e.key === "Enter" || e.key === " ")) {
+			e.preventDefault();
+			onClick?.(e as any);
+		}
+	}
 
 	function applyAction(node: HTMLElement) {
 		if (useAction) return useAction(node);
 	}
 </script>
 
-<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-<div
+<svelte:element
+	this={isButton ? "button" : "div"}
+	type={isButton ? "button" : undefined}
 	class="STYLESHIFT-Setting-Frame {className}"
-	{id}
-	data-settingtype={type}
 	class:vertical
 	class:clickable
 	class:no-padding={!padding}
 	class:transparent
-	onclick={onClick}
-	onkeydown={onKeyDown}
+	{id}
 	{role}
 	{tabindex}
 	{style}
+	data-settingtype={type}
+	onclick={onClick}
+	onkeydown={handleKeyDown}
 	use:applyAction
 >
 	{@render children()}
-</div>
+</svelte:element>
 
 <style lang="scss">
 	.STYLESHIFT-Setting-Frame {
@@ -70,6 +81,12 @@
 		user-select: none;
 		border-radius: 20px;
 		position: relative;
+		background: none;
+		border: none;
+		color: inherit;
+		font: inherit;
+		text-align: left;
+		cursor: default;
 
 		&.no-padding {
 			padding: 0;

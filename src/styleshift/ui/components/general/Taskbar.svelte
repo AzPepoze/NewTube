@@ -1,23 +1,23 @@
 <script lang="ts">
 	import { fade, scale } from "svelte/transition";
-	import { get_asset_url } from "@ui/utils";
-	import { window_manager } from "../../window-manager.svelte";
+	import { getAssetUrl } from "@ui/utils";
+	import { windowManager } from "../../windowManager.svelte";
 
-	function handle_restore(id: string, restore: () => void) {
+	function handleRestore(id: string, restore: () => void) {
 		restore();
-		window_manager.remove_window(id);
+		windowManager.removeWindow(id);
 	}
 </script>
 
-{#if window_manager.minimized_windows.length > 0}
+{#if windowManager.minimizedWindows.length > 0}
 	<div class="STYLESHIFT-Taskbar" in:fade={{ duration: 300 }} out:fade={{ duration: 200 }}>
-		{#each window_manager.minimized_windows as window (window.id)}
+		{#each windowManager.minimizedWindows as window (window.id)}
 			<button
 				class="taskbar-item"
-				onclick={() => handle_restore(window.id, window.restore)}
+				onclick={() => handleRestore(window.id, window.restore)}
 				in:scale={{ duration: 400, start: 0.8 }}
 			>
-				<img src={get_asset_url("icon/32.png")} alt="" />
+				<img src={getAssetUrl("icon/32.png")} alt="" />
 				<span>{window.title}</span>
 			</button>
 		{/each}

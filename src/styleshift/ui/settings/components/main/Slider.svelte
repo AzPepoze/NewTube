@@ -1,22 +1,22 @@
 <script lang="ts">
 	import type { Setting } from "@styleshift/types/store";
 	import Description from "./Description.svelte";
-	import { get_from_storage, get_root_value } from "@/styleshift/core/storage-manager";
-	import { set_and_save } from "@ui/settings/setting-components";
-	import { trigger_setting_update } from "@settings/functions";
-	import { sequenced_task } from "@functions/normal";
+	import { getFromStorage, getRootValue } from "@/styleshift/core/storageManager";
+	import { setAndSave } from "@ui/settings/settingComponents";
+	import { triggerSettingUpdate } from "@settings/functions";
+	import { sequencedTask } from "@functions/normal";
 
 	let {
 		setting,
 	}: {
-		setting: Extract<Setting, { type: "number_slide" }>;
+		setting: Extract<Setting, { type: "numberSlide" }>;
 	} = $props();
 
 	let value = $state(0);
 
 	async function init() {
 		if (setting.id) {
-			value = await get_from_storage(setting.id);
+			value = await getFromStorage(setting.id);
 		} else {
 			value = setting.value;
 		}
@@ -33,17 +33,17 @@
 
 	async function handleUpdate() {
 		if (setting.id) {
-			await set_and_save(setting, value);
-			await trigger_setting_update(setting.id);
-		} else if (typeof setting.update_function === "function") {
-			await setting.update_function(value);
+			await setAndSave(setting, value);
+			await triggerSettingUpdate(setting.id);
+		} else if (typeof setting.updateFunction === "function") {
+			await setting.updateFunction(value);
 		}
 	}
 
-	const sequencedUpdate = sequenced_task(handleUpdate);
+	const sequencedUpdate = sequencedTask(handleUpdate);
 
 	async function handleInput() {
-		if (await get_root_value("Realtime_Extension")) {
+		if (await getRootValue("Realtime_Extension")) {
 			sequencedUpdate();
 		}
 	}

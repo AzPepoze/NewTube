@@ -1,33 +1,33 @@
-export function setup_flyout() {
+export function setupFlyout() {
 	const observer = new IntersectionObserver(
 		(entries) => {
 			entries.forEach((entry) => {
-				const movie_player = document.querySelector("#movie_player") as HTMLElement;
-				if (!movie_player) return;
+				const moviePlayer = document.querySelector("#moviePlayer") as HTMLElement;
+				if (!moviePlayer) return;
 
 				// If element is NOT intersecting AND it is above the viewport (top < 0)
 				if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
-					movie_player.classList.add("newtube-flyout-mode");
+					moviePlayer.classList.add("newtube-flyout-mode");
 				} else if (entry.isIntersecting) {
-					movie_player.classList.remove("newtube-flyout-mode");
+					moviePlayer.classList.remove("newtube-flyout-mode");
 				}
 			});
 		},
 		{ threshold: 0 },
 	);
 
-	const start_observing = () => {
-		const player_container = document.querySelector("#player-container");
-		if (player_container) {
+	const startObserving = () => {
+		const playerContainer = document.querySelector("#player-container");
+		if (playerContainer) {
 			observer.disconnect();
-			observer.observe(player_container);
+			observer.observe(playerContainer);
 		}
 	};
 
-	start_observing();
+	startObserving();
 	window.addEventListener("yt-navigate-finish", () => {
-		const movie_player = document.querySelector("#movie_player");
-		if (movie_player) movie_player.classList.remove("newtube-flyout-mode");
-		setTimeout(start_observing, 1000);
+		const moviePlayer = document.querySelector("#moviePlayer");
+		if (moviePlayer) moviePlayer.classList.remove("newtube-flyout-mode");
+		setTimeout(startObserving, 1000);
 	});
 }

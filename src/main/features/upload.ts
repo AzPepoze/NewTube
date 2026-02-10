@@ -1,26 +1,26 @@
 // Declare global variable for TS (will be defined by esbuild)
-declare const imgbb_api_key: string;
+declare const imgbbApiKey: string;
 
-export async function upload_to_imgbb(file: File, on_progress?: (percent: number) => void): Promise<string | null> {
+export async function uploadToImgbb(file: File, onProgress?: (percent: number) => void): Promise<string | null> {
 	// Check if API key is defined (injected by build process)
-	const api_key = typeof imgbb_api_key !== "undefined" ? imgbb_api_key : "";
+	const apiKey = typeof imgbbApiKey !== "undefined" ? imgbbApiKey : "";
 
-	if (!api_key) {
+	if (!apiKey) {
 		alert("ImgBB API Key not found! Please check build configuration.");
 		return null;
 	}
 
-	const form_data = new FormData();
-	form_data.append("image", file);
+	const formData = new FormData();
+	formData.append("image", file);
 
 	return new Promise((resolve, reject) => {
 		const xhr = new XMLHttpRequest();
-		xhr.open("POST", `https://api.imgbb.com/1/upload?key=${api_key}`);
+		xhr.open("POST", `https://api.imgbb.com/1/upload?key=${apiKey}`);
 
 		xhr.upload.onprogress = (e) => {
-			if (e.lengthComputable && on_progress) {
+			if (e.lengthComputable && onProgress) {
 				const percent = (e.loaded / e.total) * 100;
-				on_progress(percent);
+				onProgress(percent);
 			}
 		};
 
@@ -42,11 +42,11 @@ export async function upload_to_imgbb(file: File, on_progress?: (percent: number
 		};
 
 		xhr.onerror = () => reject("Network error");
-		xhr.send(form_data);
+		xhr.send(formData);
 	});
 }
 
-export function create_loading_bar(): { update: (p: number) => void; remove: () => void } {
+export function createLoadingBar(): { update: (p: number) => void; remove: () => void } {
 	const container = document.createElement("div");
 	container.id = "newtube-upload-progress";
 	container.style.cssText = `

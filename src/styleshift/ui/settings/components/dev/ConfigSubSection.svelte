@@ -7,10 +7,10 @@
 	let activeSection = $state("");
 
 	const propertyTypeMap = {
-		0: ["css", "function"],
-		1: ["var"],
-		2: ["css"],
-		3: ["function"],
+		0: ["Css", "Function"],
+		1: ["Css"],
+		2: ["Css"],
+		3: ["Function"],
 	};
 
 	function getExtArray(property: any) {
@@ -20,7 +20,7 @@
 		return property;
 	}
 
-	const sections = $derived(Object.entries(props).filter(([title]) => title !== "update_config"));
+	const sections = $derived(Object.entries(props).filter(([title]) => title !== "updateConfig"));
 
 	$effect(() => {
 		if (sections.length > 0 && !activeSection) {
@@ -53,7 +53,7 @@
 
 <div class="STYLESHIFT-Config-Sub-Section">
 	<aside class="logic-sidebar">
-		{#each sections as [title, property]}
+		{#each sections as [title, _property] (title)}
 			<button
 				class="logic-nav-item"
 				class:active={activeSection === title}
@@ -67,7 +67,7 @@
 	</aside>
 
 	<div class="logic-workspace-area">
-		{#each sections as [title, property]}
+		{#each sections as [title, property] (title)}
 			{#if activeSection === title}
 				<div
 					class="workspace-mount"
@@ -78,7 +78,7 @@
 						{setting}
 						runType={title}
 						extArray={getExtArray(property)}
-						onUpdateConfig={props.update_config}
+						onUpdateConfig={props.updateConfig}
 						isWorkspace={true}
 					/>
 				</div>

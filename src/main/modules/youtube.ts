@@ -1,11 +1,11 @@
-import { wait_for_element } from "../../styleshift/build-in-functions/normal";
+import { waitForElement } from "../../styleshift/buildInFunctions/normal";
 
-export let ytd_app: HTMLElement | null = null;
+export let ytdApp: HTMLElement | null = null;
 
-export async function get_ytd_app() {
-	if (!ytd_app) {
-		ytd_app = await wait_for_element("ytd-app");
+export async function getYtdApp() {
+	if (!ytdApp) {
+		ytdApp = await waitForElement("ytd-app");
 	}
 
-	return ytd_app;
+	return ytdApp;
 }

@@ -10,25 +10,23 @@
 	import ImageInput from "./ImageInput.svelte";
 	import PreviewImage from "./PreviewImage.svelte";
 	import Icon from "./Icon.svelte";
-	import { get_from_storage, get_root_value } from "@/styleshift/core/storage-manager";
-	import { settings_ui, set_and_save } from "@ui/settings/setting-components";
-	import { trigger_setting_update } from "@settings/functions";
-	import { execute_setting_script, execute_script_string } from "@/styleshift/core/runtime-controller";
-	import { color_obj_to_hex, hex_to_color_obj } from "@styleshift/utils/colors";
-	import { remove_setting } from "@settings/items";
-	import { refresh_extension_state } from "@/styleshift/run";
-	import { show_config_ui, remove_config_ui } from "@ui/config";
-	import { create_unique_id } from "@functions/normal";
+	import { getFromStorage, getRootValue } from "@/styleshift/core/storageManager";
+	import { settingsUi } from "@ui/settings/settingComponents";
+	import { executeScriptString } from "@/styleshift/core/runtimeController";
+	import { removeSetting } from "@settings/items";
+	import { refreshExtensionState } from "@/styleshift/run";
+	import { showConfigUi, removeConfigUi } from "@ui/config";
+	import { createUniqueId } from "@functions/normal";
 	import Description from "./Description.svelte";
 	import { highlight as highlightAction } from "@ui/settings/highlight";
 	import SettingFrame from "../SettingFrame.svelte";
-	import { add_drag, add_drop_target } from "../../reorder";
-	import { get_text_align } from "../../utils";
+	import { addDrag, addDropTarget } from "../../reorder";
+	import { getTextAlign } from "../../utils";
 
 	let {
 		setting,
 		highlight = "",
-		onUpdate: externalOnUpdate,
+		onUpdate: _externalOnUpdate,
 	}: {
 		setting: Setting;
 		highlight?: string;
@@ -39,38 +37,25 @@
 	let isDeveloperMode = $state(false);
 	let domNode = $state<HTMLElement | null>(null);
 
-	const textAlign = $derived(get_text_align((setting as any).align));
+	const textAlign = $derived(getTextAlign((setting as any).align));
 
 	// Initialize value from storage
 	async function init() {
-		isDeveloperMode = (await get_root_value("Developer_mode")) && (setting.editable ?? false);
+		isDeveloperMode = (await getRootValue("Developer_mode")) && (setting.editable ?? false);
 		if ("id" in setting && setting.id) {
-			value = await get_from_storage(setting.id);
+			value = await getFromStorage(setting.id);
 		} else if ("value" in setting) {
 			value = setting.value;
 		}
 	}
 	init();
 
-	async function handleUpdate(newValue: any) {
-		value = newValue;
-
-		if (externalOnUpdate) externalOnUpdate(newValue);
-
-		if ("id" in setting && setting.id) {
-			await set_and_save(setting, newValue);
-			trigger_setting_update(setting.id);
-		} else if ("update_function" in setting && typeof setting.update_function === "function") {
-			(setting.update_function as Function)(newValue);
-		}
-	}
-
 	async function handleEdit() {
-		show_config_ui(async (parent: HTMLElement) => {
-			settings_ui.config_editor_renderer(
+		showConfigUi(async (parent: HTMLElement) => {
+			settingsUi.configEditorRenderer(
 				{
 					setting: setting,
-					onClose: () => remove_config_ui(),
+					onClose: () => removeConfigUi(),
 				},
 				parent,
 			);
@@ -78,15 +63,15 @@
 	}
 
 	function customSettingAction(node: HTMLElement) {
-		node.id = setting.id || create_unique_id(10);
+		node.id = setting.id || createUniqueId(10);
 		if (setting.type === "custom") {
-			if (typeof setting.ui_function === "function") {
-				setting.ui_function(node);
-			} else if (typeof setting.ui_function === "string") {
-				execute_script_string({
-					script_content: setting.ui_function,
-					source_identifier: `${setting.id} : ui_function`,
-					execution_arguments: JSON.stringify({ setting_id: node.id }),
+			if (typeof setting.uiFunction === "function") {
+				setting.uiFunction(node);
+			} else if (typeof setting.uiFunction === "string") {
+				executeScriptString({
+					scriptContent: setting.uiFunction,
+					sourceIdentifier: `${setting.id} : uiFunction`,
+					executionArguments: JSON.stringify({ settingId: node.id }),
 				});
 			}
 		}
@@ -94,13 +79,13 @@
 
 	function dragAction(node: HTMLElement) {
 		if (isDeveloperMode) {
-			add_drag(node, null, null, setting);
+			addDrag(node, null, null, setting);
 		}
 	}
 
 	$effect(() => {
 		if (isDeveloperMode && domNode && domNode.parentElement) {
-			add_drop_target(domNode, domNode.parentElement, setting, "setting");
+			addDropTarget(domNode, domNode.parentElement, setting, "setting");
 		}
 	});
 </script>
@@ -109,17 +94,17 @@
 	id={setting.id}
 	type={setting.type}
 	className={isDeveloperMode ? "developer-mode" : ""}
-	style={isDeveloperMode && setting.type !== "sub_text" && setting.type !== "text" ? "gap: 10px;" : ""}
+	style={isDeveloperMode && setting.type !== "subText" && setting.type !== "text" ? "gap: 10px;" : ""}
 	useAction={(node) => {
 		domNode = node;
 		highlightAction(node, highlight);
 	}}
-	padding={setting.type !== "button" && setting.type !== "sub_text"}
-	transparent={setting.type === "button" || setting.type === "sub_text" || setting.type === "text"}
-	vertical={setting.type === "number_slide" ||
+	padding={setting.type !== "button" && setting.type !== "subText"}
+	transparent={setting.type === "button" || setting.type === "subText" || setting.type === "text"}
+	vertical={setting.type === "numberSlide" ||
 		setting.type === "color" ||
 		setting.type === "custom" ||
-		setting.type === "image_input"}
+		setting.type === "imageInput"}
 >
 	{#if isDeveloperMode}
 		<button class="STYLESHIFT-Config-Button drag-handle" use:dragAction>
@@ -131,31 +116,31 @@
 		<Checkbox {setting} />
 	{:else if setting.type === "button"}
 		<Button {setting} />
-	{:else if setting.type === "number_slide"}
+	{:else if setting.type === "numberSlide"}
 		<Slider {setting} />
-	{:else if setting.type === "text_input"}
+	{:else if setting.type === "textInput"}
 		<TextInput {setting} />
 	{:else if setting.type === "color"}
 		<ColorPicker {setting} />
 	{:else if setting.type === "dropdown"}
 		<Dropdown {setting} />
 	{:else if setting.type === "text"}
-		<Text html={setting.html} fontSize={setting.font_size} {textAlign} />
-	{:else if setting.type === "sub_text"}
+		<Text html={setting.html} fontSize={setting.fontSize} {textAlign} />
+	{:else if setting.type === "subText"}
 		<Text
 			text={setting.text}
-			fontSize={setting.font_size}
+			fontSize={setting.fontSize}
 			color={setting.color}
 			{textAlign}
 			className="STYLESHIFT-Setting-Sub-Title"
 		/>
-	{:else if setting.type === "image_input"}
+	{:else if setting.type === "imageInput"}
 		<ImageInput {setting} />
-	{:else if setting.type === "preview_image"}
+	{:else if setting.type === "previewImage"}
 		<PreviewImage src={value} />
 	{:else if setting.type === "custom"}
 		<div use:customSettingAction></div>
-	{:else if setting.type === "combine_settings"}
+	{:else if setting.type === "combineSettings"}
 		<Description name={setting.name} description={setting.description} />
 	{/if}
 
@@ -167,8 +152,8 @@
 			<button
 				class="STYLESHIFT-Config-Button delete"
 				onclick={() => {
-					remove_setting(setting);
-					refresh_extension_state();
+					removeSetting(setting);
+					refreshExtensionState();
 				}}
 			>
 				<Icon name="delete" size={16} />

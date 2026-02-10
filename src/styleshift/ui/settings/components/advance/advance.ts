@@ -1,10 +1,9 @@
-import { apply_drag, sequenced_task } from "@functions/normal";
-import { persist_and_refresh_all } from "../../../../core/runtime-controller";
-import { get_root_value } from "@/styleshift/core/storage-manager";
-import { trigger_setting_update } from "@settings/functions";
+import { applyDrag, sequencedTask } from "@functions/normal";
+import { getRootValue } from "@/styleshift/core/storageManager";
+import { triggerSettingUpdate } from "@settings/functions";
 import { Category } from "@styleshift/types/store";
-import { settings_ui } from "@ui/settings/setting-components";
-import { create_config_ui_function, setup_left_title_animation } from "@ui/settings/settings";
+import { settingsUi } from "@ui/settings/settingComponents";
+import { createConfigUiFunction, setupLeftTitleAnimation } from "@ui/settings/settings";
 
 import FrameComponent from "./Frame.svelte";
 import SpaceComponent from "./Space.svelte";
@@ -24,163 +23,167 @@ import CollapseSectionComponent from "./CollapseSection.svelte";
 import ResizeHandleComponent from "./ResizeHandle.svelte";
 import { unmount, mount } from "svelte";
 
-export function resize_handle(target: HTMLElement, position: "top" | "right" | "bottom" | "left" = "right") {
-	return settings_ui.render_component(ResizeHandleComponent, {
+export function resizeHandle(target: HTMLElement, position: "top" | "right" | "bottom" | "left" = "right") {
+	return settingsUi.renderComponent(ResizeHandleComponent, {
 		target,
 		position,
 	}) as HTMLDivElement;
 }
 
-export function fill_screen(fill_bg: boolean = true) {
-	return settings_ui.render_component(FrameComponent, {
+export function fillScreen(fillBg: boolean = true) {
+	return settingsUi.renderComponent(FrameComponent, {
 		className: "STYLESHIFT-FillScreen",
-		transparent: !fill_bg,
-		style: fill_bg ? "" : "pointer-events: none;",
+		transparent: !fillBg,
+		style: fillBg ? "" : "pointer-events: none;",
 	}) as HTMLDivElement;
 }
 
-export function setting_frame(
+export function settingFrame(
 	padding: boolean = true,
 	vertical: boolean = true,
 	center: { x: boolean; y: boolean } = { x: false, y: false },
 	transparent = false,
-	class_name: string = "",
+	className: string = "",
 ) {
-	return settings_ui.render_component(FrameComponent, {
+	return settingsUi.renderComponent(FrameComponent, {
 		padding,
 		vertical,
 		centerX: center.x,
 		centerY: center.y,
 		transparent,
-		className: class_name,
+		className: className,
 	}) as HTMLDivElement;
 }
 
-export function file_input(callback: (file: File) => void, type: string | null = null) {
-	return settings_ui.render_component(FileInputComponent, {
+export function fileInput(callback: (file: File) => void, type: string | null = null) {
+	return settingsUi.renderComponent(FileInputComponent, {
 		accept: type,
 		onFileSelect: callback,
 	}) as HTMLDivElement;
 }
 
-export function text_editor(obj: any = {}, key: string = "") {
-	let more_onchange: ((value: string) => void) | null = null;
-	let rearrange_value: ((value: string) => Promise<string> | string) | null = null;
+export function textEditor(obj: any = {}, key: string = "") {
+	let afterOnChange: ((value: string) => void) | null = null;
+	let rearrangeValue: ((value: string) => Promise<string> | string) | null = null;
 
-	let on_change = sequenced_task(async function (value: string) {
+	let onChange = sequencedTask(async function (value: string) {
 		obj[key] = value;
-		await persist_and_refresh_all();
-		if (more_onchange) {
-			more_onchange(value);
+		if (afterOnChange) {
+			afterOnChange(value);
 		}
 	});
 
-	const text_editor = settings_ui.render_component(TextEditorComponent, {
+	const textEditor = settingsUi.renderComponent(TextEditorComponent, {
 		value: obj[key] || "",
 		onInput: async (val: string) => {
-			if (await get_root_value("Realtime_Extension")) {
-				on_change(val);
+			if (await getRootValue("Realtime_Extension")) {
+				onChange(val);
 			}
 		},
 		onBlur: async (val: string) => {
-			let final_value = val;
-			if (rearrange_value) {
-				final_value = await rearrange_value(final_value);
+			let finalValue = val;
+			if (rearrangeValue) {
+				finalValue = await rearrangeValue(finalValue);
 			}
-			on_change(final_value);
+			onChange(finalValue);
 		},
 	} as any) as HTMLTextAreaElement;
 
 	return {
-		text_editor: text_editor,
-		on_change: function (callback: (value: string) => void | Promise<void>) {
-			on_change = callback as any;
+		textEditor: textEditor,
+		onChange: function (callback: (value: string) => void | Promise<void>) {
+			onChange = callback as any;
 		},
-		more_onchange: function (callback: (value: string) => void) {
-			more_onchange = callback;
+		afterOnChange: function (callback: (value: string) => void) {
+			afterOnChange = callback;
 		},
-		rearrange_value: function (callback: (value: string) => Promise<string> | string) {
-			rearrange_value = callback;
+		rearrangeValue: function (callback: (value: string) => Promise<string> | string) {
+			rearrangeValue = callback;
 		},
 	};
 }
 
-export async function code_editor(parent: HTMLDivElement, obj: any, key: string, language: string, height: number = 400) {
-	let more_onchange: ((value: string) => void) | null = null;
-	let rearrange_value: ((value: string) => Promise<string> | string) | null = null;
+export async function codeEditor(
+	parent: HTMLDivElement,
+	obj: any,
+	key: string,
+	language: string,
+	height: number = 400,
+) {
+	let afterOnChange: ((value: string) => void) | null = null;
+	let rearrangeValue: ((value: string) => Promise<string> | string) | null = null;
 
-	let on_change = sequenced_task(async function (value: string) {
+	let onChange = sequencedTask(async function (value: string) {
 		obj[key] = value;
-		await persist_and_refresh_all();
 
 		if (obj["id"]) {
-			trigger_setting_update(obj["id"]);
+			triggerSettingUpdate(obj["id"]);
 		}
 
-		if (more_onchange) {
-			more_onchange(value);
+		if (afterOnChange) {
+			afterOnChange(value);
 		}
 	});
 
 	const target = document.createElement("div");
 	parent.append(target);
-	const code_editor_instance = settings_ui.render_component(
+	const codeEditorInstance = settingsUi.renderComponent(
 		CodeEditorComponent as any,
 		{
 			value: obj[key] || "",
 			language: language,
 			height: height,
 			onInput: async (val: string) => {
-				if (await get_root_value("Realtime_Extension")) {
-					on_change(val);
+				if (await getRootValue("Realtime_Extension")) {
+					onChange(val);
 				}
 			},
 			onBlur: async (val: string) => {
-				let final_value = val;
-				if (rearrange_value) {
-					final_value = await rearrange_value(final_value);
-					(code_editor_instance as any).setValue?.(final_value);
+				let finalValue = val;
+				if (rearrangeValue) {
+					finalValue = await rearrangeValue(finalValue);
+					(codeEditorInstance as any).setValue?.(finalValue);
 				}
-				on_change(final_value);
+				onChange(finalValue);
 			},
 		} as any,
 		target,
 	);
 
 	return {
-		on_change: function (callback: (value: string) => void | Promise<void>) {
-			on_change = callback as any;
+		onChange: function (callback: (value: string) => void | Promise<void>) {
+			onChange = callback as any;
 		},
-		more_onchange: function (callback: (value: string) => void) {
-			more_onchange = callback;
+		afterOnChange: function (callback: (value: string) => void) {
+			afterOnChange = callback;
 		},
-		rearrange_value: function (callback: (value: string) => Promise<string> | string) {
-			rearrange_value = callback;
+		rearrangeValue: function (callback: (value: string) => Promise<string> | string) {
+			rearrangeValue = callback;
 		},
 	};
 }
 
-export function setting_name(text: string, position: "left" | "center" | "right" = "left") {
-	return settings_ui.render_component(SettingNameComponent, {
+export function settingName(text: string, position: "left" | "center" | "right" = "left") {
+	return settingsUi.renderComponent(SettingNameComponent, {
 		text,
 		align: position,
 	}) as HTMLDivElement;
 }
 
 export function drag(target: HTMLElement) {
-	const drag = settings_ui.render_component(IconButtonComponent, {
+	const drag = settingsUi.renderComponent(IconButtonComponent, {
 		icon: dragIcon,
 		className: "STYLESHIFT-Drag-Top",
 		size: 20,
 		onClick: () => {},
 	}) as HTMLDivElement;
 
-	apply_drag(drag, target);
+	applyDrag(drag, target);
 	return drag;
 }
 
 export function close() {
-	return settings_ui.render_component(IconButtonComponent, {
+	return settingsUi.renderComponent(IconButtonComponent, {
 		icon: closeIcon,
 		className: "STYLESHIFT-Close",
 		size: 20,
@@ -188,74 +191,77 @@ export function close() {
 	}) as HTMLDivElement;
 }
 
-export async function title(this_category: Category) {
+export async function title(thisCategory: Category) {
 	const target = document.createElement("div");
 
-	function update_ui() {
+	function updateUi() {
 		target.innerHTML = "";
-		settings_ui.render_component(
+		settingsUi.renderComponent(
 			TitleComponent,
 			{
-				text: this_category.category,
-				rainbow: this_category.rainbow,
+				text: thisCategory.category,
+				rainbow: thisCategory.rainbow,
 			},
 			target,
 		);
 	}
-	update_ui();
+	updateUi();
 
 	const frame = target as HTMLDivElement;
 
-	const config_ui_function = await create_config_ui_function(this_category.editable, async function (parent: HTMLDivElement) {
-		await settings_ui.config_main_section(
-			parent,
-			this_category,
-			{
-				name: ["Category", frame],
-				Selector: "Selector",
-				Rainbow: "Rainbow",
-			},
-			update_ui,
-		);
-	});
+	const configUiFunction = await createConfigUiFunction(
+		thisCategory.editable,
+		async function (parent: HTMLDivElement) {
+			await settingsUi.configMainSection(
+				parent,
+				thisCategory,
+				{
+					name: ["Category", frame],
+					Selector: "Selector",
+					Rainbow: "Rainbow",
+				},
+				updateUi,
+			);
+		},
+	);
 
-	return { frame, config_ui_function };
+	return { frame, configUiFunction };
 }
 
-export function left_title(category: string, skip_animation: boolean) {
-	const title = settings_ui.render_component(LeftTitleComponent, {
+export function leftTitle(category: string, skipAnimation: boolean) {
+	const title = settingsUi.renderComponent(LeftTitleComponent, {
 		category,
-		skipAnimation: skip_animation,
+		skipAnimation: skipAnimation,
 	}) as HTMLDivElement;
 
-	if (!skip_animation) {
-		setup_left_title_animation(title);
+	if (!skipAnimation) {
+		setupLeftTitleAnimation(title);
 	}
 
 	return title;
 }
 
-export function sub_title(text: string) {
-	return settings_ui.render_component(TitleComponent, {
+export function subTitle(text: string) {
+	return settingsUi.renderComponent(TitleComponent, {
 		text,
 		subtitle: true,
 	}) as HTMLDivElement;
 }
 
-export async function collapsed_button(button_name: string, color: string, target_element: HTMLElement) {
-	const parent = target_element.parentElement;
+export async function collapsedButton(buttonName: string, color: string, targetElement: HTMLElement) {
+	const parent = targetElement.parentElement;
 	const target = document.createElement("div");
 
 	if (parent) {
-		parent.insertBefore(target, target_element);
+		parent.insertBefore(target, targetElement);
 	}
 
-	const _component = settings_ui.render_component(
+	const _component = settingsUi.renderComponent(
 		CollapseSectionComponent,
 		{
-			buttonName: button_name,
+			buttonName: buttonName,
 			color: color,
-			contentEl: target_element,
+			contentEl: targetElement,
 		},
 		target,
 	);
@@ -263,15 +269,15 @@ export async function collapsed_button(button_name: string, color: string, targe
 	return { button: (target.firstElementChild as HTMLDivElement) || target };
 }
 
-export function show_dropdown(options: unknown, target: HTMLElement) {
-	let resolve_selection: (value: string | null) => void;
-	const selection_promise = new Promise<string | null>((resolve) => {
-		resolve_selection = resolve;
+export function showDropdown(options: unknown, target: HTMLElement) {
+	let resolveSelection: (value: string | null) => void;
+	const selectionPromise = new Promise<string | null>((resolve) => {
+		resolveSelection = resolve;
 	});
 
 	const container = document.createElement("div");
-	const main_window = document.querySelector(".STYLESHIFT-Main.STYLESHIFT-Window");
-	(main_window || document.body).appendChild(container);
+	const mainWindow = document.querySelector(".STYLESHIFT-Main.STYLESHIFT-Window");
+	(mainWindow || document.body).appendChild(container);
 
 	const dropdown = mount(DropdownComponent as any, {
 		target: container,
@@ -281,17 +287,17 @@ export function show_dropdown(options: unknown, target: HTMLElement) {
 			isOpen: true,
 			justMenu: true,
 			onUpdate: (option: string) => {
-				resolve_selection(option);
-				remove_dropdown();
+				resolveSelection(option);
+				removeDropdown();
 			},
 			onClose: () => {
-				resolve_selection(null);
-				remove_dropdown();
+				resolveSelection(null);
+				removeDropdown();
 			},
 		},
 	});
 
-	function remove_dropdown() {
+	function removeDropdown() {
 		if (container.parentNode) {
 			unmount(dropdown);
 			container.remove();
@@ -299,30 +305,30 @@ export function show_dropdown(options: unknown, target: HTMLElement) {
 	}
 
 	return {
-		Selection: selection_promise,
+		Selection: selectionPromise,
 		Cancel: () => {
-			remove_dropdown();
-			resolve_selection(null);
+			removeDropdown();
+			resolveSelection(null);
 		},
 	};
 }
 
-export function number_slide_ui(parent: HTMLElement) {
-	const number_slide_ui = settings_ui.render_component(BasicSliderComponent, {}, parent) as HTMLInputElement;
+export function numberSlideUi(parent: HTMLElement) {
+	const numberSlideUi = settingsUi.renderComponent(BasicSliderComponent, {}, parent) as HTMLInputElement;
 
-	function update_number_slide(min: number = 0, max: number = 100, step: number = 1) {
-		number_slide_ui.min = min.toString();
-		number_slide_ui.max = max.toString();
-		number_slide_ui.step = step.toString();
+	function updateNumberSlide(min: number = 0, max: number = 100, step: number = 1) {
+		numberSlideUi.min = min.toString();
+		numberSlideUi.max = max.toString();
+		numberSlideUi.step = step.toString();
 	}
 
-	return { number_slide_ui, update_number_slide };
+	return { numberSlideUi, updateNumberSlide };
 }
 
-export function number_input_ui(parent: HTMLElement) {
-	return settings_ui.render_component(BasicNumberInputComponent, {}, parent) as HTMLDivElement;
+export function numberInputUi(parent: HTMLElement) {
+	return settingsUi.renderComponent(BasicNumberInputComponent, {}, parent) as HTMLDivElement;
 }
 
 export async function space(parent: HTMLElement, size: number = 20) {
-	settings_ui.render_component(SpaceComponent, { size }, parent);
+	settingsUi.renderComponent(SpaceComponent, { size }, parent);
 }

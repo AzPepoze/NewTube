@@ -5,9 +5,9 @@
 	import { quintOut } from "svelte/easing";
 	import { logger } from "@/styleshift/utils/logger";
 
-	import { get_from_storage } from "@/styleshift/core/storage-manager";
-	import { set_and_save } from "@ui/settings/setting-components";
-	import { trigger_setting_update } from "@settings/functions";
+	import { getFromStorage } from "@/styleshift/core/storageManager";
+	import { setAndSave } from "@ui/settings/settingComponents";
+	import { triggerSettingUpdate } from "@settings/functions";
 
 	let {
 		setting,
@@ -27,7 +27,7 @@
 
 	async function init() {
 		if (setting.id) {
-			value = await get_from_storage(setting.id);
+			value = await getFromStorage(setting.id);
 		} else {
 			value = setting.value;
 		}
@@ -57,11 +57,11 @@
 		value = option;
 		
 		if (setting.id) {
-			await set_and_save(setting, value);
-			trigger_setting_update(setting.id);
-		} else if (typeof setting.update_function === "function") {
-			logger.debug("ui", `[Dropdown] Executing update_function for non-id setting`);
-			(setting.update_function as Function)(value);
+			await setAndSave(setting, value);
+			triggerSettingUpdate(setting.id);
+		} else if (typeof setting.updateFunction === "function") {
+			logger.debug("ui", `[Dropdown] Executing updateFunction for non-id setting`);
+			(setting.updateFunction as Function)(value);
 		}
 
 		isOpen = false;
@@ -210,7 +210,7 @@
 		class:above={isMenuAbove}
 		transition:scale={{ duration: 300, start: 0.9, opacity: 0, easing: quintOut }}
 	>
-		{#each optionsList as option, i}
+		{#each optionsList as option, i (i)}
 			<button
 				class="STYLESHIFT-Dropdown-Item"
 				class:selected={option === value}

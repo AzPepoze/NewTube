@@ -1,7 +1,7 @@
-export function setup_update_timestamp() {
+export function setupUpdateTimestamp() {
 	let timer: number | undefined;
 
-	const update_url = () => {
+	const updateUrl = () => {
 		const video = document.querySelector("video") as HTMLVideoElement;
 		if (!video) return;
 
@@ -17,7 +17,7 @@ export function setup_update_timestamp() {
 	window.addEventListener("yt-navigate-finish", () => {
 		clearInterval(timer);
 		// Update every 10 seconds to avoid spamming history too much, but enough to be useful
-		timer = setInterval(update_url, 10000) as unknown as number;
+		timer = setInterval(updateUrl, 10000) as unknown as number;
 	});
 
 	// Also update immediately when paused
@@ -25,7 +25,7 @@ export function setup_update_timestamp() {
 		"pause",
 		(e) => {
 			if (e.target instanceof HTMLVideoElement) {
-				update_url();
+				updateUrl();
 			}
 		},
 		true,

@@ -2,21 +2,21 @@
 	import type { Setting } from "@styleshift/types/store";
 	import PreviewImage from "./PreviewImage.svelte";
 	import Button from "./Button.svelte";
-	import { get_asset_url } from "@ui/utils";
+	import { getAssetUrl } from "@ui/utils";
 
 	import Description from "./Description.svelte";
 
-	import { get_from_storage } from "@/styleshift/core/storage-manager";
-	import { set_and_save } from "@ui/settings/setting-components";
-	import { trigger_setting_update } from "@settings/functions";
+	import { getFromStorage } from "@/styleshift/core/storageManager";
+	import { setAndSave } from "@ui/settings/settingComponents";
+	import { triggerSettingUpdate } from "@settings/functions";
 	import { logger } from "@/styleshift/utils/logger";
-	import { show_user_confirmation } from "@ui/extension";
+	import { showUserConfirmation } from "@ui/extension";
 
 	let {
 		setting,
 		placeholder = "https://example.com/image.png",
 	}: {
-		setting: Extract<Setting, { type: "image_input" }>;
+		setting: Extract<Setting, { type: "imageInput" }>;
 		placeholder?: string;
 	} = $props();
 
@@ -24,15 +24,15 @@
 
 	async function init() {
 		if (setting.id) {
-			value = await get_from_storage(setting.id);
+			value = await getFromStorage(setting.id);
 		} else {
 			value = setting.value;
 		}
 	}
 	init();
 
-	const name = $derived(setting.name);
-	const description = $derived(setting.description);
+	const _name = $derived(setting.name);
+	const _description = $derived(setting.description);
 	const isBase64 = $derived(value?.startsWith("data:") ?? false);
 	const inputValue = $derived(isBase64 ? "" : value);
 	const inputPlaceholder = $derived(isBase64 ? "Stored Image (Base64 Data)" : placeholder);
@@ -58,8 +58,8 @@
 	async function handleUpdate(newValue: string) {
 		value = newValue;
 		if (setting.id) {
-			await set_and_save(setting, value);
-			trigger_setting_update(setting.id);
+			await setAndSave(setting, value);
+			triggerSettingUpdate(setting.id);
 		}
 	}
 
@@ -82,7 +82,7 @@
 		const fileName = file.name;
 		const fileSize = file.size;
 		const fileType = file.type;
-		const maxSize = setting.max_file_size || 10000000;
+		const maxSize = setting.maxFileSize || 10000000;
 
 		logger.info("UI", `File selected: ${fileName} (${fileSize.toLocaleString()} bytes, type: ${fileType})`);
 
@@ -98,7 +98,7 @@
 				align: "left" as const
 			};
 
-			const confirmed = await show_user_confirmation(warningMessage, warningTitle, confirmOptions);
+			const confirmed = await showUserConfirmation(warningMessage, warningTitle, confirmOptions);
 
 			if (confirmed) {
 				logger.info("UI", "User confirmed large file upload.");
@@ -163,7 +163,7 @@
 	}
 
 	async function removeImage() {
-		const confirmed = await show_user_confirmation(
+		const confirmed = await showUserConfirmation(
 			"Are you sure you want to remove this image?",
 			"Remove Image",
 			{
@@ -207,7 +207,7 @@
 			onkeydown={(e) => e.key === "Enter" && fileInput?.click()}
 			title="Click or Drag & Drop image to upload"
 		>
-			<img class="STYLESHIFT-Upload-Icon" src={get_asset_url("asset/upload.svg")} alt="Upload" />
+			<img class="STYLESHIFT-Upload-Icon" src={getAssetUrl("asset/upload.svg")} alt="Upload" />
 			<span class="STYLESHIFT-Upload-Text">Upload</span>
 		</div>
 
@@ -242,8 +242,8 @@
 						type: "button",
 						name: "View Original Image",
 						color: "#ffffff",
-						font_size: 11,
-						click_function: openImage
+						fontSize: 11,
+						clickFunction: openImage
 					}}
 					style="padding: 5px 12px; width: auto; height: 26px;"
 				/>
@@ -252,8 +252,8 @@
 						type: "button",
 						name: "Remove",
 						color: "#ff4444",
-						font_size: 11,
-						click_function: removeImage
+						fontSize: 11,
+						clickFunction: removeImage
 					}}
 					style="padding: 5px 12px; width: auto; height: 26px;"
 				/>

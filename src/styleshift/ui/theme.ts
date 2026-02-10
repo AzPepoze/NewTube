@@ -1,29 +1,29 @@
-import { get_from_storage } from "@/styleshift/core/storage-manager";
+import { getFromStorage } from "@/styleshift/core/storageManager";
 import { logger } from "@/styleshift/utils/logger";
 
 /**
  * Applies the current theme and transparency settings to a specific element.
  * @param element The HTMLElement to apply attributes to.
  */
-export async function apply_theme_to_element(element: HTMLElement) {
-	const is_light_theme = await get_from_storage("App_Light_Theme");
-	const is_transparent = await get_from_storage("Setting_BG_Transparent");
+export async function applyThemeToElement(element: HTMLElement) {
+	const isLightTheme = await getFromStorage("App_Light_Theme");
+	const isTransparent = await getFromStorage("Setting_BG_Transparent");
 
-	element.setAttribute("data-theme", is_light_theme ? "light" : "dark");
-	element.setAttribute("data-transparent", is_transparent ? "true" : "false");
+	element.setAttribute("data-theme", isLightTheme ? "light" : "dark");
+	element.setAttribute("data-transparent", isTransparent ? "true" : "false");
 }
 
 /**
  * Synchronizes theme and transparency attributes across all active .STYLESHIFT-Main elements.
  */
-export async function sync_all_themes() {
+export async function syncAllThemes() {
 	const elements = document.querySelectorAll<HTMLElement>(".STYLESHIFT-Main");
 
-	const is_light_theme = await get_from_storage("App_Light_Theme");
-	const is_transparent = await get_from_storage("Setting_BG_Transparent");
+	const isLightTheme = await getFromStorage("App_Light_Theme");
+	const isTransparent = await getFromStorage("Setting_BG_Transparent");
 
-	const theme = is_light_theme ? "light" : "dark";
-	const transparent = is_transparent ? "true" : "false";
+	const theme = isLightTheme ? "light" : "dark";
+	const transparent = isTransparent ? "true" : "false";
 
 	logger.info("theme", "Syncing all themes...", { theme, transparent });
 

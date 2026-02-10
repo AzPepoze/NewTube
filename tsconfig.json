@@ -21,9 +21,16 @@
 			"@core/*": ["src/styleshift/core/*"],
 			"@ui/*": ["src/styleshift/ui/*"],
 			"@settings/*": ["src/styleshift/settings/*"],
-			"@functions/*": ["src/styleshift/build-in-functions/*"]
+			"@functions/*": ["src/styleshift/buildInFunctions/*"]
 		}
 	},
-	"include": ["src/**/*.ts", "src/**/*.svelte", "src/**/*.svelte.ts", "utils/**/*.ts", "eslint.config.mts"],
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.svelte",
+		"src/**/*.svelte.ts",
+		"utils/**/*.ts",
+		"eslint.config.mts",
+		"utils/**/*.ts"
+	],
 	"exclude": ["node_modules"]
 }

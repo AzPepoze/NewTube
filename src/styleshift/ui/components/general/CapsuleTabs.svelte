@@ -15,20 +15,21 @@
 	} = $props();
 
 	const activeIndex = $derived(options.findIndex((opt) => opt.id === activeId));
-	// Calculate the width of a single tab area (total width minus container padding divided by count)
-	// We use percentage for width and translate to keep it responsive
-	const slideWidth = $derived(options.length > 0 ? 100 / options.length : 0);
+	// Using percentage of the container's internal width for the slide
 	const slideTransform = $derived(`translateX(${activeIndex * 100}%)`);
 </script>
 
-<div class="STYLESHIFT-Capsule-Toggle {className}" {style}>
+<div
+	class="STYLESHIFT-Capsule-Toggle {className}"
+	style:--options-count={options.length}
+	{style}
+>
 	{#if options.length > 0}
 		<div
 			class="capsule-slide"
-			style:width="calc((100% - 6px) / {options.length})"
 			style:transform={slideTransform}
 		></div>
-		{#each options as option}
+		{#each options as option (option.id)}
 			<button
 				class="capsule-button"
 				class:active={activeId === option.id}
@@ -36,9 +37,11 @@
 				type="button"
 			>
 				{#if option.icon}
-					<Icon name={option.icon} size={14} />
+					<div class="icon-wrapper">
+						<Icon name={option.icon} size={14} />
+					</div>
 				{/if}
-				<span>{option.label}</span>
+				<span class="label">{option.label}</span>
 			</button>
 		{/each}
 	{/if}
@@ -46,15 +49,15 @@
 
 <style lang="scss">
 	.STYLESHIFT-Capsule-Toggle {
-		display: flex;
-		align-items: center;
+		display: grid;
+		grid-template-columns: repeat(var(--options-count), 1fr);
 		background: var(--BG-Surface);
 		padding: 3px;
 		border-radius: 100px;
 		position: relative;
 		border: 1px solid var(--Border-Color);
 		width: fit-content;
-		min-width: 160px; // Ensure a reasonable base size
+		min-width: 180px;
 	}
 
 	.capsule-slide {
@@ -68,6 +71,7 @@
 		z-index: 1;
 		border: 1px solid var(--Border-Color);
 		box-shadow: 0 2px 8px var(--Shadow-Color);
+		width: calc((100% - 6px) / var(--options-count)) !important;
 	}
 
 	.capsule-button {
@@ -78,30 +82,34 @@
 		color: var(--Font-Color-Dim);
 		font-size: 12px;
 		font-weight: 700;
-		padding: 8px 20px;
+		padding: 8px 16px;
 		border-radius: 100px;
 		cursor: pointer;
-		transition: color 0.3s;
-		flex: 1;
-		height: 100%;
+		transition: all 0.2s;
 		display: flex;
-		flex-direction: row;
-		flex-wrap: nowrap; // Explicitly prevent wrapping
 		align-items: center;
 		justify-content: center;
-		gap: 8px;
+		gap: 6px;
 		line-height: 1;
+		white-space: nowrap;
+
+		&:hover:not(.active) {
+			color: var(--Font-Color);
+			background: var(--White-05);
+		}
 
 		&.active {
 			color: white;
 		}
 
-		&:hover:not(.active) {
-			color: var(--Font-Color);
+		.icon-wrapper {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-shrink: 0;
 		}
 
-		span {
-			white-space: nowrap;
+		.label {
 			flex-shrink: 0;
 		}
 	}

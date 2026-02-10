@@ -1,10 +1,10 @@
 import { Category } from "../../styleshift/types/store";
 
-export const thumbnail_category: Category = {
+export const thumbnailCategory: Category = {
 	category: "📰 Thumbnail/Clip cover",
 	settings: [
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "TimeEdge",
 			name: "timestamp Corner Radius",
 			description: "Adjusts the corner roundness of the video duration timestamp on thumbnails.",
@@ -12,8 +12,8 @@ export const thumbnail_category: Category = {
 			min: 0,
 			max: 30,
 			step: 1,
-			var_css: "--nt-timestamp-radius",
-			constant_css: `ytd-thumbnail-overlay-time-status-renderer { border-radius: var(--nt-timestamp-radius, 10px) !important; }`,
+			varCss: "--nt-timestamp-radius",
+			constantCss: `ytd-thumbnail-overlay-time-status-renderer { border-radius: var(--nt-timestamp-radius, 10px) !important; }`,
 		},
 		{
 			type: "color",
@@ -21,11 +21,11 @@ export const thumbnail_category: Category = {
 			name: "timestamp Background color",
 			description: "Sets the background color of the video duration timestamp.",
 			value: "#00000080",
-			var_css: "--nt-timestamp-bg",
-			constant_css: `ytd-thumbnail-overlay-time-status-renderer { background-color: var(--nt-timestamp-bg, #00000080) !important; }`,
+			varCss: "--nt-timestamp-bg",
+			constantCss: `ytd-thumbnail-overlay-time-status-renderer { background-color: var(--nt-timestamp-bg, #00000080) !important; }`,
 		},
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "TimeH",
 			name: "timestamp Height",
 			description: "Adjusts the height of the video duration timestamp on thumbnails.",
@@ -33,8 +33,8 @@ export const thumbnail_category: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
-			var_css: "--nt-timestamp-height",
-			constant_css: `
+			varCss: "--nt-timestamp-height",
+			constantCss: `
                 ytd-thumbnail-overlay-time-status-renderer,
                 ytd-thumbnail-overlay-bottom-panel-renderer {
                     height: var(--nt-timestamp-height, 12px) !important;
@@ -47,7 +47,7 @@ export const thumbnail_category: Category = {
 			name: "Time Borders/Shadows",
 			description: "Adds borders or shadows to the time indicator on thumbnails.",
 			value: true,
-			enable_css: `
+			enableCss: `
                 ytd-thumbnail-overlay-time-status-renderer {
                     box-shadow: var(--nt-global-shadow) !important;
                     border: var(--nt-global-outline) !important;
@@ -55,7 +55,7 @@ export const thumbnail_category: Category = {
             `,
 		},
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "HoverBorder",
 			name: "Hover Border Width",
 			description: "Width of the border when hovering over a thumbnail.",
@@ -63,7 +63,7 @@ export const thumbnail_category: Category = {
 			min: 0,
 			max: 10,
 			step: 1,
-			var_css: "--nt-hover-border-width",
+			varCss: "--nt-hover-border-width",
 		},
 		{
 			type: "color",
@@ -71,7 +71,7 @@ export const thumbnail_category: Category = {
 			name: "Hover Border Color",
 			description: "Color of the border/shadow when hovering.",
 			value: "#659affff",
-			var_css: "--nt-hover-color",
+			varCss: "--nt-hover-color",
 		},
 		{
 			type: "color",
@@ -79,7 +79,7 @@ export const thumbnail_category: Category = {
 			name: "Click Border Color",
 			description: "Color of the border/shadow when clicked.",
 			value: "#ffffffff",
-			var_css: "--nt-click-color",
+			varCss: "--nt-click-color",
 		},
 		{
 			type: "checkbox",
@@ -87,7 +87,7 @@ export const thumbnail_category: Category = {
 			name: "Enable Hover Overlay",
 			description: "Adds a glow effect and border when hovering over thumbnails.",
 			value: true,
-			enable_css: `
+			enableCss: `
                 ytd-thumbnail:hover, ytd-playlist-thumbnail:hover {
                     outline: var(--nt-hover-border-width, 1px) solid var(--nt-hover-color) !important;
                     box-shadow: 0 0 15px var(--nt-hover-color) !important;
@@ -114,7 +114,7 @@ export const thumbnail_category: Category = {
 			value: "Slide",
 			options: {
 				Slide: {
-					enable_css: `
+					enableCss: `
                         #dismissible.ytd-rich-grid-media:hover > ytd-thumbnail {
                             margin-block-start: -15px !important;
                             margin-block-end: 15px !important;
@@ -128,7 +128,7 @@ export const thumbnail_category: Category = {
                     `,
 				},
 				Zoom: {
-					enable_css: `
+					enableCss: `
                         ytd-thumbnail:not(.ytd-playlist-panel-video-renderer):hover,
                         ytd-playlist-thumbnail:hover {
                             transform: scale(var(--nt-zoom-scale, 1.075)) !important;
@@ -137,7 +137,7 @@ export const thumbnail_category: Category = {
                     `,
 				},
 				"Slide&Zoom": {
-					enable_css: `
+					enableCss: `
                         #dismissible.ytd-rich-grid-media:hover > ytd-thumbnail {
                             margin-block-start: -15px !important;
                             margin-block-end: 15px !important;
@@ -156,12 +156,12 @@ export const thumbnail_category: Category = {
                     `,
 				},
 				None: {
-					enable_css: ``,
+					enableCss: ``,
 				},
 			},
 		},
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "ThZoom",
 			name: "Zoom Amount",
 			description: "Adjusts the zoom scale for the 'Zoom' hover animation.",
@@ -169,7 +169,7 @@ export const thumbnail_category: Category = {
 			min: 1,
 			max: 1.5,
 			step: 0.005,
-			var_css: "--nt-zoom-scale",
+			varCss: "--nt-zoom-scale",
 		},
 		{
 			type: "checkbox",
@@ -177,7 +177,7 @@ export const thumbnail_category: Category = {
 			name: "hide timestamp on hover",
 			description: "hides the video duration timestamp when you hover over a thumbnail.",
 			value: true,
-			enable_css: `
+			enableCss: `
                 ytd-thumbnail-overlay-time-status-renderer {
                     transition: all .2s;
                 }
@@ -192,7 +192,7 @@ export const thumbnail_category: Category = {
 			name: "Thumbnail load Animation",
 			description: "Adds a fade-in and slide-up animation when thumbnails load.",
 			value: true,
-			enable_css: `
+			enableCss: `
                 #dismissible:has(.yt-core-image) {
                     transition: all 0.5s ease;
                     opacity: 0 !important;
@@ -212,7 +212,7 @@ export const thumbnail_category: Category = {
 			name: "Center Time",
 			description: "Moves the time position to the center.",
 			value: true,
-			enable_css: `
+			enableCss: `
                 ytd-thumbnail-overlay-time-status-renderer,
                 ytd-thumbnail-overlay-bottom-panel-renderer {
                     width: 100% !important;

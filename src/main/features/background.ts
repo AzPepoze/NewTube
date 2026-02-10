@@ -1,22 +1,22 @@
-import { get_document_body } from "../../styleshift/build-in-functions/normal";
-import { get_user_setting } from "../../styleshift/core/storage-manager";
-import { register_setting_listener } from "../../styleshift/settings/functions";
+import { getDocumentBody } from "../../styleshift/buildInFunctions/normal";
+import { getUserSetting } from "../../styleshift/core/storageManager";
+import { registerSettingListener } from "../../styleshift/settings/functions";
 import { logger } from "../../styleshift/utils/logger";
 
-const bg_tint_id = "newtube-bg-tint";
-const bg_image_id = "newtube-bg-image";
+const bgTintId = "newtube-bg-tint";
+const bgImageId = "newtube-bg-image";
 
-let bg_tint_element: HTMLElement | null = null;
-let bg_image_element: HTMLElement | null = null;
-const bg_image = new Image();
+let bgTintElement: HTMLElement | null = null;
+let bgImageElement: HTMLElement | null = null;
+const bgImage = new Image();
 
-export const enable_background_css = `
+export const enableBackgroundCss = `
 ytd-app {
 	background : transparent;
 }
 
-#${bg_tint_id},
-#${bg_image_id} {
+#${bgTintId},
+#${bgImageId} {
 	width : 100%;
 	height : 100%;
 	position : fixed;
@@ -25,92 +25,92 @@ ytd-app {
 	z-index : -1;
 }
 
-#${bg_tint_id}{
+#${bgTintId}{
 	background: var(--nt-bg-main);
 	opacity: calc(var(--nt-bg-opacity) / 100);
 }
 
-#${bg_image_id} {
+#${bgImageId} {
 	z-index: -10000;
 	background-repeat: var(--nt-bg-repeat);
 	filter: blur(var(--nt-bg-blur-amount));
 }
 `;
 
-function get_element() {
-	bg_tint_element = document.getElementById(bg_tint_id);
-	bg_image_element = document.getElementById(bg_image_id);
+function getElement() {
+	bgTintElement = document.getElementById(bgTintId);
+	bgImageElement = document.getElementById(bgImageId);
 }
 
-export async function enable_bg() {
-	get_element();
+export async function enableBg() {
+	getElement();
 
-	if (!bg_tint_element) {
-		bg_tint_element = document.createElement("div");
-		bg_tint_element.id = bg_tint_id;
+	if (!bgTintElement) {
+		bgTintElement = document.createElement("div");
+		bgTintElement.id = bgTintId;
 	}
 
-	if (!bg_image_element) {
-		bg_image_element = document.createElement("div");
-		bg_image_element.id = bg_image_id;
+	if (!bgImageElement) {
+		bgImageElement = document.createElement("div");
+		bgImageElement.id = bgImageId;
 	}
 
-	(await get_document_body()).appendChild(bg_tint_element);
-	(await get_document_body()).appendChild(bg_image_element);
-	window.addEventListener("resize", update_bg_img_size);
-	window.addEventListener("yt-navigate-finish", update_bg_img);
+	(await getDocumentBody()).appendChild(bgTintElement);
+	(await getDocumentBody()).appendChild(bgImageElement);
+	window.addEventListener("resize", updateBgImgSize);
+	window.addEventListener("yt-navigate-finish", updateBgImg);
 }
 
-export async function disable_bg() {
-	get_element();
+export async function disableBg() {
+	getElement();
 
-	if (bg_tint_element) {
-		bg_tint_element.remove();
-		bg_tint_element = null;
+	if (bgTintElement) {
+		bgTintElement.remove();
+		bgTintElement = null;
 	}
-	if (bg_image_element) {
-		bg_image_element.remove();
-		bg_image_element = null;
+	if (bgImageElement) {
+		bgImageElement.remove();
+		bgImageElement = null;
 	}
-	window.removeEventListener("resize", update_bg_img_size);
-	window.removeEventListener("yt-navigate-finish", update_bg_img);
+	window.removeEventListener("resize", updateBgImgSize);
+	window.removeEventListener("yt-navigate-finish", updateBgImg);
 }
 
-export async function update_bg_img() {
+export async function updateBgImg() {
 	logger.info("background", "BG updated");
-	const use_thumb = await get_user_setting("ThumbBG");
-	if (use_thumb) {
-		const video_id = new URLSearchParams(window.location.search).get("v");
-		if (video_id) {
-			bg_image.src = `https://i.ytimg.com/vi/${video_id}/maxresdefault.jpg`;
+	const useThumb = await getUserSetting("ThumbBG");
+	if (useThumb) {
+		const videoId = new URLSearchParams(window.location.search).get("v");
+		if (videoId) {
+			bgImage.src = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
 			return;
 		}
 	}
-	const url = await get_user_setting("BGIMG");
-	bg_image.src = url;
+	const url = await getUserSetting("BGIMG");
+	bgImage.src = url;
 }
 
-export async function update_bg_img_size() {
-	const bg_bound = bg_image_element.getBoundingClientRect();
-	const imagine_background_height = (bg_image.height / bg_image.width) * window.innerWidth;
-	const zoom_value = await get_user_setting("BackgroundS");
+export async function updateBgImgSize() {
+	const bgBound = bgImageElement.getBoundingClientRect();
+	const imagineBackgroundHeight = (bgImage.height / bgImage.width) * window.innerWidth;
+	const zoomValue = await getUserSetting("BackgroundS");
 
-	if (imagine_background_height < bg_bound.height) {
-		bg_image_element.style.backgroundSize = `${(bg_bound.height / imagine_background_height) * zoom_value}%`;
+	if (imagineBackgroundHeight < bgBound.height) {
+		bgImageElement.style.backgroundSize = `${(bgBound.height / imagineBackgroundHeight) * zoomValue}%`;
 	} else {
-		bg_image_element.style.backgroundSize = `${zoom_value}%`;
+		bgImageElement.style.backgroundSize = `${zoomValue}%`;
 	}
 }
 
-export async function update_bg_img_position() {
-	bg_image_element.style.backgroundPositionX = (await get_user_setting("BackgroundX")) + "%";
-	bg_image_element.style.backgroundPositionY = (await get_user_setting("BackgroundY")) + "%";
+export async function updateBgImgPosition() {
+	bgImageElement.style.backgroundPositionX = (await getUserSetting("BackgroundX")) + "%";
+	bgImageElement.style.backgroundPositionY = (await getUserSetting("BackgroundY")) + "%";
 }
 
-bg_image.onload = function () {
-	if (bg_image_element) bg_image_element.style.backgroundImage = `url("${bg_image.src}")`;
+bgImage.onload = function () {
+	if (bgImageElement) bgImageElement.style.backgroundImage = `url("${bgImage.src}")`;
 
-	update_bg_img_size();
+	updateBgImgSize();
 };
 
-register_setting_listener("BGIMG", update_bg_img, true);
+registerSettingListener("BGIMG", updateBgImg, true);

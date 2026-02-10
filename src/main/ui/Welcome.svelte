@@ -2,7 +2,7 @@
 	import { fade, fly, scale } from "svelte/transition";
 	import { quintOut, backOut } from "svelte/easing";
 	import { onMount } from "svelte";
-	import { get_asset_url } from "@ui/utils";
+	import { getAssetUrl } from "@ui/utils";
 
 	let { onDone }: { onDone: () => void } = $props();
 
@@ -39,7 +39,7 @@
 							class="Welcome-Logo-Container"
 							in:fly|global={{ y: -20, duration: 1000, delay: 300, easing: backOut }}
 						>
-							<img src={get_asset_url("icon/128.png")} alt="NewTube" class="Main-Icon" />
+							<img src={getAssetUrl("icon/128.png")} alt="NewTube" class="Main-Icon" />
 						</div>
 
 						<div class="Main-Title">
@@ -63,7 +63,7 @@
 				{:else}
 					<div class="Step-Container" in:fade={{ duration: 600, delay: 200 }}>
 						<div class="Wave-Title" in:fly|global={{ y: 20, duration: 800, easing: backOut }}>
-							{#each "Enjoy your new experience!".split("") as char, i}
+							{#each "Enjoy your new experience!".split("") as char, i (i)}
 								<span class="wave-char" style="animation-delay: {i * 50}ms"
 									>{char === " " ? "\u00A0" : char}</span
 								>

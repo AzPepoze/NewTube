@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { get_justify_content } from "../../utils";
+	import { getJustifyContent } from "../../utils";
 
 	let {
 		html = "",
@@ -11,7 +11,7 @@
 		className = "",
 	} = $props();
 
-	const justifyContent = $derived(get_justify_content(textAlign));
+	const justifyContent = $derived(getJustifyContent(textAlign));
 </script>
 
 <div

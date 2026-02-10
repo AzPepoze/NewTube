@@ -1,6 +1,6 @@
 <script lang="ts">
 	import searchIcon from "@ui/assets/icons/search.svg";
-	import { get_asset_url } from "@ui/utils";
+	import { getAssetUrl } from "@ui/utils";
 
 	let {
 		value = $bindable(""),
@@ -18,7 +18,7 @@
 </script>
 
 <div class="STYLESHIFT-Search-Wrapper">
-	<img class="STYLESHIFT-Search-Icon" src={get_asset_url(searchIcon)} alt="" />
+	<img class="STYLESHIFT-Search-Icon" src={getAssetUrl(searchIcon)} alt="" />
 	<input
 		type="text"
 		class="STYLESHIFT-Search-Input"

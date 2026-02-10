@@ -1,19 +1,19 @@
 export function highlight(node: HTMLElement, query: string) {
-	const original_content_map = new Map<Node, string>();
+	const originalContentMap = new Map<Node, string>();
 
-	function walk_and_store(root: Node) {
+	function walkAndStore(root: Node) {
 		const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
 		let node;
 		while ((node = walker.nextNode())) {
-			if (!original_content_map.has(node)) {
-				original_content_map.set(node, node.textContent || "");
+			if (!originalContentMap.has(node)) {
+				originalContentMap.set(node, node.textContent || "");
 			}
 		}
 	}
 
-	function apply_highlight() {
+	function applyHighlight() {
 		if (!query) {
-			original_content_map.forEach((text, node) => {
+			originalContentMap.forEach((text, node) => {
 				if (node.parentNode) {
 					node.textContent = text;
 				}
@@ -22,10 +22,10 @@ export function highlight(node: HTMLElement, query: string) {
 		}
 
 		// Escape special regex characters
-		const escaped_query = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-		const regex = new RegExp(`(${escaped_query})`, "gi");
+		const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		const regex = new RegExp(`(${escapedQuery})`, "gi");
 
-		original_content_map.forEach((text, node) => {
+		originalContentMap.forEach((text, node) => {
 			if (!node.parentNode) return;
 
 			// Skip if parent is already a mark or inside a script/style
@@ -47,20 +47,20 @@ export function highlight(node: HTMLElement, query: string) {
 	}
 
 	// Initial store
-	walk_and_store(node);
-	apply_highlight();
+	walkAndStore(node);
+	applyHighlight();
 
 	return {
-		update(new_query: string) {
+		update(newQuery: string) {
 			// Reset before updating
 			node.querySelectorAll("mark").forEach((mark) => {
 				const text = document.createTextNode(mark.textContent || "");
 				mark.parentNode?.replaceChild(text, mark);
 			});
 			// Re-walk to capture any dynamic text nodes
-			walk_and_store(node);
-			query = new_query;
-			apply_highlight();
+			walkAndStore(node);
+			query = newQuery;
+			applyHighlight();
 		},
 	};
 }

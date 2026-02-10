@@ -1,6 +1,6 @@
-import { string_to_color } from "./log-format";
+import { stringToColor } from "./logFormat";
 
-const log_colors = {
+const logColors = {
 	main: "color: #bada55",
 	info: "color: #00ffff",
 	debug: "color: #d1d1ff",
@@ -16,9 +16,9 @@ export interface LogConfig {
 }
 
 // Default configuration
-const debug_config: LogConfig = {
+const debugConfig: LogConfig = {
 	info: {
-		save_root_value: true,
+		saveRootValue: true,
 		drag: true,
 		ui: true,
 		storage: true,
@@ -31,42 +31,42 @@ const debug_config: LogConfig = {
 	},
 };
 
-export const set_logger_config = (config: Partial<LogConfig>) => {
+export const setLoggerConfig = (config: Partial<LogConfig>) => {
 	for (const level in config) {
-		if (!debug_config[level]) debug_config[level] = {};
-		Object.assign(debug_config[level], config[level]);
+		if (!debugConfig[level]) debugConfig[level] = {};
+		Object.assign(debugConfig[level], config[level]);
 	}
 };
 
-const should_log = (level: string, category: string): boolean => {
+const shouldLog = (level: string, category: string): boolean => {
 	const lvl = level.toLowerCase();
 	const cat = category.toLowerCase();
-	return !!(debug_config[lvl]?.all || debug_config[lvl]?.[cat]);
+	return !!(debugConfig[lvl]?.all || debugConfig[lvl]?.[cat]);
 };
 
 export const logger = {
 	log: (level: string, category: string, ...args: any[]) => {
-		if (should_log(level, category)) {
+		if (shouldLog(level, category)) {
 			const prefix = `%c StyleShift %c [${level.toUpperCase()}] %c [${category.toUpperCase()}]`;
-			const style_main = log_colors.main;
-			const style_level = log_colors[level.toLowerCase()] || log_colors.info;
-			const style_category = string_to_color(category);
+			const styleMain = logColors.main;
+			const styleLevel = logColors[level.toLowerCase()] || logColors.info;
+			const styleCategory = stringToColor(category);
 
 			switch (level.toLowerCase()) {
 				case "error":
-					console.error(prefix, style_main, style_level, style_category, ...args);
+					console.error(prefix, styleMain, styleLevel, styleCategory, ...args);
 					break;
 				case "warn":
-					console.warn(prefix, style_main, style_level, style_category, ...args);
+					console.warn(prefix, styleMain, styleLevel, styleCategory, ...args);
 					break;
 				case "info":
-					console.info(prefix, style_main, style_level, style_category, ...args);
+					console.info(prefix, styleMain, styleLevel, styleCategory, ...args);
 					break;
 				case "debug":
-					console.debug(prefix, style_main, style_level, style_category, ...args);
+					console.debug(prefix, styleMain, styleLevel, styleCategory, ...args);
 					break;
 				default:
-					console.log(prefix, style_main, style_level, style_category, ...args);
+					console.log(prefix, styleMain, styleLevel, styleCategory, ...args);
 					break;
 			}
 		}

@@ -7,13 +7,13 @@
 	import close from "@ui/assets/icons/close.svg";
 	import settings from "@ui/assets/icons/settings.svg";
 	import code from "@ui/assets/icons/code.svg";
-	import arrow_up from "@ui/assets/icons/arrow_up.svg";
-	import arrow_down from "@ui/assets/icons/arrow_down.svg";
+	import arrowUp from "@ui/assets/icons/arrowUp.svg";
+	import arrowDown from "@ui/assets/icons/arrowDown.svg";
 	import minimize from "@ui/assets/icons/minimize.svg";
 	import maximize from "@ui/assets/icons/maximize.svg";
 	import restore from "@ui/assets/icons/restore.svg";
 
-	import { get_asset_url } from "@ui/utils";
+	import { getAssetUrl } from "@ui/utils";
 
 	const icons: Record<string, string> = {
 		search,
@@ -24,8 +24,8 @@
 		close,
 		settings,
 		code,
-		arrow_up,
-		arrow_down,
+		arrowUp,
+		arrowDown,
 		minimize,
 		maximize,
 		restore,
@@ -47,7 +47,7 @@
 		size?: number;
 	} = $props();
 
-	const src = $derived(get_asset_url(icons[name] || name));
+	const src = $derived(getAssetUrl(icons[name] || name));
 </script>
 
 {#if src}

@@ -1,18 +1,18 @@
-import { get_from_storage, get_user_setting } from "../../styleshift/core/storage-manager";
-import { register_setting_listener } from "../../styleshift/settings/functions";
-import { get_ytd_app } from "../modules/youtube";
+import { getFromStorage, getUserSetting } from "../../styleshift/core/storageManager";
+import { registerSettingListener } from "../../styleshift/settings/functions";
+import { getYtdApp } from "../modules/youtube";
 
-let audio_ctx: AudioContext | null = null;
+let audioCtx: AudioContext | null = null;
 let analyser: AnalyserNode | null = null;
 let source: MediaElementAudioSourceNode | null = null;
 let canvas: HTMLCanvasElement | null = null;
-let canvas_ctx: CanvasRenderingContext2D | null = null;
-let animation_frame: number | null = null;
+let canvasCtx: CanvasRenderingContext2D | null = null;
+let animationFrame: number | null = null;
 
-export function setup_audio_visualizer() {
+export function setupAudioVisualizer() {
 	const init = async () => {
-		if ((await get_from_storage("Enable_Extension")) === false) return;
-		if (audio_ctx) return; // Already running
+		if ((await getFromStorage("Enable_Extension")) === false) return;
+		if (audioCtx) return; // Already running
 
 		const video = document.querySelector("video");
 		if (!video) return;
@@ -22,25 +22,25 @@ export function setup_audio_visualizer() {
 		}
 
 		try {
-			audio_ctx = new (window.AudioContext || window.webkitAudioContext)();
-			analyser = audio_ctx.createAnalyser();
+			audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+			analyser = audioCtx.createAnalyser();
 			analyser.fftSize = 512;
 
-			source = audio_ctx.createMediaElementSource(video);
+			source = audioCtx.createMediaElementSource(video);
 			source.connect(analyser);
-			analyser.connect(audio_ctx.destination);
+			analyser.connect(audioCtx.destination);
 
-			await create_canvas();
+			await createCanvas();
 			visualize();
 		} catch {
 			// logger.warn("visualizer", "Visualizer setup failed");
 		}
 	};
 
-	const create_canvas = async () => {
+	const createCanvas = async () => {
 		if (document.getElementById("newtube-visualizer")) return;
 
-		const ytd_app = await get_ytd_app();
+		const ytdApp = await getYtdApp();
 
 		canvas = document.createElement("canvas");
 		canvas.id = "newtube-visualizer";
@@ -57,73 +57,73 @@ export function setup_audio_visualizer() {
 		canvas.width = window.innerWidth;
 		canvas.height = 250;
 
-		if (ytd_app) {
-			ytd_app.appendChild(canvas);
+		if (ytdApp) {
+			ytdApp.appendChild(canvas);
 		} else {
 			document.body.appendChild(canvas);
 		}
 
-		canvas_ctx = canvas.getContext("2d");
+		canvasCtx = canvas.getContext("2d");
 	};
 
 	const visualize = () => {
-		if (!analyser || !canvas || !canvas_ctx) return;
+		if (!analyser || !canvas || !canvasCtx) return;
 
-		const buffer_length = analyser.frequencyBinCount;
-		const data_array = new Uint8Array(buffer_length);
+		const bufferLength = analyser.frequencyBinCount;
+		const dataArray = new Uint8Array(bufferLength);
 
 		// Cap logic
-		const cap_y_positions: number[] = [];
-		const cap_height = 2;
-		const cap_style = "#fff";
+		const capYPositions: number[] = [];
+		const capHeight = 2;
+		const capStyle = "#fff";
 
 		const draw = () => {
-			if (!analyser || !canvas_ctx || !canvas) return;
+			if (!analyser || !canvasCtx || !canvas) return;
 
-			animation_frame = requestAnimationFrame(draw);
-			analyser.getByteFrequencyData(data_array);
+			animationFrame = requestAnimationFrame(draw);
+			analyser.getByteFrequencyData(dataArray);
 
-			canvas_ctx.clearRect(0, 0, canvas.width, canvas.height);
+			canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
-			const bar_width = (canvas.width / buffer_length) * 2.5;
+			const barWidth = (canvas.width / bufferLength) * 2.5;
 			let x = 0;
 
-			for (let i = 0; i < buffer_length; i++) {
+			for (let i = 0; i < bufferLength; i++) {
 				// Calculate bar height, scaling it to look nice
 				// Value is 0-255
-				let bar_height = (data_array[i] * data_array[i]) / 500;
-				if (bar_height < 0) bar_height = 0;
+				let barHeight = (dataArray[i] * dataArray[i]) / 500;
+				if (barHeight < 0) barHeight = 0;
 
 				// Initialize cap position
-				if (cap_y_positions.length < buffer_length) {
-					cap_y_positions.push(bar_height);
+				if (capYPositions.length < bufferLength) {
+					capYPositions.push(barHeight);
 				}
 
-				const current_cap_y = cap_y_positions[i];
+				const currentCapY = capYPositions[i];
 
 				// Draw Cap
-				canvas_ctx.fillStyle = cap_style;
+				canvasCtx.fillStyle = capStyle;
 
-				if (bar_height < current_cap_y) {
+				if (barHeight < currentCapY) {
 					// Drop cap (Gravity)
-					cap_y_positions[i] = Math.max(0, current_cap_y - 1.5);
-					canvas_ctx.fillRect(x, canvas.height - cap_y_positions[i], bar_width, cap_height);
+					capYPositions[i] = Math.max(0, currentCapY - 1.5);
+					canvasCtx.fillRect(x, canvas.height - capYPositions[i], barWidth, capHeight);
 				} else {
 					// Push cap up
-					cap_y_positions[i] = bar_height;
-					canvas_ctx.fillRect(x, canvas.height - bar_height, bar_width, cap_height);
+					capYPositions[i] = barHeight;
+					canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, capHeight);
 				}
 
 				// Draw Bar with Gradient
-				const gradient = canvas_ctx.createLinearGradient(0, canvas.height, 0, canvas.height - bar_height);
+				const gradient = canvasCtx.createLinearGradient(0, canvas.height, 0, canvas.height - barHeight);
 				gradient.addColorStop(0, "rgba(255, 255, 255, 0.2)");
 				gradient.addColorStop(1, "rgba(255, 255, 255, 0.8)");
-				canvas_ctx.fillStyle = gradient;
+				canvasCtx.fillStyle = gradient;
 
 				// Draw bar slightly below cap
-				canvas_ctx.fillRect(x, canvas.height - bar_height + cap_height + 4, bar_width, bar_height);
+				canvasCtx.fillRect(x, canvas.height - barHeight + capHeight + 4, barWidth, barHeight);
 
-				x += bar_width + 1;
+				x += barWidth + 1;
 			}
 		};
 
@@ -140,25 +140,25 @@ export function setup_audio_visualizer() {
 	});
 }
 
-export function destroy_audio_visualizer() {
-	if (animation_frame) cancelAnimationFrame(animation_frame);
+export function destroyAudioVisualizer() {
+	if (animationFrame) cancelAnimationFrame(animationFrame);
 	if (canvas) canvas.remove();
-	if (audio_ctx) audio_ctx.close();
-	audio_ctx = null;
+	if (audioCtx) audioCtx.close();
+	audioCtx = null;
 	analyser = null;
 	source = null;
 	canvas = null;
-	canvas_ctx = null;
-	animation_frame = null;
+	canvasCtx = null;
+	animationFrame = null;
 }
 
-register_setting_listener("Enable_Extension", (val) => {
+registerSettingListener("Enable_Extension", (val) => {
 	if (!val) {
-		destroy_audio_visualizer();
+		destroyAudioVisualizer();
 	} else {
-		get_user_setting("AudioVisualizer").then((enabled) => {
+		getUserSetting("AudioVisualizer").then((enabled) => {
 			if (enabled) {
-				setup_audio_visualizer();
+				setupAudioVisualizer();
 			}
 		});
 	}

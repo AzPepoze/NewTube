@@ -23,20 +23,20 @@ export const JUSTIFY_CONTENT_MAP = {
 /**
  * Maps internal alignment names to standard CSS text-align values.
  */
-export function get_text_align(align: string = "center"): "start" | "center" | "end" {
+export function getTextAlign(align: string = "center"): "start" | "center" | "end" {
 	return TEXT_ALIGN_MAP[align] || "left";
 }
 
 /**
  * Maps internal alignment names to CSS flexbox align-items values.
  */
-export function get_flex_align(align: string = "center"): "flex-start" | "center" | "flex-end" {
+export function getFlexAlign(align: string = "center"): "flex-start" | "center" | "flex-end" {
 	return FLEX_ALIGN_MAP[align] || "flex-start";
 }
 
 /**
  * Maps internal alignment names to CSS flexbox justify-content values.
  */
-export function get_justify_content(align: string = "center"): "flex-start" | "center" | "flex-end" {
+export function getJustifyContent(align: string = "center"): "flex-start" | "center" | "flex-end" {
 	return JUSTIFY_CONTENT_MAP[align] || "left";
 }

@@ -6,7 +6,7 @@
 	let {
 		categories = [],
 		showCategoryList = true,
-		onClose = () => {},
+		onClose: _onClose = () => {},
 	}: {
 		categories: Category[];
 		showCategoryList?: boolean;
@@ -51,7 +51,7 @@
 <div class="STYLESHIFT-Settings-Main">
 	{#if showCategoryList}
 		<div class="STYLESHIFT-Sidebar STYLESHIFT-Scrollable" data-left="true">
-			{#each categories as category, i}
+			{#each categories as category, i (category.category)}
 				<button
 					class="STYLESHIFT-Sidebar-Item"
 					class:selected={currentCategoryIndex === i}
@@ -74,13 +74,13 @@
 			class="STYLESHIFT-Scrollable STYLESHIFT-Settings-List"
 			onscroll={handleScroll}
 		>
-			{#each filteredData as category}
+			{#each filteredData as category (category.category)}
 				<div class="STYLESHIFT-Category-Frame">
 					<div class="STYLESHIFT-Category-Title">
 						{category.category}
 					</div>
 					<div class="STYLESHIFT-Settings-Group">
-						{#each category.settings as setting}
+						{#each category.settings as setting, j (setting.id || j)}
 							<SettingRenderer {setting} highlight={searchQuery} />
 						{/each}
 					</div>

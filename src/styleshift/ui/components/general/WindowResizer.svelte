@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-
 	let {
 		target,
 		onResize = () => {},
@@ -31,8 +29,8 @@
 		const startLeft = target.offsetLeft;
 		const startTop = target.offsetTop;
 
-		const viewportWidth = window.innerWidth;
-		const viewportHeight = window.innerHeight;
+		const _viewportWidth = window.innerWidth;
+		const _viewportHeight = window.innerHeight;
 
 		function onMouseMove(e: MouseEvent) {
 			let newWidth = startWidth;

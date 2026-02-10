@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
-	import { codemirror_instance, global_metadata_cache } from "@/styleshift/core/runtime-controller";
+	import { codemirrorInstance, globalMetadataCache } from "@/styleshift/core/runtimeController";
 	import { logger } from "@/styleshift/utils/logger";
 
 	let { value = $bindable(""), language = "javascript", height = 400, onBlur, onInput } = $props();
@@ -12,22 +12,22 @@
 		if (!container) return;
 
 		const init = () => {
-			if (!codemirror_instance) {
+			if (!codemirrorInstance) {
 				setTimeout(init, 100);
 				return;
 			}
 
 			const {
-				EditorView,
+				EditorView: editorView,
 				basicSetup,
 				javascript,
 				css,
 				oneDark,
-				EditorState,
+				EditorState: editorState,
 				autocompletion,
 				hoverTooltip,
 				tooltips,
-			} = codemirror_instance;
+			} = codemirrorInstance;
 
 			function styleshiftCompletions(context: any) {
 				const word = context.matchBefore(/[\w$]*/);
@@ -38,12 +38,12 @@
 					"Providing completions for:",
 					word.text,
 					"Metadata count:",
-					global_metadata_cache.length,
+					globalMetadataCache.length,
 				);
 
 				return {
 					from: word.from,
-					options: global_metadata_cache.map((m) => ({
+					options: globalMetadataCache.map((m) => ({
 						label: m.label,
 						type: m.type,
 						detail: m.detail,
@@ -61,7 +61,7 @@
 				if ((start == pos && side < 0) || (end == pos && side > 0)) return null;
 
 				const word = text.slice(start - from, end - from);
-				const metadata = global_metadata_cache.find((m) => m.label === word);
+				const metadata = globalMetadataCache.find((m) => m.label === word);
 				if (!metadata) return null;
 
 				return {
@@ -105,14 +105,14 @@
 				tooltips({
 					parent: document.body,
 				}),
-				EditorView.updateListener.of((update: any) => {
+				editorView.updateListener.of((update: any) => {
 					if (update.docChanged) {
 						const newVal = update.state.doc.toString();
 						value = newVal;
 						onInput?.(newVal);
 					}
 				}),
-				EditorView.domEventHandlers({
+				editorView.domEventHandlers({
 					blur: () => {
 						onBlur?.(view.state.doc.toString());
 					},
@@ -135,8 +135,8 @@
 				extensions.push(css());
 			}
 
-			view = new EditorView({
-				state: EditorState.create({
+			view = new editorView({
+				state: editorState.create({
 					doc: typeof value === "string" ? value : String(value || ""),
 					extensions,
 				}),

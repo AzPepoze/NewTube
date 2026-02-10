@@ -1,10 +1,10 @@
 import { Category } from "../../styleshift/types/store";
 
-export const blur_category: Category = {
+export const blurCategory: Category = {
 	category: "🪟 Blur",
 	settings: [
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "BlurAm",
 			name: "Blur Amount",
 			description: "Global blur intensity.",
@@ -12,7 +12,7 @@ export const blur_category: Category = {
 			min: 0,
 			max: 50,
 			step: 1,
-			var_css: "--nt-general-blur-amount",
+			varCss: "--nt-general-blur-amount",
 		},
 		{
 			type: "dropdown",
@@ -21,14 +21,14 @@ export const blur_category: Category = {
 			value: "none",
 			options: {
 				all: {
-					enable_css: `
+					enableCss: `
                         #masthead > #background,
                         ytd-multi-page-menu-renderer,
                         .ytp-popup,
                         .ytp-tooltip,
                         #guide-content,
                         ytd-mini-guide-renderer,
-                        .sbdd_b,
+                        .sbddB,
                         .ytp-settings-menu,
                         #chips-wrapper
                         {
@@ -37,7 +37,7 @@ export const blur_category: Category = {
                     `,
 				},
 				main: {
-					enable_css: `
+					enableCss: `
                         #masthead > #background,
                         #guide-content
                         {
@@ -45,7 +45,7 @@ export const blur_category: Category = {
                         }
                     `,
 				},
-				none: { enable_css: "" },
+				none: { enableCss: "" },
 			},
 		},
 	],

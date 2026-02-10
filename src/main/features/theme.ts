@@ -1,141 +1,141 @@
-import { get_ytd_app } from "../modules/youtube";
+import { getYtdApp } from "../modules/youtube";
 import ColorThief from "colorthief";
-import { rgb_to_hsv, hsv_to_rgb } from "../../styleshift/build-in-functions/normal";
-import { get_user_setting } from "../../styleshift/core/storage-manager";
+import { rgbToHsv, hsvToRgb } from "../../styleshift/buildInFunctions/normal";
+import { getUserSetting } from "../../styleshift/core/storageManager";
 
-function get_sorted_palette(palette: [number, number, number][]) {
-	function cal_score(color: [number, number, number]) {
-		const hsv = rgb_to_hsv({ r: color[0], g: color[1], b: color[2] });
+function getSortedPalette(palette: [number, number, number][]) {
+	function calScore(color: [number, number, number]) {
+		const hsv = rgbToHsv({ r: color[0], g: color[1], b: color[2] });
 		// score = (s * 1.5) + (v / 100 * 100) -> using 0-100 scale
 		const score = hsv.s * 1.5 + hsv.v;
 		return score;
 	}
 
 	return palette
-		.map((color) => ({ color, score: cal_score(color) }))
+		.map((color) => ({ color, score: calScore(color) }))
 		.sort((a, b) => b.score - a.score)
 		.map((item) => item.color);
 }
 
-async function get_sample_color(img: HTMLImageElement): Promise<[number, number, number]> {
-	const color_thief = new ColorThief();
-	const dominant = color_thief.getColor(img) as [number, number, number];
-	const hsv = rgb_to_hsv({ r: dominant[0], g: dominant[1], b: dominant[2] });
+async function getSampleColor(img: HTMLImageElement): Promise<[number, number, number]> {
+	const colorThief = new ColorThief();
+	const dominant = colorThief.getColor(img) as [number, number, number];
+	const hsv = rgbToHsv({ r: dominant[0], g: dominant[1], b: dominant[2] });
 
 	// Legacy: s > 0.2 (20) and v > 100 (39.2 on 100 scale)
 	if (hsv.s > 20 && hsv.v > 39.2) {
 		return dominant;
 	} else {
-		const palette = (color_thief.getPalette(img, 10) as [number, number, number][]) || [];
-		const sorted = get_sorted_palette(palette);
+		const palette = (colorThief.getPalette(img, 10) as [number, number, number][]) || [];
+		const sorted = getSortedPalette(palette);
 		return sorted[0] || dominant;
 	}
 }
 
-export function setup_theme_by_video() {
-	const update_theme = async () => {
-		const video_id = new URLSearchParams(window.location.search).get("v");
-		if (!video_id) return;
+export function setupThemeByVideo() {
+	const updateTheme = async () => {
+		const videoId = new URLSearchParams(window.location.search).get("v");
+		if (!videoId) return;
 
 		// Use mqdefault first, try maxres if possible?
 		// Actually legacy used maxresdefault then 0.jpg as fallback
-		const thumb_url = `https://i.ytimg.com/vi/${video_id}/maxresdefault.jpg`;
+		const thumbUrl = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
 
 		try {
 			const img = new Image();
 			img.crossOrigin = "Anonymous";
-			img.src = thumb_url;
+			img.src = thumbUrl;
 
 			await new Promise((resolve, reject) => {
 				img.onload = resolve;
 				img.onerror = async () => {
-					img.src = `https://i.ytimg.com/vi/${video_id}/0.jpg`;
+					img.src = `https://i.ytimg.com/vi/${videoId}/0.jpg`;
 					img.onerror = reject;
 				};
 			});
 
-			let color = await get_sample_color(img);
+			let color = await getSampleColor(img);
 
 			// Grayscale check: if r == g == b, it might be a black frame or weird thumb
 			if (color[0] === color[1] && color[1] === color[2]) {
 				// Try first frame thumb
-				img.src = `https://i.ytimg.com/vi/${video_id}/0.jpg`;
+				img.src = `https://i.ytimg.com/vi/${videoId}/0.jpg`;
 				await new Promise((resolve) => {
 					img.onload = resolve;
 					img.onerror = resolve; // just continue if fails
 				});
-				color = await get_sample_color(img);
+				color = await getSampleColor(img);
 			}
 
 			// Legacy Normalization
-			const max_val = Math.max(color[0], color[1], color[2]);
-			const get_add = 255 - max_val;
-			color = [color[0] + get_add, color[1] + get_add, color[2] + get_add];
+			const maxVal = Math.max(color[0], color[1], color[2]);
+			const getAdd = 255 - maxVal;
+			color = [color[0] + getAdd, color[1] + getAdd, color[2] + getAdd];
 
-			const ytd_app = await get_ytd_app();
-			if (!ytd_app) return;
+			const ytdApp = await getYtdApp();
+			if (!ytdApp) return;
 
-			const set_prop = (name: string, val: string) => ytd_app.style.setProperty(name, val);
+			const setProp = (name: string, val: string) => ytdApp.style.setProperty(name, val);
 
 			// HSV Adjustments
-			const hsv = rgb_to_hsv({ r: color[0], g: color[1], b: color[2] });
+			const hsv = rgbToHsv({ r: color[0], g: color[1], b: color[2] });
 			hsv.s *= 1.5;
 			if (hsv.s > 60) hsv.s = 60;
 
-			const theme_rgb = hsv_to_rgb(hsv);
-			const theme_rgba = (a: number) => `rgba(${theme_rgb.r}, ${theme_rgb.g}, ${theme_rgb.b}, ${a})`;
+			const themeRgb = hsvToRgb(hsv);
+			const themeRgba = (a: number) => `rgba(${themeRgb.r}, ${themeRgb.g}, ${themeRgb.b}, ${a})`;
 
-			set_prop("--nt-theme-color", theme_rgba(1));
-			set_prop("--nt-theme-transparent", theme_rgba(0.3));
-			set_prop("--nt-theme-accent", theme_rgba(0.3));
-			set_prop("--nt-playlist-hover-bg", theme_rgba(0.3));
-			set_prop("--nt-text-link", theme_rgba(1));
-			set_prop("--nt-text-channel", theme_rgba(1));
-			set_prop("--nt-topbar-bg", theme_rgba(0.3));
-			set_prop("--nt-search-bg-hover", theme_rgba(0.3));
+			setProp("--nt-theme-color", themeRgba(1));
+			setProp("--nt-theme-transparent", themeRgba(0.3));
+			setProp("--nt-theme-accent", themeRgba(0.3));
+			setProp("--nt-playlist-hover-bg", themeRgba(0.3));
+			setProp("--nt-text-link", themeRgba(1));
+			setProp("--nt-text-channel", themeRgba(1));
+			setProp("--nt-topbar-bg", themeRgba(0.3));
+			setProp("--nt-search-bg-hover", themeRgba(0.3));
 
 			// Derived Colors
-			const time_bg_hsv = { ...hsv, v: hsv.v * 0.4 };
-			const time_bg_rgb = hsv_to_rgb(time_bg_hsv);
-			set_prop("--nt-timestamp-bg", `rgba(${time_bg_rgb.r}, ${time_bg_rgb.g}, ${time_bg_rgb.b}, 0.8)`);
+			const timeBgHsv = { ...hsv, v: hsv.v * 0.4 };
+			const timeBgRgb = hsvToRgb(timeBgHsv);
+			setProp("--nt-timestamp-bg", `rgba(${timeBgRgb.r}, ${timeBgRgb.g}, ${timeBgRgb.b}, 0.8)`);
 
-			const text2_hsv = { ...hsv, s: hsv.s * 0.8 };
-			const text2_rgb = hsv_to_rgb(text2_hsv);
-			set_prop("--nt-text-secondary", `rgba(${text2_rgb.r}, ${text2_rgb.g}, ${text2_rgb.b}, 1)`);
+			const text2Hsv = { ...hsv, s: hsv.s * 0.8 };
+			const text2Rgb = hsvToRgb(text2Hsv);
+			setProp("--nt-text-secondary", `rgba(${text2Rgb.r}, ${text2Rgb.g}, ${text2Rgb.b}, 1)`);
 
-			const timetext_hsv = { ...hsv, s: hsv.s * 0.5 };
-			const timetext_rgb = hsv_to_rgb(timetext_hsv);
-			set_prop("--nt-text-timestamp", `rgba(${timetext_rgb.r}, ${timetext_rgb.g}, ${timetext_rgb.b}, 1)`);
+			const timetextHsv = { ...hsv, s: hsv.s * 0.5 };
+			const timetextRgb = hsvToRgb(timetextHsv);
+			setProp("--nt-text-timestamp", `rgba(${timetextRgb.r}, ${timetextRgb.g}, ${timetextRgb.b}, 1)`);
 
-			const text_hsv = { ...hsv, s: hsv.s * 0.4 };
-			const text_rgb = hsv_to_rgb(text_hsv);
-			set_prop("--nt-text-primary", `rgba(${text_rgb.r}, ${text_rgb.g}, ${text_rgb.b}, 1)`);
+			const textHsv = { ...hsv, s: hsv.s * 0.4 };
+			const textRgb = hsvToRgb(textHsv);
+			setProp("--nt-text-primary", `rgba(${textRgb.r}, ${textRgb.g}, ${textRgb.b}, 1)`);
 
 			// Background Background
-			const bg_hsv = { ...hsv, v: hsv.v * 0.15 };
-			const bg_rgb = hsv_to_rgb(bg_hsv);
-			const is_solid = await get_user_setting("Solid_BG_Theme_by_video");
-			const bg_opacity = is_solid ? 1 : (await get_user_setting("BGO")) / 100;
-			set_prop("--nt-bg-main", `rgba(${bg_rgb.r}, ${bg_rgb.g}, ${bg_rgb.b}, ${bg_opacity})`);
+			const bgHsv = { ...hsv, v: hsv.v * 0.15 };
+			const bgRgb = hsvToRgb(bgHsv);
+			const isSolid = await getUserSetting("Solid_BG_Theme_by_video");
+			const bgOpacity = isSolid ? 1 : (await getUserSetting("BGO")) / 100;
+			setProp("--nt-bg-main", `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${bgOpacity})`);
 
 			// Timeline
-			const timeline_hsv = { ...hsv, v: hsv.v * 0.4 };
-			const timeline_rgb = hsv_to_rgb(timeline_hsv);
-			set_prop("--nt-timeline-bg", `rgba(${timeline_rgb.r}, ${timeline_rgb.g}, ${timeline_rgb.b}, 1)`);
+			const timelineHsv = { ...hsv, v: hsv.v * 0.4 };
+			const timelineRgb = hsvToRgb(timelineHsv);
+			setProp("--nt-timeline-bg", `rgba(${timelineRgb.r}, ${timelineRgb.g}, ${timelineRgb.b}, 1)`);
 
-			const loaded_hsv = { ...hsv, s: hsv.s * 0.5, v: hsv.v * 0.6 };
-			const loaded_rgb = hsv_to_rgb(loaded_hsv);
-			set_prop("--nt-timeline-load", `rgba(${loaded_rgb.r}, ${loaded_rgb.g}, ${loaded_rgb.b}, 1)`);
+			const loadedHsv = { ...hsv, s: hsv.s * 0.5, v: hsv.v * 0.6 };
+			const loadedRgb = hsvToRgb(loadedHsv);
+			setProp("--nt-timeline-load", `rgba(${loadedRgb.r}, ${loadedRgb.g}, ${loadedRgb.b}, 1)`);
 
 			// Control Panel
-			const cp_hsv = { ...hsv, v: hsv.v * 0.2 };
-			const cp_rgb = hsv_to_rgb(cp_hsv);
-			set_prop("--nt-player-bg", `rgba(${cp_rgb.r}, ${cp_rgb.g}, ${cp_rgb.b}, 0.7)`);
+			const cpHsv = { ...hsv, v: hsv.v * 0.2 };
+			const cpRgb = hsvToRgb(cpHsv);
+			setProp("--nt-player-bg", `rgba(${cpRgb.r}, ${cpRgb.g}, ${cpRgb.b}, 0.7)`);
 		} catch (_e) {
 			// logger.warn("theme", "Theme extraction failed", e);
 		}
 	};
 
-	update_theme();
-	window.addEventListener("yt-navigate-finish", update_theme);
+	updateTheme();
+	window.addEventListener("yt-navigate-finish", updateTheme);
 }

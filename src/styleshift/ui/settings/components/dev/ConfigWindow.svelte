@@ -3,7 +3,7 @@
 
 	let {
 		innerContentFunction,
-		onClose = () => {},
+		onClose: _onClose = () => {},
 	}: {
 		innerContentFunction: (parent: HTMLElement) => void | Promise<void>;
 		onClose?: () => void;

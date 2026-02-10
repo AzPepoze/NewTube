@@ -1,17 +1,17 @@
 import { Category } from "../../styleshift/types/store";
-import { enable_bg, enable_background_css, update_bg_img, update_bg_img_position } from "../features/background";
+import { enableBg, enableBackgroundCss, updateBgImg, updateBgImgPosition } from "../features/background";
 
-export const background_category: Category = {
+export const backgroundCategory: Category = {
 	category: "🎴 Background",
 	settings: [
 		{
 			type: "checkbox",
-			id: "bg_enable",
+			id: "bgEnable",
 			name: "Enable background",
 			description: "Toggle background image/tint on or off.",
 			value: true,
-			enable_function: enable_bg,
-			enable_css: enable_background_css,
+			enableFunction: enableBg,
+			enableCss: enableBackgroundCss,
 		},
 		{
 			type: "color",
@@ -20,10 +20,10 @@ export const background_category: Category = {
 			description:
 				"Sets the color and opacity of the page background or the tint applied over an image/video.",
 			value: "#0000005e",
-			var_css: "--nt-bg-main",
+			varCss: "--nt-bg-main",
 		},
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "BGO",
 			name: "Background opacity",
 			description: "Adjusts the opacity of the background tint (0-100%).",
@@ -31,19 +31,19 @@ export const background_category: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
-			var_css: "--nt-bg-opacity",
+			varCss: "--nt-bg-opacity",
 			unit: "",
 		},
 		{
-			type: "image_input",
+			type: "imageInput",
 			id: "BGIMG",
 			name: "Background image URL",
 			description: "URL of the image to use as the page background.",
 			value: "https://cdn.wallpapersafari.com/74/55/4dgN3G.jpg",
-			max_file_size: 5000000,
+			maxFileSize: 5000000,
 		},
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "BlurBGAM",
 			name: "Background blur",
 			description: "Applies a blur effect to the background image/video.",
@@ -51,10 +51,10 @@ export const background_category: Category = {
 			min: 0,
 			max: 50,
 			step: 1,
-			var_css: "--nt-bg-blur-amount",
+			varCss: "--nt-bg-blur-amount",
 		},
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "BackgroundS",
 			name: "Background size (%)",
 			description: "Adjusts the scale of the background image (percent).",
@@ -62,10 +62,10 @@ export const background_category: Category = {
 			min: 0,
 			max: 500,
 			step: 5,
-			update_function: update_bg_img,
+			updateFunction: updateBgImg,
 		},
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "BackgroundX",
 			name: "Background position X (%)",
 			description: "Horizontal position of the background image (0-100%).",
@@ -73,10 +73,10 @@ export const background_category: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
-			update_function: update_bg_img_position,
+			updateFunction: updateBgImgPosition,
 		},
 		{
-			type: "number_slide",
+			type: "numberSlide",
 			id: "BackgroundY",
 			name: "Background position Y (%)",
 			description: "Vertical position of the background image (0-100%).",
@@ -84,7 +84,7 @@ export const background_category: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
-			update_function: update_bg_img_position,
+			updateFunction: updateBgImgPosition,
 		},
 		{
 			type: "checkbox",
@@ -92,8 +92,8 @@ export const background_category: Category = {
 			name: "Repeat background image",
 			description: "Repeat the background image instead of stretching it.",
 			value: false,
-			enable_css: `:root { --nt-bg-repeat: repeat; }`,
-			disable_css: `:root { --nt-bg-repeat: no-repeat; }`,
+			enableCss: `:root { --nt-bg-repeat: repeat; }`,
+			disableCss: `:root { --nt-bg-repeat: no-repeat; }`,
 		},
 		{
 			type: "checkbox",
@@ -101,7 +101,7 @@ export const background_category: Category = {
 			name: "Thumbnail as background",
 			description: "Automatically sets the current video's thumbnail as the page background.",
 			value: false,
-			enable_function: update_bg_img,
+			enableFunction: updateBgImg,
 		},
 	],
 };

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from "svelte";
 	let {
 		title,
 		color = "#999999",

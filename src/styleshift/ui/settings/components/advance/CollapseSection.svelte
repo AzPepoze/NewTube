@@ -20,7 +20,7 @@
 			type: "button",
 			name: buttonName,
 			color: color,
-			click_function: toggle
+			clickFunction: toggle
 		}} 
 	/>
 	<div 

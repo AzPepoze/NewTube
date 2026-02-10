@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { set_and_save } from "@ui/settings/setting-components";
+	import { setAndSave } from "@ui/settings/settingComponents";
 	import TextEditor from "@ui/settings/components/advance/TextEditor.svelte";
-	import { trigger_setting_update } from "@settings/functions";
+	import { triggerSettingUpdate } from "@settings/functions";
 	import type { Setting } from "@styleshift/types/store";
 	import Button from "@ui/settings/components/main/Button.svelte";
 	import Description from "@ui/settings/components/main/Description.svelte";
 	import IconButton from "@ui/settings/components/advance/IconButton.svelte";
 	import Checkbox from "@ui/settings/components/main/Checkbox.svelte";
-	import { create_unique_id } from "@functions/normal";
-	import { get_from_storage } from "@/styleshift/core/storage-manager";
-	import { show_user_confirmation } from "@ui/extension";
+	import { createUniqueId } from "@functions/normal";
+	import { getFromStorage } from "@/styleshift/core/storageManager";
+	import { showUserConfirmation } from "@ui/extension";
 
 	type FontEntry = {
 		id: string;
@@ -33,7 +33,7 @@
 			const names = extractFontNames(urlStr);
 			for (const name of names) {
 				found.push({
-					id: create_unique_id(8),
+					id: createUniqueId(8),
 					fontName: name,
 					importUrl: urlStr,
 					enabled: true,
@@ -49,7 +49,7 @@
 					const names = extractFontNames(trimmed);
 					for (const name of names) {
 						found.push({
-							id: create_unique_id(8),
+							id: createUniqueId(8),
 							fontName: name,
 							importUrl: trimmed,
 							enabled: true,
@@ -68,7 +68,7 @@
 			if (families.length > 0) {
 				return families.map((f) => f.split(":")[0].replace(/\+/g, " "));
 			}
-		} catch (e) {}
+		} catch (_e) {}
 		return [];
 	}
 
@@ -81,13 +81,13 @@
 		}
 	}
 
-	async function handleToggle(id: string) {
+	async function handleToggle(_id: string) {
 		// The value is already updated via bind:value={font.enabled}
 		await saveFonts();
 	}
 
 	async function handleRemove(id: string, name: string) {
-		if (await show_user_confirmation(`Are you sure you want to remove the font "${name}"?`, "Remove Font")) {
+		if (await showUserConfirmation(`Are you sure you want to remove the font "${name}"?`, "Remove Font")) {
 			fonts = fonts.filter((f) => f.id !== id);
 			await saveFonts();
 		}
@@ -111,12 +111,12 @@
 
 	async function saveFonts() {
 		const plainFonts = JSON.parse(JSON.stringify(fonts));
-		await set_and_save(setting, plainFonts);
-		trigger_setting_update(setting.id);
+		await setAndSave(setting, plainFonts);
+		triggerSettingUpdate(setting.id);
 	}
 
 	async function init() {
-		const val = await get_from_storage(setting.id);
+		const val = await getFromStorage(setting.id);
 		if (Array.isArray(val)) {
 			fonts = val;
 		}
@@ -136,7 +136,7 @@
 					name: "Add Font", 
 					color: "#7f5db7", 
 					align: "center",
-					click_function: handleAdd
+					clickFunction: handleAdd
 				}}
 			/>
 		</div>
@@ -151,13 +151,13 @@
 					<div class="font-item" class:disabled={!font.enabled}>
 						<div class="sort-buttons">
 							<IconButton
-								icon="arrow_up"
+								icon="arrowUp"
 								onClick={() => moveUp(i)}
 								className="sort-btn"
 								size={14}
 							/>
 							<IconButton
-								icon="arrow_down"
+								icon="arrowDown"
 								onClick={() => moveDown(i)}
 								className="sort-btn"
 								size={14}
@@ -173,7 +173,7 @@
 									id: "", // Empty ID to use bind:value and avoid global storage
 									name: "",
 									value: font.enabled,
-									update_function: () => handleToggle(font.id)
+									updateFunction: () => handleToggle(font.id)
 								} as any}
 								bind:value={font.enabled}
 							/>

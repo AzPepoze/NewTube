@@ -47,13 +47,13 @@
 		{#if footer}
 			{@render footer()}
 		{:else if buttons}
-			{#each buttons as btn}
+			{#each buttons as btn, i (i)}
 				<Button
 					setting={{
 						type: "button",
 						name: btn.label,
 						color: btn.color,
-						click_function: () => handleAction(btn.onClick),
+						clickFunction: () => handleAction(btn.onClick),
 					} as any}
 				/>
 			{/each}
@@ -63,7 +63,7 @@
 					type: "button",
 					name: "Confirm",
 					color: "#7f5db7",
-					click_function: () => handleAction(onConfirm),
+					clickFunction: () => handleAction(onConfirm),
 				} as any}
 			/>
 			<Button
@@ -71,7 +71,7 @@
 					type: "button",
 					name: "Cancel",
 					color: "#646464",
-					click_function: () => handleAction(onCancel),
+					clickFunction: () => handleAction(onCancel),
 				} as any}
 			/>
 		{/if}

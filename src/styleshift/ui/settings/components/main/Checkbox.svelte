@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { Setting } from "@styleshift/types/store";
 	import Description from "./Description.svelte";
-	import { get_from_storage } from "@/styleshift/core/storage-manager";
-	import { set_and_save } from "@ui/settings/setting-components";
-	import { trigger_setting_update } from "@settings/functions";
+	import { getFromStorage } from "@/styleshift/core/storageManager";
+	import { setAndSave } from "@ui/settings/settingComponents";
+	import { triggerSettingUpdate } from "@settings/functions";
 
 	let {
 		setting,
@@ -15,7 +15,7 @@
 
 	async function init() {
 		if (setting.id) {
-			value = await get_from_storage(setting.id);
+			value = await getFromStorage(setting.id);
 		} else {
 			value = setting.value;
 		}
@@ -33,10 +33,10 @@
 
 	async function handleChange() {
 		if (setting.id) {
-			await set_and_save(setting, value);
-			trigger_setting_update(setting.id);
-		} else if (typeof (setting as any).update_function === "function") {
-			(setting as any).update_function(value);
+			await setAndSave(setting, value);
+			triggerSettingUpdate(setting.id);
+		} else if (typeof (setting as any).updateFunction === "function") {
+			(setting as any).updateFunction(value);
 		}
 	}
 </script>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { get_asset_url } from "@ui/utils";
+	import { getAssetUrl } from "@ui/utils";
 	import { logger } from "@/styleshift/utils/logger";
 
 	let { src = "" } = $props();
@@ -50,7 +50,7 @@
 			logger.warn("ui", "Failed to load image for preview:", url);
 			// Optionally clear canvas or show error
 		};
-		img.src = get_asset_url(url);
+		img.src = getAssetUrl(url);
 	}
 
 	$effect(() => {

@@ -1,110 +1,122 @@
-import { rearrange_selector } from "@functions/normal";
+import { rearrangeSelector } from "@functions/normal";
 import { Setting } from "@styleshift/types/store";
-import { settings_ui } from "@ui/settings/setting-components";
+import { settingsUi } from "@ui/settings/settingComponents";
 
 import DevSettingSectionComponent from "./DevSettingSection.svelte";
 import ConfigSubSectionComponent from "./ConfigSubSection.svelte";
 import ConfigMainSectionComponent from "./ConfigMainSection.svelte";
 import AddSettingButtonComponent from "./AddSettingButton.svelte";
 
-export async function setting_developer_text_editor(
+export async function settingDeveloperTextEditor(
 	parent: HTMLElement,
-	this_setting,
-	this_property,
-	update_ui = function (_value) {},
+	thisSetting,
+	thisProperty,
+	updateUi = function (_value) {},
 ) {
-	const main_ui = settings_ui.setting_frame(true, true, { x: false, y: false }, false, "STYLESHIFT-Config-Sub-Frame");
+	const mainUi = settingsUi.settingFrame(
+		true,
+		true,
+		{ x: false, y: false },
+		false,
+		"STYLESHIFT-Config-Sub-Frame",
+	);
 
-	const text_editors = {};
+	const textEditors = {};
 
-	for (const [title, property] of Object.entries(this_property)) {
-		main_ui.append(settings_ui.sub_title(title));
-		const setting_developer_text_editor = settings_ui.text_editor(this_setting, property as string);
-		setting_developer_text_editor.more_onchange(update_ui);
-		main_ui.append(setting_developer_text_editor.text_editor);
-		text_editors[title] = setting_developer_text_editor;
+	for (const [title, property] of Object.entries(thisProperty)) {
+		mainUi.append(settingsUi.subTitle(title));
+		const settingDeveloperTextEditor = settingsUi.textEditor(thisSetting, property as string);
+		settingDeveloperTextEditor.afterOnChange(updateUi);
+		mainUi.append(settingDeveloperTextEditor.textEditor);
+		textEditors[title] = settingDeveloperTextEditor;
 	}
 
-	if (parent && parent !== main_ui) {
-		parent.appendChild(main_ui);
+	if (parent && parent !== mainUi) {
+		parent.appendChild(mainUi);
 	}
 
-	return { main_ui, text_editors };
+	return { mainUi, textEditors };
 }
 
-export async function setting_developer_frame(parent, this_setting, run_type, ext_array = ["function", "css"], update_config) {
-	return settings_ui.render_component(
+export async function settingDeveloperFrame(
+	parent,
+	thisSetting,
+	runType,
+	extArray = ["function", "css"],
+	updateConfig,
+) {
+	return settingsUi.renderComponent(
 		DevSettingSectionComponent,
 		{
-			setting: this_setting,
-			runType: run_type,
-			extArray: ext_array,
-			onUpdateConfig: update_config,
+			setting: thisSetting,
+			runType: runType,
+			extArray: extArray,
+			onUpdateConfig: updateConfig,
 		},
 		parent,
 	) as HTMLDivElement;
 }
 
-export async function config_main_section(parent, this_setting, props, update_ui = function () {}) {
-	settings_ui.render_component(
+export async function configMainSection(parent, thisSetting, props, updateUi = function () {}) {
+	settingsUi.renderComponent(
 		ConfigMainSectionComponent,
 		{
-			setting: this_setting,
+			setting: thisSetting,
 			props: props,
-			updateUI: update_ui,
+			updateUI: updateUi,
 		},
 		parent,
 	);
 }
 
-export async function config_sub_section(parent, this_setting, props) {
-	settings_ui.render_component(
+export async function configSubSection(parent, thisSetting, props) {
+	settingsUi.renderComponent(
 		ConfigSubSectionComponent,
 		{
-			setting: this_setting,
+			setting: thisSetting,
 			props: props,
 		},
 		parent,
 	);
 }
 
-export async function selector_text_editor(parent, this_category) {
-	const selector_text_editor = await settings_ui.text_editor(this_category, "Selector");
-	selector_text_editor.text_editor.className += " STYLESHIFT-Selector-Text-Editor";
-	selector_text_editor.rearrange_value(function (value: string) {
-		return rearrange_selector(value);
+export async function selectorTextEditor(parent, thisCategory) {
+	const selectorTextEditor = await settingsUi.textEditor(thisCategory, "Selector");
+	selectorTextEditor.textEditor.className += " STYLESHIFT-Selector-Text-Editor";
+	selectorTextEditor.rearrangeValue(function (value: string) {
+		return rearrangeSelector(value);
 	});
-	parent.append(selector_text_editor.text_editor);
-	return selector_text_editor;
+	parent.append(selectorTextEditor.textEditor);
+	return selectorTextEditor;
 }
 
-export async function setting_delete_button(parent, when_click, type: "full" | "mini" = "full") {
-	const setting_delete_button = await settings_ui.button({
+export async function settingDeleteButton(parent, whenClick, type: "full" | "mini" = "full") {
+	const settingDeleteButton = await settingsUi.button({
 		name: "🗑️",
 		color: "#FF0000",
 		align: "center",
 	});
-	(setting_delete_button.button as HTMLDivElement).addEventListener("click", when_click);
-	parent.append(setting_delete_button.button);
+	(settingDeleteButton.button as HTMLDivElement).addEventListener("click", whenClick);
+	parent.append(settingDeleteButton.button);
 
 	switch (type) {
 		case "full":
-			(setting_delete_button.button as HTMLDivElement).style.width = "100%";
+			(settingDeleteButton.button as HTMLDivElement).style.width = "100%";
 			break;
 		case "mini":
-			(setting_delete_button.button as HTMLDivElement).style.width = "30px";
+			(settingDeleteButton.button as HTMLDivElement).style.width = "30px";
 			break;
 	}
 
-	return setting_delete_button;
+	return settingDeleteButton;
 }
 
-export async function add_setting_button(category_settings: Setting[]) {
+export async function addSettingButton(categorySettings: Setting[]) {
 	const target = document.createElement("div");
-	settings_ui.render_component(
+	settingsUi.renderComponent(
 		AddSettingButtonComponent,
 		{
-			categorySettings: category_settings,
+			categorySettings: categorySettings,
 		},
 		target,
 	);

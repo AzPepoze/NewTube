@@ -1,207 +1,207 @@
-import { dynamic_append, create_error } from "../../build-in-functions/extension";
-import { scroll_on_click } from "../../build-in-functions/normal";
+import { dynamicAppend, createError } from "../../buildInFunctions/extension";
+import { scrollOnClick } from "../../buildInFunctions/normal";
 import { logger } from "../../utils/logger";
-import { get_styleshift_dev_only_items } from "../../../main/items-styleshift-dev";
+import { getStyleshiftDevOnlyItems } from "../../../main/itemsStyleshiftDev";
 import {
-	add_category,
-	get_settings_list,
-	get_styleshift_data_type,
-	update_styleshift_items,
+	addCategory,
+	getSettingsList,
+	getStyleshiftDataType,
+	updateStyleshiftItems,
 } from "../../settings/items";
 import { Category } from "../../types/store";
-import { create_styleshift_window } from "../extension";
-import { settings_ui } from "./setting-components";
-import { add_drop_target, clear_drop_targets } from "./reorder";
-import { get_root_value } from "@/styleshift/core/storage-manager";
-import { is_dev_modules_loaded } from "@/styleshift/core/runtime-controller";
+import { createStyleshiftWindow } from "../extension";
+import { settingsUi } from "./settingComponents";
+import { addDropTarget, clearDropTargets } from "./reorder";
+import { getRootValue } from "@/styleshift/core/storageManager";
+import { isDevModulesLoaded } from "@/styleshift/core/runtimeController";
 import { IS_IN_EXTENSION_SETTINGS_PAGE } from "@/styleshift/run";
 
-export function setup_left_title_animation(title: HTMLElement) {
+export function setupLeftTitleAnimation(title: HTMLElement) {
 	title.style.transform = "translateY(40px)";
 	title.style.opacity = "0";
 }
 
-const setting_ui_registry = new Map<string, { parent: HTMLElement; container: HTMLElement }>();
+const settingUiRegistry = new Map<string, { parent: HTMLElement; container: HTMLElement }>();
 
-export async function refresh_setting_ui(setting_id: string) {
-	const entry = setting_ui_registry.get(setting_id);
+export async function refreshSettingUi(settingId: string) {
+	const entry = settingUiRegistry.get(settingId);
 	if (!entry) return;
 
 	const { parent, container } = entry;
-	const settings = await get_settings_list();
-	const setting = settings[setting_id];
+	const settings = await getSettingsList();
+	const setting = settings[settingId];
 	if (!setting) return;
 
-	logger.debug("ui", `Refreshing targeted UI for setting: ${setting_id}`);
+	logger.debug("ui", `Refreshing targeted UI for setting: ${settingId}`);
 
-	const new_element = await create_base_ui_element(setting.type, setting);
-	if (new_element) {
-		const any_element = new_element as any;
-		const new_container = any_element.frame || any_element.button || any_element;
-		if (new_container instanceof HTMLElement) {
-			container.replaceWith(new_container);
-			setting_ui_registry.set(setting_id, { parent, container: new_container });
+	const newElement = await createBaseUiElement(setting.type, setting);
+	if (newElement) {
+		const anyElement = newElement as any;
+		const newContainer = anyElement.frame || anyElement.button || anyElement;
+		if (newContainer instanceof HTMLElement) {
+			container.replaceWith(newContainer);
+			settingUiRegistry.set(settingId, { parent, container: newContainer });
 		}
 	}
 }
 
 interface SettingsWindow {
-	window_element: HTMLElement;
-	content_element: HTMLElement;
-	close_button: HTMLElement;
-	overlay_frame: HTMLElement;
-	drag_handle: HTMLElement;
-	close_window_handler: () => Promise<void>;
+	windowElement: HTMLElement;
+	contentElement: HTMLElement;
+	closeButton: HTMLElement;
+	overlayFrame: HTMLElement;
+	dragHandle: HTMLElement;
+	closeWindowHandler: () => Promise<void>;
 }
 
-export async function create_main_settings_ui({
-	show_category_list = true,
-	on_create = null as ((styleshift_window: SettingsWindow) => void) | null,
-	get_category = null as (() => Category[] | Promise<Category[]>) | null,
+export async function createMainSettingsUi({
+	showCategoryList = true,
+	onCreate = null as ((styleshiftWindow: SettingsWindow) => void) | null,
+	getCategory = null as (() => Category[] | Promise<Category[]>) | null,
 }) {
-	let settings_window: SettingsWindow | null = null;
-	let update_setting_interval: any = null;
-	let scroll_category: HTMLElement | null = null;
-	let settings_container: HTMLElement | null = null;
+	let settingsWindow: SettingsWindow | null = null;
+	let updateSettingInterval: any = null;
+	let scrollCategory: HTMLElement | null = null;
+	let settingsContainer: HTMLElement | null = null;
 
-	const return_obj = {
-		render_content: async function (skip_animation = false) {
-			if (!settings_container) return;
+	const returnObj = {
+		renderContent: async function (skipAnimation = false) {
+			if (!settingsContainer) return;
 
-			clear_drop_targets();
-			setting_ui_registry.clear();
-			settings_container.innerHTML = "";
-			if (scroll_category) scroll_category.innerHTML = "";
+			clearDropTargets();
+			settingUiRegistry.clear();
+			settingsContainer.innerHTML = "";
+			if (scrollCategory) scrollCategory.innerHTML = "";
 
-			if (update_setting_interval) clearInterval(update_setting_interval);
+			if (updateSettingInterval) clearInterval(updateSettingInterval);
 
-			const left_ui: HTMLElement[] = [];
-			const right_ui: HTMLElement[] = [];
-			const created_dev_only_category: string[] = [];
+			const leftUi: HTMLElement[] = [];
+			const rightUi: HTMLElement[] = [];
+			const createdDevOnlyCategory: string[] = [];
 
-			const categories = get_category ? await get_category() : [];
+			const categories = getCategory ? await getCategory() : [];
 
-			for (const this_category of categories) {
-				const { category_title, category_frame } = await create_category_ui(
-					settings_container,
-					this_category,
+			for (const thisCategory of categories) {
+				const { categoryTitle, categoryFrame } = await createCategoryUi(
+					settingsContainer,
+					thisCategory,
 				);
 
-				const left_category_title = await settings_ui.left_title(this_category.category, skip_animation);
+				const leftCategoryTitle = await settingsUi.leftTitle(thisCategory.category, skipAnimation);
 
-				scroll_on_click(left_category_title, category_title);
+				scrollOnClick(leftCategoryTitle, categoryTitle);
 
-				if (show_category_list && scroll_category) {
-					left_ui.push(left_category_title);
-					scroll_category.append(left_category_title);
+				if (showCategoryList && scrollCategory) {
+					leftUi.push(leftCategoryTitle);
+					scrollCategory.append(leftCategoryTitle);
 				}
 
-				right_ui.push(category_title);
+				rightUi.push(categoryTitle);
 
-				if (is_dev_modules_loaded) {
-					const get_dev_only_category = get_styleshift_dev_only_items().find(
-						(x) => x.category == this_category.category,
+				if (isDevModulesLoaded) {
+					const getDevOnlyCategory = getStyleshiftDevOnlyItems().find(
+						(x) => x.category == thisCategory.category,
 					);
 
-					if (get_dev_only_category) {
-						created_dev_only_category.push(get_dev_only_category.category);
+					if (getDevOnlyCategory) {
+						createdDevOnlyCategory.push(getDevOnlyCategory.category);
 
-						for (const this_setting_only of get_dev_only_category.settings) {
-							await create_setting_ui_element_with_able_developer_mode(
-								category_frame,
-								this_setting_only,
+						for (const thisSettingOnly of getDevOnlyCategory.settings) {
+							await createSettingUiElementWithAbleDeveloperMode(
+								categoryFrame,
+								thisSettingOnly,
 							);
 						}
 					}
 				}
 
-				if (this_category.editable && (await get_root_value("Developer_mode"))) {
-					dynamic_append(
-						category_frame,
-						await settings_ui.add_setting_button(this_category.settings),
+				if (thisCategory.editable && (await getRootValue("Developer_mode"))) {
+					dynamicAppend(
+						categoryFrame,
+						await settingsUi.addSettingButton(thisCategory.settings),
 					);
 				}
 
-				await settings_ui.space(settings_container);
+				await settingsUi.space(settingsContainer);
 			}
 
-			if (await get_root_value("Developer_mode")) {
-				for (const this_category of get_styleshift_dev_only_items()) {
-					if (!created_dev_only_category.includes(this_category.category)) {
-						await create_category_ui(settings_container, this_category);
+			if (await getRootValue("Developer_mode")) {
+				for (const thisCategory of getStyleshiftDevOnlyItems()) {
+					if (!createdDevOnlyCategory.includes(thisCategory.category)) {
+						await createCategoryUi(settingsContainer, thisCategory);
 					}
 				}
 			}
 
-			if (show_category_list && scroll_category && (await get_root_value("Developer_mode"))) {
-				const add_button = (
-					await settings_ui.button({
+			if (showCategoryList && scrollCategory && (await getRootValue("Developer_mode"))) {
+				const addButton = (
+					await settingsUi.button({
 						name: "+",
 						color: "#FFFFFF",
 						align: "center",
-						click_function: function () {
-							add_category("🥳 new_category");
+						clickFunction: function () {
+							addCategory("🥳 newCategory");
 						},
 					})
 				).button;
-				add_button.className += " STYLESHIFT-Add-Category-button";
+				addButton.className += " STYLESHIFT-Add-Category-button";
 
-				add_button.style.padding = "5px";
-				add_button.style.marginInline = "10px";
-				add_button.style.marginTop = "3px";
+				addButton.style.padding = "5px";
+				addButton.style.marginInline = "10px";
+				addButton.style.marginTop = "3px";
 
-				left_ui.push(add_button);
-				scroll_category.append(add_button);
+				leftUi.push(addButton);
+				scrollCategory.append(addButton);
 
-				if (!skip_animation) {
-					setup_left_title_animation(add_button);
+				if (!skipAnimation) {
+					setupLeftTitleAnimation(addButton);
 				}
 			}
 
-			if (show_category_list && !skip_animation) {
+			if (showCategoryList && !skipAnimation) {
 				requestAnimationFrame(function () {
-					for (let left_order = 0; left_order < left_ui.length; left_order++) {
-						const left_category_title = left_ui[left_order];
+					for (let leftOrder = 0; leftOrder < leftUi.length; leftOrder++) {
+						const leftCategoryTitle = leftUi[leftOrder];
 						setTimeout(() => {
-							left_category_title.style.transform = "";
-							left_category_title.style.opacity = "";
-						}, 50 * left_order);
+							leftCategoryTitle.style.transform = "";
+							leftCategoryTitle.style.opacity = "";
+						}, 50 * leftOrder);
 					}
 				});
 			}
 
-			let current_selected_left: HTMLElement;
-			let current_selected_right: HTMLElement;
+			let currentSelectedLeft: HTMLElement;
+			let currentSelectedRight: HTMLElement;
 
-			if (show_category_list && settings_container) {
-				update_setting_interval = setInterval(async function () {
-					const last_index = right_ui.length - 1;
+			if (showCategoryList && settingsContainer) {
+				updateSettingInterval = setInterval(async function () {
+					const lastIndex = rightUi.length - 1;
 
-					for (let index = 0; index <= last_index; index++) {
-						const settings_container_box = settings_container.getBoundingClientRect();
+					for (let index = 0; index <= lastIndex; index++) {
+						const settingsContainerBox = settingsContainer.getBoundingClientRect();
 						if (
-							index == last_index ||
-							(right_ui[index].getBoundingClientRect().top - 10 <= settings_container_box.top &&
-								right_ui[index + 1].getBoundingClientRect().top - 10 >=
-									settings_container_box.top) ||
+							index == lastIndex ||
+							(rightUi[index].getBoundingClientRect().top - 10 <= settingsContainerBox.top &&
+								rightUi[index + 1].getBoundingClientRect().top - 10 >=
+									settingsContainerBox.top) ||
 							(index == 0 &&
-								right_ui[index].getBoundingClientRect().top >= settings_container_box.top)
+								rightUi[index].getBoundingClientRect().top >= settingsContainerBox.top)
 						) {
-							if (current_selected_left == left_ui[index]) {
+							if (currentSelectedLeft == leftUi[index]) {
 								break;
 							}
-							if (current_selected_left) {
-								current_selected_left.removeAttribute("selected");
+							if (currentSelectedLeft) {
+								currentSelectedLeft.removeAttribute("selected");
 							}
-							if (current_selected_right) {
-								current_selected_right.removeAttribute("selected");
+							if (currentSelectedRight) {
+								currentSelectedRight.removeAttribute("selected");
 							}
-							current_selected_left = left_ui[index];
-							current_selected_right = right_ui[index];
-							current_selected_left.setAttribute("selected", "");
-							current_selected_right.setAttribute("selected", "");
+							currentSelectedLeft = leftUi[index];
+							currentSelectedRight = rightUi[index];
+							currentSelectedLeft.setAttribute("selected", "");
+							currentSelectedRight.setAttribute("selected", "");
 
-							current_selected_left.scrollIntoView({ behavior: "smooth", block: "nearest" });
+							currentSelectedLeft.scrollIntoView({ behavior: "smooth", block: "nearest" });
 							break;
 						}
 					}
@@ -209,200 +209,200 @@ export async function create_main_settings_ui({
 			}
 		},
 
-		create_ui: async function (skip_animation = false) {
-			logger.info("ui", "Creating UI", { settings_window });
-			if (settings_window) {
-				return_obj.recreate_ui();
+		createUi: async function (skipAnimation = false) {
+			logger.info("ui", "Creating UI", { settingsWindow });
+			if (settingsWindow) {
+				returnObj.recreateUi();
 				return;
 			}
 
 			// @ts-ignore
-			settings_window = await create_styleshift_window({
-				skip_animation,
+			settingsWindow = await createStyleshiftWindow({
+				skipAnimation,
 				title: "StyleShift Settings",
 			});
 
 			logger.info("ui", "Created_styleshift_window");
 
-			const settings_content = settings_window.content_element;
+			const settingsContent = settingsWindow.contentElement;
 
 			if (IS_IN_EXTENSION_SETTINGS_PAGE) {
-				settings_window.window_element.style.width = "100%";
-				settings_window.window_element.style.height = "100%";
-				settings_window.window_element.style.resize = "none";
+				settingsWindow.windowElement.style.width = "100%";
+				settingsWindow.windowElement.style.height = "100%";
+				settingsWindow.windowElement.style.resize = "none";
 			}
 
-			const main_frame = await settings_ui.setting_frame(false, false, { x: false, y: false }, true);
+			const mainFrame = await settingsUi.settingFrame(false, false, { x: false, y: false }, true);
 
-			main_frame.style.width = "calc(100% - 5px)";
-			main_frame.style.height = "-webkit-fill-available";
-			main_frame.style.gap = "10px";
-			main_frame.style.overflow = "hidden";
-			settings_content.append(main_frame);
+			mainFrame.style.width = "calc(100% - 5px)";
+			mainFrame.style.height = "-webkit-fill-available";
+			mainFrame.style.gap = "10px";
+			mainFrame.style.overflow = "hidden";
+			settingsContent.append(mainFrame);
 
-			if (show_category_list) {
-				scroll_category = document.createElement("div");
-				scroll_category.className = "STYLESHIFT-Scrollable";
-				scroll_category.style.minWidth = "100px";
-				scroll_category.style.width = "250px";
-				scroll_category.setAttribute("Left", "true");
-				main_frame.append(scroll_category);
+			if (showCategoryList) {
+				scrollCategory = document.createElement("div");
+				scrollCategory.className = "STYLESHIFT-Scrollable";
+				scrollCategory.style.minWidth = "100px";
+				scrollCategory.style.width = "250px";
+				scrollCategory.setAttribute("Left", "true");
+				mainFrame.append(scrollCategory);
 
-				const resize_handle = await settings_ui.resize_handle(scroll_category, "right");
-				main_frame.append(resize_handle);
+				const resizeHandle = await settingsUi.resizeHandle(scrollCategory, "right");
+				mainFrame.append(resizeHandle);
 			}
 
-			const settings_frame = await settings_ui.setting_frame(false, true, { x: false, y: false }, true);
-			settings_frame.style.width = "-webkit-fill-available";
-			settings_frame.style.height = "100%";
-			settings_frame.style.gap = "10px";
-			main_frame.append(settings_frame);
+			const settingsFrame = await settingsUi.settingFrame(false, true, { x: false, y: false }, true);
+			settingsFrame.style.width = "-webkit-fill-available";
+			settingsFrame.style.height = "100%";
+			settingsFrame.style.gap = "10px";
+			mainFrame.append(settingsFrame);
 
-			const search_input = document.createElement("input");
-			search_input.className = "STYLESHIFT-Search";
-			search_input.placeholder = "🔍 Search";
-			settings_frame.append(search_input);
+			const searchInput = document.createElement("input");
+			searchInput.className = "STYLESHIFT-Search";
+			searchInput.placeholder = "🔍 Search";
+			settingsFrame.append(searchInput);
 
-			settings_container = document.createElement("div");
-			settings_container.className = "STYLESHIFT-Scrollable";
-			settings_frame.append(settings_container);
+			settingsContainer = document.createElement("div");
+			settingsContainer.className = "STYLESHIFT-Scrollable";
+			settingsFrame.append(settingsContainer);
 
-			settings_window.close_button.addEventListener(
+			settingsWindow.closeButton.addEventListener(
 				"click",
 				() => {
-					return_obj.remove_ui();
+					returnObj.removeUi();
 				},
 				{ once: true },
 			);
 
-			await return_obj.render_content(skip_animation);
+			await returnObj.renderContent(skipAnimation);
 
-			if (on_create) {
-				on_create(settings_window);
+			if (onCreate) {
+				onCreate(settingsWindow);
 			}
 		},
-		remove_ui: function (skip_animation = false, _delay = false) {
-			if (settings_window) {
-				if (update_setting_interval) clearInterval(update_setting_interval);
-				if (skip_animation) {
-					const overlay_frame = settings_window.overlay_frame;
+		removeUi: function (skipAnimation = false, _delay = false) {
+			if (settingsWindow) {
+				if (updateSettingInterval) clearInterval(updateSettingInterval);
+				if (skipAnimation) {
+					const overlayFrame = settingsWindow.overlayFrame;
 					requestAnimationFrame(() => {
-						overlay_frame.remove();
+						overlayFrame.remove();
 					});
 				} else {
-					settings_window.close_window_handler();
+					settingsWindow.closeWindowHandler();
 				}
-				settings_window = null;
-				settings_container = null;
-				scroll_category = null;
+				settingsWindow = null;
+				settingsContainer = null;
+				scrollCategory = null;
 			}
 		},
-		recreate_ui: async function () {
-			logger.info("ui", "recreate_ui triggered", { settings_window });
-			if (settings_window && scroll_category && settings_container) {
-				await update_styleshift_items();
+		recreateUi: async function () {
+			logger.info("ui", "recreateUi triggered", { settingsWindow });
+			if (settingsWindow && scrollCategory && settingsContainer) {
+				await updateStyleshiftItems();
 
-				const last_scroll = [0, 0];
-				if (show_category_list) {
-					last_scroll[0] = scroll_category.scrollTop;
+				const lastScroll = [0, 0];
+				if (showCategoryList) {
+					lastScroll[0] = scrollCategory.scrollTop;
 				}
-				last_scroll[1] = settings_container.scrollTop;
+				lastScroll[1] = settingsContainer.scrollTop;
 
-				await return_obj.render_content(true);
+				await returnObj.renderContent(true);
 
 				requestAnimationFrame(function () {
-					if (show_category_list && scroll_category) {
-						scroll_category.scrollTo(0, last_scroll[0]);
+					if (showCategoryList && scrollCategory) {
+						scrollCategory.scrollTo(0, lastScroll[0]);
 					}
-					if (settings_container) {
-						settings_container.scrollTo(0, last_scroll[1]);
+					if (settingsContainer) {
+						settingsContainer.scrollTo(0, lastScroll[1]);
 					}
 				});
 			}
 		},
 		toggle: function () {
-			if (settings_window) {
-				return_obj.remove_ui();
+			if (settingsWindow) {
+				returnObj.removeUi();
 			} else {
-				return_obj.create_ui();
+				returnObj.createUi();
 			}
 		},
 
-		set_get_category: function (new_function: () => Category[] | Promise<Category[]> | null) {
-			get_category = new_function;
-			if (settings_window) {
-				return_obj.recreate_ui();
+		setGetCategory: function (newFunction: () => Category[] | Promise<Category[]> | null) {
+			getCategory = newFunction;
+			if (settingsWindow) {
+				returnObj.recreateUi();
 			}
 		},
 	};
 
-	return return_obj;
+	return returnObj;
 }
 
-export async function create_config_ui_function(
+export async function createConfigUiFunction(
 	editable = false,
-	config_function: Function,
+	configFunction: Function,
 ): Promise<Function | undefined> {
-	if (editable && (await get_root_value("Developer_mode"))) {
-		return config_function;
+	if (editable && (await getRootValue("Developer_mode"))) {
+		return configFunction;
 	}
 }
 
-async function create_base_ui_element(ui_type: string, this_data: any) {
+async function createBaseUiElement(uiType: string, thisData: any) {
 	try {
-		const render_func = settings_ui[ui_type as keyof typeof settings_ui];
-		if (typeof render_func === "function") {
-			return await (render_func as any)(this_data);
+		const renderFunc = settingsUi[uiType as keyof typeof settingsUi];
+		if (typeof renderFunc === "function") {
+			return await (renderFunc as any)(thisData);
 		}
-		throw new Error(`UI component type "${ui_type}" not found in settings_ui`);
+		throw new Error(`UI component type "${uiType}" not found in settingsUi`);
 	} catch (error) {
-		create_error(`${error}\n\n${JSON.stringify(this_data, null, 2)}`);
+		createError(`${error}\n\n${JSON.stringify(thisData, null, 2)}`);
 		return null;
 	}
 }
 
-export async function create_setting_ui_element_with_able_developer_mode(parent: HTMLDivElement, this_data: any) {
-	const data_type = get_styleshift_data_type(this_data);
-	const ui_type = data_type == "category" ? "title" : (this_data as any).type;
+export async function createSettingUiElementWithAbleDeveloperMode(parent: HTMLDivElement, thisData: any) {
+	const dataType = getStyleshiftDataType(thisData);
+	const uiType = dataType == "category" ? "title" : (thisData as any).type;
 
-	const main_element = await create_base_ui_element(ui_type, this_data);
-	if (!main_element) return null;
+	const mainElement = await createBaseUiElement(uiType, thisData);
+	if (!mainElement) return null;
 
-	const any_element = main_element as any;
-	const container = any_element.frame || any_element.button || any_element;
-	dynamic_append(parent, main_element);
+	const anyElement = mainElement as any;
+	const container = anyElement.frame || anyElement.button || anyElement;
+	dynamicAppend(parent, mainElement);
 
-	if (data_type === "setting" && this_data.id) {
-		setting_ui_registry.set(this_data.id, { parent, container });
+	if (dataType === "setting" && thisData.id) {
+		settingUiRegistry.set(thisData.id, { parent, container });
 	}
 
-	if (data_type === "category") {
-		add_drop_target(any_element.frame || any_element, parent, this_data as Category, "category");
+	if (dataType === "category") {
+		addDropTarget(anyElement.frame || anyElement, parent, thisData as Category, "category");
 	}
 
-	return main_element;
+	return mainElement;
 }
 
-export async function create_category_ui(parent: HTMLElement, this_category: Category) {
-	const category_frame = await settings_ui.setting_frame(true, true);
-	category_frame.className += " STYLESHIFT-Category-Frame";
-	parent.append(category_frame);
+export async function createCategoryUi(parent: HTMLElement, thisCategory: Category) {
+	const categoryFrame = await settingsUi.settingFrame(true, true);
+	categoryFrame.className += " STYLESHIFT-Category-Frame";
+	parent.append(categoryFrame);
 
-	const category_title = (
-		(await create_setting_ui_element_with_able_developer_mode(category_frame, this_category)) as any
+	const categoryTitle = (
+		(await createSettingUiElementWithAbleDeveloperMode(categoryFrame, thisCategory)) as any
 	).frame;
 
-	for (const this_setting of this_category.settings) {
+	for (const thisSetting of thisCategory.settings) {
 		try {
-			await create_setting_ui_element_with_able_developer_mode(category_frame, this_setting);
+			await createSettingUiElementWithAbleDeveloperMode(categoryFrame, thisSetting);
 		} catch (error) {
-			create_error(`At ${this_category.category} - ${JSON.stringify(this_setting, null, 2)}\n${error}`).then(
+			createError(`At ${thisCategory.category} - ${JSON.stringify(thisSetting, null, 2)}\n${error}`).then(
 				(notification) => {
-					notification.set_title("StyleShift - Create ui error");
+					notification.setTitle("StyleShift - Create ui error");
 				},
 			);
 		}
 	}
 
-	return { category_title, category_frame };
+	return { categoryTitle, categoryFrame };
 }

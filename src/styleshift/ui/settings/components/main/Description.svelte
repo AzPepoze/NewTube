@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 	import Icon from "./Icon.svelte";
-	import { get_asset_url } from "@ui/utils";
-	import { get_text_align, get_flex_align } from "../../utils";
+	import { getAssetUrl } from "@ui/utils";
+	import { getTextAlign, getFlexAlign } from "../../utils";
 
 	let {
 		name = "",
@@ -20,8 +20,8 @@
 		children?: Snippet;
 	} = $props();
 
-	const textAlign = $derived(get_text_align(align));
-	const flexAlign = $derived(get_flex_align(align));
+	const textAlign = $derived(getTextAlign(align));
+	const flexAlign = $derived(getFlexAlign(align));
 </script>
 
 <div
@@ -35,7 +35,7 @@
 		<div class="setting-name" style:justify-content={flexAlign}>
 			{#if name.includes(".svg") || name.includes("data:image/svg+xml") || name.startsWith("chrome-extension://")}
 				<Icon
-					name={get_asset_url(name)}
+					name={getAssetUrl(name)}
 					size={20}
 					className="STYLESHIFT-Description-Icon"
 					applyFilter={true}

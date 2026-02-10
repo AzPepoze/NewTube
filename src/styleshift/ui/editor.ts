@@ -1,82 +1,82 @@
-import { get_element_center_position } from "../build-in-functions/normal";
+import { getElementCenterPosition } from "../buildInFunctions/normal";
 import { Category } from "../types/store";
-import { start_highlighter } from "./highlight";
-import { create_main_settings_ui } from "./settings/settings";
+import { startHighlighter } from "./highlight";
+import { createMainSettingsUi } from "./settings/settings";
 
-const editor_width = 400;
-export let editor_ui: Awaited<ReturnType<typeof create_main_settings_ui>>;
-const current_edit_obj = {};
-let animation_frame_id: number | null = null;
-let resize_observer: ResizeObserver | null = null;
+const editorWidth = 400;
+export let editorUi: Awaited<ReturnType<typeof createMainSettingsUi>>;
+const currentEditObj = {};
+let animationFrameId: number | null = null;
+let resizeObserver: ResizeObserver | null = null;
 
 (async () => {
-	editor_ui = await create_main_settings_ui({
-		show_category_list: false,
-		on_create: function (styleshift_window) {
-			styleshift_window.window_element.style.width = editor_width + "px";
-			styleshift_window.window_element.style.minWidth = "300px";
+	editorUi = await createMainSettingsUi({
+		showCategoryList: false,
+		onCreate: function (styleshiftWindow) {
+			styleshiftWindow.windowElement.style.width = editorWidth + "px";
+			styleshiftWindow.windowElement.style.minWidth = "300px";
 
-			const target_element = current_edit_obj["target"];
+			const targetElement = currentEditObj["target"];
 
-			function update_position() {
-				const target_element_center_position = get_element_center_position(target_element);
-				let cal_position;
+			function updatePosition() {
+				const targetElementCenterPosition = getElementCenterPosition(targetElement);
+				let calPosition;
 
-				if (target_element_center_position.x < window.innerWidth / 2) {
-					cal_position = target_element.getBoundingClientRect().right + 10;
+				if (targetElementCenterPosition.x < window.innerWidth / 2) {
+					calPosition = targetElement.getBoundingClientRect().right + 10;
 				} else {
-					cal_position = target_element.getBoundingClientRect().left - editor_width - 20 - 10;
+					calPosition = targetElement.getBoundingClientRect().left - editorWidth - 20 - 10;
 				}
 
-				if (cal_position + editor_width > window.innerWidth) {
-					cal_position = window.innerWidth - editor_width - 20 - 20;
+				if (calPosition + editorWidth > window.innerWidth) {
+					calPosition = window.innerWidth - editorWidth - 20 - 20;
 				}
 
-				styleshift_window.window_element.style.left = `${cal_position}px`;
+				styleshiftWindow.windowElement.style.left = `${calPosition}px`;
 
 				// Continue animation loop
-				animation_frame_id = requestAnimationFrame(update_position);
+				animationFrameId = requestAnimationFrame(updatePosition);
 			}
 
-			update_position();
+			updatePosition();
 
-			resize_observer = new ResizeObserver(() => {
-				if (animation_frame_id) {
-					cancelAnimationFrame(animation_frame_id);
-					animation_frame_id = null;
+			resizeObserver = new ResizeObserver(() => {
+				if (animationFrameId) {
+					cancelAnimationFrame(animationFrameId);
+					animationFrameId = null;
 				}
-				if (resize_observer) {
-					resize_observer.disconnect();
-					resize_observer = null;
+				if (resizeObserver) {
+					resizeObserver.disconnect();
+					resizeObserver = null;
 				}
 			});
-			resize_observer.observe(target_element);
+			resizeObserver.observe(targetElement);
 
-			styleshift_window.drag_handle.addEventListener("mousedown", () => {
-				if (animation_frame_id) {
-					cancelAnimationFrame(animation_frame_id);
-					animation_frame_id = null;
+			styleshiftWindow.dragHandle.addEventListener("mousedown", () => {
+				if (animationFrameId) {
+					cancelAnimationFrame(animationFrameId);
+					animationFrameId = null;
 				}
 			});
 
-			styleshift_window.close_button.addEventListener("click", () => {
-				if (animation_frame_id) {
-					cancelAnimationFrame(animation_frame_id);
-					animation_frame_id = null;
+			styleshiftWindow.closeButton.addEventListener("click", () => {
+				if (animationFrameId) {
+					cancelAnimationFrame(animationFrameId);
+					animationFrameId = null;
 				}
-				if (resize_observer) {
-					resize_observer.disconnect();
-					resize_observer = null;
+				if (resizeObserver) {
+					resizeObserver.disconnect();
+					resizeObserver = null;
 				}
-				start_highlighter();
+				startHighlighter();
 			});
 		},
 	});
 })();
 
-export async function create_editor_ui(target_element, this_category: Category) {
-	current_edit_obj["target"] = target_element;
-	current_edit_obj["Category"] = this_category;
-	editor_ui.set_get_category(() => [this_category]);
-	editor_ui.create_ui();
+export async function createEditorUi(targetElement, thisCategory: Category) {
+	currentEditObj["target"] = targetElement;
+	currentEditObj["Category"] = thisCategory;
+	editorUi.setGetCategory(() => [thisCategory]);
+	editorUi.createUi();
 }

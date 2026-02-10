@@ -1,12 +1,12 @@
-import { insert_after } from "../../build-in-functions/normal";
+import { insertAfter } from "../../buildInFunctions/normal";
 import { logger } from "../../utils/logger";
-import { save_to_storage } from "../../core/storage-manager";
-import { get_setting_category, get_custom_items } from "../../settings/items";
+import { saveToStorage } from "../../core/storageManager";
+import { getSettingCategory, getCustomItems } from "../../settings/items";
 import type { Category, Setting } from "../../types/store";
-import { refresh_extension_state } from "@/styleshift/run";
+import { refreshExtensionState } from "@/styleshift/run";
 
-let draging_setting: { size: number; Data: Setting | Category } | null = null;
-const drop_targets = new Map<HTMLElement, { data: Setting | Category; data_type: string }>();
+let dragingSetting: { size: number; Data: Setting | Category } | null = null;
+const dropTargets = new Map<HTMLElement, { data: Setting | Category; dataType: string }>();
 
 interface Placeholder {
 	show: () => void;
@@ -14,16 +14,16 @@ interface Placeholder {
 	element: HTMLElement;
 }
 
-let current_placeholder: Placeholder | null = null;
+let currentPlaceholder: Placeholder | null = null;
 
-function clear_current_placeholder() {
-	if (current_placeholder) {
-		current_placeholder.hide();
-		current_placeholder = null;
+function clearCurrentPlaceholder() {
+	if (currentPlaceholder) {
+		currentPlaceholder.hide();
+		currentPlaceholder = null;
 	}
 }
 
-function create_placeholder(size: number) {
+function createPlaceholder(size: number) {
 	const space = document.createElement("div");
 	space.className = "STYLESHIFT-drag-Hint";
 	space.style.height = "0px";
@@ -53,195 +53,195 @@ function create_placeholder(size: number) {
 	};
 }
 
-export function clear_drop_targets() {
-	drop_targets.clear();
+export function clearDropTargets() {
+	dropTargets.clear();
 }
 
-export async function add_drag(
-	drag_handle: HTMLElement,
+export async function addDrag(
+	dragHandle: HTMLElement,
 	frame: HTMLElement | null,
 	_parent: HTMLElement | null,
-	this_data: Setting | Category,
+	thisData: Setting | Category,
 ) {
-	drag_handle.addEventListener("mousedown", async function (event) {
+	dragHandle.addEventListener("mousedown", async function (event) {
 		event.preventDefault();
 
-		const target_frame = frame || (drag_handle.closest(".STYLESHIFT-Setting-Frame") as HTMLElement);
-		if (!target_frame) return;
+		const targetFrame = frame || (dragHandle.closest(".STYLESHIFT-Setting-Frame") as HTMLElement);
+		if (!targetFrame) return;
 
-		const current_parent = target_frame.parentElement;
-		if (!current_parent) return;
+		const currentParent = targetFrame.parentElement;
+		if (!currentParent) return;
 
-		const scroller = current_parent.closest(".STYLESHIFT-Scrollable") as HTMLElement;
+		const scroller = currentParent.closest(".STYLESHIFT-Scrollable") as HTMLElement;
 		if (!scroller) return;
 
-		const frame_bound = target_frame.getBoundingClientRect();
-		const offset_y = event.clientY - frame_bound.top;
+		const frameBound = targetFrame.getBoundingClientRect();
+		const offsetY = event.clientY - frameBound.top;
 
-		draging_setting = {
-			size: frame_bound.height,
-			Data: this_data,
+		dragingSetting = {
+			size: frameBound.height,
+			Data: thisData,
 		};
 
-		logger.info("drag", "Started:", draging_setting);
+		logger.info("drag", "Started:", dragingSetting);
 
-		const scroller_rect = scroller.getBoundingClientRect();
-		const initial_top = frame_bound.top - scroller_rect.top + scroller.scrollTop;
-		const initial_left = frame_bound.left - scroller_rect.left;
+		const scrollerRect = scroller.getBoundingClientRect();
+		const initialTop = frameBound.top - scrollerRect.top + scroller.scrollTop;
+		const initialLeft = frameBound.left - scrollerRect.left;
 
-		clear_current_placeholder();
-		current_placeholder = create_placeholder(draging_setting.size);
-		current_parent.insertBefore(current_placeholder.element, target_frame);
-		current_placeholder.show();
+		clearCurrentPlaceholder();
+		currentPlaceholder = createPlaceholder(dragingSetting.size);
+		currentParent.insertBefore(currentPlaceholder.element, targetFrame);
+		currentPlaceholder.show();
 
-		target_frame.style.width = `${frame_bound.width}px`;
-		target_frame.style.height = `${frame_bound.height}px`;
-		target_frame.style.boxSizing = "border-box";
-		target_frame.style.position = "absolute";
-		target_frame.style.pointerEvents = "none";
-		target_frame.style.zIndex = "10000";
-		target_frame.style.boxShadow = "0 10px 30px rgba(0,0,0,0.5)";
-		target_frame.style.left = `${initial_left}px`;
-		target_frame.style.top = `${initial_top}px`;
-		target_frame.style.margin = "0";
-		target_frame.style.transition = "none";
+		targetFrame.style.width = `${frameBound.width}px`;
+		targetFrame.style.height = `${frameBound.height}px`;
+		targetFrame.style.boxSizing = "border-box";
+		targetFrame.style.position = "absolute";
+		targetFrame.style.pointerEvents = "none";
+		targetFrame.style.zIndex = "10000";
+		targetFrame.style.boxShadow = "0 10px 30px rgba(0,0,0,0.5)";
+		targetFrame.style.left = `${initialLeft}px`;
+		targetFrame.style.top = `${initialTop}px`;
+		targetFrame.style.margin = "0";
+		targetFrame.style.transition = "none";
 
-		const handle = target_frame.querySelector(".drag-handle") as HTMLElement;
+		const handle = targetFrame.querySelector(".drag-handle") as HTMLElement;
 		if (handle) handle.style.display = "none";
 
 		scroller.setAttribute("draging", "");
 
-		let current_mouse_event = event;
-		let render_drag = true;
+		let currentMouseEvent = event;
+		let renderDrag = true;
 
-		let last_hit_el: HTMLElement | null = null;
-		let last_hit_is_after = false;
+		let lastHitEl: HTMLElement | null = null;
+		let lastHitIsAfter = false;
 
-		function update_drag_function() {
-			if (!render_drag) return;
+		function updateDragFunction() {
+			if (!renderDrag) return;
 
-			const target_y = current_mouse_event.clientY - scroller_rect.top + scroller.scrollTop - offset_y;
-			target_frame!.style.top = `${target_y}px`;
+			const targetY = currentMouseEvent.clientY - scrollerRect.top + scroller.scrollTop - offsetY;
+			targetFrame!.style.top = `${targetY}px`;
 
-			const x = current_mouse_event.clientX;
-			const y = current_mouse_event.clientY;
+			const x = currentMouseEvent.clientX;
+			const y = currentMouseEvent.clientY;
 
-			let hit_info = null;
-			let is_after = false;
-			let closest_dist = Infinity;
+			let hitInfo = null;
+			let isAfter = false;
+			let closestDist = Infinity;
 
-			for (const [target_el, info] of drop_targets.entries()) {
-				if (info.data === this_data && info.data_type === "setting") continue;
+			for (const [targetEl, info] of dropTargets.entries()) {
+				if (info.data === thisData && info.dataType === "setting") continue;
 
-				const target_category: Category | null =
-					info.data_type === "category"
+				const targetCategory: Category | null =
+					info.dataType === "category"
 						? (info.data as Category)
-						: get_setting_category(info.data as Setting);
-				if (!target_category || !target_category.editable) continue;
+						: getSettingCategory(info.data as Setting);
+				if (!targetCategory || !targetCategory.editable) continue;
 
-				const rect = target_el.getBoundingClientRect();
+				const rect = targetEl.getBoundingClientRect();
 				if (x >= rect.left && x <= rect.right) {
-					const center_y = rect.top + rect.height / 2;
-					const dist = Math.abs(y - center_y);
+					const centerY = rect.top + rect.height / 2;
+					const dist = Math.abs(y - centerY);
 
-					const range = info.data_type === "category" ? rect.height : rect.height + 10;
+					const range = info.dataType === "category" ? rect.height : rect.height + 10;
 
 					if (y >= rect.top - range / 2 && y <= rect.bottom + range / 2) {
-						if (dist < closest_dist) {
-							closest_dist = dist;
-							hit_info = { target_el, ...info };
-							is_after = info.data_type === "category" ? true : y > center_y;
+						if (dist < closestDist) {
+							closestDist = dist;
+							hitInfo = { targetEl, ...info };
+							isAfter = info.dataType === "category" ? true : y > centerY;
 						}
 					}
 				}
 			}
 
-			if (hit_info && (hit_info.target_el !== last_hit_el || is_after !== last_hit_is_after)) {
-				clear_current_placeholder();
+			if (hitInfo && (hitInfo.targetEl !== lastHitEl || isAfter !== lastHitIsAfter)) {
+				clearCurrentPlaceholder();
 
-				current_placeholder = create_placeholder(draging_setting!.size);
+				currentPlaceholder = createPlaceholder(dragingSetting!.size);
 
-				if (is_after) {
-					insert_after(
-						current_placeholder.element,
-						hit_info.target_el,
-						hit_info.target_el.parentElement!,
+				if (isAfter) {
+					insertAfter(
+						currentPlaceholder.element,
+						hitInfo.targetEl,
+						hitInfo.targetEl.parentElement!,
 					);
 				} else {
-					hit_info.target_el.parentElement!.insertBefore(
-						current_placeholder.element,
-						hit_info.target_el,
+					hitInfo.targetEl.parentElement!.insertBefore(
+						currentPlaceholder.element,
+						hitInfo.targetEl,
 					);
 				}
 
-				current_placeholder.show();
+				currentPlaceholder.show();
 
-				last_hit_el = hit_info.target_el;
-				last_hit_is_after = is_after;
+				lastHitEl = hitInfo.targetEl;
+				lastHitIsAfter = isAfter;
 			}
 
-			requestAnimationFrame(update_drag_function);
+			requestAnimationFrame(updateDragFunction);
 		}
-		update_drag_function();
+		updateDragFunction();
 
-		function on_drag(event: MouseEvent) {
-			current_mouse_event = event;
+		function onDrag(event: MouseEvent) {
+			currentMouseEvent = event;
 		}
 
-		document.addEventListener("mousemove", on_drag);
+		document.addEventListener("mousemove", onDrag);
 
 		document.addEventListener(
 			"mouseup",
 			async function () {
-				document.removeEventListener("mousemove", on_drag);
-				render_drag = false;
+				document.removeEventListener("mousemove", onDrag);
+				renderDrag = false;
 
 				scroller.removeAttribute("draging");
-				clear_current_placeholder();
+				clearCurrentPlaceholder();
 
-				if (last_hit_el) {
-					const info = drop_targets.get(last_hit_el);
+				if (lastHitEl) {
+					const info = dropTargets.get(lastHitEl);
 					if (info) {
-						const item_to_move = draging_setting!.Data as Setting;
-						const source_category = get_setting_category(item_to_move);
-						if (source_category !== null) {
-							const idx = source_category.settings.indexOf(item_to_move);
-							if (idx > -1) source_category.settings.splice(idx, 1);
+						const itemToMove = dragingSetting!.Data as Setting;
+						const sourceCategory = getSettingCategory(itemToMove);
+						if (sourceCategory !== null) {
+							const idx = sourceCategory.settings.indexOf(itemToMove);
+							if (idx > -1) sourceCategory.settings.splice(idx, 1);
 						}
 
-						const target_category: Category | null =
-							info.data_type === "category"
+						const targetCategory: Category | null =
+							info.dataType === "category"
 								? (info.data as Category)
-								: get_setting_category(info.data as Setting);
+								: getSettingCategory(info.data as Setting);
 
-						if (target_category !== null && target_category.editable) {
-							let drop_index = 0;
-							if (info.data_type !== "category") {
-								drop_index =
-									target_category.settings.indexOf(info.data as Setting) +
-									(last_hit_is_after ? 1 : 0);
+						if (targetCategory !== null && targetCategory.editable) {
+							let dropIndex = 0;
+							if (info.dataType !== "category") {
+								dropIndex =
+									targetCategory.settings.indexOf(info.data as Setting) +
+									(lastHitIsAfter ? 1 : 0);
 							}
-							target_category.settings.splice(drop_index, 0, item_to_move);
+							targetCategory.settings.splice(dropIndex, 0, itemToMove);
 
-							await save_to_storage("custom_styleshift_items", get_custom_items());
+							await saveToStorage("customStyleshiftItems", getCustomItems());
 						}
 					}
 				}
 
-				draging_setting = null;
+				dragingSetting = null;
 				logger.info("drag", "Ended");
-				refresh_extension_state();
+				refreshExtensionState();
 			},
 			{ once: true },
 		);
 	});
 }
 
-export async function add_drop_target(
+export async function addDropTarget(
 	frame: HTMLElement,
 	_parent: HTMLElement,
-	this_data: Setting | Category,
-	data_type: string,
+	thisData: Setting | Category,
+	dataType: string,
 ) {
-	drop_targets.set(frame, { data: this_data, data_type });
+	dropTargets.set(frame, { data: thisData, dataType });
 }

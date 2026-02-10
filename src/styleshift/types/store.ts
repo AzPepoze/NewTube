@@ -5,14 +5,14 @@ export type Category = {
 
 	editable?: boolean;
 	settings: Setting[];
-	highlight_color?: string;
+	highlightColor?: string;
 };
 
 export type Option = {
-	enable_css?: string;
+	enableCss?: string;
 
-	enable_function?: string | Function;
-	disable_function?: string | Function;
+	enableFunction?: string | Function;
+	disableFunction?: string | Function;
 };
 
 export type Color_obj = {
@@ -28,19 +28,19 @@ export type Setting =
 			html: string;
 
 			align?: "left" | "center" | "right";
-			font_size?: number;
+			fontSize?: number;
 
 			editable?: boolean;
 	  }
 	| {
-			type: "sub_text";
+			type: "subText";
 			id?: string;
 
 			text: string;
 
 			align?: "left" | "center" | "right";
 			color?: string;
-			font_size?: number;
+			fontSize?: number;
 
 			editable?: boolean;
 	  }
@@ -53,9 +53,9 @@ export type Setting =
 			icon?: string;
 			align?: "left" | "center" | "right";
 			color?: string;
-			font_size?: number;
+			fontSize?: number;
 
-			click_function?: string | Function;
+			clickFunction?: string | Function;
 
 			editable?: boolean;
 	  }
@@ -67,21 +67,21 @@ export type Setting =
 
 			value: boolean;
 
-			constant_css?: string;
+			constantCss?: string;
 
-			setup_function?: string | Function;
-			update_function?: string | Function;
+			setupFunction?: string | Function;
+			updateFunction?: string | Function;
 
-			enable_css?: string;
-			enable_function?: string | Function;
+			enableCss?: string;
+			enableFunction?: string | Function;
 
-			disable_css?: string;
-			disable_function?: string | Function;
+			disableCss?: string;
+			disableFunction?: string | Function;
 
 			editable?: boolean;
 	  }
 	| {
-			type: "number_slide";
+			type: "numberSlide";
 			id: string;
 			name: string;
 			description?: string;
@@ -94,13 +94,13 @@ export type Setting =
 
 			//--------------
 
-			var_css?: string;
+			varCss?: string;
 
-			constant_css?: string | Function;
+			constantCss?: string | Function;
 
-			setup_function?: string | Function;
+			setupFunction?: string | Function;
 
-			update_function?: string | Function;
+			updateFunction?: string | Function;
 
 			//--------------
 
@@ -116,11 +116,11 @@ export type Setting =
 
 			//--------------
 
-			constant_css?: string;
+			constantCss?: string;
 
-			setup_function?: string | Function;
+			setupFunction?: string | Function;
 
-			update_function?: string | Function;
+			updateFunction?: string | Function;
 
 			options: { [key: string]: Option };
 
@@ -133,51 +133,51 @@ export type Setting =
 			id: string;
 			name: string;
 			description?: string;
-			show_alpha_slider?: boolean;
+			showAlphaSlider?: boolean;
 
 			value: string;
 
 			//--------------
 
-			var_css?: string;
+			varCss?: string;
 
-			constant_css?: string | Function;
+			constantCss?: string | Function;
 
-			setup_function?: string | Function;
+			setupFunction?: string | Function;
 
-			update_function?: string | Function;
+			updateFunction?: string | Function;
 
 			//--------------
 
 			editable?: boolean;
 	  }
 	| {
-			type: "text_input";
+			type: "textInput";
 			id: string;
 			name: string;
 			description?: string;
 
 			value: string;
 
-			update_function?: string | ((value: string) => void);
+			updateFunction?: string | ((value: string) => void);
 
 			//--------------
 			editable?: boolean;
 	  }
 	| {
-			type: "image_input";
+			type: "imageInput";
 			id: string;
 			name: string;
 			description?: string;
 
 			value: string;
-			max_file_size: number;
+			maxFileSize: number;
 
 			//--------------
 			editable?: boolean;
 	  }
 	| {
-			type: "preview_image";
+			type: "previewImage";
 			id: string;
 
 			//--------------
@@ -189,21 +189,21 @@ export type Setting =
 
 			//--------------
 
-			constant_css?: string | ((value: any) => string);
-			setup_function?: string | Function;
+			constantCss?: string | ((value: any) => string);
+			setupFunction?: string | Function;
 			setup_?: string | Function;
-			ui_function?: string | Function;
+			uiFunction?: string | Function;
 
 			//--------------
 
 			editable?: boolean;
 	  }
 	| {
-			type: "combine_settings";
+			type: "combineSettings";
 			id?: string;
 			name?: string;
 			description?: string;
-			sync_id: string[];
-			update_function?: string;
+			syncId: string[];
+			updateFunction?: string;
 			editable?: boolean;
 	  };

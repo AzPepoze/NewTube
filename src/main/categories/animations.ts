@@ -1,6 +1,6 @@
 import { Category } from "../../styleshift/types/store";
 
-export const animation_category: Category = {
+export const animationCategory: Category = {
 	category: "🚶 Animations",
 	settings: [
 		{
@@ -9,7 +9,7 @@ export const animation_category: Category = {
 			name: "Enable Page Transition",
 			description: "Adds a fade-in and slide-in animation when navigating between video pages.",
 			value: true,
-			enable_css: `
+			enableCss: `
                 ytd-page-manager:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode)) {
                     transition: all 0.5s;
                 }
@@ -36,7 +36,7 @@ export const animation_category: Category = {
 			name: "Enable Search icon moving animation",
 			description: "Adds a subtle moving animation to the search icon.",
 			value: false,
-			enable_css: `
+			enableCss: `
                 #search-icon-legacy[ytd-searchbox].ytd-searchbox:not([is-iconbox]) yt-icon.ytd-searchbox {
                     animation: SearchIconMove 2s infinite;
                 }
@@ -54,7 +54,7 @@ export const animation_category: Category = {
 			name: "Enable Menu Fade-in Animation",
 			description: "Adds a smooth fade and scale effect to YouTube dropdown menus and popups.",
 			value: true,
-			enable_css: `
+			enableCss: `
                 @keyframes show-box {
                     from { opacity: 0; transform: scale(0.9); }
                     to { opacity: 1; transform: scale(1); }

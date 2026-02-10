@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Setting } from "@styleshift/types/store";
-	import { hex_to_rgb, rgb_to_hsv, hsv_to_rgb } from "../../../../build-in-functions/normal";
+	import { hexToRgb, rgbToHsv, hsvToRgb } from "../../../../buildInFunctions/normal";
 	import Description from "./Description.svelte";
 	import Icon from "./Icon.svelte";
-	import { get_justify_content } from "../../utils";
+	import { getJustifyContent } from "../../utils";
 
-	import { execute_setting_script } from "@/styleshift/core/runtime-controller";
+	import { executeSettingScript } from "@/styleshift/core/runtimeController";
 
 	let {
 		setting,
@@ -21,75 +21,90 @@
 	const icon = $derived(setting.icon);
 	const color = $derived(setting.color || "#ffffff");
 	const align = $derived(setting.align || "center");
-	const font_size = $derived(setting.font_size || 15);
-	const justifyContent = $derived(get_justify_content(align));
+	const fontSize = $derived(setting.fontSize || 15);
+	const justifyContent = $derived(getJustifyContent(align));
 
 	let scale = $state(1);
 
-	const colors = $derived.by(() => {
+	const buttonStyles = $derived.by(() => {
 		const isHex = color.startsWith("#");
 
 		if (!isHex) {
 			return {
 				background: color,
-				borderColor: "var(--Border-Color)",
-				textColor: "var(--Font-Color)",
+				border: "1px solid var(--Border-Color)",
+				color: "var(--Font-Color)",
 			};
 		}
 
-		const { r, g, b } = hex_to_rgb(color);
+		const { r, g, b } = hexToRgb(color);
 
-		const bg_hsv = rgb_to_hsv({ r, g, b });
-		bg_hsv.s /= 2;
-		bg_hsv.v /= 3;
-		const bg_color = hsv_to_rgb(bg_hsv);
+		// Calculate background shades
+		const bgHsv = rgbToHsv({ r, g, b });
+		bgHsv.s /= 2;
+		bgHsv.v /= 3;
+		const bgColor = hsvToRgb(bgHsv);
 
-		const bgt_hsv = rgb_to_hsv({ r, g, b });
-		bgt_hsv.s /= 1.5;
-		bgt_hsv.v /= 2;
-		const bgt_color = hsv_to_rgb(bgt_hsv);
+		const bgtHsv = rgbToHsv({ r, g, b });
+		bgtHsv.s /= 1.5;
+		bgtHsv.v /= 2;
+		const bgtColor = hsvToRgb(bgtHsv);
 
-		const background_top_color = `${bgt_color.r},${bgt_color.g},${bgt_color.b}`;
-		const background_color = `${bg_color.r},${bg_color.g},${bg_color.b}`;
-		const border_color = `${r + 150},${g + 150},${b + 150}`;
+		const top = `rgb(${bgtColor.r}, ${bgtColor.g}, ${bgtColor.b})`;
+		const bottom = `rgb(${bgColor.r}, ${bgColor.g}, ${bgColor.b}, 0.5)`;
+		const border = `rgb(${r + 150}, ${g + 150}, ${b + 150})`;
 
 		return {
-			background: `radial-gradient(at center top, rgb(${background_top_color}), rgb(${background_color}, 0.5))`,
-			borderColor: `rgb(${border_color})`,
-			textColor: `rgb(${border_color})`,
+			background: `radial-gradient(at center top, ${top}, ${bottom})`,
+			border: `1px solid ${border}`,
+			color: border,
 		};
 	});
 
-	function handleClick(e: MouseEvent) {
+	function handleClick(e: MouseEvent | KeyboardEvent) {
 		scale = 0.95;
-		setTimeout(() => {
-			scale = 1;
-		}, 100);
+		setTimeout(() => (scale = 1), 100);
 
-		if (!setting.click_function) return;
-		if (typeof setting.click_function === "string") {
-			execute_setting_script(setting, "click_function");
+		if (!setting.clickFunction) return;
+
+		if (typeof setting.clickFunction === "string") {
+			executeSettingScript(setting, "clickFunction");
 		} else {
-			(setting.click_function as Function)();
+			setting.clickFunction();
+		}
+	}
+
+	function handleKeyDown(e: KeyboardEvent) {
+		if (e.key === "Enter" || e.key === " ") {
+			e.preventDefault();
+			handleClick(e);
 		}
 	}
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="STYLESHIFT-Button"
-	style="justify-content: {justifyContent}; background: {colors.background}; border: 1px solid {colors.borderColor}; transform: scale({scale}); {style}"
+	class:has-icon={!!icon}
+	style:justify-content={justifyContent}
+	style:background={buttonStyles.background}
+	style:border={buttonStyles.border}
+	style:color={buttonStyles.color}
+	style:transform="scale({scale})"
+	style={style}
 	onclick={handleClick}
+	onkeydown={handleKeyDown}
+	role="button"
+	tabindex="0"
 >
 	{#if icon}
 		<Icon name={icon} size={50} className="STYLESHIFT-Button-Icon" applyFilter={false} />
 	{/if}
+
 	<Description
 		{name}
 		{description}
 		{align}
-		style="display: flex; color: {colors.textColor}; font-size: {font_size}px;"
+		style="display: flex; color: inherit; font-size: {fontSize}px;"
 	/>
 </div>
 

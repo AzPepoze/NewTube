@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { ui_preset } from "../../../../settings/default-items";
-	import { add_setting } from "../../../../settings/items";
-	import * as main_setting_ui from "../main/main";
+	import { uiPreset } from "../../../../settings/defaultItems";
+	import { addSetting } from "../../../../settings/items";
+	import * as mainSettingUi from "../main/main";
 	import Button from "../main/Button.svelte";
 	import Dropdown from "../main/Dropdown.svelte";
 
@@ -9,14 +9,14 @@
 	let isOpen = $state(false);
 	let triggerEl = $state<HTMLElement | null>(null);
 
-	const options = Object.keys(main_setting_ui).filter((key) => key !== "search");
+	const options = Object.keys(mainSettingUi).filter((key) => key !== "search");
 
 	async function handleSelect(selected: string) {
-		const preset = ui_preset.find((p) => p.type === selected);
+		const preset = uiPreset.find((p) => p.type === selected);
 		if (preset) {
-			await add_setting(categorySettings, { ...preset, editable: true });
+			await addSetting(categorySettings, { ...preset, editable: true });
 		} else {
-			await add_setting(categorySettings, {
+			await addSetting(categorySettings, {
 				type: selected,
 				id: `new_${selected}`,
 				name: `New ${selected}`,
@@ -32,7 +32,7 @@
 			type: "button",
 			name: "+",
 			color: "#FFFFFF",
-			click_function: () => (isOpen = !isOpen)
+			clickFunction: () => (isOpen = !isOpen)
 		}}
 		style="border-radius: 1000px; padding: 10px; width: 100%;"
 	/>
@@ -42,11 +42,11 @@
 		{triggerEl}
 		setting={{
 			type: "dropdown",
-			id: "add_setting_dropdown",
+			id: "addSettingDropdown",
 			name: "Add Setting",
 			value: "",
 			options: Object.fromEntries(options.map(opt => [opt, {}])),
-			update_function: handleSelect
+			updateFunction: handleSelect
 		}}
 	/>
 </div>

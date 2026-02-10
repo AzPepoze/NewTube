@@ -1,7 +1,7 @@
-import { create_notification } from "../build-in-functions/extension";
+import { createNotification } from "../buildInFunctions/extension";
 import { logger } from "./logger";
 
-export const dangerous_patterns = [
+export const dangerousPatterns = [
 	/eval/i,
 	/new function/i,
 	/(?<!@)\bimport\b/i,
@@ -47,41 +47,41 @@ export const dangerous_patterns = [
 	/symbol\./i,
 ];
 
-export function is_safe_code(code: string, code_name: string): boolean {
+export function isSafeCode(code: string, codeName: string): boolean {
 	if (!code) return false;
-	const lowered_case_code = code.toLowerCase();
+	const loweredCaseCode = code.toLowerCase();
 
-	for (const pattern of dangerous_patterns) {
-		if (pattern.test(lowered_case_code)) {
-			const match = lowered_case_code.match(pattern);
+	for (const pattern of dangerousPatterns) {
+		if (pattern.test(loweredCaseCode)) {
+			const match = loweredCaseCode.match(pattern);
 			if (match) {
-				const match_index = match.index;
+				const matchIndex = match.index;
 
-				const before_match = lowered_case_code.slice(0, match_index);
-				const line_number = before_match.split("\n").length;
-				const char_position = match_index - before_match.lastIndexOf("\n");
+				const beforeMatch = loweredCaseCode.slice(0, matchIndex);
+				const lineNumber = beforeMatch.split("\n").length;
+				const charPosition = matchIndex - beforeMatch.lastIndexOf("\n");
 
-				const code_lines = lowered_case_code.split("\n");
-				const error_line = code_lines[line_number - 1];
+				const codeLines = loweredCaseCode.split("\n");
+				const errorLine = codeLines[lineNumber - 1];
 
-				const is_comment = error_line.replaceAll(" ", "").replaceAll("\t", "").startsWith("//");
-				if (is_comment) {
+				const isComment = errorLine.replaceAll(" ", "").replaceAll("\t", "").startsWith("//");
+				if (isComment) {
 					continue;
 				}
 
-				const start_context = Math.max(0, char_position - 15);
-				const end_context = Math.min(error_line.length, char_position + match[0].length + 15);
-				const context_snippet = error_line.slice(start_context, end_context);
+				const startContext = Math.max(0, charPosition - 15);
+				const endContext = Math.min(errorLine.length, charPosition + match[0].length + 15);
+				const contextSnippet = errorLine.slice(startContext, endContext);
 
-				const highlighted_error = context_snippet.replace(
+				const highlightedError = contextSnippet.replace(
 					match[0],
 					`<span style="color: red; text-decoration: underline;">${match[0]}</span>`,
 				);
 
-				create_notification({
+				createNotification({
 					icon: "🚫",
 					title: "StyleShift - Error",
-					content: `<b>"${match[0]}"</b> is not allowed.<br>Found at line: <b>${line_number}</b>, character: <b>${char_position}</b><br>From: <b>${code_name}</b><br><br><pre>${highlighted_error}</pre>`,
+					content: `<b>"${match[0]}"</b> is not allowed.<br>Found at line: <b>${lineNumber}</b>, character: <b>${charPosition}</b><br>From: <b>${codeName}</b><br><br><pre>${highlightedError}</pre>`,
 					timeout: 0,
 				});
 

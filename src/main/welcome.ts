@@ -1,13 +1,13 @@
 import { mount, unmount } from "svelte";
 import Welcome from "./ui/Welcome.svelte";
-import { get_root_value, save_root_value } from "@core/storage-manager";
-import { show_user_confirmation } from "@ui/extension";
+import { getRootValue, saveRootValue } from "@core/storageManager";
+import { showUserConfirmation } from "@ui/extension";
 
-export async function check_and_show_welcome() {
-	const has_shown = await get_root_value("Welcome_Shown");
+export async function checkAndShowWelcome() {
+	const hasShown = await getRootValue("Welcome_Shown");
 	
-	if (!has_shown) {
-		const has_time = await show_user_confirmation(
+	if (!hasShown) {
+		const hasTime = await showUserConfirmation(
 			"Do you have a moment?",
 			"Welcome to NewTube!",
 			{
@@ -16,8 +16,8 @@ export async function check_and_show_welcome() {
 			}
 		);
 
-		if (!has_time) {
-			await save_root_value("Welcome_Shown", true);
+		if (!hasTime) {
+			await saveRootValue("Welcome_Shown", true);
 			return;
 		}
 
@@ -30,7 +30,7 @@ export async function check_and_show_welcome() {
 			intro: true,
 			props: {
 				onDone: async () => {
-					await save_root_value("Welcome_Shown", true);
+					await saveRootValue("Welcome_Shown", true);
 					unmount(component);
 					target.remove();
 				}
