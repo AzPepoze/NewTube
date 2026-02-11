@@ -1,4 +1,4 @@
-import { insertAfter } from "../../buildInFunctions/normal";
+import { insertAfter } from "../../shared/normal";
 import { logger } from "../../utils/logger";
 import { saveToStorage } from "../../core/storageManager";
 import { getSettingCategory, getCustomItems } from "../../settings/items";
@@ -162,16 +162,9 @@ export async function addDrag(
 				currentPlaceholder = createPlaceholder(dragingSetting!.size);
 
 				if (isAfter) {
-					insertAfter(
-						currentPlaceholder.element,
-						hitInfo.targetEl,
-						hitInfo.targetEl.parentElement!,
-					);
+					insertAfter(currentPlaceholder.element, hitInfo.targetEl, hitInfo.targetEl.parentElement!);
 				} else {
-					hitInfo.targetEl.parentElement!.insertBefore(
-						currentPlaceholder.element,
-						hitInfo.targetEl,
-					);
+					hitInfo.targetEl.parentElement!.insertBefore(currentPlaceholder.element, hitInfo.targetEl);
 				}
 
 				currentPlaceholder.show();

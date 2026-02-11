@@ -4,7 +4,7 @@
 		"dev:chromium": "concurrently \"bun run dev:css\" \"bun run dev:js\" \"bun run test:chromium\"",
 		"build": "bun run build:css && bun run build:types && bun run build:module && bun utils/builderExtension.ts --production --once",
 		"release": "bun run build && bun utils/builderRelease.ts",
-		"check": "eslint --fix src && svelte-check --tsconfig ./tsconfig.json && eslint src",
+		"check": "bun utils/check.ts",
 		"dev:js": "bun utils/builderExtension.ts",
 		"dev:css": "sass --watch src/styleshift/styles/setting.scss out/build/style.css --style=compressed --no-source-map",
 		"build:css": "sass src/styleshift/styles/setting.scss out/build/style.css --style=compressed --no-source-map",

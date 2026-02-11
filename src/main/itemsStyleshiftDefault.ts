@@ -1,4 +1,4 @@
-import { openSettingPage } from "../styleshift/buildInFunctions/extension";
+import { openSettingPage } from "../styleshift/shared/extension";
 import { Category } from "../styleshift/types/store";
 
 const defaultStyleshiftItems: Category[] = [
@@ -136,6 +136,25 @@ const defaultStyleshiftItems: Category[] = [
 				name: 'Import "NewTube Data"',
 				align: "center",
 				type: "button",
+			},
+		],
+	},
+	{
+		category: "⚡ Performance",
+		settings: [
+			{
+				type: "checkbox",
+				id: "Performance_Mode",
+				name: "Performance Mode",
+				description: "Disables all blurs, filters, transitions, and animations to improve performance.",
+				value: false,
+				enableCss: `
+                * {
+                    backdrop-filter: none !important;
+                    transition: none !important;
+                    animation: none !important;
+                }
+            `,
 			},
 		],
 	},

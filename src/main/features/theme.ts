@@ -1,6 +1,6 @@
 import { getYtdApp } from "../modules/youtube";
 import ColorThief from "colorthief";
-import { rgbToHsv, hsvToRgb } from "../../styleshift/buildInFunctions/normal";
+import { rgbToHsv, hsvToRgb } from "../../styleshift/shared/normal";
 import { getUserSetting } from "../../styleshift/core/storageManager";
 
 function getSortedPalette(palette: [number, number, number][]) {

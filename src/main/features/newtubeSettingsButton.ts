@@ -1,5 +1,5 @@
 import { extensionSettingsUi, extensionSettingsUiPromise } from "../../styleshift/ui/extensionSettings";
-import { waitForElement } from "../../styleshift/buildInFunctions/normal";
+import { waitForElement } from "../../styleshift/shared/normal";
 
 /**
  * Injects the NewTube settings button (✦) into the YouTube top bar.

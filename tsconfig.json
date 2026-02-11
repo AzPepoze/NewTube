@@ -21,7 +21,7 @@
 			"@core/*": ["src/styleshift/core/*"],
 			"@ui/*": ["src/styleshift/ui/*"],
 			"@settings/*": ["src/styleshift/settings/*"],
-			"@functions/*": ["src/styleshift/buildInFunctions/*"]
+			"@functions/*": ["src/styleshift/shared/*"]
 		}
 	},
 	"include": [

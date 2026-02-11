@@ -1,7 +1,4 @@
-const categoryPalette = [
-	"#ff6d6d", "#a7f2ff", "#ffa7f8", "#bca7ff",
-	"#fff1a7", "#a7ffb5", "#ffc4a7", "#a7d1ff",
-];
+const categoryPalette = ["#ff6d6d", "#a7f2ff", "#ffa7f8", "#bca7ff", "#fff1a7", "#a7ffb5", "#ffc4a7", "#a7d1ff"];
 
 function stringToColor(str: string) {
 	if (str.toUpperCase() === "STORAGE") return "color: #ffca28; font-weight: bold;";
@@ -46,6 +43,18 @@ const logger = {
 			`%c StyleShift %c [ERROR] %c [${category}]`,
 			"color: #bada55",
 			"color: #ff0000",
+			stringToColor(category),
+			...args,
+		);
+	},
+	debug: (category, ...args: any[]) => {
+		if ((window as any).StyleShift?.logger?.debug) {
+			return (window as any).StyleShift.logger.debug(category, ...args);
+		}
+		console.debug(
+			`%c StyleShift %c [DEBUG] %c [${category}]`,
+			"color: #bada55",
+			"color: #888888",
 			stringToColor(category),
 			...args,
 		);
@@ -499,12 +508,7 @@ export function applyDrag(dragObject: HTMLElement, target: HTMLElement): void {
  * @example
  * updateDragPosition(document.querySelector("#element"), event, 10, 10);
  */
-export function updateDragPosition(
-	element: HTMLElement,
-	event: MouseEvent,
-	offsetX: number,
-	offsetY: number,
-): void {
+export function updateDragPosition(element: HTMLElement, event: MouseEvent, offsetX: number, offsetY: number): void {
 	element.style.left = `${event.clientX - offsetX}px`;
 	element.style.top = `${event.clientY - offsetY}px`;
 }
@@ -679,7 +683,7 @@ export async function fireFunctionEventWithReturn(
 		detail: JSON.stringify({ remoteId: remoteId, data: args }),
 	});
 
-	logger.info("Sent", sentEvent);
+	logger.debug("runtime", "Sent event:", `${prefix}_${functionName}`, sentEvent);
 
 	window.dispatchEvent(sentEvent);
 
@@ -689,7 +693,7 @@ export async function fireFunctionEventWithReturn(
 			function (event) {
 				//@ts-ignore
 				const detail = JSON.parse(event.detail);
-				logger.info("Return Data", `${prefix}_${functionName}_${remoteId}`, detail);
+				logger.debug("runtime", "Received return data:", `${prefix}_${functionName}_${remoteId}`, detail);
 				resolve(detail);
 			},
 			{ once: true },
@@ -714,7 +718,7 @@ export async function onFunctionEvent(
 ): Promise<{ Cancel: Function }> {
 	const onEventRunFunction = async function (event: Event) {
 		const detail = JSON.parse((event as CustomEvent).detail);
-		logger.info("Recived", event);
+		logger.debug("extension", "Processing event request:", event);
 
 		const remoteId = detail.remoteId;
 		let getReturn;
@@ -727,7 +731,7 @@ export async function onFunctionEvent(
 
 		window.dispatchEvent(
 			new CustomEvent(`${prefix}_${functionName}_${remoteId}`, {
-				detail: JSON.stringify(getReturn),
+				detail: JSON.stringify(getReturn === undefined ? null : getReturn),
 			}),
 		);
 	};

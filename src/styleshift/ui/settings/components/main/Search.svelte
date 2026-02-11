@@ -19,13 +19,7 @@
 
 <div class="STYLESHIFT-Search-Wrapper">
 	<img class="STYLESHIFT-Search-Icon" src={getAssetUrl(searchIcon)} alt="" />
-	<input
-		type="text"
-		class="STYLESHIFT-Search-Input"
-		{placeholder}
-		bind:value
-		oninput={handleInput}
-	/>
+	<input type="text" class="STYLESHIFT-Search-Input" {placeholder} bind:value oninput={handleInput} />
 </div>
 
 <style lang="scss">

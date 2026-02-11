@@ -1,5 +1,5 @@
-import * as StyleShift_Functions from "../buildInFunctions/extension";
-import { onFunctionEvent } from "../buildInFunctions/normal";
+import * as StyleShift_Functions from "../shared/extension";
+import { onFunctionEvent } from "../shared/normal";
 
 // function Clear_Bloat(thisSetting: any): any | null {
 // 	const settingtype = thisSetting.type;
@@ -23,3 +23,6 @@ import { onFunctionEvent } from "../buildInFunctions/normal";
 for (const thisFunctionName of Object.keys(StyleShift_Functions)) {
 	onFunctionEvent("StyleShift", thisFunctionName, StyleShift_Functions[thisFunctionName]);
 }
+
+(window as any).StyleShift = (window as any).StyleShift || {};
+(window as any).StyleShift.functions = StyleShift_Functions;

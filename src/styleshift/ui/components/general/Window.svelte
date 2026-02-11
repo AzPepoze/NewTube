@@ -219,10 +219,6 @@
 			opacity: 0 !important;
 			pointer-events: none !important;
 		}
-
-		&.closing {
-			pointer-events: none !important;
-		}
 	}
 
 	.STYLESHIFT-Window-Topbar {

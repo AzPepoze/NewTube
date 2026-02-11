@@ -16,7 +16,7 @@
 	import { removeSetting } from "@settings/items";
 	import { refreshExtensionState } from "@/styleshift/run";
 	import { showConfigUi, removeConfigUi } from "@ui/config";
-	import { createUniqueId } from "@functions/normal";
+	import { createUniqueId } from "@/styleshift/shared/normal";
 	import Description from "./Description.svelte";
 	import { highlight as highlightAction } from "@ui/settings/highlight";
 	import SettingFrame from "../SettingFrame.svelte";

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Setting } from "@styleshift/types/store";
-	import { hexToRgb, rgbToHsv, hsvToRgb } from "../../../../buildInFunctions/normal";
+	import { hexToRgb, rgbToHsv, hsvToRgb } from "../../../../shared/normal";
 	import Description from "./Description.svelte";
 	import Icon from "./Icon.svelte";
 	import { getJustifyContent } from "../../utils";
@@ -61,7 +61,7 @@
 		};
 	});
 
-	function handleClick(e: MouseEvent | KeyboardEvent) {
+	function handleClick(_e: MouseEvent | KeyboardEvent) {
 		scale = 0.95;
 		setTimeout(() => (scale = 1), 100);
 

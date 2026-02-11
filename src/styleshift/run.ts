@@ -1,4 +1,4 @@
-import { createError, createNotification } from "./buildInFunctions/extension";
+import { createError, createNotification } from "./shared/extension";
 import { logger } from "./utils/logger";
 import {
 	getCurrentDomain,
@@ -7,8 +7,8 @@ import {
 	getDocumentHead,
 	rearrangeSelector,
 	sleep,
-} from "./buildInFunctions/normal";
-import { executeScriptString, synchronizeAvailableFunctions } from "./core/runtimeController";
+} from "./shared/normal";
+import { synchronizeAvailableFunctions } from "./core/runtimeController";
 import {
 	initializeStorageConnection,
 	getRootValue,
@@ -20,11 +20,7 @@ import {
 	populateMissingDefaultSettings,
 	initializeDefaultCustomItems,
 } from "./core/storageMaintenance";
-import {
-	registerSettingListener,
-	initializeAllActiveSettings,
-	attachBehaviorToSetting,
-} from "./settings/functions";
+import { registerSettingListener, initializeAllActiveSettings, attachBehaviorToSetting } from "./settings/functions";
 import { createStylesheetHolder } from "./settings/styleSheet";
 import { getAllStyleshiftItems, getAllStyleshiftSettings, updateStyleshiftItems } from "./settings/items";
 import "./communication/extension";
@@ -86,13 +82,11 @@ async function bootstrapExtension(): Promise<void> {
 		(await getDocumentBody()).append(styleshiftContainer);
 	}, 1);
 
-	// Inject built-in functions into the page context
+	// Inject built-in functions into the page context (Main World)
 	if (!IS_IN_EXTENSION_SETTINGS_PAGE) {
-		const builtinCode = await (await fetch(chrome.runtime.getURL("build-in.js"))).text();
-		executeScriptString({
-			scriptContent: builtinCode,
-			shouldSanitize: false,
-		});
+		const script = document.createElement("script");
+		script.src = chrome.runtime.getURL("build-in.js");
+		(await getDocumentHead()).appendChild(script);
 	}
 
 	// Initialize storage and sync functions

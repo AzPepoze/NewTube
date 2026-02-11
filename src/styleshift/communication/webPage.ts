@@ -1,35 +1,4 @@
 // @ts-nocheck
-
-const logger = (window as any).StyleShift?.logger || {
-	info: (category, ...args: any[]) =>
-		(window as any).StyleShift?.logger?.info(category, ...args) ||
-		console.log(
-			`%c StyleShift %c [INFO] %c [${category}]`,
-			"color: #bada55",
-			"color: #00ffff",
-			"color: #888",
-			...args,
-		),
-	warn: (category, ...args: any[]) =>
-		(window as any).StyleShift?.logger?.warn(category, ...args) ||
-		console.warn(
-			`%c StyleShift %c [WARN] %c [${category}]`,
-			"color: #bada55",
-			"color: #ffae00",
-			"color: #888",
-			...args,
-		),
-	error: (category, ...args: any[]) =>
-		(window as any).StyleShift?.logger?.error(category, ...args) ||
-		console.error(
-			`%c StyleShift %c [ERROR] %c [${category}]`,
-			"color: #bada55",
-			"color: #ff0000",
-			"color: #888",
-			...args,
-		),
-};
-
 const buildInFunctions = {
 	/*
 	-------------------------------------------------------
@@ -69,9 +38,7 @@ const buildInFunctions = {
 			...args,
 		);
 
-		const ui = await StyleShift["build-in"]["waitForElement"](
-			`.StyleShift-Station [styleshift-ui-id="${uiId}"]`,
-		);
+		const ui = await StyleShift["build-in"]["waitForElement"](`.StyleShift-Station [styleshift-ui-id="${uiId}"]`);
 
 		logger.info("ui", ui);
 
@@ -88,6 +55,17 @@ const buildInFunctions = {
 
 	_variables: {},
 	_call_function: async function (functionName, ...args) {
+		StyleShift.logger.debug("runtime", `Main World calling function: ${functionName}`, args);
+
+		if (
+			(window as any).StyleShift &&
+			(window as any).StyleShift.functions &&
+			typeof (window as any).StyleShift.functions[functionName] === "function"
+		) {
+			StyleShift.logger.debug("runtime", `Directly calling function: ${functionName}`);
+			return await (window as any).StyleShift.functions[functionName](...args);
+		}
+
 		return await StyleShift["build-in"]["fireFunctionEventWithReturn"]("StyleShift", functionName, ...args);
 	},
 };

@@ -7,10 +7,10 @@
 	"homepage_url": "https://github.com/AzPepoze/StyleShift",
 	"minimum_chrome_version": "88",
 	"icons": {
-		"128": "icon/128.png",
-		"64": "icon/64.png",
-		"32": "icon/32.png",
-		"16": "icon/16.png"
+		"128": "assets/icons/128.png",
+		"64": "assets/icons/64.png",
+		"32": "assets/icons/32.png",
+		"16": "assets/icons/16.png"
 	},
 	"options_page": "setting/styleshift.html",
 	"action": {
@@ -18,7 +18,7 @@
 	},
 	"web_accessible_resources": [
 		{
-			"resources": ["*"],
+			"resources": ["assets/*", "workers/*", "modules/*", "build-in.js", "styleshift.js", "style.css"],
 			"matches": ["<all_urls>"]
 		}
 	],
@@ -33,8 +33,7 @@
 	],
 
 	"background": {
-		"service_worker": "background.js",
-		"scripts": ["background.js"]
+		"service_worker": "background.js"
 	},
 	"commands": {
 		"Enable": {

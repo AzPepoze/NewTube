@@ -4,7 +4,7 @@
 	import { getFromStorage, getRootValue } from "@/styleshift/core/storageManager";
 	import { setAndSave } from "@ui/settings/settingComponents";
 	import { triggerSettingUpdate } from "@settings/functions";
-	import { sequencedTask } from "@functions/normal";
+	import { sequencedTask } from "@/styleshift/shared/normal";
 
 	let {
 		setting,

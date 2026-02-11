@@ -1,5 +1,5 @@
-import { createNotification } from "../buildInFunctions/extension";
-import { sleep } from "../buildInFunctions/normal";
+import { createNotification } from "../shared/extension";
+import { sleep } from "../shared/normal";
 import { logger } from "../utils/logger";
 import { isSafeCode } from "../utils/security";
 import { IS_IN_EXTENSION_SETTINGS_PAGE } from "../run";

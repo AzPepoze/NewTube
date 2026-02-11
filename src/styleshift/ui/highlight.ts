@@ -1,4 +1,4 @@
-import { createUniqueId, onceElementRemove, waitDocumentLoaded } from "../buildInFunctions/normal";
+import { createUniqueId, onceElementRemove, waitDocumentLoaded } from "../shared/normal";
 import { getStyleshiftItems } from "../settings/items";
 import { createEditorUi, editorUi } from "./editor";
 import { showUserConfirmation } from "./extension";

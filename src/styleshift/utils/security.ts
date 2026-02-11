@@ -1,4 +1,4 @@
-import { createNotification } from "../buildInFunctions/extension";
+import { createNotification } from "../shared/extension";
 import { logger } from "./logger";
 
 export const dangerousPatterns = [

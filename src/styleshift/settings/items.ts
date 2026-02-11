@@ -1,7 +1,7 @@
 import { getDefaultItems } from "../../main/itemsDefault";
 import { getStyleshiftDefaultItems } from "../../main/itemsStyleshiftDefault";
 import { getStyleshiftCustomItems } from "../../main/itemsStyleshiftCustom";
-import { randomNumberInRange } from "../buildInFunctions/normal";
+import { randomNumberInRange } from "../shared/normal";
 import { persistAndRefreshAll } from "../core/runtimeController";
 import { getRootValue, saveToStorage } from "../core/storageManager";
 import { refreshExtensionState } from "../run";
@@ -79,7 +79,7 @@ function saveCustomItemsAndRefreshExtensionState(customItems) {
 
 export async function updateStyleshiftItems() {
 	styleshiftItems.Default = [...getStyleshiftDefaultItems(), ...getDefaultItems()];
-	
+
 	const storedCustom = await getRootValue("customStyleshiftItems");
 	if (storedCustom && Array.isArray(storedCustom) && storedCustom.length > 0) {
 		logger.debug("settings", "Loading custom items from storage");

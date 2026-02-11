@@ -1,4 +1,4 @@
-import { getDocumentHead, sleep } from "../buildInFunctions/normal";
+import { getDocumentHead, sleep } from "../shared/normal";
 import { getUserSetting } from "../core/storageManager";
 
 let stylesheetHolder: HTMLElement;

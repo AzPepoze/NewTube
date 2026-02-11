@@ -1,13 +1,8 @@
-import { dynamicAppend, createError } from "../../buildInFunctions/extension";
-import { scrollOnClick } from "../../buildInFunctions/normal";
+import { dynamicAppend, createError } from "../../shared/extension";
+import { scrollOnClick } from "../../shared/normal";
 import { logger } from "../../utils/logger";
 import { getStyleshiftDevOnlyItems } from "../../../main/itemsStyleshiftDev";
-import {
-	addCategory,
-	getSettingsList,
-	getStyleshiftDataType,
-	updateStyleshiftItems,
-} from "../../settings/items";
+import { addCategory, getSettingsList, getStyleshiftDataType, updateStyleshiftItems } from "../../settings/items";
 import { Category } from "../../types/store";
 import { createStyleshiftWindow } from "../extension";
 import { settingsUi } from "./settingComponents";
@@ -82,10 +77,7 @@ export async function createMainSettingsUi({
 			const categories = getCategory ? await getCategory() : [];
 
 			for (const thisCategory of categories) {
-				const { categoryTitle, categoryFrame } = await createCategoryUi(
-					settingsContainer,
-					thisCategory,
-				);
+				const { categoryTitle, categoryFrame } = await createCategoryUi(settingsContainer, thisCategory);
 
 				const leftCategoryTitle = await settingsUi.leftTitle(thisCategory.category, skipAnimation);
 
@@ -107,19 +99,13 @@ export async function createMainSettingsUi({
 						createdDevOnlyCategory.push(getDevOnlyCategory.category);
 
 						for (const thisSettingOnly of getDevOnlyCategory.settings) {
-							await createSettingUiElementWithAbleDeveloperMode(
-								categoryFrame,
-								thisSettingOnly,
-							);
+							await createSettingUiElementWithAbleDeveloperMode(categoryFrame, thisSettingOnly);
 						}
 					}
 				}
 
 				if (thisCategory.editable && (await getRootValue("Developer_mode"))) {
-					dynamicAppend(
-						categoryFrame,
-						await settingsUi.addSettingButton(thisCategory.settings),
-					);
+					dynamicAppend(categoryFrame, await settingsUi.addSettingButton(thisCategory.settings));
 				}
 
 				await settingsUi.space(settingsContainer);
@@ -388,9 +374,8 @@ export async function createCategoryUi(parent: HTMLElement, thisCategory: Catego
 	categoryFrame.className += " STYLESHIFT-Category-Frame";
 	parent.append(categoryFrame);
 
-	const categoryTitle = (
-		(await createSettingUiElementWithAbleDeveloperMode(categoryFrame, thisCategory)) as any
-	).frame;
+	const categoryTitle = ((await createSettingUiElementWithAbleDeveloperMode(categoryFrame, thisCategory)) as any)
+		.frame;
 
 	for (const thisSetting of thisCategory.settings) {
 		try {

@@ -185,7 +185,9 @@
 			class:open={isOpen}
 			onclick={toggleDropdown}
 		>
-			<span class="current-value">{value}</span>
+			<span class="current-value">
+				{setting.options[value]?.name || value}
+			</span>
 			<span class="arrow">▼</span>
 		</button>
 
@@ -217,7 +219,7 @@
 				onclick={(e) => handleSelect(e, option)}
 				style="animation-delay: {i * 50}ms"
 			>
-				{option}
+				{setting.options[option]?.name || option}
 			</button>
 		{/each}
 	</div>

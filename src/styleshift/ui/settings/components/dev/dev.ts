@@ -1,4 +1,4 @@
-import { rearrangeSelector } from "@functions/normal";
+import { rearrangeSelector } from "@/styleshift/shared/normal";
 import { Setting } from "@styleshift/types/store";
 import { settingsUi } from "@ui/settings/settingComponents";
 
@@ -13,13 +13,7 @@ export async function settingDeveloperTextEditor(
 	thisProperty,
 	updateUi = function (_value) {},
 ) {
-	const mainUi = settingsUi.settingFrame(
-		true,
-		true,
-		{ x: false, y: false },
-		false,
-		"STYLESHIFT-Config-Sub-Frame",
-	);
+	const mainUi = settingsUi.settingFrame(true, true, { x: false, y: false }, false, "STYLESHIFT-Config-Sub-Frame");
 
 	const textEditors = {};
 

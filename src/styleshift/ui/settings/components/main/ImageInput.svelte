@@ -207,7 +207,7 @@
 			onkeydown={(e) => e.key === "Enter" && fileInput?.click()}
 			title="Click or Drag & Drop image to upload"
 		>
-			<img class="STYLESHIFT-Upload-Icon" src={getAssetUrl("asset/upload.svg")} alt="Upload" />
+			<img class="STYLESHIFT-Upload-Icon" src={getAssetUrl("assets/upload.svg")} alt="Upload" />
 			<span class="STYLESHIFT-Upload-Text">Upload</span>
 		</div>
 

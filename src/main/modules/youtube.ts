@@ -1,4 +1,4 @@
-import { waitForElement } from "../../styleshift/buildInFunctions/normal";
+import { waitForElement } from "../../styleshift/shared/normal";
 
 export let ytdApp: HTMLElement | null = null;
 

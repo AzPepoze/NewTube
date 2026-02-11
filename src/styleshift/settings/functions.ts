@@ -1,4 +1,4 @@
-import { waitOneFrame } from "../buildInFunctions/normal";
+import { waitOneFrame } from "../shared/normal";
 import { executeSettingScript } from "../core/runtimeController";
 import { getFromStorage } from "../core/storageManager";
 import { Setting } from "../types/store";
@@ -27,6 +27,7 @@ const SETTING_TYPE_BEHAVIORS = {
 
 		async function applyCheckboxUpdate() {
 			const currentValue = await getFromStorage(setting.id);
+			logger.debug("settings", `Applying checkbox update for ${setting.id}:`, currentValue);
 
 			if (stylesheet) {
 				stylesheet.textContent = setting.constantCss || ``;
@@ -207,6 +208,7 @@ const updateThrottleState: Record<string, "Idle" | "Waiting" | "Processing"> = {
  * Triggers the update logic for a specific setting, with basic throttling.
  */
 export async function triggerSettingUpdate(settingId: string) {
+	logger.debug("settings", "Triggering update for:", settingId);
 	const state = updateThrottleState[settingId] || "Idle";
 
 	if (state === "Waiting") return;
@@ -285,7 +287,7 @@ export async function runSettingInitialization(settingId: string) {
  */
 export async function initializeAllActiveSettings() {
 	for (const id in settingInitializers) {
-		logger.info("settings", "Initializing setting:", id);
+		logger.debug("settings", "Initializing setting:", id);
 		runSettingInitialization(id);
 	}
 }

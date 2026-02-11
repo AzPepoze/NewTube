@@ -13,7 +13,6 @@ const OUT_DIR = path.join(__dirname, "../out/build");
 const TEMPLATE_DIR = path.join(__dirname, "../out/template");
 
 const SETTINGS_OUT_DIR = path.join(TEMPLATE_DIR, "settings");
-const TYPES_OUT_DIR = path.join(TEMPLATE_DIR, "types");
 const PROD_TYPES_DIR = path.join(OUT_DIR, "types");
 
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, "../extension.config.json"), "utf8"));
@@ -26,33 +25,33 @@ const METADATA_FILE_NAME = `${config.name}-Metadata.json`;
 Helper Functions
 -------------------------------------------------------
 */
-function ensure_dir(dir: string) {
+function ensureDir(dir: string) {
 	if (!fs.existsSync(dir)) {
 		fs.mkdirSync(dir, { recursive: true });
 	}
 }
 
-async function create_setting_folder(category_folder_path: string, this_setting: any) {
+async function createSettingFolder(categoryFolderPath: string, thisSetting: any) {
 	// Standardize folder name: lowercase and replace spaces
-	const setting_folder_name = this_setting.type.toLowerCase().replace(/\s+/g, "-");
-	const settings_folder_path = path.join(category_folder_path, setting_folder_name);
+	const settingFolderName = thisSetting.type.toLowerCase().replace(/\s+/g, "-");
+	const settingsFolderPath = path.join(categoryFolderPath, settingFolderName);
 
-	ensure_dir(settings_folder_path);
+	ensureDir(settingsFolderPath);
 
-	await convertToExportSetting(this_setting, async (file_name, file_data) => {
-		fs.writeFileSync(path.join(settings_folder_path, file_name), file_data);
+	await convertToExportSetting(thisSetting, async (fileName, fileData) => {
+		fs.writeFileSync(path.join(settingsFolderPath, fileName), fileData);
 	});
 
-	fs.writeFileSync(path.join(settings_folder_path, "config.json"), JSON.stringify(this_setting, null, 2));
+	fs.writeFileSync(path.join(settingsFolderPath, "config.json"), JSON.stringify(thisSetting, null, 2));
 }
 
-function extract_metadata(content: string) {
+function extractMetadata(content: string) {
 	const metadata: any[] = [];
 	// Regex to capture JSDoc + Exported function
 	const regex = /\/\*\*([\s\S]*?)\*\/[\s\r\n]*export\s+(async\s+)?function\s+(\w+)\s*\((.*?)\)/g;
 	let match;
 	while ((match = regex.exec(content)) !== null) {
-		const [full, jsdoc, isAsync, name, params] = match;
+		const [_full, jsdoc, isAsync, name, params] = match;
 		metadata.push({
 			label: name,
 			type: "function",
@@ -90,32 +89,32 @@ Main Runner
 
 	// 1. Build Templates
 	console.log("📦 Generating UI Templates...");
-	ensure_dir(SETTINGS_OUT_DIR);
-	for (const this_preset of uiPreset) {
-		await create_setting_folder(SETTINGS_OUT_DIR, this_preset);
+	ensureDir(SETTINGS_OUT_DIR);
+	for (const thisPreset of uiPreset) {
+		await createSettingFolder(SETTINGS_OUT_DIR, thisPreset);
 	}
 
 	// 2. Build Type Definitions & Metadata
 	console.log("📝 Generating Type Definitions...");
-	const styleshift_dir = path.join(SRC_DIR, "styleshift");
-	const build_in_functions_dir = path.join(styleshift_dir, "buildInFunctions");
+	const styleshiftDir = path.join(SRC_DIR, "styleshift");
+	const sharedFunctionsDir = path.join(styleshiftDir, "shared");
 
-	const source_files = [
-		path.join(build_in_functions_dir, "normal.ts"),
-		path.join(build_in_functions_dir, "extension.ts"),
-		path.join(styleshift_dir, "communication/webPage.ts"),
+	const sourceFiles = [
+		path.join(sharedFunctionsDir, "normal.ts"),
+		path.join(sharedFunctionsDir, "extension.ts"),
+		path.join(styleshiftDir, "communication/webPage.ts"),
 	];
 
-	let all_metadata: any[] = [];
-	for (const file_path of source_files) {
-		if (fs.existsSync(file_path)) {
-			const content = fs.readFileSync(file_path, "utf-8");
-			all_metadata = [...all_metadata, ...extract_metadata(content)];
+	let allMetadata: any[] = [];
+	for (const filePath of sourceFiles) {
+		if (fs.existsSync(filePath)) {
+			const content = fs.readFileSync(filePath, "utf-8");
+			allMetadata = [...allMetadata, ...extractMetadata(content)];
 		}
 	}
 
 	// Add manual internal entries
-	all_metadata.push(
+	allMetadata.push(
 		{
 			label: "set_value",
 			type: "function",
@@ -131,21 +130,21 @@ Main Runner
 	);
 
 	// Generate Signature string for .d.ts
-	const combined_signatures = all_metadata
+	const combinedSignatures = allMetadata
 		.map((m) => `    /** ${m.info || m.label} */\n    function ${m.label}${m.detail.replace(" => ", ": ")};`)
 		.join("\n");
 
-	const d_ts_content = `/**\n * ${config.name} Global API\n * These functions are available in the advanced script editor.\n */\ndeclare global {\n${combined_signatures}\n}\nexport {};`;
+	const dTsContent = `/**\n * ${config.name} Global API\n * These functions are available in the advanced script editor.\n */\ndeclare global {\n${combinedSignatures}\n}\nexport {};`;
 
 	// 3. Write Output Files
-	const metadata_json = JSON.stringify(all_metadata, null, 2);
+	const metadataJson = JSON.stringify(allMetadata, null, 2);
 
 	// Write to /out/template (Dev)
-	ensure_dir(TEMPLATE_DIR);
-	fs.writeFileSync(path.join(TEMPLATE_DIR, TYPE_FILE_NAME), d_ts_content);
+	ensureDir(TEMPLATE_DIR);
+	fs.writeFileSync(path.join(TEMPLATE_DIR, TYPE_FILE_NAME), dTsContent);
 
 	// Generate a tsconfig.json for the template directory
-	const template_tsconfig = {
+	const templateTsconfig = {
 		compilerOptions: {
 			target: "es2022",
 			module: "esnext",
@@ -157,12 +156,12 @@ Main Runner
 		},
 		include: ["**/*.js", "**/*.ts", TYPE_FILE_NAME],
 	};
-	fs.writeFileSync(path.join(TEMPLATE_DIR, "tsconfig.json"), JSON.stringify(template_tsconfig, null, 2));
+	fs.writeFileSync(path.join(TEMPLATE_DIR, "tsconfig.json"), JSON.stringify(templateTsconfig, null, 2));
 
 	// Write to /out/build/types (Production)
-	ensure_dir(PROD_TYPES_DIR);
-	fs.writeFileSync(path.join(PROD_TYPES_DIR, METADATA_FILE_NAME), metadata_json);
-	fs.writeFileSync(path.join(PROD_TYPES_DIR, TYPE_FILE_NAME), d_ts_content);
+	ensureDir(PROD_TYPES_DIR);
+	fs.writeFileSync(path.join(PROD_TYPES_DIR, METADATA_FILE_NAME), metadataJson);
+	fs.writeFileSync(path.join(PROD_TYPES_DIR, TYPE_FILE_NAME), dTsContent);
 
 	console.log(`✅ Build complete!`);
 	console.log(`- Templates: ${SETTINGS_OUT_DIR}`);

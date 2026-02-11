@@ -1,5 +1,5 @@
-import * as styleshiftFunctions from "../styleshift/buildInFunctions/extension";
-import { sleep } from "../styleshift/buildInFunctions/normal";
+import * as styleshiftFunctions from "../styleshift/shared/extension";
+import { sleep } from "../styleshift/shared/normal";
 import { Category } from "../styleshift/types/store";
 import { logger } from "../styleshift/utils/logger";
 

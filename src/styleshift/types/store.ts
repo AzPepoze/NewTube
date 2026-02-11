@@ -9,6 +9,7 @@ export type Category = {
 };
 
 export type Option = {
+	name?: string;
 	enableCss?: string;
 
 	enableFunction?: string | Function;

@@ -22,8 +22,14 @@ const debugConfig: LogConfig = {
 		drag: true,
 		ui: true,
 		storage: true,
+		runtime: true,
+		settings: true,
+		lifecycle: true,
 	},
 	debug: {
+		all: true,
+	},
+	warn: {
 		all: true,
 	},
 	error: {

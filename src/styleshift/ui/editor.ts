@@ -1,4 +1,4 @@
-import { getElementCenterPosition } from "../buildInFunctions/normal";
+import { getElementCenterPosition } from "../shared/normal";
 import { Category } from "../types/store";
 import { startHighlighter } from "./highlight";
 import { createMainSettingsUi } from "./settings/settings";

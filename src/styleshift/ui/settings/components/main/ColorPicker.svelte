@@ -6,7 +6,7 @@
 	import { setAndSave } from "@ui/settings/settingComponents";
 	import { triggerSettingUpdate } from "@settings/functions";
 	import { hexToColorObj, colorObjToHex } from "@styleshift/utils/colors";
-	import { sequencedTask } from "@functions/normal";
+	import { sequencedTask } from "@/styleshift/shared/normal";
 
 	let {
 		setting,

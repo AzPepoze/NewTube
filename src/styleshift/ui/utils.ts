@@ -7,6 +7,14 @@ export function getAssetUrl(path: string): string {
 	if (path.includes("://") || path.startsWith("data:")) return path;
 
 	// Remove leading slash if present
-	const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+	let cleanPath = path.startsWith("/") ? path.slice(1) : path;
+
+	// Redirect old paths to new structure for organization
+	if (cleanPath.startsWith("icon/")) {
+		cleanPath = cleanPath.replace("icon/", "assets/icons/");
+	} else if (cleanPath.startsWith("asset/")) {
+		cleanPath = cleanPath.replace("asset/", "assets/");
+	}
+
 	return chrome.runtime.getURL(cleanPath);
 }

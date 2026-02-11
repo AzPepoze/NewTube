@@ -1,4 +1,4 @@
-import { getDocumentBody, getDocumentHead, sleep } from "../buildInFunctions/normal";
+import { getDocumentBody, getDocumentHead, sleep } from "../shared/normal";
 import { initializeDeveloperEnvironment, isDevModulesLoaded } from "../core/runtimeController";
 import { getRootValue } from "../core/storageManager";
 import { removeConfigUi } from "./config";

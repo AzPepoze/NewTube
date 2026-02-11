@@ -1,5 +1,5 @@
-import { createError } from "../buildInFunctions/extension";
-import { sleep } from "../buildInFunctions/normal";
+import { createError } from "../shared/extension";
+import { sleep } from "../shared/normal";
 import { currentContextDomain } from "../run";
 import { logger } from "../utils/logger";
 

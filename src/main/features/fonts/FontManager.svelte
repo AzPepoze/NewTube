@@ -7,7 +7,7 @@
 	import Description from "@ui/settings/components/main/Description.svelte";
 	import IconButton from "@ui/settings/components/advance/IconButton.svelte";
 	import Checkbox from "@ui/settings/components/main/Checkbox.svelte";
-	import { createUniqueId } from "@functions/normal";
+	import { createUniqueId } from "@/styleshift/shared/normal";
 	import { getFromStorage } from "@/styleshift/core/storageManager";
 	import { showUserConfirmation } from "@ui/extension";
 

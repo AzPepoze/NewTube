@@ -1,4 +1,4 @@
-import { applyDrag, sequencedTask } from "@functions/normal";
+import { applyDrag, sequencedTask } from "@/styleshift/shared/normal";
 import { getRootValue } from "@/styleshift/core/storageManager";
 import { triggerSettingUpdate } from "@settings/functions";
 import { Category } from "@styleshift/types/store";

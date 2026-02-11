@@ -2,19 +2,19 @@ const fs = require("fs");
 const path = require("path");
 const archiver = require("archiver");
 
-const release_dir = path.join(__dirname, "../out/release");
-if (!fs.existsSync(release_dir)) {
-    fs.mkdirSync(release_dir, { recursive: true });
+const RELEASE_DIR = path.join(__dirname, "../out/release");
+if (!fs.existsSync(RELEASE_DIR)) {
+	fs.mkdirSync(RELEASE_DIR, { recursive: true });
 }
 
-function zip(input_dir, output) {
-	const output_stream = fs.createWriteStream(output);
+function zip(inputDir, output) {
+	const outputStream = fs.createWriteStream(output);
 
 	const archive = archiver("zip", {
 		zlib: { level: 9 },
 	});
 
-	output_stream.on("close", function () {
+	outputStream.on("close", function () {
 		console.log(`Created zip file: ${output} (${archive.pointer()} total bytes)`);
 	});
 
@@ -22,8 +22,8 @@ function zip(input_dir, output) {
 		throw err;
 	});
 
-	archive.pipe(output_stream);
-	archive.directory(input_dir, false);
+	archive.pipe(outputStream);
+	archive.directory(inputDir, false);
 	archive.finalize();
 }
 

@@ -1,5 +1,5 @@
-import { createNotification } from "../buildInFunctions/extension";
-import { sleep } from "../buildInFunctions/normal";
+import { createNotification } from "../shared/extension";
+import { sleep } from "../shared/normal";
 import { refreshExtensionState, IS_IN_EXTENSION_SETTINGS_PAGE } from "../run";
 import { getCustomItems } from "../settings/items";
 import { persistCachedDataToStorage, saveToStorage } from "./storageManager";
@@ -107,6 +107,9 @@ export async function executeScriptString({
 	sourceIdentifier = "StyleShift",
 	executionArguments = "",
 }: ExecutionOptions): Promise<void> {
+	logger.debug("runtime", "Trying to run script", sourceIdentifier);
+	logger.debug("runtime", scriptContent);
+
 	if (typeof scriptContent === "function") {
 		scriptContent();
 		return;
@@ -133,6 +136,8 @@ export async function executeScriptString({
 			return;
 		}
 	}
+
+	logger.debug("runtime", "Final script for execution:", finalScript);
 
 	if (!IS_IN_EXTENSION_SETTINGS_PAGE) {
 		chrome.runtime.sendMessage({
@@ -228,4 +233,14 @@ export async function initializeDeveloperEnvironment(): Promise<void> {
 		setTimeout(() => loaderUi.close(), 5000);
 		hasAttemptedDevModuleLoad = false;
 	}
+}
+
+/**
+ * Loads a worker script from the extension's workers directory.
+ * @param {string} fileName - The name of the worker script (e.g., 'myWorker.js').
+ * @returns {Worker} A new Worker instance.
+ */
+export function loadWorker(fileName: string): Worker {
+	const url = chrome.runtime.getURL(`workers/${fileName}`);
+	return new Worker(url);
 }
