@@ -9,19 +9,16 @@
 		"outDir": "./dist",
 		"types": ["chrome", "node"],
 		"lib": ["es2022", "dom"],
-		"downlevelIteration": true,
 		"strictNullChecks": false,
 		"noImplicitAny": false,
-
-		"baseUrl": ".",
 		"paths": {
-			"@/*": ["src/*"],
-			"@main/*": ["src/main/*"],
-			"@styleshift/*": ["src/styleshift/*"],
-			"@core/*": ["src/styleshift/core/*"],
-			"@ui/*": ["src/styleshift/ui/*"],
-			"@settings/*": ["src/styleshift/settings/*"],
-			"@functions/*": ["src/styleshift/shared/*"]
+			"@/*": ["./src/*"],
+			"@main/*": ["./src/main/*"],
+			"@styleshift/*": ["./src/styleshift/*"],
+			"@core/*": ["./src/styleshift/core/*"],
+			"@ui/*": ["./src/styleshift/ui/*"],
+			"@settings/*": ["./src/styleshift/settings/*"],
+			"@functions/*": ["./src/styleshift/shared/*"]
 		}
 	},
 	"include": [
