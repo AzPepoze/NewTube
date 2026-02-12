@@ -2,7 +2,7 @@ import { createUniqueId, onceElementRemove, waitDocumentLoaded } from "../shared
 import { getStyleshiftItems } from "../settings/items";
 import { createEditorUi, editorUi } from "./editor";
 import { showUserConfirmation } from "./extension";
-import { logger } from "../utils/logger";
+import { logger } from "../../shared/logger";
 
 let highlightElements = {};
 let debounceTimer: NodeJS.Timeout;

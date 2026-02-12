@@ -172,24 +172,20 @@ async function build() {
 		fs.ensureDirSync(path.join(buildPath, "assets/icons"));
 		fs.ensureDirSync(path.join(buildPath, "modules"));
 
-		// Copy extension files (excluding modules, they are handled separately or by builderModules)
+		// Copy extension files (excluding modules and TypeScript source files)
 		fs.copySync(path.join(__dirname, "../src/extension"), buildPath, {
 			filter: (src) => {
 				const relativePath = path.relative(path.join(__dirname, "../src/extension"), src);
-				return (
-					!relativePath.startsWith("modules") &&
-					!relativePath.startsWith("icon") &&
-					!relativePath.startsWith("asset")
-				);
+				// Exclude modules directory and TypeScript files
+				if (relativePath.startsWith("modules")) return false;
+				if (relativePath.endsWith(".ts")) return false;
+				return true;
 			},
 		});
 
 		// Copy icons and assets to the new structure
-		if (fs.existsSync(path.join(__dirname, "../src/extension/icon"))) {
-			fs.copySync(path.join(__dirname, "../src/extension/icon"), path.join(buildPath, "assets/icons"));
-		}
-		if (fs.existsSync(path.join(__dirname, "../src/extension/asset"))) {
-			fs.copySync(path.join(__dirname, "../src/extension/asset"), path.join(buildPath, "assets"));
+		if (fs.existsSync(path.join(__dirname, "../src/assets"))) {
+			fs.copySync(path.join(__dirname, "../src/assets"), path.join(buildPath, "assets"));
 		}
 
 		// Build main bundle
@@ -268,6 +264,26 @@ async function build() {
 			entryPoints: [path.join(__dirname, "../src/main/features/removeBlackBarsWorker.ts")],
 			bundle: true,
 			outfile: path.join(buildPath, "workers/removeBlackBarsWorker.js"),
+			platform: "browser",
+			minify: isProduction,
+			plugins: [brandingPlugin],
+		});
+
+		// Build background script (TypeScript)
+		await esbuild.build({
+			entryPoints: [path.join(__dirname, "../src/extension/background.ts")],
+			bundle: true,
+			outfile: path.join(buildPath, "background.js"),
+			platform: "browser",
+			minify: isProduction,
+			plugins: [brandingPlugin],
+		});
+
+		// Build offscreen document script (TypeScript)
+		await esbuild.build({
+			entryPoints: [path.join(__dirname, "../src/extension/offscreen.ts")],
+			bundle: true,
+			outfile: path.join(buildPath, "offscreen.js"),
 			platform: "browser",
 			minify: isProduction,
 			plugins: [brandingPlugin],

@@ -7,7 +7,7 @@ import { getRootValue, saveToStorage } from "../core/storageManager";
 import { refreshExtensionState } from "../run";
 import { attachBehaviorToSetting } from "./functions";
 import { Category, type Setting } from "../types/store";
-import { logger } from "../utils/logger";
+import { logger } from "../../shared/logger";
 
 const highlightColors = [`255, 109, 109`, `167, 242, 255`, `255, 167, 248`, `188, 167, 255`, `255, 241, 167`];
 

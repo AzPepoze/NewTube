@@ -3,7 +3,7 @@
 	import Description from "./Description.svelte";
 	import { scale } from "svelte/transition";
 	import { quintOut } from "svelte/easing";
-	import { logger } from "@/styleshift/utils/logger";
+	import { logger } from "@/shared/logger";
 
 	import { getFromStorage } from "@/styleshift/core/storageManager";
 	import { setAndSave } from "@ui/settings/settingComponents";

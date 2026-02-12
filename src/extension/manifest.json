@@ -7,10 +7,10 @@
 	"homepage_url": "https://github.com/AzPepoze/StyleShift",
 	"minimum_chrome_version": "88",
 	"icons": {
-		"128": "assets/icons/128.png",
-		"64": "assets/icons/64.png",
-		"32": "assets/icons/32.png",
-		"16": "assets/icons/16.png"
+		"128": "assets/branding/128.png",
+		"64": "assets/branding/64.png",
+		"32": "assets/branding/32.png",
+		"16": "assets/branding/16.png"
 	},
 	"options_page": "setting/styleshift.html",
 	"action": {
@@ -61,7 +61,7 @@
 			"description": "Toggle Developer Mode"
 		}
 	},
-	"permissions": ["storage", "unlimitedStorage", "scripting"],
+	"permissions": ["storage", "unlimitedStorage", "scripting", "offscreen"],
 	"host_permissions": ["*://*/*"],
 	"browser_specific_settings": {
 		"gecko": {

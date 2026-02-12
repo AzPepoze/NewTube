@@ -6,7 +6,7 @@ import { editorUi } from "./editor";
 import { extensionSettingsUi } from "./extensionSettings";
 import { settingsUi } from "./settings/settingComponents";
 import { applyThemeToElement } from "./theme";
-import { logger } from "../utils/logger";
+import { logger } from "../../shared/logger";
 import { unmount } from "svelte";
 
 /**

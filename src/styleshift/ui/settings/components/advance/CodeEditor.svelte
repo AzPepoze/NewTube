@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { codemirrorInstance, globalMetadataCache } from "@/styleshift/core/runtimeController";
-	import { logger } from "@/styleshift/utils/logger";
+	import { logger } from "@/shared/logger";
 
 	let { value = $bindable(""), language = "javascript", height = 400, onBlur, onInput } = $props();
 

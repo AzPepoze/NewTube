@@ -3,7 +3,8 @@ import { loadWorker } from "../../styleshift/core/runtimeController";
 import { getUserSetting } from "../../styleshift/core/storageManager";
 import { registerSettingListener } from "../../styleshift/settings/functions";
 import { hideBg, showBg } from "./background";
-import { logger } from "../../styleshift/utils/logger";
+import { logger } from "../../shared/logger";
+import { VideoBGRenderer } from "./videoBackgroundRenderer";
 
 // --- State Management ---
 interface VideoBgState {
@@ -12,6 +13,7 @@ interface VideoBgState {
 	wrapper: HTMLDivElement | null;
 	canvas: HTMLCanvasElement | null;
 	worker: Worker | null;
+	localRenderer: VideoBGRenderer | null;
 	overlay: HTMLDivElement | null;
 
 	animationFrame: number | null;
@@ -29,6 +31,7 @@ const state: VideoBgState = {
 	wrapper: null,
 	canvas: null,
 	worker: null,
+	localRenderer: null,
 	overlay: null,
 	animationFrame: null,
 	frameCount: 0,
@@ -167,6 +170,15 @@ export async function updateVideoBgSettings() {
 		});
 	}
 
+	if (state.localRenderer) {
+		state.localRenderer.updateSettings({
+			blur: settings.blur,
+			quality: settings.quality,
+			smooth: settings.smooth,
+			engine: settings.engine as any,
+		});
+	}
+
 	if (oldEngine !== settings.engine && state.enabled) {
 		logger.info("video-bg", `Restarting: Engine changed ${oldEngine} -> ${settings.engine}`);
 		state.enabled = false;
@@ -189,7 +201,7 @@ export async function updateVideoBgSettings() {
 }
 
 const render = async () => {
-	if (!state.enabled || !state.canvas || !state.worker) {
+	if (!state.enabled || !state.canvas || (!state.worker && !state.localRenderer)) {
 		if (!state.enabled && state.frameCount % 60 === 0)
 			logger.debug("video-bg", "render loop running but feature is disabled.");
 		return;
@@ -286,9 +298,13 @@ const render = async () => {
 				resizeQuality: "low",
 			});
 
-			state.worker.postMessage({ type: "render", data: { bitmap } }, [bitmap]);
+			if (state.worker) {
+				state.worker.postMessage({ type: "render", data: { bitmap } }, [bitmap]);
+			} else if (state.localRenderer) {
+				state.localRenderer.render(bitmap);
+			}
 
-			if (state.frameCount % 100 === 0) logger.debug("video-bg", "Sent frame to worker");
+			if (state.frameCount % 100 === 0) logger.debug("video-bg", "Processed frame");
 		}
 	} else {
 		if (state.container && state.isFadedIn) {
@@ -349,24 +365,35 @@ export function setupVideoBackground() {
 		overlayStyle.zIndex = "1";
 		overlayStyle.pointerEvents = "none";
 
-		state.worker = loadWorker("videoBackgroundWorker.js");
+		state.worker = await loadWorker("videoBackgroundWorker.js");
 
-		const offscreen = state.canvas.transferControlToOffscreen();
-		state.worker.postMessage(
-			{
-				type: "init",
-				data: {
-					canvas: offscreen,
-					settings: {
-						blur: settings.blur,
-						quality: settings.quality,
-						smooth: settings.smooth,
-						engine: settings.engine,
+		if (state.worker) {
+			const offscreen = state.canvas.transferControlToOffscreen();
+			state.worker.postMessage(
+				{
+					type: "init",
+					data: {
+						canvas: offscreen,
+						settings: {
+							blur: settings.blur,
+							quality: settings.quality,
+							smooth: settings.smooth,
+							engine: settings.engine,
+						},
 					},
 				},
-			},
-			[offscreen],
-		);
+				[offscreen],
+			);
+		} else {
+			logger.info("video-bg", "Falling back to main thread rendering");
+			state.localRenderer = new VideoBGRenderer();
+			state.localRenderer.init(state.canvas, {
+				blur: settings.blur,
+				quality: settings.quality,
+				smooth: settings.smooth,
+				engine: settings.engine as any,
+			});
+		}
 
 		state.wrapper.appendChild(state.canvas);
 		state.wrapper.appendChild(state.overlay);
@@ -396,6 +423,7 @@ export async function disableVideoBackground(force = false) {
 	state.wrapper = null;
 	state.canvas = null;
 	state.worker = null;
+	state.localRenderer = null;
 	state.isStatic = false;
 	state.lastFrameData = null;
 	state.isFadedIn = false;

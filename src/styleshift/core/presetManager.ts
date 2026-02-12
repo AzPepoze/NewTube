@@ -1,4 +1,4 @@
-import { logger } from "../utils/logger";
+import { logger } from "../../shared/logger";
 import { showUserConfirmation } from "../ui/extension";
 import { persistCachedDataToStorage, saveUserSetting, getRootValue } from "./storageManager";
 import { updateStyleshiftItems } from "../settings/items";

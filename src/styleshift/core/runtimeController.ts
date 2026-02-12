@@ -4,7 +4,7 @@ import { refreshExtensionState, IS_IN_EXTENSION_SETTINGS_PAGE } from "../run";
 import { getCustomItems } from "../settings/items";
 import { persistCachedDataToStorage, saveToStorage } from "./storageManager";
 import { isSafeCode } from "../utils/security";
-import { logger } from "../utils/logger";
+import { logger } from "../../shared/logger";
 
 /**
  * Persists all cached data and triggers a global UI/state refresh.
@@ -236,11 +236,47 @@ export async function initializeDeveloperEnvironment(): Promise<void> {
 }
 
 /**
- * Loads a worker script from the extension's workers directory.
+ * Creates a worker proxy that communicates via the background script.
+ * The actual Worker runs in the background script context (ISOLATED world)
+ * where extension URLs work, avoiding CSP and cross-origin restrictions.
  * @param {string} fileName - The name of the worker script (e.g., 'myWorker.js').
- * @returns {Worker} A new Worker instance.
+ * @returns {Promise<Worker>} A Worker-like object that proxies to the background worker.
  */
-export function loadWorker(fileName: string): Worker {
-	const url = chrome.runtime.getURL(`workers/${fileName}`);
-	return new Worker(url);
+export async function doesWorkerExist(workerId: string): Promise<boolean> {
+	if (!workerId) return false;
+
+	try {
+		// Check if worker exists by sending a test message
+		const result = await chrome.runtime.sendMessage({
+			Command: "workerPostMessage",
+			workerId,
+			message: { type: "ping" },
+		});
+
+		return result;
+	} catch (error) {
+		logger.warn("runtime", `Worker existence check failed for ${workerId}:`, error);
+		return false;
+	}
+}
+
+/**
+ * Loads a Web Worker natively if supported by the browser and CSP.
+ * Returns null if native worker creation fails.
+ * @param {string} fileName - The name of the worker script (e.g., 'myWorker.js').
+ * @returns {Promise<Worker | null>} A Worker object or null if failed.
+ */
+export async function loadWorker(fileName: string): Promise<Worker | null> {
+	const scriptUrl = chrome.runtime.getURL(`workers/${fileName}`);
+
+	logger.info("runtime", `Loading worker ${fileName}`);
+
+	try {
+		const worker = new Worker(scriptUrl);
+		logger.info("runtime", `Native Worker created successfully for ${fileName}`);
+		return worker;
+	} catch (error) {
+		logger.warn("runtime", `Native Worker failed for ${fileName}:`, error);
+		return null;
+	}
 }

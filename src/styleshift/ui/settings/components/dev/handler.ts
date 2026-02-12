@@ -1,6 +1,6 @@
 import { persistItems, synchronizeAvailableFunctions } from "@/styleshift/core/runtimeController";
 import { refreshExtensionState } from "@/styleshift/run";
-import { logger } from "@/styleshift/utils/logger";
+import { logger } from "@/shared/logger";
 import { triggerSettingUpdate } from "@/styleshift/settings/functions";
 import { refreshSettingUi } from "@/styleshift/ui/settings/settings";
 import { getSettingsList } from "@/styleshift/settings/items";
@@ -11,7 +11,7 @@ import { getSettingsList } from "@/styleshift/settings/items";
  */
 export async function handleLogicUpdate(callback?: Function) {
 	logger.debug("config", "Handling logic update...");
-	
+
 	await persistItems();
 	await synchronizeAvailableFunctions();
 
@@ -32,7 +32,7 @@ export async function applyPropertyUpdate(
 	options: {
 		updateUI?: Function;
 		customCallback?: Function;
-	} = {}
+	} = {},
 ) {
 	const { updateUI, customCallback } = options;
 	let finalValue = newValue;

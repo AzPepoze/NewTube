@@ -1,17 +1,17 @@
 <script lang="ts">
-	import search from "@ui/assets/icons/search.svg";
-	import edit from "@ui/assets/icons/edit.svg";
-	import del from "@ui/assets/icons/delete.svg";
-	import drag from "@ui/assets/icons/drag.svg";
-	import add from "@ui/assets/icons/add.svg";
-	import close from "@ui/assets/icons/close.svg";
-	import settings from "@ui/assets/icons/settings.svg";
-	import code from "@ui/assets/icons/code.svg";
-	import arrowUp from "@ui/assets/icons/arrowUp.svg";
-	import arrowDown from "@ui/assets/icons/arrowDown.svg";
-	import minimize from "@ui/assets/icons/minimize.svg";
-	import maximize from "@ui/assets/icons/maximize.svg";
-	import restore from "@ui/assets/icons/restore.svg";
+	import search from "@/assets/icons/search.svg";
+	import edit from "@/assets/icons/edit.svg";
+	import del from "@/assets/icons/delete.svg";
+	import drag from "@/assets/icons/drag.svg";
+	import add from "@/assets/icons/add.svg";
+	import close from "@/assets/icons/close.svg";
+	import settings from "@/assets/icons/settings.svg";
+	import code from "@/assets/icons/code.svg";
+	import arrowUp from "@/assets/icons/arrowUp.svg";
+	import arrowDown from "@/assets/icons/arrowDown.svg";
+	import minimize from "@/assets/icons/minimize.svg";
+	import maximize from "@/assets/icons/maximize.svg";
+	import restore from "@/assets/icons/restore.svg";
 
 	import { getAssetUrl } from "@ui/utils";
 

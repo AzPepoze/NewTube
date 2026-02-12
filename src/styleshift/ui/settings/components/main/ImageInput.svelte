@@ -9,7 +9,7 @@
 	import { getFromStorage } from "@/styleshift/core/storageManager";
 	import { setAndSave } from "@ui/settings/settingComponents";
 	import { triggerSettingUpdate } from "@settings/functions";
-	import { logger } from "@/styleshift/utils/logger";
+	import { logger } from "@/shared/logger";
 	import { showUserConfirmation } from "@ui/extension";
 
 	let {
@@ -207,7 +207,7 @@
 			onkeydown={(e) => e.key === "Enter" && fileInput?.click()}
 			title="Click or Drag & Drop image to upload"
 		>
-			<img class="STYLESHIFT-Upload-Icon" src={getAssetUrl("assets/upload.svg")} alt="Upload" />
+			<img class="STYLESHIFT-Upload-Icon" src={getAssetUrl("assets/icons/upload.svg")} alt="Upload" />
 			<span class="STYLESHIFT-Upload-Text">Upload</span>
 		</div>
 

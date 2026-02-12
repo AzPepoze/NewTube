@@ -11,9 +11,7 @@ export function getAssetUrl(path: string): string {
 
 	// Redirect old paths to new structure for organization
 	if (cleanPath.startsWith("icon/")) {
-		cleanPath = cleanPath.replace("icon/", "assets/icons/");
-	} else if (cleanPath.startsWith("asset/")) {
-		cleanPath = cleanPath.replace("asset/", "assets/");
+		cleanPath = cleanPath.replace("icon/", "assets/branding/");
 	}
 
 	return chrome.runtime.getURL(cleanPath);

@@ -1,5 +1,5 @@
 import { insertAfter } from "../../shared/normal";
-import { logger } from "../../utils/logger";
+import { logger } from "../../../shared/logger";
 import { saveToStorage } from "../../core/storageManager";
 import { getSettingCategory, getCustomItems } from "../../settings/items";
 import type { Category, Setting } from "../../types/store";

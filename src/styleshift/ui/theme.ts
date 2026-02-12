@@ -1,5 +1,5 @@
 import { getFromStorage } from "@/styleshift/core/storageManager";
-import { logger } from "@/styleshift/utils/logger";
+import { logger } from "@/shared/logger";
 
 /**
  * Applies the current theme and transparency settings to a specific element.

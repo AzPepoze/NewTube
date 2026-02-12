@@ -1,6 +1,6 @@
 import { dynamicAppend, createError } from "../../shared/extension";
 import { scrollOnClick } from "../../shared/normal";
-import { logger } from "../../utils/logger";
+import { logger } from "../../../shared/logger";
 import { getStyleshiftDevOnlyItems } from "../../../main/itemsStyleshiftDev";
 import { addCategory, getSettingsList, getStyleshiftDataType, updateStyleshiftItems } from "../../settings/items";
 import { Category } from "../../types/store";

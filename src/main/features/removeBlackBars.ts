@@ -16,9 +16,9 @@ let worker: Worker | null = null;
 const ultraWideRatio = (21 / 9).toFixed(2);
 let isUltraWideMode = false;
 
-function initWorker() {
+async function initWorker() {
 	if (worker) return;
-	worker = loadWorker("removeBlackBarsWorker.js");
+	worker = await loadWorker("removeBlackBarsWorker.js");
 }
 
 async function checkBlackBars() {
@@ -34,7 +34,7 @@ async function checkBlackBars() {
 	}
 
 	isChecking = true;
-	initWorker();
+	await initWorker();
 
 	const debug = await getUserSetting("DelBarDebug");
 

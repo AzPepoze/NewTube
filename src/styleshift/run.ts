@@ -1,5 +1,5 @@
 import { createError, createNotification } from "./shared/extension";
-import { logger } from "./utils/logger";
+import { logger } from "../shared/logger";
 import {
 	getCurrentDomain,
 	getCurrentUrlParameters,
@@ -154,7 +154,12 @@ try {
  */
 chrome.runtime.onMessage.addListener(async (message) => {
 	try {
-		logger.info("lifecycle", "Incoming message:", message);
+		// Log errors at error level, others at info level
+		if (message.Command === "workerError" || message.error) {
+			logger.error("lifecycle", "Incoming message:", message);
+		} else {
+			logger.info("lifecycle", "Incoming message:", message);
+		}
 
 		if (message === "Developer") {
 			const isDev = await getRootValue("Developer_mode");

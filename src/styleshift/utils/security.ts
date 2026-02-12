@@ -1,5 +1,5 @@
 import { createNotification } from "../shared/extension";
-import { logger } from "./logger";
+import { logger } from "../../shared/logger";
 
 export const dangerousPatterns = [
 	/eval/i,

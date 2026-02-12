@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { settingsUi } from "../../settingComponents";
-	import { logger } from "@/styleshift/utils/logger";
+	import { logger } from "@/shared/logger";
 	import { applyPropertyUpdate as applyUpdate } from "./handler";
 
 	let { setting, props, updateUi = () => {} } = $props();

@@ -1,4 +1,4 @@
-import { logger } from "../utils/logger";
+import { logger } from "../../shared/logger";
 import { getSettingsList } from "../settings/items";
 import { getStyleshiftCustomItems } from "../../main/itemsStyleshiftCustom";
 import {

@@ -1,0 +1,258 @@
+/**
+ * Background Service Worker for StyleShift Extension
+ * Main entry point - delegates to specialized modules
+ */
+
+import { logger } from "@/shared/logger";
+import {
+	createWorker,
+	postMessageToWorker,
+	terminateWorker,
+	cleanupWorkersForTab,
+	OffscreenMessage,
+} from "./workerManager";
+
+interface ContentScriptMessage {
+	Command: string;
+	workerId?: string;
+	scriptUrl?: string;
+	message?: any;
+	Script?: string;
+	data?: any;
+	error?: string;
+	args?: string;
+}
+
+// Listen for messages from offscreen document
+chrome.runtime.onMessage.addListener((message: OffscreenMessage, _sender: chrome.runtime.MessageSender) => {
+	if (message.target !== "background") return;
+
+	switch (message.command) {
+		case "workerMessage": {
+			const { workerId, data } = message;
+			if (!workerId) return;
+			const tabId = parseInt(workerId.split(":")[0]);
+			const actualWorkerId = workerId.split(":")[1];
+			chrome.tabs
+				.sendMessage(tabId, {
+					Command: "workerMessage",
+					workerId: actualWorkerId,
+					data: data,
+				} as ContentScriptMessage)
+				.catch(() => {});
+			break;
+		}
+		case "workerError": {
+			const { workerId, error } = message;
+			if (!workerId) return;
+			const tabId = parseInt(workerId.split(":")[0]);
+			const actualWorkerId = workerId.split(":")[1];
+			chrome.tabs
+				.sendMessage(tabId, {
+					Command: "workerError",
+					workerId: actualWorkerId,
+					error: error,
+				} as ContentScriptMessage)
+				.catch(() => {});
+			break;
+		}
+	}
+});
+
+// Clean up workers when tabs are closed
+chrome.tabs.onRemoved.addListener((tabId: number) => {
+	cleanupWorkersForTab(tabId);
+});
+
+// Handle extension commands
+chrome.commands.onCommand.addListener(async (command: string) => {
+	logger.info("command", `Command "${command}" triggered`);
+	const queryOptions = { active: true, lastFocusedWindow: true };
+	const [tab] = await chrome.tabs.query(queryOptions);
+	if (tab.id) {
+		chrome.tabs.sendMessage(tab.id, command);
+	}
+});
+
+/**
+ * Execute a function in the main world of a tab
+ * This function runs in the MAIN world via executeScript
+ * Note: This function is stringified and injected, so it must be self-contained
+ */
+async function execFunction(execText: string): Promise<void> {
+	try {
+		console.debug("StyleShift: Injecting script into Main World");
+
+		// Setup Trusted Types policies first (self-contained)
+		const win = window as any;
+		if (win.trustedTypes && win.trustedTypes.createPolicy) {
+			// Create TrustedScript policy
+			if (!win.__styleshift_script_policy) {
+				try {
+					win.__styleshift_script_policy = win.trustedTypes.createPolicy("styleshift-script-policy", {
+						createScript: (s: string) => s,
+					});
+				} catch (_e) {
+					win.__styleshift_script_policy = win.trustedTypes.getPolicy("styleshift-script-policy");
+				}
+			}
+
+			// Create TrustedHTML policy
+			if (!win.__styleshift_html_policy) {
+				try {
+					win.__styleshift_html_policy = win.trustedTypes.createPolicy("styleshift-html-policy", {
+						createHTML: (h: string) => h,
+					});
+				} catch (_e) {
+					win.__styleshift_html_policy = win.trustedTypes.getPolicy("styleshift-html-policy");
+				}
+			}
+		}
+
+		const script = document.createElement("script");
+
+		// Use TrustedScript policy if available
+		if (win.__styleshift_script_policy && win.__styleshift_script_policy.createScript) {
+			script.textContent = win.__styleshift_script_policy.createScript(execText);
+		} else {
+			script.textContent = execText;
+		}
+
+		(document.head || document.documentElement).appendChild(script);
+		script.remove();
+	} catch (error) {
+		console.error("StyleShift: Execution failed", error);
+		const errorMsg = error instanceof Error ? error.message : String(error);
+		if (typeof (window as any).StyleShift !== "undefined") {
+			(window as any).StyleShift["build-in"]?.["_call_function"]?.(
+				"createError",
+				"Injection failed: " + errorMsg,
+			);
+		}
+		try {
+			new Function(execText)();
+		} catch (_e) {
+			// Silent fail
+		}
+	}
+}
+
+// Listen for messages from content scripts
+chrome.runtime.onMessage.addListener(
+	(recivedMsg: ContentScriptMessage, sender: chrome.runtime.MessageSender, sendResponse) => {
+		// Log errors at error level, others at info level
+		if (recivedMsg.Command === "workerError" || recivedMsg.error) {
+			logger.error("message", recivedMsg);
+		} else {
+			logger.info("message", recivedMsg);
+		}
+
+		handleMessage(recivedMsg, sender)
+			.then((result) => {
+				sendResponse(result);
+			})
+			.catch((error) => {
+				logger.error("message", "Error handling message:", error);
+				sendResponse(false);
+			});
+
+		return true; // Keep channel open for async response
+	},
+);
+
+async function handleMessage(recivedMsg: ContentScriptMessage, sender: chrome.runtime.MessageSender): Promise<boolean> {
+	switch (recivedMsg.Command) {
+		case "createWorker": {
+			if (!sender.tab?.id) return false;
+			const { workerId, scriptUrl } = recivedMsg;
+			return await createWorker(sender.tab.id, workerId!, scriptUrl!);
+		}
+
+		case "workerPostMessage": {
+			if (!sender.tab?.id) return false;
+			const { workerId, message } = recivedMsg;
+			logger.debug("worker", `Routing workerPostMessage for ${workerId} in tab ${sender.tab.id}`, message);
+			return postMessageToWorker(sender.tab.id, workerId!, message);
+		}
+
+		case "terminateWorker": {
+			if (!sender.tab?.id) return false;
+			const { workerId } = recivedMsg;
+			return terminateWorker(sender.tab.id, workerId!);
+		}
+
+		case "runScript": {
+			if (!sender.tab?.id) return false;
+
+			let preCode = "";
+
+			if (recivedMsg.args && recivedMsg.args !== "") {
+				const args = JSON.parse(recivedMsg.args);
+
+				if (args) {
+					const settingId = args["settingId"];
+					if (settingId) {
+						preCode += `let thisSettingFrame = document.querySelector(".STYLESHIFT-Window #${settingId}");\n`;
+						preCode += `
+                            if (window.trustedTypes && thisSettingFrame) {
+                                if (!window.__styleshift_html_policy) {
+                                    try {
+                                        window.__styleshift_html_policy = window.trustedTypes.createPolicy("styleshift-policy-html", { createHTML: (h) => h });
+                                    } catch (_e) {
+                                        window.__styleshift_html_policy = window.trustedTypes.getPolicy("styleshift-policy-html") || window.trustedTypes.defaultPolicy || null;
+                                    }
+                                }
+                                const policy = window.__styleshift_html_policy;
+                                
+                                if (policy && !thisSettingFrame.__styleshift_policy_set) {
+                                    const originalSetInnerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML').set;
+                                    Object.defineProperty(thisSettingFrame, 'innerHTML', {
+                                        set: function(html) {
+                                            originalSetInnerHTML.call(this, policy.createHTML(html));
+                                        },
+                                        configurable: true
+                                    });
+                                    thisSettingFrame.__styleshift_policy_set = true;
+                                }
+                            }\n`;
+						preCode += `async function saveSettingValue(value){
+                                   return await StyleShift["build-in"]["_call_function"]("saveStyleshiftValue", "${settingId}", value)
+                              }\n`;
+						preCode += `async function loadSettingValue(){
+                                   return await StyleShift["build-in"]["_call_function"]("loadStyleshiftValue", "${settingId}")
+                              }\n`;
+					}
+					for (const [key, value] of Object.entries(args)) {
+						preCode += `let ${key} = "${value}";\n`;
+					}
+				}
+			}
+
+			const scriptData = recivedMsg.Script || "";
+			const excuteData = `(async () => {
+                try {
+                    ${preCode}
+                    
+${scriptData}
+                } catch (e) {
+                    console.error("StyleShift: Script execution failed", e);
+                }
+            })()`;
+
+			await chrome.scripting.executeScript({
+				target: { tabId: sender.tab.id },
+				func: execFunction,
+				args: [excuteData],
+				world: "MAIN",
+			});
+
+			logger.info("script", "Executed Script");
+			return true;
+		}
+	}
+
+	logger.info("message", "---------------------------------");
+	return false;
+}
+
+export {};

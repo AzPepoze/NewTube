@@ -1,5 +1,5 @@
 <script lang="ts">
-	import searchIcon from "@ui/assets/icons/search.svg";
+	import searchIcon from "@/assets/icons/search.svg";
 	import { getAssetUrl } from "@ui/utils";
 
 	let {

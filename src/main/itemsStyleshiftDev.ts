@@ -1,7 +1,7 @@
 import * as styleshiftFunctions from "../styleshift/shared/extension";
 import { sleep } from "../styleshift/shared/normal";
 import { Category } from "../styleshift/types/store";
-import { logger } from "../styleshift/utils/logger";
+import { logger } from "../shared/logger";
 
 const devOnlyItems: Category[] = [
 	{

@@ -1,4 +1,4 @@
-import { stringToColor } from "./logFormat";
+import { stringToColor } from "../styleshift/utils/logFormat";
 
 const logColors = {
 	main: "color: #bada55",
@@ -18,13 +18,7 @@ export interface LogConfig {
 // Default configuration
 const debugConfig: LogConfig = {
 	info: {
-		saveRootValue: true,
-		drag: true,
-		ui: true,
-		storage: true,
-		runtime: true,
-		settings: true,
-		lifecycle: true,
+		all: true,
 	},
 	debug: {
 		all: true,

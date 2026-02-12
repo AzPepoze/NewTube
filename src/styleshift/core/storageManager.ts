@@ -1,7 +1,7 @@
 import { createError } from "../shared/extension";
 import { sleep } from "../shared/normal";
 import { currentContextDomain } from "../run";
-import { logger } from "../utils/logger";
+import { logger } from "../../shared/logger";
 
 export let cachedStorageData: any = {};
 let isStorageInitialized = false;
