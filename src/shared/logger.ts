@@ -81,4 +81,15 @@ export const logger = {
 if (typeof window !== "undefined") {
 	if (!(window as any).StyleShift) (window as any).StyleShift = {};
 	(window as any).StyleShift.logger = logger;
+
+	const originalConsoleError = console.error;
+	console.error = (category: string, ...args: any[]) => {
+		if (args.length > 0) {
+			originalConsoleError(...args);
+			logger.log("error", category, ...args);
+		} else {
+			originalConsoleError(category);
+			logger.log("error", "system", category);
+		}
+	};
 }

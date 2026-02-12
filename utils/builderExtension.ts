@@ -80,6 +80,14 @@ async function processFileReplacements(filePath, isFirefox = false) {
 					manifest.background.scripts = [manifest.background.service_worker];
 					delete manifest.background.service_worker;
 				}
+
+				// Add workers to web_accessible_resources for Firefox
+				if (manifest.web_accessible_resources && manifest.web_accessible_resources[0]) {
+					if (!manifest.web_accessible_resources[0].resources.includes("workers/*")) {
+						manifest.web_accessible_resources[0].resources.push("workers/*");
+					}
+				}
+
 				content = JSON.stringify(manifest, null, "\t");
 			}
 		}
@@ -111,9 +119,9 @@ async function processFunctions(codePath) {
 		code = code
 			.replace(
 				wrapRegex,
-				(_, asyncKeyword) => `StyleShift["build-in"]["${name}"] = ${asyncKeyword || ""}function (`,
+				(_, asyncKeyword) => `StyleShift["buildIn"]["${name}"] = ${asyncKeyword || ""}function (`,
 			)
-			.replace(callRegex, `StyleShift["build-in"]["${name}"](`);
+			.replace(callRegex, `StyleShift["buildIn"]["${name}"](`);
 	});
 
 	return code;
@@ -129,7 +137,7 @@ async function generateBuildInFunctions(buildPath) {
 	const functionsListData = functionNames
 		.map(
 			(name) =>
-				`StyleShift["build-in"]["${name}"] = async function(...args){return await StyleShift["build-in"]["_call_function"]("${name}",...args)};`,
+				`StyleShift["buildIn"]["${name}"] = async function(...args){return await StyleShift["buildIn"]["_call_function"]("${name}",...args)};`,
 		)
 		.join("");
 
@@ -137,8 +145,8 @@ async function generateBuildInFunctions(buildPath) {
 	const buildInFunctions = await fs.readFile(path.join(buildPath, "build-in.js"), "utf8");
 
 	return `var StyleShift = window.StyleShift || {};
-	StyleShift["build-in"] = StyleShift["build-in"] || {};
-	StyleShift["Custom"] = StyleShift["Custom"] || {};
+	StyleShift["buildIn"] = StyleShift["buildIn"] || {};
+	StyleShift["custom"] = StyleShift["custom"] || {};
 	StyleShift["logger"] = StyleShift["logger"] || {
 			info: (category, ...args) => console.log("%c StyleShift %c [INFO] %c [" + category.toUpperCase() + "]", "color: #bada55", "color: #00ffff", "color: #6a6a6a", ...args),
 			warn: (category, ...args) => console.warn("%c StyleShift %c [WARN] %c [" + category.toUpperCase() + "]", "color: #bada55", "color: #ffae00", "color: #6a6a6a", ...args),
@@ -168,27 +176,9 @@ async function build() {
 		const tempPath = path.join(__dirname, "../temp");
 
 		// Ensure directories exist
-		fs.ensureDirSync(path.join(buildPath, "workers"));
 		fs.ensureDirSync(path.join(buildPath, "assets/icons"));
 		fs.ensureDirSync(path.join(buildPath, "modules"));
 
-		// Copy extension files (excluding modules and TypeScript source files)
-		fs.copySync(path.join(__dirname, "../src/extension"), buildPath, {
-			filter: (src) => {
-				const relativePath = path.relative(path.join(__dirname, "../src/extension"), src);
-				// Exclude modules directory and TypeScript files
-				if (relativePath.startsWith("modules")) return false;
-				if (relativePath.endsWith(".ts")) return false;
-				return true;
-			},
-		});
-
-		// Copy icons and assets to the new structure
-		if (fs.existsSync(path.join(__dirname, "../src/assets"))) {
-			fs.copySync(path.join(__dirname, "../src/assets"), path.join(buildPath, "assets"));
-		}
-
-		// Build main bundle
 		const brandingPlugin = {
 			name: "branding",
 			setup(buildInstance) {
@@ -205,85 +195,11 @@ async function build() {
 			},
 		};
 
-		await esbuild.build({
-			entryPoints: [path.join(__dirname, "../src/styleshift/run.ts")],
-			bundle: true,
-			outfile: path.join(buildPath, `${config.name.toLowerCase()}.js`),
-			platform: "browser",
-			minify: isProduction,
-			publicPath: "/",
-			external: [
-				"jszip",
-				"codemirror",
-				"@codemirror/view",
-				"@codemirror/state",
-				"@codemirror/lang-javascript",
-				"@codemirror/lang-css",
-				"@codemirror/theme-one-dark",
-			],
-			alias: {
-				"@": path.join(__dirname, "../src"),
-				"@main": path.join(__dirname, "../src"), // Replaced @main with root src for consistency
-				"@styleshift": path.join(__dirname, "../src/styleshift"),
-				"@core": path.join(__dirname, "../src/styleshift/core"),
-				"@ui": path.join(__dirname, "../src/styleshift/ui"),
-				"@settings": path.join(__dirname, "../src/styleshift/settings"),
-				"@functions": path.join(__dirname, "../src/styleshift/shared"),
-			},
-			plugins: [
-				esbuildSvelte({
-					compilerOptions: {
-						css: "injected",
-					},
-				}),
-				brandingPlugin,
-			],
-			define: {
-				imgbb_api_key: JSON.stringify(process.env.IMGBB_API_KEY || ""),
-			},
-			loader: {
-				".ttf": "file",
-				".svg": "file",
-				".png": "file",
-			},
-			assetNames: "assets/[name]",
-		});
-
-		// Build video background worker
-		await esbuild.build({
-			entryPoints: [path.join(__dirname, "../src/main/features/videoBackgroundWorker.ts")],
-			bundle: true,
-			outfile: path.join(buildPath, "workers/videoBackgroundWorker.js"),
-			platform: "browser",
-			minify: isProduction,
-			plugins: [brandingPlugin],
-		});
-
-		// Build remove black bars worker
-		await esbuild.build({
-			entryPoints: [path.join(__dirname, "../src/main/features/removeBlackBarsWorker.ts")],
-			bundle: true,
-			outfile: path.join(buildPath, "workers/removeBlackBarsWorker.js"),
-			platform: "browser",
-			minify: isProduction,
-			plugins: [brandingPlugin],
-		});
-
 		// Build background script (TypeScript)
 		await esbuild.build({
 			entryPoints: [path.join(__dirname, "../src/extension/background.ts")],
 			bundle: true,
 			outfile: path.join(buildPath, "background.js"),
-			platform: "browser",
-			minify: isProduction,
-			plugins: [brandingPlugin],
-		});
-
-		// Build offscreen document script (TypeScript)
-		await esbuild.build({
-			entryPoints: [path.join(__dirname, "../src/extension/offscreen.ts")],
-			bundle: true,
-			outfile: path.join(buildPath, "offscreen.js"),
 			platform: "browser",
 			minify: isProduction,
 			plugins: [brandingPlugin],
@@ -317,12 +233,94 @@ async function build() {
 		const buildInFunctionsData = await generateBuildInFunctions(buildPath);
 		await fs.writeFile(path.join(buildPath, "build-in.js"), buildInFunctionsData, "utf8");
 
+		await esbuild.build({
+			entryPoints: [path.join(__dirname, "../src/styleshift/run.ts")],
+			bundle: true,
+			outfile: path.join(buildPath, `${config.name.toLowerCase()}.js`),
+			platform: "browser",
+			minify: isProduction,
+			publicPath: "/",
+			external: [
+				"jszip",
+				"codemirror",
+				"@codemirror/view",
+				"@codemirror/state",
+				"@codemirror/lang-javascript",
+				"@codemirror/lang-css",
+				"@codemirror/theme-one-dark",
+			],
+			alias: {
+				"@": path.join(__dirname, "../src"),
+				"@main": path.join(__dirname, "../src"),
+				"@styleshift": path.join(__dirname, "../src/styleshift"),
+				"@core": path.join(__dirname, "../src/styleshift/core"),
+				"@ui": path.join(__dirname, "../src/styleshift/ui"),
+				"@settings": path.join(__dirname, "../src/styleshift/settings"),
+				"@functions": path.join(__dirname, "../src/styleshift/shared"),
+			},
+			plugins: [
+				esbuildSvelte({
+					compilerOptions: {
+						css: "injected",
+					},
+				}),
+				brandingPlugin,
+			],
+			define: {
+				imgbb_api_key: JSON.stringify(process.env.IMGBB_API_KEY || ""),
+			},
+			loader: {
+				".ttf": "file",
+				".svg": "file",
+				".png": "file",
+			},
+			assetNames: "assets/[name]",
+		});
+
+		// Copy extension files (excluding modules and TypeScript source files)
+		fs.copySync(path.join(__dirname, "../src/extension"), buildPath, {
+			filter: (src) => {
+				const relativePath = path.relative(path.join(__dirname, "../src/extension"), src);
+				// Exclude modules directory and TypeScript files
+				if (relativePath.startsWith("modules")) return false;
+				if (relativePath.endsWith(".ts")) return false;
+				return true;
+			},
+		});
+
+		// Copy icons and assets to the new structure
+		if (fs.existsSync(path.join(__dirname, "../src/assets"))) {
+			fs.copySync(path.join(__dirname, "../src/assets"), path.join(buildPath, "assets"));
+		}
+
 		// Create distribution builds
 		const chromiumPath = path.join(__dirname, "../out/dist/chromium");
 		const firefoxPath = path.join(__dirname, "../out/dist/firefox");
 
 		fs.copySync(buildPath, chromiumPath);
 		fs.copySync(buildPath, firefoxPath);
+
+		// Build workers for Firefox only
+		const firefoxWorkersPath = path.join(firefoxPath, "workers");
+		fs.ensureDirSync(firefoxWorkersPath);
+
+		await esbuild.build({
+			entryPoints: [path.join(__dirname, "../src/main/features/videoBackgroundWorker.ts")],
+			bundle: true,
+			outfile: path.join(firefoxWorkersPath, "videoBackgroundWorker.js"),
+			platform: "browser",
+			minify: isProduction,
+			plugins: [brandingPlugin],
+		});
+
+		await esbuild.build({
+			entryPoints: [path.join(__dirname, "../src/main/features/removeBlackBarsWorker.ts")],
+			bundle: true,
+			outfile: path.join(firefoxWorkersPath, "removeBlackBarsWorker.js"),
+			platform: "browser",
+			minify: isProduction,
+			plugins: [brandingPlugin],
+		});
 
 		// Post-process distribution files
 		async function processDir(dir, isFirefox) {

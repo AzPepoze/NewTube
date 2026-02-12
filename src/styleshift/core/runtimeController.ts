@@ -83,7 +83,7 @@ export async function synchronizeAvailableFunctions(): Promise<void> {
 /**
  * Retrieves a specific function from the StyleShift global object in the page context.
  */
-export async function fetchGlobalFunction(scope: "build-in" | "custom", functionName: string): Promise<any> {
+export async function fetchGlobalFunction(scope: "buildIn" | "custom", functionName: string): Promise<any> {
 	if (!window["StyleShift"] || !window["StyleShift"][scope] || !window["StyleShift"][scope][functionName]) {
 		await sleep(10);
 		return await fetchGlobalFunction(scope, functionName);
@@ -260,12 +260,6 @@ export async function doesWorkerExist(workerId: string): Promise<boolean> {
 	}
 }
 
-/**
- * Loads a Web Worker natively if supported by the browser and CSP.
- * Returns null if native worker creation fails.
- * @param {string} fileName - The name of the worker script (e.g., 'myWorker.js').
- * @returns {Promise<Worker | null>} A Worker object or null if failed.
- */
 export async function loadWorker(fileName: string): Promise<Worker | null> {
 	const scriptUrl = chrome.runtime.getURL(`workers/${fileName}`);
 
@@ -276,7 +270,7 @@ export async function loadWorker(fileName: string): Promise<Worker | null> {
 		logger.info("runtime", `Native Worker created successfully for ${fileName}`);
 		return worker;
 	} catch (error) {
-		logger.warn("runtime", `Native Worker failed for ${fileName}:`, error);
+		logger.warn("runtime", `Native Worker failed for ${fileName}:`, error, "");
 		return null;
 	}
 }

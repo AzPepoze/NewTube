@@ -2,6 +2,7 @@ import { waitOneFrame } from "../../styleshift/shared/normal";
 import { loadWorker } from "../../styleshift/core/runtimeController";
 import { getFromStorage, getUserSetting } from "../../styleshift/core/storageManager";
 import { registerSettingListener } from "../../styleshift/settings/functions";
+import { calculateVdoHeight, detectBlackBars } from "./removeBlackBarsLogic";
 
 let video: HTMLVideoElement | null = null;
 let canvas: HTMLCanvasElement | null = null;
@@ -12,13 +13,68 @@ let lastHeight = 0;
 let enabled = false;
 let isChecking = false;
 let worker: Worker | null = null;
+let workerLoadAttempted = false;
 
 const ultraWideRatio = (21 / 9).toFixed(2);
 let isUltraWideMode = false;
 
 async function initWorker() {
-	if (worker) return;
+	if (worker || workerLoadAttempted) return;
+	workerLoadAttempted = true;
 	worker = await loadWorker("removeBlackBarsWorker.js");
+}
+
+async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number) {
+	const debug = await getUserSetting("DelBarDebug");
+	const dropFrame = await getUserSetting("DropFrame");
+	const lazyAmount = await getUserSetting("LazyAmount");
+
+	if (Math.abs(finalDetectedHeight - lastHeight) > 10 || (finalDetectedHeight > 10 && lastHeight === 0)) {
+		const player = document.querySelector(".html5-video-container") as HTMLElement;
+		if (player) {
+			if (finalDetectedHeight > lastHeight) {
+				player.style.transition = "none";
+			} else {
+				player.style.transition = "all 0.5s ease-out";
+			}
+		}
+		lastHeight = finalDetectedHeight;
+		applyCrop(finalDetectedHeight, vHeight);
+	}
+
+	if (debug && ctx) {
+		ctx.fillStyle = "yellow";
+		ctx.fillRect(0, 10, 5, 1);
+		ctx.fillStyle = "green";
+		ctx.fillRect(0, lastHeight, 5, 1);
+		ctx.fillRect(0, vHeight - lastHeight, 5, 1);
+	}
+
+	const ultraWideEnabled = await getUserSetting("UltraWide");
+	if (ultraWideEnabled) {
+		checkUltraWide();
+	} else {
+		disableUltraWide();
+	}
+
+	isChecking = false;
+	const cooldown = dropFrame ? lazyAmount : 0;
+
+	const nextCall = () => {
+		if (video && enabled) {
+			if ("requestVideoFrameCallback" in video) {
+				vfcId = video.requestVideoFrameCallback(checkBlackBars);
+			} else {
+				animationId = requestAnimationFrame(checkBlackBars);
+			}
+		}
+	};
+
+	if (cooldown > 0) {
+		setTimeout(nextCall, cooldown);
+	} else {
+		nextCall();
+	}
 }
 
 async function checkBlackBars() {
@@ -83,9 +139,9 @@ async function checkBlackBars() {
 		canvas.height = vHeight;
 	}
 
-	ctx.drawImage(video, 0, 0, 5, vHeight);
+	if (ctx) ctx.drawImage(video, 0, 0, 5, vHeight);
 
-	const sampleColor = ctx.getImageData(1, 3, 1, 1).data;
+	const sampleColor = ctx!.getImageData(1, 3, 1, 1).data;
 	const [sR, sG, sB] = [sampleColor[0], sampleColor[1], sampleColor[2]];
 	const threshold = 20;
 
@@ -93,83 +149,51 @@ async function checkBlackBars() {
 	const lazyAmount = await getUserSetting("LazyAmount");
 	const checkStep = dropFrame ? Math.max(1, Math.floor(lazyAmount / 10)) : 1;
 
-	const imgData = ctx.getImageData(0, 0, 5, vHeight).data;
+	const imgData = ctx!.getImageData(0, 0, 5, vHeight).data;
 
-	worker.onmessage = async (e) => {
-		const { type, data } = e.data;
-		if (type === "detected") {
-			const { heightsFound } = data;
-			worker.postMessage({
-				type: "calculate",
-				data: { heights: heightsFound, currentLastHeight: lastHeight },
-			});
-		} else if (type === "calculated") {
-			const finalDetectedHeight = data.result;
-
-			if (Math.abs(finalDetectedHeight - lastHeight) > 10 || (finalDetectedHeight > 10 && lastHeight === 0)) {
-				const player = document.querySelector(".html5-video-container") as HTMLElement;
-				if (player) {
-					if (finalDetectedHeight > lastHeight) {
-						player.style.transition = "none";
-					} else {
-						player.style.transition = "all 0.5s ease-out";
-					}
-				}
-				lastHeight = finalDetectedHeight;
-				applyCrop(finalDetectedHeight, vHeight);
+	if (worker) {
+		worker.onmessage = async (e) => {
+			const { type, data } = e.data;
+			if (type === "detected") {
+				const { heightsFound } = data;
+				worker!.postMessage({
+					type: "calculate",
+					data: { heights: heightsFound, currentLastHeight: lastHeight },
+				});
+			} else if (type === "calculated") {
+				handleDetectedHeight(data.result, vHeight);
 			}
+		};
 
-			if (debug) {
-				ctx.fillStyle = "yellow";
-				ctx.fillRect(0, 10, 5, 1);
-				ctx.fillStyle = "green";
-				ctx.fillRect(0, lastHeight, 5, 1);
-				ctx.fillRect(0, vHeight - lastHeight, 5, 1);
-			}
-
-			const ultraWideEnabled = await getUserSetting("UltraWide");
-			if (ultraWideEnabled) {
-				checkUltraWide();
-			} else {
-				disableUltraWide();
-			}
-
-			isChecking = false;
-			const cooldown = dropFrame ? lazyAmount : 0;
-
-			const nextCall = () => {
-				if (video && enabled) {
-					if ("requestVideoFrameCallback" in video) {
-						vfcId = video.requestVideoFrameCallback(checkBlackBars);
-					} else {
-						animationId = requestAnimationFrame(checkBlackBars);
-					}
-				}
-			};
-
-			if (cooldown > 0) {
-				setTimeout(nextCall, cooldown);
-			} else {
-				nextCall();
-			}
-		}
-	};
-
-	worker.postMessage(
-		{
-			type: "detect",
-			data: {
-				imgData,
-				vHeight,
-				checkStep,
-				threshold,
-				sR,
-				sG,
-				sB,
+		worker.postMessage(
+			{
+				type: "detect",
+				data: {
+					imgData,
+					vHeight,
+					checkStep,
+					threshold,
+					sR,
+					sG,
+					sB,
+				},
 			},
-		},
-		[imgData.buffer],
-	);
+			[imgData.buffer],
+		);
+	} else {
+		// Fallback to main thread
+		const heightsFound = detectBlackBars({
+			imgData,
+			vHeight,
+			checkStep,
+			threshold,
+			sR,
+			sG,
+			sB,
+		});
+		const result = calculateVdoHeight(heightsFound, lastHeight);
+		handleDetectedHeight(result, vHeight);
+	}
 }
 
 function checkUltraWide() {

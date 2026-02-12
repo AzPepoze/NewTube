@@ -18,7 +18,7 @@
 	},
 	"web_accessible_resources": [
 		{
-			"resources": ["assets/*", "workers/*", "modules/*", "build-in.js", "styleshift.js", "style.css"],
+			"resources": ["assets/*", "modules/*", "build-in.js", "styleshift.js", "style.css"],
 			"matches": ["<all_urls>"]
 		}
 	],
@@ -61,7 +61,7 @@
 			"description": "Toggle Developer Mode"
 		}
 	},
-	"permissions": ["storage", "unlimitedStorage", "scripting", "offscreen"],
+	"permissions": ["storage", "unlimitedStorage", "scripting"],
 	"host_permissions": ["*://*/*"],
 	"browser_specific_settings": {
 		"gecko": {

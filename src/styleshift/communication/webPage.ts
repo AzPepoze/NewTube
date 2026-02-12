@@ -7,11 +7,11 @@ const buildInFunctions = {
 	*/
 
 	setValue: function (id: string, value: any) {
-		window["StyleShift"]["build-in"]["_variables"][id] = value;
+		window["StyleShift"]["buildIn"]["_variables"][id] = value;
 	},
 
 	getValue: function (id: string) {
-		return window["StyleShift"]["build-in"]["_variables"][id];
+		return window["StyleShift"]["buildIn"]["_variables"][id];
 	},
 
 	/*
@@ -21,24 +21,24 @@ const buildInFunctions = {
 	*/
 
 	loadStyleshiftValue: async function (id) {
-		return JSON.parse(await StyleShift["build-in"]["_call_function"]("_load_styleshift_value", id));
+		return JSON.parse(await StyleShift["buildIn"]["_call_function"]("_load_styleshift_value", id));
 	},
 
 	saveStyleshiftValue: async function (id, value) {
 		return JSON.parse(
-			await StyleShift["build-in"]["_call_function"]("_save_styleshift_value", id, JSON.stringify(value)),
+			await StyleShift["buildIn"]["_call_function"]("_save_styleshift_value", id, JSON.stringify(value)),
 		);
 	},
 
 	createStyleshiftSettingUi: async function (type, thisSetting, ...args) {
-		const uiId = await StyleShift["build-in"]["_call_function"](
+		const uiId = await StyleShift["buildIn"]["_call_function"](
 			"createStyleshiftSettingUi",
 			type,
 			thisSetting,
 			...args,
 		);
 
-		const ui = await StyleShift["build-in"]["waitForElement"](`.StyleShift-Station [styleshift-ui-id="${uiId}"]`);
+		const ui = await StyleShift["buildIn"]["waitForElement"](`.StyleShift-Station [styleshift-ui-id="${uiId}"]`);
 
 		logger.info("ui", ui);
 
@@ -66,10 +66,10 @@ const buildInFunctions = {
 			return await (window as any).StyleShift.functions[functionName](...args);
 		}
 
-		return await StyleShift["build-in"]["fireFunctionEventWithReturn"]("StyleShift", functionName, ...args);
+		return await StyleShift["buildIn"]["fireFunctionEventWithReturn"]("StyleShift", functionName, ...args);
 	},
 };
 
 for (const [functionName, thisFunction] of Object.entries(buildInFunctions)) {
-	StyleShift["build-in"][functionName] = thisFunction;
+	StyleShift["buildIn"][functionName] = thisFunction;
 }

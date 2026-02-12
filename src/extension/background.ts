@@ -4,13 +4,6 @@
  */
 
 import { logger } from "@/shared/logger";
-import {
-	createWorker,
-	postMessageToWorker,
-	terminateWorker,
-	cleanupWorkersForTab,
-	OffscreenMessage,
-} from "./workerManager";
 
 interface ContentScriptMessage {
 	Command: string;
@@ -22,47 +15,6 @@ interface ContentScriptMessage {
 	error?: string;
 	args?: string;
 }
-
-// Listen for messages from offscreen document
-chrome.runtime.onMessage.addListener((message: OffscreenMessage, _sender: chrome.runtime.MessageSender) => {
-	if (message.target !== "background") return;
-
-	switch (message.command) {
-		case "workerMessage": {
-			const { workerId, data } = message;
-			if (!workerId) return;
-			const tabId = parseInt(workerId.split(":")[0]);
-			const actualWorkerId = workerId.split(":")[1];
-			chrome.tabs
-				.sendMessage(tabId, {
-					Command: "workerMessage",
-					workerId: actualWorkerId,
-					data: data,
-				} as ContentScriptMessage)
-				.catch(() => {});
-			break;
-		}
-		case "workerError": {
-			const { workerId, error } = message;
-			if (!workerId) return;
-			const tabId = parseInt(workerId.split(":")[0]);
-			const actualWorkerId = workerId.split(":")[1];
-			chrome.tabs
-				.sendMessage(tabId, {
-					Command: "workerError",
-					workerId: actualWorkerId,
-					error: error,
-				} as ContentScriptMessage)
-				.catch(() => {});
-			break;
-		}
-	}
-});
-
-// Clean up workers when tabs are closed
-chrome.tabs.onRemoved.addListener((tabId: number) => {
-	cleanupWorkersForTab(tabId);
-});
 
 // Handle extension commands
 chrome.commands.onCommand.addListener(async (command: string) => {
@@ -124,7 +76,7 @@ async function execFunction(execText: string): Promise<void> {
 		console.error("StyleShift: Execution failed", error);
 		const errorMsg = error instanceof Error ? error.message : String(error);
 		if (typeof (window as any).StyleShift !== "undefined") {
-			(window as any).StyleShift["build-in"]?.["_call_function"]?.(
+			(window as any).StyleShift["buildIn"]?.["_call_function"]?.(
 				"createError",
 				"Injection failed: " + errorMsg,
 			);
@@ -162,25 +114,6 @@ chrome.runtime.onMessage.addListener(
 
 async function handleMessage(recivedMsg: ContentScriptMessage, sender: chrome.runtime.MessageSender): Promise<boolean> {
 	switch (recivedMsg.Command) {
-		case "createWorker": {
-			if (!sender.tab?.id) return false;
-			const { workerId, scriptUrl } = recivedMsg;
-			return await createWorker(sender.tab.id, workerId!, scriptUrl!);
-		}
-
-		case "workerPostMessage": {
-			if (!sender.tab?.id) return false;
-			const { workerId, message } = recivedMsg;
-			logger.debug("worker", `Routing workerPostMessage for ${workerId} in tab ${sender.tab.id}`, message);
-			return postMessageToWorker(sender.tab.id, workerId!, message);
-		}
-
-		case "terminateWorker": {
-			if (!sender.tab?.id) return false;
-			const { workerId } = recivedMsg;
-			return terminateWorker(sender.tab.id, workerId!);
-		}
-
 		case "runScript": {
 			if (!sender.tab?.id) return false;
 
@@ -216,10 +149,10 @@ async function handleMessage(recivedMsg: ContentScriptMessage, sender: chrome.ru
                                 }
                             }\n`;
 						preCode += `async function saveSettingValue(value){
-                                   return await StyleShift["build-in"]["_call_function"]("saveStyleshiftValue", "${settingId}", value)
+                                   return await StyleShift["buildIn"]["_call_function"]("saveStyleshiftValue", "${settingId}", value)
                               }\n`;
 						preCode += `async function loadSettingValue(){
-                                   return await StyleShift["build-in"]["_call_function"]("loadStyleshiftValue", "${settingId}")
+                                   return await StyleShift["buildIn"]["_call_function"]("loadStyleshiftValue", "${settingId}")
                               }\n`;
 					}
 					for (const [key, value] of Object.entries(args)) {
