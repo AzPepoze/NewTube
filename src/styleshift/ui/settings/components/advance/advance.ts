@@ -14,14 +14,14 @@ import CodeEditorComponent from "./CodeEditor.svelte";
 import IconButtonComponent from "./IconButton.svelte";
 import DropdownComponent from "@ui/settings/components/main/Dropdown.svelte";
 import SettingNameComponent from "./SettingName.svelte";
-import dragIcon from "@/assets/icons/drag.svg";
-import closeIcon from "@/assets/icons/close.svg";
 import BasicSliderComponent from "./BasicSlider.svelte";
 import BasicNumberInputComponent from "./BasicNumberInput.svelte";
 import FileInputComponent from "./FileInput.svelte";
 import CollapseSectionComponent from "./CollapseSection.svelte";
 import ResizeHandleComponent from "./ResizeHandle.svelte";
 import { unmount, mount } from "svelte";
+const dragIcon = "assets/icons/drag.svg";
+const closeIcon = "assets/icons/close.svg";
 
 export function resizeHandle(target: HTMLElement, position: "top" | "right" | "bottom" | "left" = "right") {
 	return settingsUi.renderComponent(ResizeHandleComponent, {
@@ -256,7 +256,7 @@ export async function collapsedButton(buttonName: string, color: string, targetE
 		parent.insertBefore(target, targetElement);
 	}
 
-	const _component = settingsUi.renderComponent(
+	settingsUi.renderComponent(
 		CollapseSectionComponent,
 		{
 			buttonName: buttonName,

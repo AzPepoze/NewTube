@@ -1,17 +1,17 @@
 <script lang="ts">
-	import search from "@/assets/icons/search.svg";
-	import edit from "@/assets/icons/edit.svg";
-	import del from "@/assets/icons/delete.svg";
-	import drag from "@/assets/icons/drag.svg";
-	import add from "@/assets/icons/add.svg";
-	import close from "@/assets/icons/close.svg";
-	import settings from "@/assets/icons/settings.svg";
-	import code from "@/assets/icons/code.svg";
-	import arrowUp from "@/assets/icons/arrowUp.svg";
-	import arrowDown from "@/assets/icons/arrowDown.svg";
-	import minimize from "@/assets/icons/minimize.svg";
-	import maximize from "@/assets/icons/maximize.svg";
-	import restore from "@/assets/icons/restore.svg";
+	const search = "assets/icons/search.svg";
+	const edit = "assets/icons/edit.svg";
+	const del = "assets/icons/delete.svg";
+	const drag = "assets/icons/drag.svg";
+	const add = "assets/icons/add.svg";
+	const close = "assets/icons/close.svg";
+	const settings = "assets/icons/settings.svg";
+	const code = "assets/icons/code.svg";
+	const arrowUp = "assets/icons/arrowUp.svg";
+	const arrowDown = "assets/icons/arrowDown.svg";
+	const minimize = "assets/icons/minimize.svg";
+	const maximize = "assets/icons/maximize.svg";
+	const restore = "assets/icons/restore.svg";
 
 	import { getAssetUrl } from "@ui/utils";
 
@@ -49,7 +49,7 @@
 
 	const isUrl = $derived(name.includes("://") || name.startsWith("data:"));
 	const iconPath = $derived(icons[name]);
-	const src = $derived(iconPath ? getAssetUrl(iconPath) : (isUrl ? getAssetUrl(name) : ""));
+	const src = $derived(iconPath ? getAssetUrl(iconPath) : isUrl ? getAssetUrl(name) : "");
 	const isEmoji = $derived(!iconPath && !isUrl && name.length > 0);
 </script>
 

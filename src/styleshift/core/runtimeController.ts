@@ -7,18 +7,18 @@ import { isSafeCode } from "../utils/security";
 import { logger } from "../../shared/logger";
 
 /**
- * Persists all cached data and triggers a global UI/state refresh.
+ * Saves all cached data and triggers a global UI/state refresh.
  */
-export async function persistAndRefreshAll(): Promise<void> {
-	logger.info("STORAGE", "Persisting structure and refreshing all...");
-	await persistItems();
+export async function saveAndRefreshAll(): Promise<void> {
+	logger.info("STORAGE", "Saving structure and refreshing all...");
+	await saveItems();
 	refreshExtensionState();
 }
 
 /**
- * Persists custom items and cached data to storage without a full UI refresh.
+ * Saves custom items and cached data to storage without a full UI refresh.
  */
-export async function persistItems(): Promise<void> {
+export async function saveItems(): Promise<void> {
 	const customItems = getCustomItems();
 	if (customItems && customItems.length > 0) {
 		await saveToStorage("customStyleshiftItems", customItems, true);
@@ -232,31 +232,6 @@ export async function initializeDeveloperEnvironment(): Promise<void> {
 
 		setTimeout(() => loaderUi.close(), 5000);
 		hasAttemptedDevModuleLoad = false;
-	}
-}
-
-/**
- * Creates a worker proxy that communicates via the background script.
- * The actual Worker runs in the background script context (ISOLATED world)
- * where extension URLs work, avoiding CSP and cross-origin restrictions.
- * @param {string} fileName - The name of the worker script (e.g., 'myWorker.js').
- * @returns {Promise<Worker>} A Worker-like object that proxies to the background worker.
- */
-export async function doesWorkerExist(workerId: string): Promise<boolean> {
-	if (!workerId) return false;
-
-	try {
-		// Check if worker exists by sending a test message
-		const result = await chrome.runtime.sendMessage({
-			Command: "workerPostMessage",
-			workerId,
-			message: { type: "ping" },
-		});
-
-		return result;
-	} catch (error) {
-		logger.warn("runtime", `Worker existence check failed for ${workerId}:`, error);
-		return false;
 	}
 }
 

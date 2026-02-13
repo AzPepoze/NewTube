@@ -39,7 +39,7 @@
 							class="Welcome-Logo-Container"
 							in:fly|global={{ y: -20, duration: 1000, delay: 300, easing: backOut }}
 						>
-							<img src={getAssetUrl("assets/icons/128.png")} alt="NewTube" class="Main-Icon" />
+							<img src={getAssetUrl("icon/128.png")} alt="NewTube" class="Main-Icon" />
 						</div>
 
 						<div class="Main-Title">

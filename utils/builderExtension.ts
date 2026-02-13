@@ -271,7 +271,6 @@ async function build() {
 			},
 			loader: {
 				".ttf": "file",
-				".svg": "file",
 				".png": "file",
 			},
 			assetNames: "assets/[name]",

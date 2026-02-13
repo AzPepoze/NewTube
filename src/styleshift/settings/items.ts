@@ -2,7 +2,7 @@ import { getDefaultItems } from "../../main/itemsDefault";
 import { getStyleshiftDefaultItems } from "../../main/itemsStyleshiftDefault";
 import { getStyleshiftCustomItems } from "../../main/itemsStyleshiftCustom";
 import { randomNumberInRange } from "../shared/normal";
-import { persistAndRefreshAll } from "../core/runtimeController";
+import { saveAndRefreshAll } from "../core/runtimeController";
 import { getRootValue, saveToStorage } from "../core/storageManager";
 import { refreshExtensionState } from "../run";
 import { attachBehaviorToSetting } from "./functions";
@@ -169,7 +169,7 @@ export async function addSetting(categorySettings: Setting[], thisSetting) {
 
 	attachBehaviorToSetting(thisSetting);
 
-	persistAndRefreshAll();
+	saveAndRefreshAll();
 }
 
 export async function removeSetting(thisSetting) {
@@ -181,7 +181,7 @@ export async function removeSetting(thisSetting) {
 		}
 	}
 
-	persistAndRefreshAll();
+	saveAndRefreshAll();
 }
 
 //--------------------------------------------------

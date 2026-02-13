@@ -1,4 +1,4 @@
-import { persistItems, synchronizeAvailableFunctions } from "@/styleshift/core/runtimeController";
+import { saveItems, synchronizeAvailableFunctions } from "@/styleshift/core/runtimeController";
 import { refreshExtensionState } from "@/styleshift/run";
 import { logger } from "@/shared/logger";
 import { triggerSettingUpdate } from "@/styleshift/settings/functions";
@@ -7,12 +7,12 @@ import { getSettingsList } from "@/styleshift/settings/items";
 
 /**
  * Shared handler for logic-related updates (JS/CSS code).
- * Persists changes and synchronizes functions without a full UI refresh to maintain focus.
+ * Saves changes and synchronizes functions without a full UI refresh to maintain focus.
  */
 export async function handleLogicUpdate(callback?: Function) {
 	logger.debug("config", "Handling logic update...");
 
-	await persistItems();
+	await saveItems();
 	await synchronizeAvailableFunctions();
 
 	// Avoid full UI recreation if the callback is the global refresh function
@@ -74,5 +74,5 @@ export async function applyPropertyUpdate(
 		updateUI();
 	}
 
-	await persistItems();
+	await saveItems();
 }

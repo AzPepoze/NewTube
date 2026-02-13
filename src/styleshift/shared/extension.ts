@@ -1,5 +1,5 @@
 import { convertToExportSetting } from "../core/exportConverter";
-import { persistAndRefreshAll, jszipInstance as jszip } from "../core/runtimeController";
+import { saveAndRefreshAll, jszipInstance as jszip } from "../core/runtimeController";
 import {
 	EXTERNAL_STORAGE_KEYS as styleshiftAllowedKeys,
 	cachedStorageData as savedData,
@@ -368,7 +368,7 @@ export async function importStyleshiftData(styleshiftData: object) {
 		}
 
 		await setNullSave();
-		persistAndRefreshAll();
+		saveAndRefreshAll();
 
 		notification.setIcon("✅");
 		notification.setTitle("StyleShift - Imported data");

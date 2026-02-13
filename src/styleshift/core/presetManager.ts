@@ -3,6 +3,7 @@ import { showUserConfirmation } from "../ui/extension";
 import { persistCachedDataToStorage, saveUserSetting, getRootValue } from "./storageManager";
 import { updateStyleshiftItems } from "../settings/items";
 import { performStorageGarbageCollection } from "./storageMaintenance";
+import { triggerSettingUpdate } from "../settings/functions";
 
 /**
  * Resolves a stored color ID into a CSS-ready RGBA string.
@@ -28,6 +29,7 @@ export async function resolveRgbaFromStorage(colorBaseId: string): Promise<strin
  */
 export async function importPresetToSettings(presetData: any): Promise<void> {
 	let changesDetected = false;
+	const changedKeys: string[] = [];
 
 	const processEntry = async (key: string, value: any) => {
 		let processedValue = value;
@@ -49,6 +51,7 @@ Do you want to execute the JS code?`,
 		} else {
 			await saveUserSetting(key, processedValue, true);
 		}
+		changedKeys.push(key);
 		changesDetected = true;
 	};
 
@@ -64,6 +67,10 @@ Do you want to execute the JS code?`,
 
 	if (changesDetected) {
 		await persistCachedDataToStorage();
+		// Trigger CSS updates for all changed settings
+		for (const key of changedKeys) {
+			await triggerSettingUpdate(key);
+		}
 	}
 }
 

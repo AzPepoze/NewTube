@@ -16,10 +16,7 @@ const settingInitializers: Record<string, Function[]> = {};
  */
 const SETTING_TYPE_BEHAVIORS = {
 	["checkbox"]: async function (setting: any) {
-		let stylesheet: HTMLElement;
-		if (setting.constantCss || setting.enableCss || setting.disableCss) {
-			stylesheet = createStylesheet(setting.id);
-		}
+		let stylesheet: HTMLElement = createStylesheet(setting.id);
 
 		if (setting.setupFunction) {
 			executeSettingScript(setting, "setupFunction");
@@ -29,15 +26,15 @@ const SETTING_TYPE_BEHAVIORS = {
 			const currentValue = await getFromStorage(setting.id);
 			logger.debug("settings", `Applying checkbox update for ${setting.id}:`, currentValue);
 
-			if (stylesheet) {
-				stylesheet.textContent = setting.constantCss || ``;
-			}
+			stylesheet.textContent = setting.constantCss || ``;
 
 			if (currentValue) {
-				if (stylesheet) stylesheet.textContent += setting.enableCss || ``;
+				stylesheet.textContent += setting.enableCss || ``;
 			} else {
-				if (stylesheet) stylesheet.textContent += setting.disableCss || ``;
+				stylesheet.textContent += setting.disableCss || ``;
 			}
+
+			logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
 
 			if (activeSettingsState[setting.id] === currentValue) return;
 			activeSettingsState[setting.id] = currentValue;
@@ -77,6 +74,7 @@ const SETTING_TYPE_BEHAVIORS = {
 				if (setting.constantCss) {
 					stylesheet.textContent += setting.constantCss;
 				}
+				logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
 			}
 
 			activeSettingsState[setting.id] = value;
@@ -100,11 +98,19 @@ const SETTING_TYPE_BEHAVIORS = {
 			const value = await getFromStorage(setting.id);
 			if (activeSettingsState[setting.id] === value) return;
 
-			executeSettingScript(setting, "disableFunction");
+			// Disable the previous option
+			const previousValue = activeSettingsState[setting.id];
+			if (previousValue && setting.options[previousValue]?.disableFunction) {
+				executeSettingScript(setting.options[previousValue], "disableFunction");
+			}
 
 			activeSettingsState[setting.id] = value;
 			const selectedOption = setting.options[value];
-			executeSettingScript(setting, "enableFunction");
+
+			// Enable the new option
+			if (selectedOption?.enableFunction) {
+				executeSettingScript(selectedOption, "enableFunction");
+			}
 
 			stylesheet.textContent = "";
 			if (setting.constantCss) {
@@ -113,6 +119,7 @@ const SETTING_TYPE_BEHAVIORS = {
 			if (selectedOption?.enableCss) {
 				stylesheet.textContent += selectedOption.enableCss;
 			}
+			logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
 		}
 
 		applyDropdownUpdate();
@@ -130,12 +137,11 @@ const SETTING_TYPE_BEHAVIORS = {
 			const value = await getFromStorage(setting.id);
 			activeSettingsState[setting.id] = value;
 
-			if (stylesheet) {
-				stylesheet.textContent = "";
-				const varName = setting.varCss || `--${setting.id}`;
-				stylesheet.textContent += `:root{${varName}: ${value}}`;
-				stylesheet.textContent += setting.constantCss || ``;
-			}
+			stylesheet.textContent = "";
+			const varName = setting.varCss || `--${setting.id}`;
+			stylesheet.textContent += `:root{${varName}: ${value}}`;
+			stylesheet.textContent += setting.constantCss || ``;
+			logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
 
 			if (setting.updateFunction) {
 				executeSettingScript(setting, "updateFunction");
@@ -166,6 +172,7 @@ const SETTING_TYPE_BEHAVIORS = {
 				} else {
 					stylesheet.textContent = setting.constantCss || ``;
 				}
+				logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
 			}
 		}
 
@@ -179,6 +186,7 @@ const SETTING_TYPE_BEHAVIORS = {
 		async function applyCombinedUpdate() {
 			if (stylesheet && setting.updateFunction) {
 				stylesheet.textContent = setting.updateFunction;
+				logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
 			}
 		}
 

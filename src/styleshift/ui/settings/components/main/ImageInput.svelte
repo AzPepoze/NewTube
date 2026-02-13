@@ -3,14 +3,13 @@
 	import PreviewImage from "./PreviewImage.svelte";
 	import Button from "./Button.svelte";
 	import { getAssetUrl } from "@ui/utils";
-
 	import Description from "./Description.svelte";
-
 	import { getFromStorage } from "@/styleshift/core/storageManager";
 	import { setAndSave } from "@ui/settings/settingComponents";
 	import { triggerSettingUpdate } from "@settings/functions";
 	import { logger } from "@/shared/logger";
 	import { showUserConfirmation } from "@ui/extension";
+	const uploadIcon = "assets/icons/upload.svg";
 
 	let {
 		setting,
@@ -67,7 +66,8 @@
 		const fileSizeMB = (fileSize / 1024 / 1024).toFixed(1);
 		const maxSizeMB = (maxSize / 1024 / 1024).toFixed(1);
 
-		return `Your file size : ${fileSize.toLocaleString()} bytes. (${fileSizeMB} MB)\n` +
+		return (
+			`Your file size : ${fileSize.toLocaleString()} bytes. (${fileSizeMB} MB)\n` +
 			`Recommend file size : lower than ${maxSize.toLocaleString()} bytes. (${maxSizeMB} MB)\n\n` +
 			`Your file is quite large. (It may cause lag!)\n\n` +
 			`I recommend do one of these.\n` +
@@ -75,7 +75,8 @@
 			`- (image) resize it\n` +
 			`- (image) Use image URL instead \n` +
 			`- Use Upload api (Make this is the last choice)\n\n` +
-			`Are you want to continue?`;
+			`Are you want to continue?`
+		);
 	};
 
 	async function processFile(file: File) {
@@ -95,7 +96,7 @@
 				confirmLabel: "Continue anyway",
 				cancelLabel: "Cancel",
 				confirmColor: "#7f5db7",
-				align: "left" as const
+				align: "left" as const,
 			};
 
 			const confirmed = await showUserConfirmation(warningMessage, warningTitle, confirmOptions);
@@ -163,15 +164,11 @@
 	}
 
 	async function removeImage() {
-		const confirmed = await showUserConfirmation(
-			"Are you sure you want to remove this image?",
-			"Remove Image",
-			{
-				confirmLabel: "Remove",
-				cancelLabel: "Cancel",
-				confirmColor: "#f44336"
-			}
-		);
+		const confirmed = await showUserConfirmation("Are you sure you want to remove this image?", "Remove Image", {
+			confirmLabel: "Remove",
+			cancelLabel: "Cancel",
+			confirmColor: "#f44336",
+		});
 
 		if (confirmed) {
 			await handleUpdate("");
@@ -207,7 +204,7 @@
 			onkeydown={(e) => e.key === "Enter" && fileInput?.click()}
 			title="Click or Drag & Drop image to upload"
 		>
-			<img class="STYLESHIFT-Upload-Icon" src={getAssetUrl("assets/icons/upload.svg")} alt="Upload" />
+			<img class="STYLESHIFT-Upload-Icon" src={getAssetUrl(uploadIcon)} alt="Upload" />
 			<span class="STYLESHIFT-Upload-Text">Upload</span>
 		</div>
 
@@ -243,7 +240,7 @@
 						name: "View Original Image",
 						color: "#ffffff",
 						fontSize: 11,
-						clickFunction: openImage
+						clickFunction: openImage,
 					}}
 					style="padding: 5px 12px; width: auto; height: 26px;"
 				/>
@@ -253,7 +250,7 @@
 						name: "Remove",
 						color: "#ff4444",
 						fontSize: 11,
-						clickFunction: removeImage
+						clickFunction: removeImage,
 					}}
 					style="padding: 5px 12px; width: auto; height: 26px;"
 				/>
