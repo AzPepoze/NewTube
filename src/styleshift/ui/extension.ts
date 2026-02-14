@@ -17,6 +17,7 @@ export async function createStyleshiftWindow({
 	height = "80%",
 	skipAnimation = false,
 	title = "StyleShift",
+	fullscreen = false,
 }) {
 	// Ensure developer tools are ready if mode is enabled
 	if (await getRootValue("Developer_mode")) {
@@ -26,8 +27,10 @@ export async function createStyleshiftWindow({
 	logger.info("ui", "Initializing main window");
 
 	await getDocumentHead();
-	const overlayFrame = settingsUi.fillScreen(false);
-	overlayFrame.style.pointerEvents = "none"; // Let window handle events
+	const overlayFrame = settingsUi.fillScreen(fullscreen);
+	if (!fullscreen) {
+		overlayFrame.style.pointerEvents = "none"; // Let window handle events
+	}
 
 	const mountPoint = document.createElement("div");
 	overlayFrame.appendChild(mountPoint);
@@ -48,6 +51,7 @@ export async function createStyleshiftWindow({
 			title,
 			width,
 			height,
+			fullscreen,
 			onClose: closeWindowHandler,
 			children: (_target: HTMLElement) => {
 				return "";
@@ -59,13 +63,16 @@ export async function createStyleshiftWindow({
 	const windowContainer = mountPoint.querySelector(".STYLESHIFT-Window-Container") as HTMLElement;
 	await applyThemeToElement(windowContainer);
 	const contentElement = windowContainer.querySelector(".STYLESHIFT-Window-Content") as HTMLElement;
-	const topbar = windowContainer.querySelector(".STYLESHIFT-Window-Topbar") as HTMLElement;
-	const closeButton = windowContainer.querySelector(".control-btn.close") as HTMLElement;
+	const topbar = windowContainer.querySelector(".STYLESHIFT-Window-Topbar") as HTMLElement | null;
+	const closeButton = windowContainer.querySelector(".control-btn.close") as HTMLElement | null;
 
 	requestAnimationFrame(async () => {
 		(await getDocumentBody()).appendChild(overlayFrame);
-		if (!skipAnimation) {
+		if (!skipAnimation && !fullscreen) {
 			triggerWindowShowAnimation(windowContainer);
+		} else {
+			windowContainer.style.opacity = "1";
+			windowContainer.style.transform = "scale(1)";
 		}
 	});
 

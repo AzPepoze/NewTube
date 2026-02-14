@@ -182,6 +182,12 @@ ${scriptData}
 			logger.info("script", "Executed Script");
 			return true;
 		}
+
+		case "openSettingPage": {
+			const url = chrome.runtime.getURL(`setting/styleshift.html?domain=${recivedMsg.data?.domain || ""}`);
+			chrome.tabs.create({ url });
+			return true;
+		}
 	}
 
 	logger.info("message", "---------------------------------");

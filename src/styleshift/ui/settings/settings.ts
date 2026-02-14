@@ -202,21 +202,18 @@ export async function createMainSettingsUi({
 				return;
 			}
 
-			// @ts-ignore
 			settingsWindow = await createStyleshiftWindow({
 				skipAnimation,
 				title: "StyleShift Settings",
+				fullscreen: IS_IN_EXTENSION_SETTINGS_PAGE,
 			});
 
 			logger.info("ui", "Created_styleshift_window");
 
 			const settingsContent = settingsWindow.contentElement;
+			const settingsWindowElement = settingsWindow.windowElement;
 
-			if (IS_IN_EXTENSION_SETTINGS_PAGE) {
-				settingsWindow.windowElement.style.width = "100%";
-				settingsWindow.windowElement.style.height = "100%";
-				settingsWindow.windowElement.style.resize = "none";
-			}
+			settingsWindowElement.style.minWidth = "500px";
 
 			const mainFrame = await settingsUi.settingFrame(false, false, { x: false, y: false }, true);
 
@@ -253,13 +250,15 @@ export async function createMainSettingsUi({
 			settingsContainer.className = "STYLESHIFT-Scrollable";
 			settingsFrame.append(settingsContainer);
 
-			settingsWindow.closeButton.addEventListener(
-				"click",
-				() => {
-					returnObj.removeUi();
-				},
-				{ once: true },
-			);
+			if (settingsWindow.closeButton) {
+				settingsWindow.closeButton.addEventListener(
+					"click",
+					() => {
+						returnObj.removeUi();
+					},
+					{ once: true },
+				);
+			}
 
 			await returnObj.renderContent(skipAnimation);
 

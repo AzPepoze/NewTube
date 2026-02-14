@@ -1,9 +1,5 @@
 import { Category } from "../../styleshift/types/store";
-import {
-	setupVideoBackground,
-	disableVideoBackground,
-	updateVideoBgSettings,
-} from "../features/videoBackground";
+import { setupVideoBackground, disableVideoBackground, updateVideoBgSettings } from "../features/videoBackground";
 
 export const videoBackgroundCategory: Category = {
 	category: "🎆 Background Video",
@@ -78,7 +74,7 @@ export const videoBackgroundCategory: Category = {
 			id: "VideoBGSmooth",
 			name: "Visual Smoothing",
 			description: "Blends video frames together to prevent flickering.",
-			value: 1,
+			value: 10,
 			min: 1,
 			max: 20,
 			step: 1,
@@ -100,7 +96,7 @@ export const videoBackgroundCategory: Category = {
 			id: "VideoBGBrightness",
 			name: "Brightness",
 			description: "Make the background video lighter or darker.",
-			value: 1,
+			value: 0.4,
 			min: 0,
 			max: 4,
 			step: 0.2,

@@ -11,12 +11,14 @@
 		onClose = () => {},
 		width = "600px",
 		height = "400px",
+		fullscreen = false,
 		children,
 	}: {
 		title?: string;
 		onClose?: () => void;
 		width?: string;
 		height?: string;
+		fullscreen?: boolean;
 		children: any;
 	} = $props();
 
@@ -121,10 +123,17 @@
 
 	onMount(() => {
 		if (windowEl) {
-			windowEl.style.width = width;
-			windowEl.style.height = height;
-			windowEl.style.top = "10%";
-			windowEl.style.left = "25%";
+			if (fullscreen) {
+				windowEl.style.width = "100vw";
+				windowEl.style.height = "100vh";
+				windowEl.style.top = "0";
+				windowEl.style.left = "0";
+			} else {
+				windowEl.style.width = width;
+				windowEl.style.height = height;
+				windowEl.style.top = "10%";
+				windowEl.style.left = "25%";
+			}
 			applyThemeToElement(windowEl);
 		}
 	});
@@ -142,36 +151,44 @@
 
 <div
 	class="STYLESHIFT-Window-Container STYLESHIFT-Window STYLESHIFT-Main"
-	class:maximized={isMaximized}
+	class:maximized={isMaximized || fullscreen}
+	class:fullscreen={fullscreen}
 	class:dragging={isDragging}
 	class:minimized={isMinimized}
 	bind:this={windowEl}
 >
-	{#if windowEl && !isMaximized}
+	{#if windowEl && !isMaximized && !fullscreen}
 		<WindowResizer target={windowEl} />
 	{/if}
 
-	<div class="STYLESHIFT-Window-Topbar" onmousedown={handleDrag} ondblclick={toggleMaximize} role="presentation">
-		<div class="STYLESHIFT-Window-Title">
-			<img src={getAssetUrl("icon/32.png")} alt="" class="title-icon" />
-			<span>{title}</span>
+	{#if !fullscreen}
+		<div
+			class="STYLESHIFT-Window-Topbar"
+			onmousedown={handleDrag}
+			ondblclick={toggleMaximize}
+			role="presentation"
+		>
+			<div class="STYLESHIFT-Window-Title">
+				<img src={getAssetUrl("icon/32.png")} alt="" class="title-icon" />
+				<span>{title}</span>
+			</div>
+			<div class="STYLESHIFT-Window-Controls">
+				<button class="control-btn minimize" onclick={(e) => toggleMinimize(e)} title="Minimize">
+					<Icon name="minimize" size={14} />
+				</button>
+				<button
+					class="control-btn maximize"
+					onclick={(e) => toggleMaximize(e)}
+					title={isMaximized ? "Restore" : "Maximize"}
+				>
+					<Icon name={isMaximized ? "restore" : "maximize"} size={14} />
+				</button>
+				<button class="control-btn close" onclick={(e) => handleClose(e)} title="Close">
+					<Icon name="close" size={16} />
+				</button>
+			</div>
 		</div>
-		<div class="STYLESHIFT-Window-Controls">
-			<button class="control-btn minimize" onclick={(e) => toggleMinimize(e)} title="Minimize">
-				<Icon name="minimize" size={14} />
-			</button>
-			<button
-				class="control-btn maximize"
-				onclick={(e) => toggleMaximize(e)}
-				title={isMaximized ? "Restore" : "Maximize"}
-			>
-				<Icon name={isMaximized ? "restore" : "maximize"} size={14} />
-			</button>
-			<button class="control-btn close" onclick={(e) => handleClose(e)} title="Close">
-				<Icon name="close" size={16} />
-			</button>
-		</div>
-	</div>
+	{/if}
 
 	<div class="STYLESHIFT-Window-Content" bind:this={contentEl}>
 		{#if typeof children !== "function"}
@@ -208,6 +225,14 @@
 		&.maximized {
 			border-radius: 0;
 			border: none;
+		}
+
+		&.fullscreen {
+			border-radius: 0;
+			border: none;
+			box-shadow: none;
+			opacity: 1;
+			transform: scale(1);
 		}
 
 		&.dragging {
@@ -297,5 +322,11 @@
 		padding: 10px;
 		border-bottom-left-radius: 12px;
 		border-bottom-right-radius: 12px;
+
+		:global(.fullscreen) & {
+			border-bottom-left-radius: 0;
+			border-bottom-right-radius: 0;
+			padding: 0;
+		}
 	}
 </style>

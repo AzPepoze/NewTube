@@ -647,7 +647,12 @@ export function dynamicGetElement(child: unknown): HTMLElement | undefined {
  * openSettingPage();
  */
 export function openSettingPage() {
-	window.open(chrome.runtime.getURL(`setting/styleshift.html?domain=${getCurrentDomain()}`), "_blank");
+	chrome.runtime.sendMessage({
+		Command: "openSettingPage",
+		data: {
+			domain: getCurrentDomain(),
+		},
+	});
 }
 
 /*
