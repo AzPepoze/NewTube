@@ -1,3 +1,5 @@
+import { onYoutubeNavigate } from "../../modules/youtube";
+
 export function setupAutoTheater() {
 	const checkTheater = () => {
 		const theaterButton = document.querySelector("button.ytp-size-button") as HTMLElement;
@@ -9,7 +11,7 @@ export function setupAutoTheater() {
 	// run after a delay to ensure the page is loaded
 	setTimeout(checkTheater, 2000);
 	// Re-run when navigating to a new video
-	window.addEventListener("yt-navigate-finish", () => setTimeout(checkTheater, 1000));
+	onYoutubeNavigate(() => setTimeout(checkTheater, 1000));
 }
 
 export function setupRemoveAmbient() {
@@ -43,5 +45,5 @@ export function setupRemoveAmbient() {
 	};
 
 	setTimeout(checkAndDisable, 3000);
-	window.addEventListener("yt-navigate-finish", () => setTimeout(checkAndDisable, 2000));
+	onYoutubeNavigate(() => setTimeout(checkAndDisable, 2000));
 }

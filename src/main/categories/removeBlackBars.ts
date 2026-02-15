@@ -40,8 +40,15 @@ export const removeBlackBarsCategory: Category = {
 		{
 			type: "checkbox",
 			id: "DelBarDebug",
-			name: "Remove black bars Debug",
+			name: "Debug Canvas",
 			description: "Shows the analysis canvas for debugging black bar detection.",
+			value: false,
+		},
+		{
+			type: "checkbox",
+			id: "DelBarDebugInfo",
+			name: "Debug Info",
+			description: "Shows technical information over the video player.",
 			value: false,
 		},
 	],

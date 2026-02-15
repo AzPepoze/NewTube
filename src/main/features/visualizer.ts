@@ -1,6 +1,6 @@
 import { getFromStorage, getUserSetting } from "../../styleshift/core/storageManager";
 import { registerSettingListener } from "../../styleshift/settings/functions";
-import { getYtdApp } from "../modules/youtube";
+import { getYtdApp, getVideoElement, onYoutubeNavigate } from "../modules/youtube";
 
 let audioCtx: AudioContext | null = null;
 let analyser: AnalyserNode | null = null;
@@ -8,13 +8,14 @@ let source: MediaElementAudioSourceNode | null = null;
 let canvas: HTMLCanvasElement | null = null;
 let canvasCtx: CanvasRenderingContext2D | null = null;
 let animationFrame: number | null = null;
+let navigateCleanup: (() => void) | null = null;
 
 export function setupAudioVisualizer() {
 	const init = async () => {
 		if ((await getFromStorage("Enable_Extension")) === false) return;
 		if (audioCtx) return; // Already running
 
-		const video = document.querySelector("video");
+		const video = await getVideoElement();
 		if (!video) return;
 
 		if (!video.crossOrigin) {
@@ -131,7 +132,9 @@ export function setupAudioVisualizer() {
 	};
 
 	setTimeout(init, 2000);
-	window.addEventListener("yt-navigate-finish", () => setTimeout(init, 1000));
+	if (!navigateCleanup) {
+		navigateCleanup = onYoutubeNavigate(() => setTimeout(init, 1000));
+	}
 
 	window.addEventListener("resize", () => {
 		if (canvas) {
@@ -144,6 +147,10 @@ export function destroyAudioVisualizer() {
 	if (animationFrame) cancelAnimationFrame(animationFrame);
 	if (canvas) canvas.remove();
 	if (audioCtx) audioCtx.close();
+	if (navigateCleanup) {
+		navigateCleanup();
+		navigateCleanup = null;
+	}
 	audioCtx = null;
 	analyser = null;
 	source = null;

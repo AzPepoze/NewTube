@@ -1,7 +1,7 @@
-import { getYtdApp } from "../modules/youtube";
 import ColorThief from "colorthief";
-import { rgbToHsv, hsvToRgb } from "../../styleshift/shared/normal";
+import { rgbToHsv, hsvToRgb, getDocumentBody } from "../../styleshift/shared/normal";
 import { getUserSetting } from "../../styleshift/core/storageManager";
+import { onYoutubeNavigate, getYoutubeVideoId } from "../modules/youtube";
 
 function getSortedPalette(palette: [number, number, number][]) {
 	function calScore(color: [number, number, number]) {
@@ -34,7 +34,7 @@ async function getSampleColor(img: HTMLImageElement): Promise<[number, number, n
 
 export function setupThemeByVideo() {
 	const updateTheme = async () => {
-		const videoId = new URLSearchParams(window.location.search).get("v");
+		const videoId = getYoutubeVideoId();
 		if (!videoId) return;
 
 		// Use mqdefault first, try maxres if possible?
@@ -72,10 +72,10 @@ export function setupThemeByVideo() {
 			const getAdd = 255 - maxVal;
 			color = [color[0] + getAdd, color[1] + getAdd, color[2] + getAdd];
 
-			const ytdApp = await getYtdApp();
-			if (!ytdApp) return;
+			const body = await getDocumentBody();
+			if (!body) return;
 
-			const setProp = (name: string, val: string) => ytdApp.style.setProperty(name, val);
+			const setProp = (name: string, val: string) => body.style.setProperty(name, val);
 
 			// HSV Adjustments
 			const hsv = rgbToHsv({ r: color[0], g: color[1], b: color[2] });
@@ -137,5 +137,5 @@ export function setupThemeByVideo() {
 	};
 
 	updateTheme();
-	window.addEventListener("yt-navigate-finish", updateTheme);
+	onYoutubeNavigate(updateTheme);
 }

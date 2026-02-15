@@ -21,6 +21,7 @@ self.onmessage = (e) => {
 			break;
 		case "render":
 			renderer.render(data.bitmap);
+			self.postMessage({ type: "rendered" });
 			break;
 	}
 };

@@ -1,6 +1,8 @@
+import { onYoutubeNavigate, getVideoElement, getPlayerContainer } from "../../modules/youtube";
+
 export function setupVideoAnimations() {
-	const addVolIndicator = () => {
-		const container = document.querySelector(".html5-video-container");
+	const addVolIndicator = async () => {
+		const container = getPlayerContainer();
 		if (!container || container.querySelector(".newtube-vol-indicator")) return;
 
 		const volDisplay = document.createElement("div");
@@ -9,7 +11,7 @@ export function setupVideoAnimations() {
 		container.appendChild(volDisplay);
 
 		let timer: number | undefined;
-		const video = document.querySelector("video");
+		const video = await getVideoElement();
 
 		if (video) {
 			video.addEventListener("volumechange", () => {
@@ -26,7 +28,7 @@ export function setupVideoAnimations() {
 		}
 	};
 
-	window.addEventListener("yt-navigate-finish", () => {
+	onYoutubeNavigate(() => {
 		setTimeout(addVolIndicator, 1000);
 	});
 	setTimeout(addVolIndicator, 2000);

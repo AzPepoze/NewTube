@@ -1,5 +1,8 @@
 import { extensionSettingsUi, extensionSettingsUiPromise } from "../../styleshift/ui/extensionSettings";
 import { waitForElement } from "../../styleshift/shared/normal";
+import { onYoutubeNavigate } from "../modules/youtube";
+
+let navigateCleanup: (() => void) | null = null;
 
 /**
  * Injects the NewTube settings button (✦) into the YouTube top bar.
@@ -97,12 +100,15 @@ export async function injectSettingsButton() {
 }
 
 export function enableSettingsButton() {
-	window.addEventListener("yt-navigate-finish", injectSettingsButton);
+	navigateCleanup = onYoutubeNavigate(injectSettingsButton);
 	injectSettingsButton();
 }
 
 export function disableSettingsButton() {
-	window.removeEventListener("yt-navigate-finish", injectSettingsButton);
+	if (navigateCleanup) {
+		navigateCleanup();
+		navigateCleanup = null;
+	}
 	const btn = document.getElementById("NEWTUBESET");
 	if (btn) btn.remove();
 	const style = document.getElementById("NEWTUBESET_STYLE");

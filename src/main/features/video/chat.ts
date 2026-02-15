@@ -1,3 +1,5 @@
+import { onYoutubeNavigate } from "../../modules/youtube";
+
 export function setupAutoShowChatReplay() {
 	const tryClickChat = (attempts = 10) => {
 		if (attempts <= 0) return;
@@ -11,5 +13,5 @@ export function setupAutoShowChatReplay() {
 	};
 
 	tryClickChat();
-	window.addEventListener("yt-navigate-finish", () => setTimeout(() => tryClickChat(), 1000));
+	onYoutubeNavigate(() => setTimeout(() => tryClickChat(), 1000));
 }

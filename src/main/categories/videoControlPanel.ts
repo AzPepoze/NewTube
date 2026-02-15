@@ -44,7 +44,8 @@ export const videoControlPanelCategory: Category = {
 			description: "Moves the video control panel to appear underneath the video player.",
 			value: true,
 			enableCss: `
-      #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) {
+      #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode),
+	  #ytd-player {
         padding-bottom: var(--nt-player-below-space, 70px);
       }
       div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) .ytp-chrome-bottom {

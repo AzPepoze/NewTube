@@ -5,8 +5,16 @@ import { registerSettingListener } from "../../styleshift/settings/functions";
 import { hideBg, showBg } from "./background";
 import { logger } from "../../shared/logger";
 import { VideoBGRenderer } from "./videoBackgroundRenderer";
+import {
+	getVideoElement,
+	getYoutubeVideoId,
+	onYoutubeNavigate,
+	onYoutubeFullscreen,
+	isYoutubeFullscreen,
+} from "../modules/youtube";
 
-// --- State Management ---
+// --- Types & State ---
+
 interface VideoBgState {
 	enabled: boolean;
 	container: HTMLDivElement | null;
@@ -17,12 +25,23 @@ interface VideoBgState {
 	overlay: HTMLDivElement | null;
 
 	animationFrame: number | null;
+	renderTimeout: number | null;
+	layoutAnimationFrame: number | null;
 	frameCount: number;
 	lastTime: number;
 	laggedFrames: number;
 	isStatic: boolean;
-	lastFrameData: Uint8ClampedArray | null;
 	isFadedIn: boolean;
+	navigateCleanup: (() => void) | null;
+	fullscreenCleanup: (() => void) | null;
+
+	debugContainer: HTMLDivElement | null;
+	lastProcessTime: number;
+	renderMethod: string;
+	isProcessing: boolean;
+	isCapturing: boolean;
+	droppedFrames: number;
+	pendingBitmap: ImageBitmap | null;
 }
 
 const state: VideoBgState = {
@@ -34,38 +53,79 @@ const state: VideoBgState = {
 	localRenderer: null,
 	overlay: null,
 	animationFrame: null,
+	renderTimeout: null,
+	layoutAnimationFrame: null,
 	frameCount: 0,
 	lastTime: 0,
 	laggedFrames: 0,
 	isStatic: false,
-	lastFrameData: null,
 	isFadedIn: false,
+	navigateCleanup: null,
+	fullscreenCleanup: null,
+
+	debugContainer: null,
+	lastProcessTime: 0,
+	renderMethod: "Unknown",
+	isProcessing: false,
+	isCapturing: false,
+	droppedFrames: 0,
+	pendingBitmap: null,
 };
 
 const settings = {
 	blur: 30,
 	quality: 0.5,
-	brightness: 100,
-	contrast: 100,
+	brightness: 1,
+	contrast: 1,
 	opacity: 100,
 	scale: 2.2,
 	smooth: 1,
 	engine: "GPU",
 	stick: false,
 	checkLag: true,
+	debug: false,
 };
 
-const MAX_LAGGED_FRAMES = 10;
+function sendToWorker(bitmap: ImageBitmap) {
+	if (!state.enabled) {
+		bitmap.close();
+		return;
+	}
 
-function findVideo() {
-	return (
-		(document.querySelector("#player-container video") as HTMLVideoElement) ||
-		(document.querySelector("video") as HTMLVideoElement)
-	);
+	state.isProcessing = true;
+	if (state.worker) {
+		state.worker.postMessage({ type: "render", data: { bitmap } }, [bitmap]);
+	} else {
+		state.localRenderer?.render(bitmap);
+		state.isProcessing = false;
+		if (state.pendingBitmap) {
+			const next = state.pendingBitmap;
+			state.pendingBitmap = null;
+			sendToWorker(next);
+		}
+	}
 }
 
+const MAX_LAGGED_FRAMES = 10;
+const LAG_WARNING_MESSAGE = `NEWTUBE : I see that you so laggy.
+(I guess it cause by Background Video)
+                
+Solution to fix this laggy:
+1.Try enable "Use hardware acceleration when available" in your browser setting.
+2.If your graphic card is quite poor try change Background Video to renders by CPU.
+3.Try decrease quality of Background Video
+
+Are you want to disable Background Video?
+(You can turn it back on later)`;
+
+let lastStaticCheckVideoID: string | null = null;
+let cachedStaticResult = false;
+let lastRect = { top: -1, left: -1, width: -1, height: -1, scrollY: -1, scrollX: -1 };
+
+// --- Helper Functions ---
+
 function isMainVideoActive(video: HTMLVideoElement): boolean {
-	if (!video || !video.src) return false;
+	if (!video?.src) return false;
 	let parent = video.parentElement;
 	while (parent && parent.tagName !== "BODY") {
 		if (parent.classList.contains("ytp-player-minimized")) return false;
@@ -74,14 +134,6 @@ function isMainVideoActive(video: HTMLVideoElement): boolean {
 	}
 	return true;
 }
-
-function getVideoID(): string | null {
-	const urlParams = new URLSearchParams(window.location.search);
-	return urlParams.get("v");
-}
-
-let lastStaticCheckVideoID: string | null = null;
-let cachedStaticResult = false;
 
 async function getImageColor(src: string): Promise<Uint8ClampedArray | null> {
 	return new Promise((resolve) => {
@@ -103,95 +155,244 @@ async function getImageColor(src: string): Promise<Uint8ClampedArray | null> {
 }
 
 async function checkStaticVDO(): Promise<boolean> {
-	const videoID = getVideoID();
+	const videoID = getYoutubeVideoId();
 	if (!videoID) return false;
 	if (videoID === lastStaticCheckVideoID) return cachedStaticResult;
 
-	logger.debug("video-bg", `Checking if video is static for ID: ${videoID}...`);
 	lastStaticCheckVideoID = videoID;
-
-	const frames = await Promise.all([
-		getImageColor(`https://i.ytimg.com/vi/${videoID}/1.jpg`),
-		getImageColor(`https://i.ytimg.com/vi/${videoID}/2.jpg`),
-		getImageColor(`https://i.ytimg.com/vi/${videoID}/3.jpg`),
-	]);
+	const frames = await Promise.all(
+		[1, 2, 3].map((i) => getImageColor(`https://i.ytimg.com/vi/${videoID}/${i}.jpg`)),
+	);
 
 	if (frames.some((f) => f === null)) {
-		logger.debug("video-bg", "Static check failed due to fetch error, assuming NOT static");
 		cachedStaticResult = false;
 		return false;
 	}
 
-	const f1 = frames[0]!,
-		f2 = frames[1]!,
-		f3 = frames[2]!;
-	let maxR = Math.max(f1[0], f2[0], f3[0]),
-		minR = Math.min(f1[0], f2[0], f3[0]);
-	let maxG = Math.max(f1[1], f2[1], f3[1]),
-		minG = Math.min(f1[1], f2[1], f3[1]);
-	let maxB = Math.max(f1[2], f2[2], f3[2]),
-		minB = Math.min(f1[2], f2[2], f3[2]);
+	const [f1, f2, f3] = frames as Uint8ClampedArray[];
+	const diff =
+		Math.abs(f1[0] - f2[0]) +
+		Math.abs(f2[0] - f3[0]) +
+		(Math.abs(f1[1] - f2[1]) + Math.abs(f2[1] - f3[1])) +
+		(Math.abs(f1[2] - f2[2]) + Math.abs(f2[2] - f3[2]));
 
-	const diff = maxR - minR + (maxG - minG) + (maxB - minB);
-	cachedStaticResult = diff <= 5;
-	logger.debug("video-bg", `Static check complete. Result: ${cachedStaticResult} (Diff: ${diff})`);
+	cachedStaticResult = diff <= 10;
+	logger.debug("video-bg", `Static check result for ${videoID}: ${cachedStaticResult} (diff: ${diff})`);
 	return cachedStaticResult;
 }
 
-export async function updateVideoBgSettings() {
-	logger.debug("video-bg", "updateVideoBgSettings() called - fetching from storage");
-	settings.blur = (await getUserSetting("VideoBGBlur")) ?? 30;
-	settings.quality = ((await getUserSetting("VideoBGQuality")) ?? 50) / 100;
-	settings.brightness = (await getUserSetting("VideoBGBrightness")) ?? 100;
-	settings.contrast = (await getUserSetting("VideoBGContrast")) ?? 100;
-	settings.opacity = (await getUserSetting("VideoBGOpacity")) ?? 100;
-	settings.scale = (await getUserSetting("VideoBGSize")) ?? 2.2;
-	settings.smooth = (await getUserSetting("VideoBGSmooth")) ?? 1;
-	settings.stick = (await getUserSetting("VideoBGStick")) ?? false;
-	settings.checkLag = (await getUserSetting("VideoBGCheckLag")) ?? true;
+function fadeIn() {
+	if (!state.container || state.isFadedIn) return;
+	state.isFadedIn = true;
+	requestAnimationFrame(() => {
+		if (state.container) {
+			state.container.style.opacity = (settings.opacity / 100).toString();
+			hideBg();
+		}
+	});
+}
 
-	logger.debug(
-		"video-bg",
-		`Current Settings: blur=${settings.blur}, quality=${settings.quality}, opacity=${settings.opacity}, engine=${settings.engine}, stick=${settings.stick}`,
-	);
+function fadeOut() {
+	if (!state.container || !state.isFadedIn) return;
+	state.isFadedIn = false;
+	requestAnimationFrame(() => {
+		if (state.container) {
+			state.container.style.opacity = "0";
+			showBg();
+		}
+	});
+}
 
-	const oldEngine = settings.engine;
-	settings.engine = (await getUserSetting("VideoBGRenderEngine")) ?? "GPU";
+function updateLayout(video: HTMLVideoElement) {
+	if (!state.wrapper || !state.canvas || !state.overlay) return;
 
-	if (state.worker) {
-		state.worker.postMessage({
-			type: "updateSettings",
-			data: {
-				blur: settings.blur,
-				quality: settings.quality,
-				smooth: settings.smooth,
-				engine: settings.engine,
-			},
-		});
-	}
+	const rect = video.getBoundingClientRect();
+	const { scrollY, scrollX } = window;
 
-	if (state.localRenderer) {
-		state.localRenderer.updateSettings({
-			blur: settings.blur,
-			quality: settings.quality,
-			smooth: settings.smooth,
-			engine: settings.engine as any,
-		});
-	}
+	if (
+		rect.top === lastRect.top &&
+		rect.left === lastRect.left &&
+		rect.width === lastRect.width &&
+		rect.height === lastRect.height &&
+		scrollY === lastRect.scrollY &&
+		scrollX === lastRect.scrollX
+	)
+		return;
 
-	if (oldEngine !== settings.engine && state.enabled) {
-		logger.info("video-bg", `Restarting: Engine changed ${oldEngine} -> ${settings.engine}`);
-		state.enabled = false;
-		await disableVideoBackground(true);
-		setupVideoBackground();
+	Object.assign(lastRect, {
+		top: rect.top,
+		left: rect.left,
+		width: rect.width,
+		height: rect.height,
+		scrollY,
+		scrollX,
+	});
+
+	const { style: wStyle } = state.wrapper;
+	wStyle.marginTop = `${rect.top + scrollY}px`;
+	wStyle.marginLeft = `${rect.left + scrollX}px`;
+	wStyle.width = `${rect.width}px`;
+	wStyle.height = `${rect.height}px`;
+
+	const { style: cStyle } = state.canvas;
+	cStyle.width = `${rect.width}px`;
+	cStyle.height = `${rect.height}px`;
+
+	const vSize = Math.min(rect.width, rect.height) * 0.2;
+	state.overlay.style.boxShadow = `inset black 0px 0px ${vSize}px ${vSize}px`;
+}
+
+function updateDebugInfo(video: HTMLVideoElement, frameTime: number) {
+	if (!settings.debug) {
+		if (state.debugContainer) {
+			state.debugContainer.style.display = "none";
+		}
 		return;
 	}
 
+	if (!state.debugContainer) {
+		state.debugContainer = document.createElement("div");
+		state.debugContainer.id = "newtube-bg-debug";
+		Object.assign(state.debugContainer.style, {
+			position: "absolute",
+			top: "10px",
+			left: "10px",
+			padding: "12px",
+			background: "rgba(0, 0, 0, 0.6)",
+			color: "white",
+			fontFamily: "inherit",
+			fontSize: "13px",
+			zIndex: "10000",
+			pointerEvents: "none",
+			borderRadius: "8px",
+			lineHeight: "1.4",
+			boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+		});
+		video.parentElement?.appendChild(state.debugContainer);
+	}
+
+	state.debugContainer.style.display = "block";
+	const fps = frameTime > 0 ? Math.round(1000 / frameTime) : 0;
+	const engineDisplay = settings.engine === "GPU" ? "WebGL" : "2d canvas";
+
+	state.debugContainer.innerHTML = `
+		<div style="font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 5px; padding-bottom: 2px;">NewTube Background Video Debug</div>
+		<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px 15px;">
+			<span>FPS:</span> <span>${fps} (${Math.round(frameTime)}ms)</span>
+			<span>Method:</span> <span>${state.renderMethod}</span>
+			<span>Worker:</span> <span>${state.worker ? "Yes" : "No"}</span>
+			<span>Latency:</span> <span>${state.lastProcessTime.toFixed(2)}ms</span>
+			<span>Dropped (BG):</span> <span>${state.droppedFrames}</span>
+			<span>Lagged (BG):</span> <span>${state.laggedFrames}/${MAX_LAGGED_FRAMES}</span>
+			<span>Engine:</span> <span>${engineDisplay}</span>
+			<span>Quality:</span> <span>${settings.quality * 100}%</span>
+			<span>Static:</span> <span>${state.isStatic}</span>
+			<span>Paused:</span> <span>${video.paused}</span>
+			<span>Capturing:</span> <span>${state.isCapturing}</span>
+			<span>Rendering:</span> <span>${state.isProcessing}</span>
+		</div>
+	`;
+}
+
+function handleLagMonitoring(frameTime: number) {
+	// Lag is detected if:
+	// 1. Browser stutter (frameTime > 100ms)
+	// 2. Processing is consistently very slow (> 120ms)
+	// 3. We are dropping frames from the pipeline (tracked via state.droppedFrames)
+
+	const isSlow = frameTime > 100 || state.lastProcessTime > 120;
+	const isHealthy = frameTime < 30 && state.lastProcessTime < 60;
+
+	if (isHealthy) {
+		state.laggedFrames = 0;
+		return;
+	}
+
+	if (isSlow && !state.isStatic && state.frameCount > 60) {
+		state.laggedFrames++;
+		if (state.laggedFrames > MAX_LAGGED_FRAMES) {
+			if (confirm(LAG_WARNING_MESSAGE)) {
+				disableVideoBackground();
+			}
+			state.laggedFrames = 0;
+		}
+	} else if (state.laggedFrames > 0) {
+		state.laggedFrames--;
+	}
+}
+
+// --- Main Logic ---
+
+export async function updateVideoBgSettings(value?: any, settingId?: string) {
+	if (typeof settingId === "string") {
+		const oldEngine = settings.engine;
+		switch (settingId) {
+			case "VideoBGBlur":
+				settings.blur = value;
+				break;
+			case "VideoBGQuality":
+				settings.quality = value / 100;
+				break;
+			case "VideoBGBrightness":
+				settings.brightness = value;
+				break;
+			case "VideoBGContrast":
+				settings.contrast = value;
+				break;
+			case "VideoBGOpacity":
+				settings.opacity = value;
+				break;
+			case "VideoBGSize":
+				settings.scale = value;
+				break;
+			case "VideoBGSmooth":
+				settings.smooth = value;
+				break;
+			case "VideoBGStick":
+				settings.stick = value;
+				break;
+			case "VideoBGCheckLag":
+				settings.checkLag = value;
+				break;
+			case "VideoBGDebug":
+				settings.debug = value;
+				break;
+			case "VideoBGRenderEngine":
+				settings.engine = value;
+				break;
+		}
+
+		// Full restart if engine changes because we can't switch context on the same canvas
+		if (settingId === "VideoBGRenderEngine" && oldEngine !== settings.engine && state.enabled) {
+			logger.info("video-bg", `Engine changed from ${oldEngine} to ${settings.engine}, restarting...`);
+			await disableVideoBackground(true);
+			enableVideoBackground();
+			return;
+		}
+	} else {
+		settings.blur = await getUserSetting("VideoBGBlur");
+		settings.quality = (await getUserSetting("VideoBGQuality")) / 100;
+		settings.brightness = await getUserSetting("VideoBGBrightness");
+		settings.contrast = await getUserSetting("VideoBGContrast");
+		settings.opacity = await getUserSetting("VideoBGOpacity");
+		settings.scale = await getUserSetting("VideoBGSize");
+		settings.smooth = await getUserSetting("VideoBGSmooth");
+		settings.stick = await getUserSetting("VideoBGStick");
+		settings.checkLag = await getUserSetting("VideoBGCheckLag");
+		settings.debug = await getUserSetting("VideoBGDebug");
+		settings.engine = await getUserSetting("VideoBGRenderEngine");
+	}
+
+	const updateData = {
+		blur: settings.blur,
+		quality: settings.quality,
+		smooth: settings.smooth,
+		engine: settings.engine,
+	};
+	state.worker?.postMessage({ type: "updateSettings", data: updateData });
+	state.localRenderer?.updateSettings({ ...updateData, engine: settings.engine as any });
+
 	if (state.canvas && state.wrapper) {
-		logger.debug(
-			"video-bg",
-			`Applying filters: brightness(${settings.brightness}) contrast(${settings.contrast})`,
-		);
 		state.canvas.style.filter = `brightness(${settings.brightness}) contrast(${settings.contrast})`;
 		state.wrapper.style.transform = `scale(${settings.scale})`;
 		if (state.isFadedIn && state.container) {
@@ -201,127 +402,102 @@ export async function updateVideoBgSettings() {
 }
 
 const render = async () => {
-	if (!state.enabled || !state.canvas || (!state.worker && !state.localRenderer)) {
-		if (!state.enabled && state.frameCount % 60 === 0)
-			logger.debug("video-bg", "render loop running but feature is disabled.");
+	if (!state.enabled || !state.canvas) return;
+
+	const video = await getVideoElement();
+	if (!video) {
+		state.animationFrame = requestAnimationFrame(render);
 		return;
 	}
 
-	const video = findVideo();
-
-	if (state.frameCount % 100 === 0) {
-		logger.debug(
-			"video-bg",
-			`Render status: videoFound=${!!video}, readyState=${video?.readyState}, paused=${video?.paused}, isStatic=${state.isStatic}`,
-		);
-	}
-
-	if (video && "requestVideoFrameCallback" in video) {
+	// Schedule next frame (Priority: rVFC > 30fps Fallback)
+	// We MUST NOT await long tasks before scheduling the next frame
+	if ("requestVideoFrameCallback" in video) {
+		state.renderMethod = "rVFC";
 		(video as any).requestVideoFrameCallback(render);
 	} else {
-		state.animationFrame = requestAnimationFrame(render);
+		state.renderMethod = "30fps";
+		state.renderTimeout = setTimeout(() => {
+			state.animationFrame = requestAnimationFrame(render);
+		}, 33) as any;
 	}
 
-	if (!video) return;
+	// Exit if hidden or fullscreen
+	const shouldShow = (isMainVideoActive(video) || settings.stick) && !isYoutubeFullscreen;
+	if (!shouldShow) {
+		if (state.isFadedIn) fadeOut();
+		return;
+	}
 
+	if (!state.isFadedIn) fadeIn();
+
+	// Performance Tracking
 	const now = performance.now();
 	const frameTime = now - state.lastTime;
 	state.lastTime = now;
-
-	if (settings.checkLag && frameTime > 150 && !state.isStatic && state.frameCount > 60) {
-		state.laggedFrames++;
-		if (state.laggedFrames > MAX_LAGGED_FRAMES) {
-			if (confirm("NewTube: Background Video is causing lag. Disable it?")) disableVideoBackground();
-			state.laggedFrames = 0;
-		}
-	} else {
-		state.laggedFrames = Math.max(0, state.laggedFrames - 1);
-	}
-
 	state.frameCount++;
 
-	const shouldBeVisible = isMainVideoActive(video) || settings.stick;
+	if (settings.checkLag) handleLagMonitoring(frameTime);
+	updateDebugInfo(video, frameTime);
 
-	if (shouldBeVisible) {
-		if (state.container && !state.isFadedIn) {
-			logger.debug(
-				"video-bg",
-				`Showing background: isMainActive=${isMainVideoActive(video)}, stick=${settings.stick}`,
-			);
-			state.container.style.opacity = (settings.opacity / 100).toString();
-			state.isFadedIn = true;
-			hideBg();
-		}
+	// Processing logic
+	if (video.readyState < 2 || video.videoWidth === 0) return;
 
-		if (state.wrapper) {
-			const rect = video.getBoundingClientRect();
-			state.wrapper.style.marginTop = rect.top + window.scrollY + "px";
-			state.wrapper.style.marginLeft = rect.left + window.scrollX + "px";
-			state.wrapper.style.width = rect.width + "px";
-			state.wrapper.style.height = rect.height + "px";
-
-			if (state.canvas.style.width !== rect.width + "px") {
-				state.canvas.style.width = rect.width + "px";
-				state.canvas.style.height = rect.height + "px";
-			}
-
-			if (state.overlay) {
-				const vignetteSize = rect.height <= rect.width ? rect.height * 0.2 : rect.width * 0.2;
-				state.overlay.style.boxShadow = `inset black 0px 0px ${vignetteSize}px ${vignetteSize}px`;
-			}
-		}
-
-		if (video.readyState >= 2) {
-			const isPaused = video.paused || video.ended;
-
-			if (state.frameCount % 120 === 0) {
-				const wasStatic = state.isStatic;
-				checkStaticVDO().then((result) => {
-					state.isStatic = result;
-					if (state.isStatic !== wasStatic) {
-						logger.debug("video-bg", `Static video state changed: ${state.isStatic}`);
-					}
-				});
-			}
-
-			if (state.isStatic && !isPaused && state.frameCount % 60 !== 0) return;
-			if (isPaused && state.frameCount % 60 !== 0) return;
-
-			if (video.videoWidth === 0 || video.videoHeight === 0) return;
-
-			const tw = Math.max(64, Math.floor(video.videoWidth * settings.quality));
-			const th = Math.max(36, Math.floor(video.videoHeight * settings.quality));
-
-			const bitmap = await createImageBitmap(video, {
-				resizeWidth: tw,
-				resizeHeight: th,
-				resizeQuality: "low",
-			});
-
-			if (state.worker) {
-				state.worker.postMessage({ type: "render", data: { bitmap } }, [bitmap]);
-			} else if (state.localRenderer) {
-				state.localRenderer.render(bitmap);
-			}
-
-			if (state.frameCount % 100 === 0) logger.debug("video-bg", "Processed frame");
-		}
-	} else {
-		if (state.container && state.isFadedIn) {
-			state.container.style.opacity = "0";
-			state.isFadedIn = false;
-			showBg();
-		}
+	if (state.frameCount % 120 === 0) {
+		checkStaticVDO().then((res) => (state.isStatic = res));
 	}
+
+	// Skip if capture is busy (rare)
+	if (state.isCapturing) return;
+
+	// Skip processing if static or paused
+	const isPaused = video.paused || video.ended;
+	if ((state.isStatic || isPaused) && state.frameCount % 60 !== 0) return;
+
+	// FIRE AND FORGET: Move async work out of the rVFC callback path
+	(async () => {
+		state.isCapturing = true;
+		const processStart = performance.now();
+		try {
+			const bitmap = await createImageBitmap(video);
+			state.lastProcessTime = performance.now() - processStart;
+			state.isCapturing = false;
+
+			if (state.isProcessing) {
+				if (state.pendingBitmap) {
+					state.pendingBitmap.close();
+					state.droppedFrames++;
+					if (settings.checkLag) state.laggedFrames++;
+				}
+				state.pendingBitmap = bitmap;
+				return;
+			}
+
+			sendToWorker(bitmap);
+		} catch (e) {
+			state.isCapturing = false;
+		}
+	})();
 };
 
-export function setupVideoBackground() {
+const updatePositionLoop = async () => {
+	if (!state.enabled) return;
+
+	const video = await getVideoElement();
+	if (video) {
+		updateLayout(video);
+	}
+
+	state.layoutAnimationFrame = requestAnimationFrame(updatePositionLoop);
+};
+
+export async function enableVideoBackground() {
 	state.enabled = true;
-	logger.info("video-bg", "Starting setup...");
-	updateVideoBgSettings();
+	await updateVideoBgSettings(); // Await settings loading
 
 	const init = async () => {
 		if (document.getElementById("newtube-bg-container") || !state.enabled) return;
+		logger.info("video-bg", "Initializing background video...", { engine: settings.engine });
 		const app = (await getDocumentBody()) || document.body;
 		if (!app) return;
 
@@ -330,22 +506,22 @@ export function setupVideoBackground() {
 
 		state.container = document.createElement("div");
 		state.container.id = "newtube-bg-container";
-		const containerStyle = state.container.style;
-		containerStyle.position = "absolute";
-		containerStyle.top = "0";
-		containerStyle.left = "0";
-		containerStyle.width = "100%";
-		containerStyle.height = "100%";
-		containerStyle.zIndex = "-1";
-		containerStyle.pointerEvents = "none";
-		containerStyle.transition = "opacity 0.5s ease";
-		containerStyle.opacity = "0";
+		Object.assign(state.container.style, {
+			position: "absolute",
+			top: "0",
+			left: "0",
+			width: "100%",
+			height: "100%",
+			zIndex: "-1",
+			pointerEvents: "none",
+			transition: "opacity 0.5s ease",
+			opacity: "0",
+		});
 
 		state.wrapper = document.createElement("div");
 		state.wrapper.id = "newtube-canvas-wraper";
-		const wrapperStyle = state.wrapper.style;
-		wrapperStyle.position = "relative";
-		wrapperStyle.background = "black";
+		state.wrapper.style.position = "relative";
+		state.wrapper.style.background = "black";
 
 		state.canvas = document.createElement("canvas");
 		state.canvas.id = "newtube-blur-bg";
@@ -356,18 +532,29 @@ export function setupVideoBackground() {
 
 		state.overlay = document.createElement("div");
 		state.overlay.id = "newtube-black-overlay";
-		const overlayStyle = state.overlay.style;
-		overlayStyle.position = "absolute";
-		overlayStyle.top = "0";
-		overlayStyle.left = "0";
-		overlayStyle.width = "100%";
-		overlayStyle.height = "100%";
-		overlayStyle.zIndex = "1";
-		overlayStyle.pointerEvents = "none";
+		Object.assign(state.overlay.style, {
+			position: "absolute",
+			top: "0",
+			left: "0",
+			width: "100%",
+			height: "100%",
+			zIndex: "1",
+			pointerEvents: "none",
+		});
 
 		state.worker = await loadWorker("videoBackgroundWorker.js");
 
 		if (state.worker) {
+			state.worker.onmessage = (e) => {
+				if (e.data.type === "rendered") {
+					state.isProcessing = false;
+					if (state.pendingBitmap) {
+						const next = state.pendingBitmap;
+						state.pendingBitmap = null;
+						sendToWorker(next);
+					}
+				}
+			};
 			const offscreen = state.canvas.transferControlToOffscreen();
 			state.worker.postMessage(
 				{
@@ -385,7 +572,6 @@ export function setupVideoBackground() {
 				[offscreen],
 			);
 		} else {
-			logger.info("video-bg", "Falling back to main thread rendering");
 			state.localRenderer = new VideoBGRenderer();
 			state.localRenderer.init(state.canvas, {
 				blur: settings.blur,
@@ -399,16 +585,24 @@ export function setupVideoBackground() {
 		state.wrapper.appendChild(state.overlay);
 		state.container.appendChild(state.wrapper);
 		app.appendChild(state.container);
+
 		updateVideoBgSettings();
 		render();
+		updatePositionLoop();
 	};
 
 	init();
-	window.addEventListener("yt-navigate-finish", init);
+	state.navigateCleanup = onYoutubeNavigate(init);
+	state.fullscreenCleanup = onYoutubeFullscreen((fullscreen) => {
+		if (fullscreen) {
+			fadeOut();
+		} else if (state.enabled) {
+			render();
+		}
+	});
 }
 
 export async function disableVideoBackground(force = false) {
-	logger.info("video-bg", `Disabling background (force=${force})`);
 	state.enabled = false;
 	const container = state.container;
 	if (container) {
@@ -417,26 +611,53 @@ export async function disableVideoBackground(force = false) {
 		if (container.parentNode) container.remove();
 	}
 	if (state.animationFrame) cancelAnimationFrame(state.animationFrame);
-	if (state.worker) state.worker.terminate();
+	if (state.renderTimeout) clearTimeout(state.renderTimeout);
+	if (state.layoutAnimationFrame) cancelAnimationFrame(state.layoutAnimationFrame);
+	state.worker?.terminate();
+	if (state.pendingBitmap) {
+		state.pendingBitmap.close();
+		state.pendingBitmap = null;
+	}
 
-	state.container = null;
-	state.wrapper = null;
-	state.canvas = null;
-	state.worker = null;
-	state.localRenderer = null;
-	state.isStatic = false;
-	state.lastFrameData = null;
-	state.isFadedIn = false;
+	if (state.debugContainer) {
+		state.debugContainer.remove();
+		state.debugContainer = null;
+	}
+
+	if (state.navigateCleanup) {
+		state.navigateCleanup();
+		state.navigateCleanup = null;
+	}
+
+	Object.assign(state, {
+		container: null,
+		wrapper: null,
+		canvas: null,
+		worker: null,
+		localRenderer: null,
+		isStatic: false,
+		isFadedIn: false,
+		isProcessing: false,
+		isCapturing: false,
+		navigateCleanup: null,
+		layoutAnimationFrame: null,
+		renderTimeout: null,
+	});
 	showBg();
 }
 
-registerSettingListener("VideoBGBlur", updateVideoBgSettings);
-registerSettingListener("VideoBGQuality", updateVideoBgSettings);
-registerSettingListener("VideoBGBrightness", updateVideoBgSettings);
-registerSettingListener("VideoBGContrast", updateVideoBgSettings);
-registerSettingListener("VideoBGOpacity", updateVideoBgSettings);
-registerSettingListener("VideoBGSize", updateVideoBgSettings);
-registerSettingListener("VideoBGSmooth", updateVideoBgSettings);
-registerSettingListener("VideoBGRenderEngine", updateVideoBgSettings);
-registerSettingListener("VideoBGStick", updateVideoBgSettings);
-registerSettingListener("VideoBGCheckLag", updateVideoBgSettings);
+// --- Listeners ---
+
+[
+	"VideoBGBlur",
+	"VideoBGQuality",
+	"VideoBGBrightness",
+	"VideoBGContrast",
+	"VideoBGOpacity",
+	"VideoBGSize",
+	"VideoBGSmooth",
+	"VideoBGRenderEngine",
+	"VideoBGStick",
+	"VideoBGCheckLag",
+	"VideoBGDebug",
+].forEach((id) => registerSettingListener(id, (val) => updateVideoBgSettings(val, id)));

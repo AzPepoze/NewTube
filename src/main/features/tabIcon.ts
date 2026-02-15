@@ -1,7 +1,9 @@
 import { getRootValue } from "../../styleshift/core/storageManager";
 import { registerSettingListener } from "../../styleshift/settings/functions";
+import { onYoutubeNavigate } from "../modules/youtube";
 
 let originalFavicon: string | null = null;
+let navigateCleanup: (() => void) | null = null;
 
 function changeFavicon(url: string) {
 	let favicon = document.querySelector('link[rel*="icon"]') as HTMLLinkElement;
@@ -42,10 +44,14 @@ async function updateIcon() {
 
 export function setupTabIconChanger() {
 	updateIcon();
-	window.addEventListener("yt-navigate-finish", updateIcon);
+	navigateCleanup = onYoutubeNavigate(updateIcon);
 }
 
 export function disableTabIconChanger() {
+	if (navigateCleanup) {
+		navigateCleanup();
+		navigateCleanup = null;
+	}
 	revertFavicon();
 }
 

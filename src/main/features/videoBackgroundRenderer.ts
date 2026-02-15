@@ -191,7 +191,10 @@ export class VideoBGRenderer {
 			this.ctx2d = this.canvas.getContext("2d", { alpha: false }) as any;
 			this.preCanvas = new OffscreenCanvas(this.canvas.width, this.canvas.height);
 			this.preCtx2d = this.preCanvas.getContext("2d", { alpha: true });
-			logger.info("video-bg-renderer", "CPU initialized successfully");
+			logger.info("video-bg-renderer", "CPU initialized successfully", { 
+				ctx2d: !!this.ctx2d, 
+				preCtx2d: !!this.preCtx2d 
+			});
 		}
 	}
 
@@ -202,16 +205,25 @@ export class VideoBGRenderer {
 	public render(bitmap: ImageBitmap) {
 		if (!this.canvas || !this.preCanvas) return;
 
-		const tw = bitmap.width;
-		const th = bitmap.height;
+		const tw = Math.max(64, Math.floor(bitmap.width * this.settings.quality));
+		const th = Math.max(36, Math.floor(bitmap.height * this.settings.quality));
 
 		if (this.canvas.width !== tw) {
 			this.canvas.width = tw;
 			this.canvas.height = th;
 			this.preCanvas.width = tw;
 			this.preCanvas.height = th;
-			if (this.gl) this.gl.viewport(0, 0, tw, th);
-			if (this.preGl) this.preGl.viewport(0, 0, tw, th);
+			if (this.gl) {
+				this.gl.viewport(0, 0, tw, th);
+				this.gl.useProgram(this.program!);
+				this.gl.uniform2f(this.uniformLocations.mainResolutionLocation, tw, th);
+			}
+			if (this.preGl) {
+				this.preGl.viewport(0, 0, tw, th);
+				const resLoc = this.preGl.getUniformLocation(this.preProgram!, "canvasRes");
+				this.preGl.useProgram(this.preProgram!);
+				this.preGl.uniform2f(resLoc, tw, th);
+			}
 		}
 
 		const alpha = 1.0 / this.settings.smooth;
@@ -245,9 +257,16 @@ export class VideoBGRenderer {
 		} else if (this.ctx2d && this.preCtx2d) {
 			const ctx2d = this.ctx2d;
 			const preCtx2d = this.preCtx2d;
+			// Smoothing: Draw current frame with partial alpha over previous content
 			preCtx2d.globalAlpha = alpha;
 			preCtx2d.drawImage(bitmap, 0, 0, this.canvas.width, this.canvas.height);
-			(ctx2d as any).filter = `blur(${this.settings.blur}px)`;
+			
+			// Final output: Draw preCanvas onto main canvas with blur
+			if (this.settings.blur > 0) {
+				(ctx2d as any).filter = `blur(${this.settings.blur}px)`;
+			} else {
+				(ctx2d as any).filter = "none";
+			}
 			ctx2d.drawImage(this.preCanvas, 0, 0, this.canvas.width, this.canvas.height);
 		}
 

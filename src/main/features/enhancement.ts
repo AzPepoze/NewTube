@@ -1,3 +1,5 @@
+import { onYoutubeNavigate } from "../modules/youtube";
+
 export function setupFlyoutListener() {
 	const videoPlayer = document.querySelector("#player.ytd-watch-flexy") as HTMLElement;
 	if (!videoPlayer) return;
@@ -23,5 +25,5 @@ export async function setupChatReplay() {
 	};
 
 	setTimeout(clickButton, 2500);
-	window.addEventListener("yt-navigate-finish", () => setTimeout(clickButton, 1500));
+	onYoutubeNavigate(() => setTimeout(clickButton, 1500));
 }

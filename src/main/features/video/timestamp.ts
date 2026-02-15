@@ -1,8 +1,10 @@
+import { onYoutubeNavigate, getVideoElement } from "../../modules/youtube";
+
 export function setupUpdateTimestamp() {
 	let timer: number | undefined;
 
-	const updateUrl = () => {
-		const video = document.querySelector("video") as HTMLVideoElement;
+	const updateUrl = async () => {
+		const video = await getVideoElement();
 		if (!video) return;
 
 		const time = Math.floor(video.currentTime);
@@ -14,7 +16,7 @@ export function setupUpdateTimestamp() {
 	};
 
 	// Start checking when navigation finishes
-	window.addEventListener("yt-navigate-finish", () => {
+	onYoutubeNavigate(() => {
 		clearInterval(timer);
 		// Update every 10 seconds to avoid spamming history too much, but enough to be useful
 		timer = setInterval(updateUrl, 10000) as unknown as number;

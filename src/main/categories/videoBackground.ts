@@ -1,5 +1,5 @@
 import { Category } from "../../styleshift/types/store";
-import { setupVideoBackground, disableVideoBackground, updateVideoBgSettings } from "../features/videoBackground";
+import { enableVideoBackground, disableVideoBackground, updateVideoBgSettings } from "../features/videoBackground";
 
 export const videoBackgroundCategory: Category = {
 	category: "🎆 Background Video",
@@ -10,7 +10,7 @@ export const videoBackgroundCategory: Category = {
 			name: "Enable Background Video",
 			description: "Adds a cinematic blurred background using the current video. (Higher resource usage)",
 			value: false,
-			enableFunction: setupVideoBackground,
+			enableFunction: enableVideoBackground,
 			disableFunction: disableVideoBackground,
 		},
 		{
@@ -27,6 +27,15 @@ export const videoBackgroundCategory: Category = {
 			id: "VideoBGStick",
 			name: "Stick to Video Player",
 			description: "Keeps the background directly behind the video player instead of the full page.",
+			value: false,
+			enableFunction: updateVideoBgSettings,
+			disableFunction: updateVideoBgSettings,
+		},
+		{
+			type: "checkbox",
+			id: "VideoBGDebug",
+			name: "Debug Info",
+			description: "Shows technical information over the video player.",
 			value: false,
 			enableFunction: updateVideoBgSettings,
 			disableFunction: updateVideoBgSettings,

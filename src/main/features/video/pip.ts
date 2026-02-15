@@ -1,6 +1,8 @@
+import { getVideoElement } from "../../modules/youtube";
+
 export function setupAutoPip() {
 	document.addEventListener("visibilitychange", async () => {
-		const video = document.querySelector("video") as HTMLVideoElement;
+		const video = await getVideoElement();
 		if (!video) return;
 
 		if (document.hidden && !video.paused && !document.pictureInPictureElement) {

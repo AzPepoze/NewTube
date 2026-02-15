@@ -1,3 +1,5 @@
+import { onYoutubeNavigate } from "../../modules/youtube";
+
 export function setupFlyout() {
 	const observer = new IntersectionObserver(
 		(entries) => {
@@ -25,7 +27,7 @@ export function setupFlyout() {
 	};
 
 	startObserving();
-	window.addEventListener("yt-navigate-finish", () => {
+	onYoutubeNavigate(() => {
 		const moviePlayer = document.querySelector("#moviePlayer");
 		if (moviePlayer) moviePlayer.classList.remove("newtube-flyout-mode");
 		setTimeout(startObserving, 1000);

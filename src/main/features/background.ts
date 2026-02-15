@@ -1,6 +1,8 @@
 import { getDocumentBody } from "../../styleshift/shared/normal";
 import { getUserSetting } from "../../styleshift/core/storageManager";
 import { registerSettingListener } from "../../styleshift/settings/functions";
+import { logger } from "@/shared/logger";
+import { onYoutubeNavigate, getYoutubeVideoId } from "../modules/youtube";
 
 const bgTintId = "newtube-bg-tint";
 const bgImageId = "newtube-bg-image";
@@ -10,6 +12,7 @@ let bgImageElement: HTMLElement | null = null;
 const bgImage = new Image();
 
 let hiddenByVideo = false;
+let navigateCleanup: (() => void) | null = null;
 
 export const enableBackgroundCss = `
 ytd-app {
@@ -76,33 +79,23 @@ export async function showBg() {
 	}
 }
 
-import { createStylesheet } from "../../styleshift/settings/styleSheet";
-
-let stylesheet: HTMLElement | null = null;
-
 export async function enableBg() {
 	getElement();
-
-	if (!stylesheet) {
-		stylesheet = createStylesheet("nt-background-transparency");
-		stylesheet.textContent = enableBackgroundCss;
-	}
+	const body = await getDocumentBody();
 
 	if (!bgTintElement) {
 		bgTintElement = document.createElement("div");
 		bgTintElement.id = bgTintId;
+		body.appendChild(bgTintElement);
 	}
 
 	if (!bgImageElement) {
 		bgImageElement = document.createElement("div");
 		bgImageElement.id = bgImageId;
+		body.appendChild(bgImageElement);
 	}
 
-	const body = await getDocumentBody();
-	if (body) {
-		if (bgTintElement && !body.contains(bgTintElement)) body.appendChild(bgTintElement);
-		if (bgImageElement && !body.contains(bgImageElement)) body.appendChild(bgImageElement);
-	}
+	logger.info("Enabling background elements", { bgTintElement, bgImageElement });
 
 	if (!hiddenByVideo) {
 		requestAnimationFrame(() => {
@@ -118,7 +111,7 @@ export async function enableBg() {
 	}
 
 	window.addEventListener("resize", updateBgImgSize);
-	window.addEventListener("yt-navigate-finish", updateBgImg);
+	navigateCleanup = onYoutubeNavigate(updateBgImg);
 	updateBgImg();
 }
 
@@ -140,13 +133,16 @@ export async function disableBg() {
 	}, 500);
 
 	window.removeEventListener("resize", updateBgImgSize);
-	window.removeEventListener("yt-navigate-finish", updateBgImg);
+	if (navigateCleanup) {
+		navigateCleanup();
+		navigateCleanup = null;
+	}
 }
 
 export async function updateBgImg() {
 	const useThumb = await getUserSetting("ThumbBG");
 	if (useThumb) {
-		const videoId = new URLSearchParams(window.location.search).get("v");
+		const videoId = getYoutubeVideoId();
 		if (videoId) {
 			bgImage.src = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
 			return;
