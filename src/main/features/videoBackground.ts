@@ -42,6 +42,7 @@ interface VideoBgState {
 	isCapturing: boolean;
 	droppedFrames: number;
 	pendingBitmap: ImageBitmap | null;
+	sessionId: number;
 }
 
 const state: VideoBgState = {
@@ -70,6 +71,7 @@ const state: VideoBgState = {
 	isCapturing: false,
 	droppedFrames: 0,
 	pendingBitmap: null,
+	sessionId: 0,
 };
 
 const settings = {
@@ -364,7 +366,7 @@ export async function updateVideoBgSettings(value?: any, settingId?: string) {
 
 		// Full restart if engine changes because we can't switch context on the same canvas
 		if (settingId === "VideoBGRenderEngine" && oldEngine !== settings.engine && state.enabled) {
-			logger.info("video-bg", `Engine changed from ${oldEngine} to ${settings.engine}, restarting...`);
+			logger.info("video-bg", `Engine changed: ${oldEngine} -> ${settings.engine}. Restarting...`);
 			await disableVideoBackground(true);
 			enableVideoBackground();
 			return;
@@ -402,23 +404,29 @@ export async function updateVideoBgSettings(value?: any, settingId?: string) {
 }
 
 const render = async () => {
+	const mySession = state.sessionId;
 	if (!state.enabled || !state.canvas) return;
 
 	const video = await getVideoElement();
-	if (!video) {
-		state.animationFrame = requestAnimationFrame(render);
+	if (!video || !state.enabled || state.sessionId !== mySession) {
+		if (state.enabled && state.sessionId === mySession) {
+			state.animationFrame = requestAnimationFrame(render);
+		}
 		return;
 	}
 
 	// Schedule next frame (Priority: rVFC > 30fps Fallback)
-	// We MUST NOT await long tasks before scheduling the next frame
 	if ("requestVideoFrameCallback" in video) {
 		state.renderMethod = "rVFC";
-		(video as any).requestVideoFrameCallback(render);
+		(video as any).requestVideoFrameCallback(() => {
+			if (state.enabled && state.sessionId === mySession) render();
+		});
 	} else {
 		state.renderMethod = "30fps";
 		state.renderTimeout = setTimeout(() => {
-			state.animationFrame = requestAnimationFrame(render);
+			state.animationFrame = requestAnimationFrame(() => {
+				if (state.enabled && state.sessionId === mySession) render();
+			});
 		}, 33) as any;
 	}
 
@@ -433,6 +441,7 @@ const render = async () => {
 
 	// Performance Tracking
 	const now = performance.now();
+	if (state.lastTime === 0) state.lastTime = now;
 	const frameTime = now - state.lastTime;
 	state.lastTime = now;
 	state.frameCount++;
@@ -448,7 +457,10 @@ const render = async () => {
 	}
 
 	// Skip if capture is busy (rare)
-	if (state.isCapturing) return;
+	if (state.isCapturing) {
+		state.droppedFrames++;
+		return;
+	}
 
 	// Skip processing if static or paused
 	const isPaused = video.paused || video.ended;
@@ -456,9 +468,11 @@ const render = async () => {
 
 	// FIRE AND FORGET: Move async work out of the rVFC callback path
 	(async () => {
+		if (!state.enabled) return;
 		state.isCapturing = true;
 		const processStart = performance.now();
 		try {
+			// Fast capture without resizing (Browser can usually do this zero-copy)
 			const bitmap = await createImageBitmap(video);
 			state.lastProcessTime = performance.now() - processStart;
 			state.isCapturing = false;
@@ -474,32 +488,39 @@ const render = async () => {
 			}
 
 			sendToWorker(bitmap);
-		} catch (e) {
+		} catch (_e) {
 			state.isCapturing = false;
+			state.droppedFrames++;
 		}
 	})();
 };
 
 const updatePositionLoop = async () => {
-	if (!state.enabled) return;
+	const mySession = state.sessionId;
+	if (!state.enabled || state.sessionId !== mySession) return;
 
 	const video = await getVideoElement();
 	if (video) {
 		updateLayout(video);
 	}
 
-	state.layoutAnimationFrame = requestAnimationFrame(updatePositionLoop);
+	state.layoutAnimationFrame = requestAnimationFrame(() => {
+		if (state.enabled && state.sessionId === mySession) {
+			updatePositionLoop();
+		}
+	});
 };
 
 export async function enableVideoBackground() {
 	state.enabled = true;
+	const mySession = state.sessionId;
 	await updateVideoBgSettings(); // Await settings loading
 
 	const init = async () => {
-		if (document.getElementById("newtube-bg-container") || !state.enabled) return;
-		logger.info("video-bg", "Initializing background video...", { engine: settings.engine });
+		if (document.getElementById("newtube-bg-container") || !state.enabled || state.sessionId !== mySession) return;
+		logger.info("video-bg", "Initializing background video...", { engine: settings.engine, session: mySession });
 		const app = (await getDocumentBody()) || document.body;
-		if (!app) return;
+		if (!app || state.sessionId !== mySession) return;
 
 		app.style.backgroundColor = "transparent";
 		app.style.backgroundImage = "none";
@@ -542,7 +563,14 @@ export async function enableVideoBackground() {
 			pointerEvents: "none",
 		});
 
+		state.worker?.terminate();
 		state.worker = await loadWorker("videoBackgroundWorker.js");
+
+		if (state.sessionId !== mySession || !state.enabled) {
+			state.worker?.terminate();
+			state.worker = null;
+			return;
+		}
 
 		if (state.worker) {
 			state.worker.onmessage = (e) => {
@@ -596,24 +624,30 @@ export async function enableVideoBackground() {
 	state.fullscreenCleanup = onYoutubeFullscreen((fullscreen) => {
 		if (fullscreen) {
 			fadeOut();
-		} else if (state.enabled) {
+		} else if (state.enabled && state.sessionId === mySession) {
 			render();
 		}
 	});
 }
 
 export async function disableVideoBackground(force = false) {
+	if (state.enabled) logger.info("video-bg", "Disabling background video...", { force });
 	state.enabled = false;
+
 	const container = state.container;
 	if (container) {
 		container.style.opacity = "0";
 		if (!force) await new Promise((r) => setTimeout(r, 500));
 		if (container.parentNode) container.remove();
 	}
+
 	if (state.animationFrame) cancelAnimationFrame(state.animationFrame);
 	if (state.renderTimeout) clearTimeout(state.renderTimeout);
 	if (state.layoutAnimationFrame) cancelAnimationFrame(state.layoutAnimationFrame);
+	
 	state.worker?.terminate();
+	state.sessionId++;
+
 	if (state.pendingBitmap) {
 		state.pendingBitmap.close();
 		state.pendingBitmap = null;
@@ -629,20 +663,37 @@ export async function disableVideoBackground(force = false) {
 		state.navigateCleanup = null;
 	}
 
+	if (state.fullscreenCleanup) {
+		state.fullscreenCleanup();
+		state.fullscreenCleanup = null;
+	}
+
+	Object.assign(lastRect, { top: -1, left: -1, width: -1, height: -1, scrollY: -1, scrollX: -1 });
+
 	Object.assign(state, {
 		container: null,
 		wrapper: null,
 		canvas: null,
 		worker: null,
 		localRenderer: null,
+		overlay: null,
 		isStatic: false,
 		isFadedIn: false,
 		isProcessing: false,
 		isCapturing: false,
 		navigateCleanup: null,
+		fullscreenCleanup: null,
 		layoutAnimationFrame: null,
 		renderTimeout: null,
+		animationFrame: null,
+		frameCount: 0,
+		lastTime: 0,
+		laggedFrames: 0,
+		droppedFrames: 0,
+		lastProcessTime: 0,
+		renderMethod: "Unknown",
 	});
+
 	showBg();
 }
 

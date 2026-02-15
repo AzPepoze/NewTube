@@ -55,9 +55,11 @@ export function calculateVdoHeight(heights: (number | "inf")[], currentLastHeigh
 	return mostCommonHeight;
 }
 
-export function detectBlackBars(data: BarDetectionData) {
+export function detectBlackBars(data: BarDetectionData, ctx?: any) {
 	const { imgData, vHeight, checkStep, threshold, sR, sG, sB } = data;
 	const heightsFound: (number | "inf")[] = [];
+
+	if (ctx) ctx.fillStyle = "red";
 
 	for (let x = 0; x < 5; x++) {
 		let top = -1;
@@ -70,6 +72,7 @@ export function detectBlackBars(data: BarDetectionData) {
 				top = i;
 				break;
 			}
+			if (ctx) ctx.fillRect(x, i, 1, checkStep);
 		}
 
 		// Bottom scan
@@ -79,6 +82,7 @@ export function detectBlackBars(data: BarDetectionData) {
 				bottom = vHeight - i;
 				break;
 			}
+			if (ctx) ctx.fillRect(x, i, 1, checkStep);
 		}
 
 		if (top !== -1 && bottom !== -1) {

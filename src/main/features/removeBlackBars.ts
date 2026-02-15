@@ -15,6 +15,15 @@ let isChecking = false;
 let worker: Worker | null = null;
 let workerLoadAttempted = false;
 
+let droppedFrames = 0;
+let lastSampleColor = "transparent";
+let processLatency = 0;
+let startTime = 0;
+let lastIntervalTime = 0;
+let currentInterval = 0;
+let debugContainer: HTMLDivElement | null = null;
+let sessionId = 0;
+
 const ultraWideRatio = (21 / 9).toFixed(2);
 let isUltraWideMode = false;
 
@@ -24,8 +33,63 @@ async function initWorker() {
 	worker = await loadWorker("removeBlackBarsWorker.js");
 }
 
-async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number) {
-	const debug = await getUserSetting("DelBarDebug");
+function updateDebugUI(finalDetectedHeight: number, vHeight: number) {
+	if (!debugContainer) {
+		debugContainer = document.createElement("div");
+		debugContainer.id = "newtube-bars-debug";
+		Object.assign(debugContainer.style, {
+			position: "absolute",
+			top: "10px",
+			right: "10px",
+			padding: "12px",
+			background: "rgba(0, 0, 0, 0.6)",
+			color: "white",
+			fontFamily: "inherit",
+			fontSize: "13px",
+			zIndex: "10000",
+			pointerEvents: "none",
+			borderRadius: "8px",
+			lineHeight: "1.4",
+			boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+		});
+		video?.parentElement?.appendChild(debugContainer);
+	}
+
+	const needCrop = finalDetectedHeight > 10;
+	const cropPercent = (finalDetectedHeight * 2 / vHeight) * 100;
+
+	debugContainer.innerHTML = `
+		<div style="font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 5px; padding-bottom: 2px;">NewTube Remove Bars Debug</div>
+		<div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 5px 15px;">
+			<span>Interval:</span> <span>${currentInterval}ms</span>
+			<span>Latency:</span> <span>${processLatency.toFixed(2)}ms</span>
+			<span>Worker:</span> <span>${worker ? "Yes" : "No"}</span>
+			<span>Dropped:</span> <span>${droppedFrames}</span>
+			<span>Sample:</span> <span>
+				<div style="width: 100%; height: 16px; background: ${lastSampleColor}; border: 1px solid rgba(255,255,255,0.8); border-radius: 4px; box-shadow: 0 0 2px rgba(0,0,0,0.5);"></div>
+			</span>
+			<span>Detected:</span> <span>${finalDetectedHeight}px</span>
+			<span>Need Crop:</span> <span style="color: ${needCrop ? "#00ff00" : "#ff4444"}">${needCrop}</span>
+			<span>Crop:</span> <span>${cropPercent.toFixed(1)}%</span>
+			<span>vHeight:</span> <span>${vHeight}px</span>
+			<span>UltraWide:</span> <span>${isUltraWideMode}</span>
+		</div>
+	`;
+	debugContainer.style.display = "block";
+}
+
+async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number, mySession: number) {
+	if (sessionId !== mySession) return;
+	const debugCanvas = await getUserSetting("DelBarDebug");
+	const debugInfo = await getUserSetting("DelBarDebugInfo");
+	processLatency = performance.now() - startTime;
+
+	if (debugInfo) {
+		updateDebugUI(finalDetectedHeight, vHeight);
+	} else if (debugContainer) {
+		debugContainer.style.display = "none";
+	}
+
 	const dropFrame = await getUserSetting("DropFrame");
 	const lazyAmount = await getUserSetting("LazyAmount");
 
@@ -42,9 +106,12 @@ async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number
 		applyCrop(finalDetectedHeight, vHeight);
 	}
 
-	if (debug && ctx) {
+	if (debugCanvas && ctx) {
 		ctx.fillStyle = "yellow";
 		ctx.fillRect(0, 10, 5, 1);
+		ctx.fillStyle = "green";
+		ctx.fillRect(0, finalDetectedHeight, 5, 1);
+		ctx.fillRect(0, vHeight - finalDetectedHeight, 5, 1);
 		ctx.fillStyle = "green";
 		ctx.fillRect(0, lastHeight, 5, 1);
 		ctx.fillRect(0, vHeight - lastHeight, 5, 1);
@@ -61,11 +128,15 @@ async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number
 	const cooldown = dropFrame ? lazyAmount : 0;
 
 	const nextCall = () => {
-		if (video && enabled) {
+		if (video && enabled && sessionId === mySession) {
 			if ("requestVideoFrameCallback" in video) {
-				vfcId = video.requestVideoFrameCallback(checkBlackBars);
+				vfcId = video.requestVideoFrameCallback(() => {
+					if (sessionId === mySession) checkBlackBars();
+				});
 			} else {
-				animationId = requestAnimationFrame(checkBlackBars);
+				animationId = requestAnimationFrame(() => {
+					if (sessionId === mySession) checkBlackBars();
+				});
 			}
 		}
 	};
@@ -78,21 +149,40 @@ async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number
 }
 
 async function checkBlackBars() {
-	if (!enabled || !video || isChecking) return;
+	const mySession = sessionId;
+	if (!enabled || !video || sessionId !== mySession) return;
+
+	if (isChecking) {
+		droppedFrames++;
+		return;
+	}
 
 	if (video.ended || video.paused) {
 		if ("requestVideoFrameCallback" in video) {
-			vfcId = video.requestVideoFrameCallback(checkBlackBars);
+			vfcId = video.requestVideoFrameCallback(() => {
+				if (sessionId === mySession) checkBlackBars();
+			});
 		} else {
-			animationId = requestAnimationFrame(checkBlackBars);
+			animationId = requestAnimationFrame(() => {
+				if (sessionId === mySession) checkBlackBars();
+			});
 		}
 		return;
 	}
 
+	const now = performance.now();
+	if (lastIntervalTime > 0) {
+		currentInterval = Math.round(now - lastIntervalTime);
+	}
+	lastIntervalTime = now;
+	startTime = now;
+
 	isChecking = true;
 	await initWorker();
+	if (sessionId !== mySession) return;
 
-	const debug = await getUserSetting("DelBarDebug");
+	const debugCanvas = await getUserSetting("DelBarDebug");
+	const debugInfo = await getUserSetting("DelBarDebugInfo");
 
 	if (!canvas) {
 		canvas = document.createElement("canvas");
@@ -101,7 +191,7 @@ async function checkBlackBars() {
 		canvas.id = "NewtubeVDOCanvas";
 	}
 
-	if (debug) {
+	if (debugCanvas) {
 		const videoRect = video.getBoundingClientRect();
 		if (!canvas.parentElement) {
 			const container = video.parentElement;
@@ -128,9 +218,13 @@ async function checkBlackBars() {
 	if (vHeight === 0) {
 		isChecking = false;
 		if ("requestVideoFrameCallback" in video) {
-			video.requestVideoFrameCallback(checkBlackBars);
+			video.requestVideoFrameCallback(() => {
+				if (sessionId === mySession) checkBlackBars();
+			});
 		} else {
-			animationId = requestAnimationFrame(checkBlackBars);
+			animationId = requestAnimationFrame(() => {
+				if (sessionId === mySession) checkBlackBars();
+			});
 		}
 		return;
 	}
@@ -143,6 +237,7 @@ async function checkBlackBars() {
 
 	const sampleColor = ctx!.getImageData(1, 3, 1, 1).data;
 	const [sR, sG, sB] = [sampleColor[0], sampleColor[1], sampleColor[2]];
+	lastSampleColor = `rgb(${sR}, ${sG}, ${sB})`;
 	const threshold = 20;
 
 	const dropFrame = await getUserSetting("DropFrame");
@@ -151,8 +246,9 @@ async function checkBlackBars() {
 
 	const imgData = ctx!.getImageData(0, 0, 5, vHeight).data;
 
-	if (worker) {
+	if (worker && !debugCanvas) {
 		worker.onmessage = async (e) => {
+			if (sessionId !== mySession) return;
 			const { type, data } = e.data;
 			if (type === "detected") {
 				const { heightsFound } = data;
@@ -161,7 +257,7 @@ async function checkBlackBars() {
 					data: { heights: heightsFound, currentLastHeight: lastHeight },
 				});
 			} else if (type === "calculated") {
-				handleDetectedHeight(data.result, vHeight);
+				handleDetectedHeight(data.result, vHeight, mySession);
 			}
 		};
 
@@ -181,18 +277,21 @@ async function checkBlackBars() {
 			[imgData.buffer],
 		);
 	} else {
-		// Fallback to main thread
-		const heightsFound = detectBlackBars({
-			imgData,
-			vHeight,
-			checkStep,
-			threshold,
-			sR,
-			sG,
-			sB,
-		});
+		// Fallback to main thread or forced by debugCanvas
+		const heightsFound = detectBlackBars(
+			{
+				imgData,
+				vHeight,
+				checkStep,
+				threshold,
+				sR,
+				sG,
+				sB,
+			},
+			debugCanvas ? ctx : null,
+		);
 		const result = calculateVdoHeight(heightsFound, lastHeight);
-		handleDetectedHeight(result, vHeight);
+		handleDetectedHeight(result, vHeight, mySession);
 	}
 }
 
@@ -310,7 +409,16 @@ export function destroyRemoveBlackBars() {
 		video.style.position = "";
 	}
 	if (canvas) canvas.style.display = "none";
+	if (debugContainer) {
+		debugContainer.remove();
+		debugContainer = null;
+	}
 	lastHeight = 0;
+	droppedFrames = 0;
+	processLatency = 0;
+	startTime = 0;
+	lastIntervalTime = 0;
+	currentInterval = 0;
 	disableUltraWide();
 }
 

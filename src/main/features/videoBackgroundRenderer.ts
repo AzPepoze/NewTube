@@ -191,9 +191,9 @@ export class VideoBGRenderer {
 			this.ctx2d = this.canvas.getContext("2d", { alpha: false }) as any;
 			this.preCanvas = new OffscreenCanvas(this.canvas.width, this.canvas.height);
 			this.preCtx2d = this.preCanvas.getContext("2d", { alpha: true });
-			logger.info("video-bg-renderer", "CPU initialized successfully", { 
-				ctx2d: !!this.ctx2d, 
-				preCtx2d: !!this.preCtx2d 
+			logger.info("video-bg-renderer", "CPU initialized successfully", {
+				ctx2d: !!this.ctx2d,
+				preCtx2d: !!this.preCtx2d,
 			});
 		}
 	}
@@ -260,7 +260,7 @@ export class VideoBGRenderer {
 			// Smoothing: Draw current frame with partial alpha over previous content
 			preCtx2d.globalAlpha = alpha;
 			preCtx2d.drawImage(bitmap, 0, 0, this.canvas.width, this.canvas.height);
-			
+
 			// Final output: Draw preCanvas onto main canvas with blur
 			if (this.settings.blur > 0) {
 				(ctx2d as any).filter = `blur(${this.settings.blur}px)`;
