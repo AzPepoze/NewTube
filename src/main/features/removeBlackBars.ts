@@ -80,8 +80,8 @@ function updateDebugUI(finalDetectedHeight: number, vHeight: number) {
 
 async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number, mySession: number) {
 	if (sessionId !== mySession) return;
-	const debugCanvas = await getUserSetting("DelBarDebug");
-	const debugInfo = await getUserSetting("DelBarDebugInfo");
+	const debugCanvas = await getUserSetting("RemoveBlackBarsDebugCanvas");
+	const debugInfo = await getUserSetting("RemoveBlackBarsDebugInfo");
 	processLatency = performance.now() - startTime;
 
 	if (debugInfo) {
@@ -90,8 +90,8 @@ async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number
 		debugContainer.style.display = "none";
 	}
 
-	const dropFrame = await getUserSetting("DropFrame");
-	const lazyAmount = await getUserSetting("LazyAmount");
+	const dropFrame = await getUserSetting("RemoveBlackBarsLazyCheck");
+	const lazyAmount = await getUserSetting("RemoveBlackBarsLazyAmount");
 
 	if (Math.abs(finalDetectedHeight - lastHeight) > 10 || (finalDetectedHeight > 10 && lastHeight === 0)) {
 		const player = document.querySelector(".html5-video-container") as HTMLElement;
@@ -117,7 +117,7 @@ async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number
 		ctx.fillRect(0, vHeight - lastHeight, 5, 1);
 	}
 
-	const ultraWideEnabled = await getUserSetting("UltraWide");
+	const ultraWideEnabled = await getUserSetting("RemoveBlackBarsUltrawide");
 	if (ultraWideEnabled) {
 		checkUltraWide();
 	} else {
@@ -178,11 +178,18 @@ async function checkBlackBars() {
 	startTime = now;
 
 	isChecking = true;
-	await initWorker();
+	const useWorker = await getUserSetting("RemoveBlackBarsWorker");
+	if (useWorker) {
+		await initWorker();
+	} else if (worker) {
+		worker.terminate();
+		worker = null;
+		workerLoadAttempted = false;
+	}
+
 	if (sessionId !== mySession) return;
 
-	const debugCanvas = await getUserSetting("DelBarDebug");
-	const debugInfo = await getUserSetting("DelBarDebugInfo");
+	const debugCanvas = await getUserSetting("RemoveBlackBarsDebugCanvas");
 
 	if (!canvas) {
 		canvas = document.createElement("canvas");
@@ -240,8 +247,8 @@ async function checkBlackBars() {
 	lastSampleColor = `rgb(${sR}, ${sG}, ${sB})`;
 	const threshold = 20;
 
-	const dropFrame = await getUserSetting("DropFrame");
-	const lazyAmount = await getUserSetting("LazyAmount");
+	const dropFrame = await getUserSetting("RemoveBlackBarsLazyCheck");
+	const lazyAmount = await getUserSetting("RemoveBlackBarsLazyAmount");
 	const checkStep = dropFrame ? Math.max(1, Math.floor(lazyAmount / 10)) : 1;
 
 	const imgData = ctx!.getImageData(0, 0, 5, vHeight).data;
@@ -367,7 +374,7 @@ function applyCrop(barHeight: number, totalHeight: number) {
 }
 
 export async function setupRemoveBlackBars() {
-	if ((await getFromStorage("Enable_Extension")) === false) return;
+	if ((await getFromStorage("EnableExtension")) === false) return;
 	if (enabled) return;
 	enabled = true;
 	const findVideo = async () => {
@@ -422,11 +429,11 @@ export function destroyRemoveBlackBars() {
 	disableUltraWide();
 }
 
-registerSettingListener("Enable_Extension", (val) => {
+registerSettingListener("EnableExtension", (val) => {
 	if (!val) {
 		destroyRemoveBlackBars();
 	} else {
-		getUserSetting("DelBar").then((enabled) => {
+		getUserSetting("RemoveBlackBars").then((enabled) => {
 			if (enabled) {
 				setupRemoveBlackBars();
 			}

@@ -6,8 +6,8 @@ import { logger } from "@/shared/logger";
  * @param element The HTMLElement to apply attributes to.
  */
 export async function applyThemeToElement(element: HTMLElement) {
-	const isLightTheme = await getFromStorage("App_Light_Theme");
-	const isTransparent = await getFromStorage("Setting_BG_Transparent");
+	const isLightTheme = await getFromStorage("EnableAppLightTheme");
+	const isTransparent = await getFromStorage("EnableSettingsBackgroundBlur");
 
 	element.setAttribute("data-theme", isLightTheme ? "light" : "dark");
 	element.setAttribute("data-transparent", isTransparent ? "true" : "false");
@@ -19,8 +19,8 @@ export async function applyThemeToElement(element: HTMLElement) {
 export async function syncAllThemes() {
 	const elements = document.querySelectorAll<HTMLElement>(".STYLESHIFT-Main");
 
-	const isLightTheme = await getFromStorage("App_Light_Theme");
-	const isTransparent = await getFromStorage("Setting_BG_Transparent");
+	const isLightTheme = await getFromStorage("EnableAppLightTheme");
+	const isTransparent = await getFromStorage("EnableSettingsBackgroundBlur");
 
 	const theme = isLightTheme ? "light" : "dark";
 	const transparent = isTransparent ? "true" : "false";

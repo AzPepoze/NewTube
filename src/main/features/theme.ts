@@ -114,8 +114,8 @@ export function setupThemeByVideo() {
 			// Background Background
 			const bgHsv = { ...hsv, v: hsv.v * 0.15 };
 			const bgRgb = hsvToRgb(bgHsv);
-			const isSolid = await getUserSetting("Solid_BG_Theme_by_video");
-			const bgOpacity = isSolid ? 1 : (await getUserSetting("BGO")) / 100;
+			const isSolid = await getUserSetting("EnableSolidThemeByVideo");
+			const bgOpacity = isSolid ? 1 : (await getUserSetting("BackgroundOpacity")) / 100;
 			setProp("--nt-bg-main", `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${bgOpacity})`);
 
 			// Timeline

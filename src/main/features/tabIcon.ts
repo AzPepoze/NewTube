@@ -31,12 +31,12 @@ function revertFavicon() {
 }
 
 async function updateIcon() {
-	const useCustomIcon = await getRootValue("CustomIcon");
+	const useCustomIcon = await getRootValue("EnableCustomTabIcon");
 	if (!useCustomIcon) {
 		revertFavicon();
 		return;
 	}
-	const iconUrl = (await getRootValue("iconURL")) as string;
+	const iconUrl = (await getRootValue("TabIconImageUrl")) as string;
 	if (iconUrl) {
 		changeFavicon(iconUrl);
 	}
@@ -55,4 +55,4 @@ export function disableTabIconChanger() {
 	revertFavicon();
 }
 
-registerSettingListener("iconURL", updateIcon);
+registerSettingListener("TabIconImageUrl", updateIcon);

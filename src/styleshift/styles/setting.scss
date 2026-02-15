@@ -9,10 +9,6 @@
 		inherits: false;
 	}
 
-	:where(*:not(.cm-editor *)) {
-		user-select: none;
-	}
-
 	textarea {
 		white-space: nowrap !important;
 
@@ -77,7 +73,9 @@
 		gap: 12px;
 		box-sizing: border-box;
 		width: -webkit-fill-available;
-		transition: border-color 0.2s, background 0.2s;
+		transition:
+			border-color 0.2s,
+			background 0.2s;
 
 		&:focus-within {
 			border-color: var(--Theme-0);

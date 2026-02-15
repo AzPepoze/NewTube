@@ -5,9 +5,9 @@ export const animationCategory: Category = {
 	settings: [
 		{
 			type: "checkbox",
-			id: "Ptran",
-			name: "Enable Page Transition",
-			description: "Adds a fade-in and slide-in animation when navigating between video pages.",
+			id: "PageTransitions",
+			name: "Page Transitions",
+			description: "Adds a smooth fade-in and slide-in motion effect when navigating between different video pages or search results.",
 			value: true,
 			enableCss: `
                 ytd-page-manager:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode)) {
@@ -32,27 +32,9 @@ export const animationCategory: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "SearchIconAni",
-			name: "Enable Search icon moving animation",
-			description: "Adds a subtle moving animation to the search icon.",
-			value: false,
-			enableCss: `
-                #search-icon-legacy[ytd-searchbox].ytd-searchbox:not([is-iconbox]) yt-icon.ytd-searchbox {
-                    animation: SearchIconMove 2s infinite;
-                }
-                @keyframes SearchIconMove {
-                    0% { transform: scale(1) translate(0px, 0px) rotate(0deg); }
-                    30% { transform: scale(1) translate(2px, 2px) rotate(4deg); }
-                    60% { transform: scale(1) translate(-2px, -2px) rotate(-4deg); }
-                    100% { transform: scale(1) translate(0px, 0px) rotate(0deg); }
-                }
-            `,
-		},
-		{
-			type: "checkbox",
-			id: "MenuAnim",
-			name: "Enable Menu Fade-in Animation",
-			description: "Adds a smooth fade and scale effect to YouTube dropdown menus and popups.",
+			id: "MenuAnimations",
+			name: "Menu Animations",
+			description: "Applies a polished fade and scale-up animation to all dropdown menus, context menus, and popup windows.",
 			value: true,
 			enableCss: `
                 @keyframes show-box {
@@ -73,6 +55,24 @@ export const animationCategory: Category = {
                     pointer-events: none;
                     opacity: 0 !important;
                     transform: scale(0.9) !important;
+                }
+            `,
+		},
+		{
+			type: "checkbox",
+			id: "SearchIconAnimation",
+			name: "Search Icon",
+			description: "Adds a subtle, continuous floating movement to the magnifying glass icon in the search bar.",
+			value: false,
+			enableCss: `
+                #search-icon-legacy[ytd-searchbox].ytd-searchbox:not([is-iconbox]) yt-icon.ytd-searchbox {
+                    animation: SearchIconMove 2s infinite;
+                }
+                @keyframes SearchIconMove {
+                    0% { transform: scale(1) translate(0px, 0px) rotate(0deg); }
+                    30% { transform: scale(1) translate(2px, 2px) rotate(4deg); }
+                    60% { transform: scale(1) translate(-2px, -2px) rotate(-4deg); }
+                    100% { transform: scale(1) translate(0px, 0px) rotate(0deg); }
                 }
             `,
 		},

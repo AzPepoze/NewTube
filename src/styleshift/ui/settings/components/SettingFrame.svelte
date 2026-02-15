@@ -32,7 +32,7 @@
 	} = $props();
 
 	const isButton = $derived(clickable);
-	const role = $derived(roleProp ?? (isButton ? "button" : (tabindexProp !== undefined ? "region" : undefined)));
+	const role = $derived(roleProp ?? (isButton ? "button" : tabindexProp !== undefined ? "region" : undefined));
 	const tabindex = $derived(tabindexProp ?? (isButton ? 0 : undefined));
 
 	function handleKeyDown(e: KeyboardEvent) {
@@ -78,7 +78,6 @@
 		gap: 10px;
 		width: -webkit-fill-available;
 		transition: all 0.3s;
-		user-select: none;
 		border-radius: 20px;
 		position: relative;
 		background: none;

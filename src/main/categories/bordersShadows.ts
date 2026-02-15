@@ -5,12 +5,13 @@ export const bordersShadowsCategory: Category = {
 	settings: [
 		{
 			type: "dropdown",
-			id: "OutOrSha",
-			name: "Style type",
-			description: "Choose between outlines (borders), shadows, or none for applicable elements.",
+			id: "GlobalStyleType",
+			name: "Style Mode",
+			description: "Select the primary visual enhancement for YouTube elements. 'Outline' adds a solid border, 'Shadow' creates a glowing depth effect, and 'None' keeps it flat.",
 			value: "Sha",
 			options: {
 				Out: {
+					name: "Outline",
 					enableCss: `
                         :root {
                             --nt-global-outline: var(--nt-border-width, 1px) solid var(--nt-border-color, #099DFF80);
@@ -19,6 +20,7 @@ export const bordersShadowsCategory: Category = {
                     `,
 				},
 				Sha: {
+					name: "Shadow",
 					enableCss: `
                         :root {
                             --nt-global-outline: none;
@@ -27,6 +29,7 @@ export const bordersShadowsCategory: Category = {
                     `,
 				},
 				None: {
+					name: "None",
 					enableCss: `
                         :root {
                             --nt-global-outline: none;
@@ -37,29 +40,31 @@ export const bordersShadowsCategory: Category = {
 			},
 		},
 		{
+			type: "color",
+			id: "GlobalBorderColor",
+			name: "Effect Color",
+			description: "Sets the color for both the global outlines and the glow shadows. Best paired with your primary theme color.",
+			value: "#099DFF80",
+			varCss: "--nt-border-color",
+			require: { GlobalStyleType: ["Out", "Sha"] }
+		},
+		{
 			type: "numberSlide",
-			id: "Border",
-			name: "width / size",
-			description: "Adjusts the width of the border or the size of the shadow.",
+			id: "GlobalBorderSize",
+			name: "Effect Width",
+			description: "Adjusts the thickness of borders or the spread distance of shadows.",
 			value: 8,
 			min: 1,
 			max: 50,
 			step: 1,
 			varCss: "--nt-border-width",
-		},
-		{
-			type: "color",
-			id: "OutSha",
-			name: "color",
-			description: "The color of the border or shadow.",
-			value: "#099DFF80",
-			varCss: "--nt-border-color",
+			require: { GlobalStyleType: ["Out", "Sha"] }
 		},
 		{
 			type: "numberSlide",
-			id: "Edge",
-			name: "Corner Radius",
-			description: "Global corner roundness for UI elements.",
+			id: "GlobalCornerRadius",
+			name: "Corner Rounding",
+			description: "Controls the global roundness of thumbnails, buttons, and panels. Higher values create a more organic, bubbly look.",
 			value: 10,
 			min: 0,
 			max: 100,

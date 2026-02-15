@@ -90,7 +90,7 @@
 	style:border={buttonStyles.border}
 	style:color={buttonStyles.color}
 	style:transform="scale({scale})"
-	style={style}
+	{style}
 	onclick={handleClick}
 	onkeydown={handleKeyDown}
 	role="button"
@@ -100,12 +100,7 @@
 		<Icon name={icon} size={50} className="STYLESHIFT-Button-Icon" applyFilter={false} />
 	{/if}
 
-	<Description
-		{name}
-		{description}
-		{align}
-		style="display: flex; color: inherit; font-size: {fontSize}px;"
-	/>
+	<Description {name} {description} {align} style="display: flex; color: inherit; font-size: {fontSize}px;" />
 </div>
 
 <style lang="scss">

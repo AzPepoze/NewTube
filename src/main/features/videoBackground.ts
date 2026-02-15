@@ -83,6 +83,7 @@ const settings = {
 	scale: 2.2,
 	smooth: 1,
 	engine: "GPU",
+	worker: true,
 	stick: false,
 	checkLag: true,
 	debug: false,
@@ -95,7 +96,7 @@ function sendToWorker(bitmap: ImageBitmap) {
 	}
 
 	state.isProcessing = true;
-	if (state.worker) {
+	if (state.worker && settings.worker) {
 		state.worker.postMessage({ type: "render", data: { bitmap } }, [bitmap]);
 	} else {
 		state.localRenderer?.render(bitmap);
@@ -329,60 +330,67 @@ export async function updateVideoBgSettings(value?: any, settingId?: string) {
 	if (typeof settingId === "string") {
 		const oldEngine = settings.engine;
 		switch (settingId) {
-			case "VideoBGBlur":
+			case "VideoBackgroundBlur":
 				settings.blur = value;
 				break;
-			case "VideoBGQuality":
+			case "VideoBackgroundQuality":
 				settings.quality = value / 100;
 				break;
-			case "VideoBGBrightness":
+			case "VideoBackgroundBrightness":
 				settings.brightness = value;
 				break;
-			case "VideoBGContrast":
+			case "VideoBackgroundContrast":
 				settings.contrast = value;
 				break;
-			case "VideoBGOpacity":
+			case "VideoBackgroundOpacity":
 				settings.opacity = value;
 				break;
-			case "VideoBGSize":
+			case "VideoBackgroundSize":
 				settings.scale = value;
 				break;
-			case "VideoBGSmooth":
+			case "VideoBackgroundSmooth":
 				settings.smooth = value;
 				break;
-			case "VideoBGStick":
+			case "VideoBackgroundStick":
 				settings.stick = value;
 				break;
-			case "VideoBGCheckLag":
+			case "VideoBackgroundCheckLag":
 				settings.checkLag = value;
 				break;
-			case "VideoBGDebug":
+			case "VideoBackgroundDebug":
 				settings.debug = value;
 				break;
-			case "VideoBGRenderEngine":
+			case "VideoBackgroundRenderEngine":
 				settings.engine = value;
+				break;
+			case "VideoBackgroundWorker":
+				settings.worker = value;
 				break;
 		}
 
-		// Full restart if engine changes because we can't switch context on the same canvas
-		if (settingId === "VideoBGRenderEngine" && oldEngine !== settings.engine && state.enabled) {
-			logger.info("video-bg", `Engine changed: ${oldEngine} -> ${settings.engine}. Restarting...`);
+		// Full restart if engine or worker setting changes
+		if (
+			(settingId === "VideoBackgroundRenderEngine" && oldEngine !== settings.engine && state.enabled) ||
+			(settingId === "VideoBackgroundWorker" && state.enabled)
+		) {
+			logger.info("video-bg", `Setting ${settingId} changed. Restarting...`);
 			await disableVideoBackground(true);
 			enableVideoBackground();
 			return;
 		}
 	} else {
-		settings.blur = await getUserSetting("VideoBGBlur");
-		settings.quality = (await getUserSetting("VideoBGQuality")) / 100;
-		settings.brightness = await getUserSetting("VideoBGBrightness");
-		settings.contrast = await getUserSetting("VideoBGContrast");
-		settings.opacity = await getUserSetting("VideoBGOpacity");
-		settings.scale = await getUserSetting("VideoBGSize");
-		settings.smooth = await getUserSetting("VideoBGSmooth");
-		settings.stick = await getUserSetting("VideoBGStick");
-		settings.checkLag = await getUserSetting("VideoBGCheckLag");
-		settings.debug = await getUserSetting("VideoBGDebug");
-		settings.engine = await getUserSetting("VideoBGRenderEngine");
+		settings.blur = await getUserSetting("VideoBackgroundBlur");
+		settings.quality = (await getUserSetting("VideoBackgroundQuality")) / 100;
+		settings.brightness = await getUserSetting("VideoBackgroundBrightness");
+		settings.contrast = await getUserSetting("VideoBackgroundContrast");
+		settings.opacity = await getUserSetting("VideoBackgroundOpacity");
+		settings.scale = await getUserSetting("VideoBackgroundSize");
+		settings.smooth = await getUserSetting("VideoBackgroundSmooth");
+		settings.stick = await getUserSetting("VideoBackgroundStick");
+		settings.checkLag = await getUserSetting("VideoBackgroundCheckLag");
+		settings.debug = await getUserSetting("VideoBackgroundDebug");
+		settings.engine = await getUserSetting("VideoBackgroundRenderEngine");
+		settings.worker = await getUserSetting("VideoBackgroundWorker");
 	}
 
 	const updateData = {
@@ -564,7 +572,11 @@ export async function enableVideoBackground() {
 		});
 
 		state.worker?.terminate();
-		state.worker = await loadWorker("videoBackgroundWorker.js");
+		if (settings.worker) {
+			state.worker = await loadWorker("videoBackgroundWorker.js");
+		} else {
+			state.worker = null;
+		}
 
 		if (state.sessionId !== mySession || !state.enabled) {
 			state.worker?.terminate();
@@ -700,15 +712,16 @@ export async function disableVideoBackground(force = false) {
 // --- Listeners ---
 
 [
-	"VideoBGBlur",
-	"VideoBGQuality",
-	"VideoBGBrightness",
-	"VideoBGContrast",
-	"VideoBGOpacity",
-	"VideoBGSize",
-	"VideoBGSmooth",
-	"VideoBGRenderEngine",
-	"VideoBGStick",
-	"VideoBGCheckLag",
-	"VideoBGDebug",
+	"VideoBackgroundBlur",
+	"VideoBackgroundQuality",
+	"VideoBackgroundBrightness",
+	"VideoBackgroundContrast",
+	"VideoBackgroundOpacity",
+	"VideoBackgroundSize",
+	"VideoBackgroundSmooth",
+	"VideoBackgroundRenderEngine",
+	"VideoBackgroundWorker",
+	"VideoBackgroundStick",
+	"VideoBackgroundCheckLag",
+	"VideoBackgroundDebug",
 ].forEach((id) => registerSettingListener(id, (val) => updateVideoBgSettings(val, id)));

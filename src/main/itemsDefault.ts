@@ -1,5 +1,8 @@
 import { Category } from "../styleshift/types/store";
-import { videoCategory } from "./categories/video";
+import { videoPlayerCategory } from "./categories/videoPlayer";
+import { videoAutomationCategory } from "./categories/videoAutomation";
+import { videoLayoutCategory } from "./categories/videoLayout";
+import { videoColorsCategory } from "./categories/videoColors";
 import { videoControlPanelCategory } from "./categories/videoControlPanel";
 import { videoBackgroundCategory } from "./categories/videoBackground";
 import { removeBlackBarsCategory } from "./categories/removeBlackBars";
@@ -16,31 +19,45 @@ import { backgroundCategory } from "./categories/background";
 import { blurCategory } from "./categories/blur";
 import { animationCategory } from "./categories/animations";
 import { hoverClickColorCategory } from "./categories/hoverClickColor";
-import { otherSettingsCategory } from "./categories/otherSettings";
+import { scrollbarCategory } from "./categories/scrollbar";
+import { uiCleanerCategory } from "./categories/uiCleaner";
 import { fontsCategory } from "./categories/fonts";
 import { betaFeaturesCategory } from "./categories/betaFeatures";
+import { cssFixesCategory } from "./categories/cssFixes";
 
 const defaultStyleshiftItems: Category[] = [
-	videoCategory,
+	// --- Video Experience ---
+	videoPlayerCategory,
 	videoControlPanelCategory,
+	videoColorsCategory,
+	videoAutomationCategory,
+	videoLayoutCategory,
 	videoBackgroundCategory,
 	removeBlackBarsCategory,
-	subtitlesCategory,
-	topbarSearchCategory,
-	thumbnailCategory,
-	enhancementCategory,
+
+	// --- Visual Style ---
 	colorThemeCategory,
-	subscribeButtonCategory,
-	topLeftIconCategory,
-	tabIconCategory,
-	bordersShadowsCategory,
 	backgroundCategory,
 	blurCategory,
+	bordersShadowsCategory,
 	animationCategory,
 	hoverClickColorCategory,
-	otherSettingsCategory,
 	fontsCategory,
+
+	// --- Components ---
+	subtitlesCategory,
+	thumbnailCategory,
+	topbarSearchCategory,
+	topLeftIconCategory,
+	tabIconCategory,
+	subscribeButtonCategory,
+
+	// --- Utility & Cleanup ---
+	enhancementCategory,
+	scrollbarCategory,
+	uiCleanerCategory,
 	betaFeaturesCategory,
+	cssFixesCategory,
 ];
 
 export function getDefaultItems() {

@@ -336,7 +336,9 @@
 	gap: 10px;
 	box-shadow: 0 10px 50px var(--Shadow-Color);
 	color: var(--Font-Color);
-	transition: background-color 0.3s, backdrop-filter 0.3s;
+	transition:
+		background-color 0.3s,
+		backdrop-filter 0.3s;
 }
 
 textarea.STYLESHIFT-Selector-Text-Editor {

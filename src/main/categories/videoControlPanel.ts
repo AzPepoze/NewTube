@@ -1,47 +1,14 @@
 import { Category } from "../../styleshift/types/store";
 
 export const videoControlPanelCategory: Category = {
-	category: "🎚️ Video control panel",
+	category: "🎚️ Video Control Panel",
 	settings: [
 		{
-			type: "color",
-			id: "TimeBG",
-			name: "Timestamp/Popup Background",
-			description: "Background color for video timestamps, settings popups, and preview tooltips.",
-			value: "#00000080",
-			varCss: "--nt-timestamp-bg",
-		},
-		{
-			type: "color",
-			id: "VDOTEXT",
-			name: "Control Panel text",
-			description: "color of the text on the video control panel (time, etc.).",
-			value: "#ffffffff",
-			varCss: "--nt-text-primary",
-			constantCss: `
-      .ytp-time-current, .ytp-time-separator, .ytp-time-duration, .ytp-button {
-        color: var(--nt-text-primary) !important;
-      }
-    `,
-		},
-		{
-			type: "color",
-			id: "HBT",
-			name: "Control Panel hover button",
-			description: "Background color when hovering over buttons on the control panel.",
-			value: "#ffffff20",
-			varCss: "--nt-theme-transparent",
-			constantCss: `
-      .ytp-button:hover {
-        background-color: var(--nt-theme-transparent) !important;
-      }
-    `,
-		},
-		{
 			type: "checkbox",
-			id: "ControlUnderVDO",
-			name: "Move Controls Below Video",
-			description: "Moves the video control panel to appear underneath the video player.",
+			id: "EnableControlsBelowVideo",
+			name: "Detach Controls",
+			description:
+				"Moves the entire video control bar (play, volume, settings) from an overlay on top of the video to a dedicated space directly underneath it.",
 			value: true,
 			enableCss: `
       #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode),
@@ -62,20 +29,21 @@ export const videoControlPanelCategory: Category = {
 		},
 		{
 			type: "numberSlide",
-			id: "MediaSpace",
-			name: "Controls-Below-Video Distance",
-			description: "Adjusts the distance of the control panel when moved below the video.",
+			id: "ControlsBelowVideoDistance",
+			name: "Detach Gap",
+			description: "Adjusts the vertical distance between the video player and the detached control bar.",
 			value: 70,
 			min: 30,
 			max: 200,
 			step: 1,
 			varCss: "--nt-player-below-space",
+			require: { EnableControlsBelowVideo: true },
 		},
 		{
 			type: "checkbox",
-			id: "CenterMedia",
-			name: "Center Control buttons",
-			description: "Centers the buttons on the video control panel.",
+			id: "EnableCenteredControls",
+			name: "Center Buttons",
+			description: "Re-aligns the play, volume, and playback buttons to the exact center of the control bar.",
 			value: true,
 			enableCss: `
       .ytp-chrome-controls {
@@ -89,106 +57,10 @@ export const videoControlPanelCategory: Category = {
     `,
 		},
 		{
-			type: "color",
-			id: "MediaBG",
-			name: "Control Panel Background",
-			description: "Background color of the video control panel.",
-			value: "#00000080",
-			varCss: "--nt-player-bg",
-			constantCss: `
-      .ytp-chrome-bottom, .ytp-gradient-bottom {
-        background-color: var(--nt-player-bg) !important;
-      }
-    `,
-		},
-		{
 			type: "checkbox",
-			id: "MediaBlur",
-			name: "Blur Control Panel Background",
-			description: "Applies a blur effect to the control panel background.",
-			value: true,
-			enableCss: `
-                .ytp-chrome-bottom, .ytp-gradient-bottom {
-                    backdrop-filter: blur(var(--nt-player-blur-amount, 10px)) !important;
-                }
-            `,
-		},
-		{
-			type: "numberSlide",
-			id: "MediaBlurAmount",
-			name: "Control Panel Blur Amount",
-			description: "Adjusts the amount of blur on the control panel.",
-			value: 10,
-			min: 0,
-			max: 50,
-			step: 1,
-			varCss: "--nt-player-blur-amount",
-		},
-		{
-			type: "checkbox",
-			id: "BottomG",
-			name: "Remove Gradient",
-			description: "Removes the default gradient from the video player bottom.",
-			value: false,
-			enableCss: `.ytp-gradient-bottom { background-image: none !important; }`,
-		},
-		{
-			type: "numberSlide",
-			id: "MediaH",
-			name: "Background Height",
-			description: "Adjusts the height of the control panel background.",
-			value: 60,
-			min: 30,
-			max: 150,
-			step: 1,
-			varCss: "--nt-player-bg-height",
-			constantCss: `
-                .ytp-gradient-bottom { height: var(--nt-player-bg-height, 60px) !important; }
-            `,
-		},
-		{
-			type: "numberSlide",
-			id: "MediaHFull",
-			name: "(Full screen) Background height",
-			description: "Adjusts the height of the control panel background when in fullscreen.",
-			value: 70,
-			min: 30,
-			max: 150,
-			step: 1,
-			varCss: "--nt-player-bg-height-full",
-			constantCss: `
-                .ytp-fullscreen .ytp-gradient-bottom { height: var(--nt-player-bg-height-full, 70px) !important; }
-            `,
-		},
-		{
-			type: "checkbox",
-			id: "PlayerOut",
-			name: "Enable Borders/Shadows",
-			description: "Adds borders/shadows to the control panel (uses Global Border Settings).",
-			value: false,
-			enableCss: `
-                .ytp-chrome-bottom, .ytp-gradient-bottom {
-                    box-shadow: var(--nt-global-shadow) !important;
-                    border: var(--nt-global-outline) !important;
-                }
-            `,
-		},
-		{
-			type: "numberSlide",
-			id: "PlayerBorder",
-			name: "Border/Shadow Width",
-			description: "Specific width for the player border/shadow (overrides global if set separately).",
-			value: 1,
-			min: 0,
-			max: 20,
-			step: 1,
-			varCss: "--nt-player-border-width",
-		},
-		{
-			type: "checkbox",
-			id: "AutohideBar",
-			name: "Autohide Controls",
-			description: "Automatically hides the control panel when the mouse is inactive.",
+			id: "EnableControlPanelAutohide",
+			name: "Auto-Hide Bar",
+			description: "Automatically hides the control bar when your mouse is not moving over the player.",
 			value: true,
 			disableCss: `
                 div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed).ytp-autohide .ytp-gradient-bottom,
@@ -200,9 +72,10 @@ export const videoControlPanelCategory: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "VdoBtnHover",
-			name: "Enlarge buttons on hover",
-			description: "Makes video control buttons larger when you hover over them.",
+			id: "EnableControlPanelButtonHoverScale",
+			name: "Button Pop",
+			description:
+				"Makes control icons grow slightly when you hover over them for better interactive feedback.",
 			value: true,
 			enableCss: `
                 .ytp-chrome-bottom .ytp-button,
@@ -215,28 +88,125 @@ export const videoControlPanelCategory: Category = {
                 .ytp-cards-button-icon:hover {
                     transform: scale(1.5) !important;
                 }
-                
-                /* Settings Menu Animation from Update.js */
-                .html5-video-player .ytp-settings-menu:not(.ytpa-ambientlight-settings-menu) {
-                    transition: opacity 0.5s, transform 0.25s !important;
-                    margin-bottom: 20px !important;
-                }
-                .html5-video-player:not(.ytp-settings-shown) .ytp-settings-menu:not(.ytpa-ambientlight-settings-menu) {
-                    transform: translateX(100px) !important;
-                    opacity: 0 !important;
-                    pointer-events: none !important;
-                }
-
-                /* Central Play Button Styling */
-                path.ytp-large-play-button-bg {
-                    fill: black !important;
-                    opacity: 0.7 !important;
-                }
-                .ytp-large-play-button.ytp-button:hover path.ytp-large-play-button-bg {
-                    opacity: 1 !important;
-                    filter: drop-shadow(0px 0px 6px black);
+            `,
+		},
+		{
+			type: "color",
+			id: "ControlPanelBackgroundColor",
+			name: "Bar Color",
+			description: "Sets the background color of the main video control strip.",
+			value: "#00000080",
+			varCss: "--nt-player-bg",
+			constantCss: `
+      .ytp-chrome-bottom, .ytp-gradient-bottom {
+        background-color: var(--nt-player-bg) !important;
+      }
+    `,
+		},
+		{
+			type: "checkbox",
+			id: "EnableControlPanelBlur",
+			name: "Glass Effect",
+			description: "Applies a frosted-glass blur effect to the background of the video control bar.",
+			value: true,
+			enableCss: `
+                .ytp-chrome-bottom, .ytp-gradient-bottom {
+                    backdrop-filter: blur(var(--nt-player-blur-amount, 10px)) !important;
                 }
             `,
+		},
+		{
+			type: "numberSlide",
+			id: "ControlPanelBlurAmount",
+			name: "Glass Intensity",
+			description: "Adjusts the strength of the frosted-glass effect on the control bar.",
+			value: 10,
+			min: 0,
+			max: 50,
+			step: 1,
+			varCss: "--nt-player-blur-amount",
+			require: { EnableControlPanelBlur: true },
+		},
+		{
+			type: "checkbox",
+			id: "EnableControlPanelRemoveGradient",
+			name: "Remove Shadow",
+			description: "Removes the default dark gradient at the bottom of the video player.",
+			value: false,
+			enableCss: `.ytp-gradient-bottom { background-image: none !important; }`,
+		},
+		{
+			type: "color",
+			id: "ControlPanelTextColor",
+			name: "Icon Color",
+			description: "Changes the color of the icons and timestamps within the video control bar.",
+			value: "#ffffffff",
+			varCss: "--nt-text-primary",
+			constantCss: `
+      .ytp-time-current, .ytp-time-separator, .ytp-time-duration, .ytp-button {
+        color: var(--nt-text-primary) !important;
+      }
+    `,
+		},
+		{
+			type: "color",
+			id: "ControlPanelButtonHoverColor",
+			name: "Hover Glow",
+			description: "Sets the background highlight color when you hover over any button in the control bar.",
+			value: "#ffffff20",
+			varCss: "--nt-theme-transparent",
+			constantCss: `
+      .ytp-button:hover {
+        background-color: var(--nt-theme-transparent) !important;
+      }
+    `,
+		},
+		{
+			type: "color",
+			id: "ControlPanelPopupBackgroundColor",
+			name: "Popup Color",
+			description: "Customizes the background color for all in-player popups.",
+			value: "#00000080",
+			varCss: "--nt-timestamp-bg",
+		},
+		{
+			type: "numberSlide",
+			id: "ControlPanelBackgroundHeight",
+			name: "Bar Height",
+			description: "Increases or decreases the height of the control bar's background.",
+			value: 60,
+			min: 30,
+			max: 150,
+			step: 1,
+			varCss: "--nt-player-bg-height",
+			constantCss: `
+                .ytp-gradient-bottom { height: var(--nt-player-bg-height, 60px) !important; }
+            `,
+		},
+		{
+			type: "checkbox",
+			id: "EnableControlPanelBorder",
+			name: "Borders & Shadows",
+			description: "Applies your global outline or glow shadow settings to the video control bar.",
+			value: false,
+			enableCss: `
+                .ytp-chrome-bottom, .ytp-gradient-bottom {
+                    box-shadow: var(--nt-global-shadow) !important;
+                    border: var(--nt-global-outline) !important;
+                }
+            `,
+		},
+		{
+			type: "numberSlide",
+			id: "ControlPanelBorderWidth",
+			name: "Local Border Width",
+			description: "Overrides the global border width specifically for the video player's controls.",
+			value: 1,
+			min: 0,
+			max: 20,
+			step: 1,
+			varCss: "--nt-player-border-width",
+			require: { EnableControlPanelBorder: true },
 		},
 	],
 };

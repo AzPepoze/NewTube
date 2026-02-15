@@ -16,9 +16,9 @@ const devOnlyItems: Category[] = [
 			},
 			{
 				type: "button",
-				id: "Export_ZIP_file",
+				id: "ExportZipFileButton",
 				name: "Export file",
-				description: "Description of this button",
+				description: "Packages your entire NewTube configuration, including all custom categories and settings, into a compressed .zip file for easy backup or sharing.",
 				color: "#1a34ffff",
 				fontSize: 15,
 				clickFunction: async function () {
@@ -55,9 +55,9 @@ const devOnlyItems: Category[] = [
 			},
 			{
 				type: "button",
-				id: "Import_ZIP_file",
+				id: "ImportZipFileButton",
 				name: "Import file",
-				description: "Description of this button",
+				description: "Instantly restores your NewTube configuration from a previously exported .zip backup file.",
 				color: "#1a34ffff",
 				fontSize: 15,
 				clickFunction: async function () {

@@ -6,9 +6,8 @@ export const cssFixesCategory: Category = {
 		{
 			type: "checkbox",
 			id: "CoreCssFixes",
-			name: "Enable Core CSS Engine",
-			description:
-				"Applies the main CSS rules required for theming to work correctly. It is highly recommended to keep this enabled.",
+			name: "Core Engine",
+			description: "Applies the fundamental CSS rules required for NewTube to function. This handles transparency, layout centering, and removes obstructive default YouTube elements. (Highly Recommended)",
 			value: true,
 			enableCss: `
                 /* General Layout & Background Fixes */
@@ -49,8 +48,8 @@ export const cssFixesCategory: Category = {
 		{
 			type: "checkbox",
 			id: "ScrollbarFixes",
-			name: "Enable Scrollbar Styling",
-			description: "Applies custom styling to the browser scrollbar.",
+			name: "Custom Scrollbar",
+			description: "Replaces YouTube's default scrollbar with a sleek, themed version that matches your selected accent colors and rounding settings.",
 			value: true,
 			enableCss: `
                 @supports selector(::-webkit-scrollbar) {
@@ -76,9 +75,8 @@ export const cssFixesCategory: Category = {
 		{
 			type: "checkbox",
 			id: "ComponentStyleFixes",
-			name: "Enable ui Component Styling",
-			description:
-				"Applies general theme colors and styles to various ui components like buttons, menus, and popups.",
+			name: "Interface Polish",
+			description: "Fine-tunes various UI components like buttons, inputs, and progress spinners. It adds interactive hover states and ensures text selection matches your theme.",
 			value: true,
 			enableCss: `
                 /* General Interaction Fixes */

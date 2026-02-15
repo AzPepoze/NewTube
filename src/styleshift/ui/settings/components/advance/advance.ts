@@ -76,7 +76,7 @@ export function textEditor(obj: any = {}, key: string = "") {
 	const textEditor = settingsUi.renderComponent(TextEditorComponent, {
 		value: obj[key] || "",
 		onInput: async (val: string) => {
-			if (await getRootValue("Realtime_Extension")) {
+			if (await getRootValue("EnableRealtimeExtension")) {
 				onChange(val);
 			}
 		},
@@ -134,7 +134,7 @@ export async function codeEditor(
 			language: language,
 			height: height,
 			onInput: async (val: string) => {
-				if (await getRootValue("Realtime_Extension")) {
+				if (await getRootValue("EnableRealtimeExtension")) {
 					onChange(val);
 				}
 			},

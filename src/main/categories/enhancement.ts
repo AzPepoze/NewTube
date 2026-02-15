@@ -7,9 +7,9 @@ export const enhancementCategory: Category = {
 	settings: [
 		{
 			type: "checkbox",
-			id: "SwapRow",
-			name: "Swap left-right row (In watching mode)",
-			description: "Moves the sidebar (recommendations/chat) to the left side.",
+			id: "EnhancementSwapLayout",
+			name: "Swap Sidebar",
+			description: "Swaps the positions of the video player and the sidebar (recommendations/chat). Moves the sidebar to the left and the video to the right.",
 			value: false,
 			enableCss: `
                 #columns {
@@ -24,10 +24,9 @@ export const enhancementCategory: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "SrollRow",
-			name: "Srollable row",
-			description:
-				"Allows the sidebar and comments to scroll independently from the video player. (Flyout will not working)",
+			id: "EnhancementIndependentScroll",
+			name: "Independent Scroll",
+			description: "Allows you to scroll through the sidebar and comments independently without moving the video player. Note: This feature is incompatible with Flyout Player.",
 			value: false,
 			enableCss: `
                 html, body {
@@ -56,9 +55,9 @@ export const enhancementCategory: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "Flyout",
-			name: "Enable Flyout Video (Show video after scroll down)",
-			description: "Keeps the video player visible in the corner when scrolling down.",
+			id: "EnhancementFlyoutPlayer",
+			name: "Flyout Player",
+			description: "Attaches a small, persistent version of the video player to the corner of your screen when you scroll down to read comments. Keeps the video visible at all times.",
 			value: false,
 			enableFunction: setupFlyout,
 			enableCss: `
@@ -107,9 +106,9 @@ export const enhancementCategory: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "ChatReplay",
-			name: "Auto show chat replay",
-			description: "Automatically expands the chat replay on videos.",
+			id: "EnhancementAutoChatReplay",
+			name: "Auto Chat Replay",
+			description: "Automatically enables and expands the 'Chat Replay' window for premiered videos and past livestreams.",
 			value: false,
 			enableFunction: setupAutoShowChatReplay,
 		},

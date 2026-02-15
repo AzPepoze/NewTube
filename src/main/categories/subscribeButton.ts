@@ -1,13 +1,13 @@
 import { Category } from "../../styleshift/types/store";
 
 export const subscribeButtonCategory: Category = {
-	category: "▶️ Subscribe button",
+	category: "▶️ Subscribe Button",
 	settings: [
 		{
 			type: "checkbox",
-			id: "SPSubScribe",
-			name: "Enable Custom Subscribe button colors",
-			description: "Allows you to set separate colors for the subscribe button.",
+			id: "EnableCustomSubscribeButton",
+			name: "Custom Styling",
+			description: "Enables independent color and shape customization for the YouTube subscribe button, overriding the default YouTube branding.",
 			value: false,
 			enableCss: `
                 .ytd-subscribeButton-renderer button.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--filled {
@@ -19,25 +19,27 @@ export const subscribeButtonCategory: Category = {
 		},
 		{
 			type: "color",
-			id: "SPSubScribeBG",
-			name: "Subscribe button Background",
-			description: "The background color of the subscribe button.",
+			id: "SubscribeButtonBackgroundColor",
+			name: "Button Color",
+			description: "Sets the background fill color for the subscribe button. Traditionally red, but can be any color to match your theme.",
 			value: "#ff0000ff",
 			varCss: "--nt-subscribe-bg",
+			require: { EnableCustomSubscribeButton: true }
 		},
 		{
 			type: "color",
-			id: "SPSubScribeColor",
-			name: "Subscribe button text color",
-			description: "The text color of the subscribe button.",
+			id: "SubscribeButtonTextColor",
+			name: "Text Color",
+			description: "Changes the color of the 'Subscribe' or 'Subscribed' text inside the button.",
 			value: "#ffffffff",
 			varCss: "--nt-subscribe-text",
+			require: { EnableCustomSubscribeButton: true }
 		},
 		{
 			type: "checkbox",
-			id: "SubOut",
-			name: "Enable Borders/Shadows",
-			description: "Adds borders or shadows to the subscribe button.",
+			id: "EnableSubscribeButtonBorder",
+			name: "Borders & Shadows",
+			description: "Applies your global outline or glow shadow settings specifically to the subscribe button.",
 			value: false,
 			enableCss: `
                 .ytd-subscribe-button-renderer button {
@@ -45,6 +47,7 @@ export const subscribeButtonCategory: Category = {
                     border: var(--nt-global-outline) !important;
                 }
             `,
+			require: { EnableCustomSubscribeButton: true }
 		},
 	],
 };

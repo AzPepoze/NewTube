@@ -28,6 +28,7 @@
 	let isMaximized = $state(false);
 	let isMinimized = $state(false);
 	let isDragging = $state(false);
+	let isResizing = $state(false);
 	let previousRect = $state({ top: "10%", left: "25%", width: "50%", height: "80%" });
 
 	function handleClose(e?: MouseEvent) {
@@ -154,11 +155,16 @@
 	class:maximized={isMaximized || fullscreen}
 	class:fullscreen={fullscreen}
 	class:dragging={isDragging}
+	class:resizing={isResizing}
 	class:minimized={isMinimized}
 	bind:this={windowEl}
 >
 	{#if windowEl && !isMaximized && !fullscreen}
-		<WindowResizer target={windowEl} />
+		<WindowResizer
+			target={windowEl}
+			onResizeStart={() => (isResizing = true)}
+			onResizeEnd={() => (isResizing = false)}
+		/>
 	{/if}
 
 	{#if !fullscreen}
@@ -235,7 +241,8 @@
 			transform: scale(1);
 		}
 
-		&.dragging {
+		&.dragging,
+		&.resizing {
 			transition: none !important;
 		}
 

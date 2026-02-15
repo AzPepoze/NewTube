@@ -40,7 +40,7 @@
 	const sequencedUpdate = sequencedTask(handleUpdate);
 
 	async function handleInput() {
-		if (await getRootValue("Realtime_Extension")) {
+		if (await getRootValue("EnableRealtimeExtension")) {
 			sequencedUpdate();
 		}
 	}

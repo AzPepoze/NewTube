@@ -3,146 +3,21 @@ import { setupThemeByVideo } from "../features/theme";
 import { mainCss } from "../features/mainCss";
 
 export const colorThemeCategory: Category = {
-	category: "🎨 color theme",
+	category: "🎨 Color Theme",
 	settings: [
 		{
 			type: "checkbox",
-			id: "mainCssEnable",
-			name: "Enable Base Main CSS",
-			description: "Toggles the primary static CSS that styles many of YouTube's core components.",
+			id: "EnableBaseMainCss",
+			name: "Base Theming",
+			description: "Enables the foundational CSS required for custom themes to apply correctly across YouTube's complex interface. Highly recommended.",
 			value: true,
 			enableCss: mainCss,
 		},
 		{
-			type: "color",
-			id: "Theme",
-			name: "Main Theme color",
-			description: "The primary accent color used throughout the ui.",
-			value: "#659affff",
-			varCss: "--nt-theme-color",
-		},
-		{
-			type: "color",
-			id: "ThemeThr",
-			name: "Transparent Theme color",
-			description: "A transparent version of the theme color, used for backgrounds and highlights.",
-			value: "#659aff33",
-			varCss: "--nt-theme-transparent",
-		},
-		{
-			type: "color",
-			id: "ThemeFort",
-			name: "Theme Accent color",
-			description: "A secondary accent color for borders and small details.",
-			value: "#659aff66",
-			varCss: "--nt-theme-accent",
-		},
-		{
-			type: "color",
-			id: "EndScreenBG",
-			name: "Video overlay Background (Endscreen)",
-			description: "Background color for endscreen elements and video overlays.",
-			value: "#00000080",
-			varCss: "--nt-endscreen-bg",
-		},
-		{
-			type: "color",
-			id: "LeftBar",
-			name: "Left Sidebar Background",
-			description: "Background color of the main left-hand sidebar.",
-			value: "#00000000",
-			varCss: "--nt-sidebar-bg",
-			constantCss: `
-                #guide-inner-content.ytd-app, ytd-mini-guide-renderer {
-                    background: var(--nt-sidebar-bg) !important;
-                }
-            `,
-		},
-		{
-			type: "color",
-			id: "Text",
-			name: "Main text color",
-			description: "The primary text color for general ui text.",
-			value: "#ffffffff",
-			varCss: "--nt-text-primary",
-			constantCss: `
-                ytd-watch-flexy, #video-title, #channel-name, .ytd-video-primary-info-renderer, .ytd-video-secondary-info-renderer {
-                    color: var(--nt-text-primary) !important;
-                }
-            `,
-		},
-		{
-			type: "color",
-			id: "NdText",
-			name: "Secondary text color",
-			description: "The secondary text color, used for metadata, descriptions, and less important text.",
-			value: "#c4c4c4ff",
-			varCss: "--nt-text-secondary",
-			constantCss: `
-                #metadata-line, .ytd-video-meta-block, #description-text, .ytd-comment-renderer, .yt-formatted-string[is-empty] {
-                    color: var(--nt-text-secondary) !important;
-                }
-            `,
-		},
-		{
-			type: "color",
-			id: "LinkColor",
-			name: "Link color",
-			description: "The color for hyperlinks in descriptions and comments.",
-			value: "#5797ffff",
-			varCss: "--nt-text-link",
-			constantCss: `
-                .yt-core-attributed-string__link {
-                    color: var(--nt-text-link) !important;
-                }
-            `,
-		},
-		{
-			type: "color",
-			id: "TIMETEXT",
-			name: "timestamp text color",
-			description: "The color of the text for video timestamps (e.g., on thumbnails).",
-			value: "#ffffffff",
-			varCss: "--nt-text-timestamp",
-			constantCss: `
-                ytd-thumbnail-overlay-time-status-renderer {
-                    color: var(--nt-text-timestamp) !important;
-                }
-            `,
-		},
-		{
-			type: "color",
-			id: "Chanel_Color",
-			name: "Channel name color",
-			description: "The color of channel names under video titles.",
-			value: "#ffffffff",
-			varCss: "--nt-text-channel",
-			constantCss: `
-                #channel-name .ytd-video-owner-renderer {
-                    color: var(--nt-text-channel) !important;
-                }
-            `,
-		},
-		{
 			type: "checkbox",
-			id: "Theme_by_video",
-			name: "Theme colors base on video thumbnail",
-			description: "Automatically extracts colors from the video thumbnail and applies them as the theme.",
-			value: false,
-			enableFunction: setupThemeByVideo,
-		},
-		{
-			type: "checkbox",
-			id: "Solid_BG_Theme_by_video",
-			name: "Solid background (Theme by video)",
-			description: "Makes the background tint fully opaque when 'Theme by video' is enabled.",
-			value: false,
-		},
-		{
-			type: "checkbox",
-			id: "StyleSync",
-			name: "Sync YouTube styles with Theme",
-			description: "Forces YouTube's internal color variables to match your custom theme.",
+			id: "EnableStyleSync",
+			name: "Sync YouTube Styles",
+			description: "Forces YouTube's internal design system to use your custom colors. This ensures consistency in menus, buttons, and badges.",
 			value: true,
 			enableCss: `
                 html, [watch-color-update] {
@@ -180,6 +55,132 @@ export const colorThemeCategory: Category = {
                     --yt-spec-themed-green: var(--nt-theme-color) !important;
                 }
             `,
+		},
+		{
+			type: "checkbox",
+			id: "EnableThemeByVideo",
+			name: "Dynamic Video Theme",
+			description: "Automatically extracts the most prominent colors from the current video's thumbnail and applies them to your entire theme in real-time.",
+			value: false,
+			enableFunction: setupThemeByVideo,
+		},
+		{
+			type: "checkbox",
+			id: "EnableSolidThemeByVideo",
+			name: "Solid Dynamic Background",
+			description: "When using Dynamic Video Theme, this makes the background tint solid instead of semi-transparent.",
+			value: false,
+			require: { EnableThemeByVideo: true }
+		},
+		{
+			type: "color",
+			id: "MainThemeColor",
+			name: "Primary Accent",
+			description: "The main color used for highlights, active buttons, and primary UI accents.",
+			value: "#659affff",
+			varCss: "--nt-theme-color",
+		},
+		{
+			type: "color",
+			id: "TransparentThemeColor",
+			name: "Surface Accent",
+			description: "A semi-transparent version of the theme color used for hover states and subtle backgrounds.",
+			value: "#659aff33",
+			varCss: "--nt-theme-transparent",
+		},
+		{
+			type: "color",
+			id: "ThemeAccentColor",
+			name: "Detail Accent",
+			description: "A secondary accent color used for smaller details like borders and inactive badges.",
+			value: "#659aff66",
+			varCss: "--nt-theme-accent",
+		},
+		{
+			type: "color",
+			id: "PrimaryTextColor",
+			name: "Primary Text",
+			description: "Sets the color for all main text, including video titles and channel names.",
+			value: "#ffffffff",
+			varCss: "--nt-text-primary",
+			constantCss: `
+                ytd-watch-flexy, #video-title, #channel-name, .ytd-video-primary-info-renderer, .ytd-video-secondary-info-renderer {
+                    color: var(--nt-text-primary) !important;
+                }
+            `,
+		},
+		{
+			type: "color",
+			id: "SecondaryTextColor",
+			name: "Secondary Text",
+			description: "Sets the color for metadata, video descriptions, and comments.",
+			value: "#c4c4c4ff",
+			varCss: "--nt-text-secondary",
+			constantCss: `
+                #metadata-line, .ytd-video-meta-block, #description-text, .ytd-comment-renderer, .yt-formatted-string[is-empty] {
+                    color: var(--nt-text-secondary) !important;
+                }
+            `,
+		},
+		{
+			type: "color",
+			id: "LinkTextColor",
+			name: "Links",
+			description: "The color applied to all clickable hyperlinks within YouTube.",
+			value: "#5797ffff",
+			varCss: "--nt-text-link",
+			constantCss: `
+                .yt-core-attributed-string__link {
+                    color: var(--nt-text-link) !important;
+                }
+            `,
+		},
+		{
+			type: "color",
+			id: "TimestampTextColor",
+			name: "Timestamps",
+			description: "Color for the time indicators shown on video thumbnails.",
+			value: "#ffffffff",
+			varCss: "--nt-text-timestamp",
+			constantCss: `
+                ytd-thumbnail-overlay-time-status-renderer {
+                    color: var(--nt-text-timestamp) !important;
+                }
+            `,
+		},
+		{
+			type: "color",
+			id: "ChannelNameColor",
+			name: "Channel Titles",
+			description: "Specifically sets the color for channel names in the video owner section.",
+			value: "#ffffffff",
+			varCss: "--nt-text-channel",
+			constantCss: `
+                #channel-name .ytd-video-owner-renderer {
+                    color: var(--nt-text-channel) !important;
+                }
+            `,
+		},
+		{
+			type: "color",
+			id: "SidebarBackgroundColor",
+			name: "Sidebar Surface",
+			description: "Customizes the background color of the left-hand navigation menu.",
+			value: "#00000000",
+			varCss: "--nt-sidebar-bg",
+			constantCss: `
+                #guide-inner-content.ytd-app, ytd-mini-guide-renderer {
+                    background: var(--nt-sidebar-bg) !important;
+                }
+            `,
+		},
+		{
+			type: "color",
+			id: "EndScreenOverlayColor",
+			name: "Endscreen Overlay",
+			description: "The background color applied to the endscreen video grid.",
+			value: "#00000080",
+			varCss: "--nt-endscreen-bg",
 		},
 	],
 };

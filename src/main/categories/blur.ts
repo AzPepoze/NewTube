@@ -5,9 +5,9 @@ export const blurCategory: Category = {
 	settings: [
 		{
 			type: "numberSlide",
-			id: "BlurAm",
-			name: "Blur Amount",
-			description: "Global blur intensity.",
+			id: "GlobalBlurAmount",
+			name: "Blur Intensity",
+			description: "Adjusts the overall strength of the blur effect applied to various YouTube interface elements. Higher values create a more pronounced frosted-glass look.",
 			value: 5,
 			min: 0,
 			max: 50,
@@ -16,11 +16,13 @@ export const blurCategory: Category = {
 		},
 		{
 			type: "dropdown",
-			id: "BlurWhat",
-			name: "Things to blur",
+			id: "BlurTargetSelection",
+			name: "Apply Blur To",
+			description: "Choose which parts of the YouTube interface should have the blur effect applied to them.",
 			value: "none",
 			options: {
 				all: {
+					name: "Everything",
 					enableCss: `
                         #masthead > #background,
                         ytd-multi-page-menu-renderer,
@@ -37,6 +39,7 @@ export const blurCategory: Category = {
                     `,
 				},
 				main: {
+					name: "Main Bars Only",
 					enableCss: `
                         #masthead > #background,
                         #guide-content
@@ -45,7 +48,10 @@ export const blurCategory: Category = {
                         }
                     `,
 				},
-				none: { enableCss: "" },
+				none: { 
+					name: "None",
+					enableCss: "" 
+				},
 			},
 		},
 	],

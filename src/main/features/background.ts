@@ -140,7 +140,7 @@ export async function disableBg() {
 }
 
 export async function updateBgImg() {
-	const useThumb = await getUserSetting("ThumbBG");
+	const useThumb = await getUserSetting("BackgroundThumbnailMode");
 	if (useThumb) {
 		const videoId = getYoutubeVideoId();
 		if (videoId) {
@@ -148,7 +148,7 @@ export async function updateBgImg() {
 			return;
 		}
 	}
-	const url = await getUserSetting("BGIMG");
+	const url = await getUserSetting("BackgroundImageUrl");
 	if (url) bgImage.src = url;
 }
 
@@ -159,7 +159,7 @@ export async function updateBgImgSize() {
 	const bgBound = el.getBoundingClientRect();
 	if (!bgBound.height || bgImage.width === 0) return;
 	const imagineBackgroundHeight = (bgImage.height / bgImage.width) * window.innerWidth;
-	const zoomValue = (await getUserSetting("BackgroundS")) || 100;
+	const zoomValue = (await getUserSetting("BackgroundImageSize")) || 100;
 
 	if (imagineBackgroundHeight < bgBound.height) {
 		el.style.backgroundSize = `${(bgBound.height / imagineBackgroundHeight) * zoomValue}%`;
@@ -172,8 +172,8 @@ export async function updateBgImgPosition() {
 	getElement();
 	const el = bgImageElement;
 	if (!el) return;
-	const x = await getUserSetting("BackgroundX");
-	const y = await getUserSetting("BackgroundY");
+	const x = await getUserSetting("BackgroundImagePositionX");
+	const y = await getUserSetting("BackgroundImagePositionY");
 	el.style.backgroundPositionX = x + "%";
 	el.style.backgroundPositionY = y + "%";
 }
@@ -183,8 +183,8 @@ bgImage.onload = function () {
 	updateBgImgSize();
 };
 
-registerSettingListener("BGIMG", updateBgImg, true);
-registerSettingListener("ThumbBG", updateBgImg, true);
-registerSettingListener("BackgroundS", updateBgImgSize, true);
-registerSettingListener("BackgroundX", updateBgImgPosition, true);
-registerSettingListener("BackgroundY", updateBgImgPosition, true);
+registerSettingListener("BackgroundImageUrl", updateBgImg, true);
+registerSettingListener("BackgroundThumbnailMode", updateBgImg, true);
+registerSettingListener("BackgroundImageSize", updateBgImgSize, true);
+registerSettingListener("BackgroundImagePositionX", updateBgImgPosition, true);
+registerSettingListener("BackgroundImagePositionY", updateBgImgPosition, true);

@@ -6,18 +6,18 @@ export const topbarSearchCategory: Category = {
 	settings: [
 		{
 			type: "checkbox",
-			id: "Enable_Settings_Button",
-			name: "Show NewTube Settings Button (✦)",
-			description: "Adds a star icon to the top right of the page to quickly open NewTube settings.",
+			id: "EnableSettingsButton",
+			name: "NewTube Settings Button",
+			description: "Adds a stylized NewTube (✦) icon to the top-right header for instant access to these settings without leaving the page.",
 			value: true,
 			enableFunction: enableSettingsButton,
 			disableFunction: disableSettingsButton,
 		},
 		{
 			type: "checkbox",
-			id: "Scroll",
-			name: "Auto-Transparent Topbar",
-			description: "Makes the topbar transparent when scrolled down.",
+			id: "EnableTopbarTransparency",
+			name: "Adaptive Topbar",
+			description: "Makes the top header bar transparent by default and applies your custom background color only when you begin to scroll down.",
 			value: true,
 			enableFunction: function () {
 				const masthead = document.querySelector("#masthead") as HTMLElement;
@@ -32,7 +32,6 @@ export const topbarSearchCategory: Category = {
 				};
 
 				window.addEventListener("scroll", handleScroll);
-				// Also remove listener when disabled if we add a disableFunction
 			},
 			enableCss: `
                 #masthead {
@@ -45,25 +44,26 @@ export const topbarSearchCategory: Category = {
 		},
 		{
 			type: "color",
-			id: "ThemeSnd",
-			name: "Topbar color",
-			description: "The background color of the topbar when scrolled.",
+			id: "TopbarBackgroundColor",
+			name: "Topbar Color",
+			description: "Customizes the background color of the top header. Best used with 'Adaptive Topbar' for a smooth transition while scrolling.",
 			value: "#00000080",
 			varCss: "--nt-topbar-bg",
+			require: { EnableTopbarTransparency: true },
 		},
 		{
 			type: "color",
-			id: "Themehover",
-			name: "Search suggestion hover color",
-			description: "Background color of the search suggestions when hovered.",
+			id: "SearchSuggestionHoverColor",
+			name: "Search Hover",
+			description: "Sets the background highlight color when navigating through the search suggestion dropdown menu.",
 			value: "#ffffffff",
 			varCss: "--nt-search-bg-hover",
 		},
 		{
 			type: "checkbox",
-			id: "TopOut",
-			name: "Topbar Borders/Shadows",
-			description: "Adds borders or shadows to the topbar.",
+			id: "EnableTopbarBorder",
+			name: "Topbar Borders",
+			description: "Applies your global outline or shadow settings to the bottom of the top navigation bar.",
 			value: true,
 			enableCss: `
                 #masthead > #background {
@@ -74,9 +74,9 @@ export const topbarSearchCategory: Category = {
 		},
 		{
 			type: "color",
-			id: "ThemeChips",
-			name: "Chips Bar color",
-			description: "Background color for the topic chips bar below the topbar.",
+			id: "ChipsBarBackgroundColor",
+			name: "Chips Bar Color",
+			description: "Changes the background color of the horizontal category list (the 'chips') found at the top of the home and search feeds.",
 			value: "#00000080",
 			varCss: "--nt-chips-bg",
 			constantCss: `
@@ -87,9 +87,9 @@ export const topbarSearchCategory: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "SndOut",
-			name: "Chips Bar Borders/Shadows",
-			description: "Adds borders or shadows to the chips bar.",
+			id: "EnableChipsBarBorder",
+			name: "Chips Bar Borders",
+			description: "Adds global outlines or shadows to the horizontal category chips bar.",
 			value: false,
 			enableCss: `
                 #chips-wrapper.ytd-feed-filter-chip-bar-renderer {
@@ -100,9 +100,9 @@ export const topbarSearchCategory: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "SearchAnim",
-			name: "Enable Search Animation",
-			description: "Adds a slide-in animation to the search suggestion box.",
+			id: "EnableSearchAnimation",
+			name: "Search Animation",
+			description: "Adds a sleek slide-in and fade animation when the search bar is focused, enhancing the overall feel of the header.",
 			value: true,
 			enableCss: `
                 div.gstl50.sbddA {

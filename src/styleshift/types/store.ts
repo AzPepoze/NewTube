@@ -21,7 +21,15 @@ export type Color_obj = {
 	alpha: number;
 };
 
-export type Setting =
+export type BaseSetting = {
+	lock?: {
+		condition: boolean;
+		message?: string;
+	};
+	require?: Record<string, any>;
+};
+
+export type Setting = (
 	| {
 			type: "text";
 			id?: string;
@@ -207,4 +215,6 @@ export type Setting =
 			syncId: string[];
 			updateFunction?: string;
 			editable?: boolean;
-	  };
+	  }
+) &
+	BaseSetting;

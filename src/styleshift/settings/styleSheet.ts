@@ -8,7 +8,7 @@ export async function createStylesheetHolder() {
 	stylesheetHolder = document.createElement("fieldset");
 	stylesheetHolder.id = "STYLESHIFT_stylesheet_holder";
 
-	if ((await getUserSetting("Enable_Extension")) == true) {
+	if ((await getUserSetting("EnableExtension")) == true) {
 		showStylesheet();
 	} else {
 		hideStylesheet();

@@ -1,14 +1,13 @@
 import { Category } from "../../styleshift/types/store";
 
 export const hoverClickColorCategory: Category = {
-	category: "🖱️ hover/Click color",
+	category: "🖱️ Hover & Click Color",
 	settings: [
 		{
 			type: "color",
-			id: "Themehover",
-			name: "Main hover Background color",
-			description:
-				"The background color for most elements when you hover over them (e.g., menu items, buttons).",
+			id: "GlobalHoverBackgroundColor",
+			name: "Main Hover",
+			description: "Sets the background color for most clickable elements when you hover over them, such as menu items and buttons.",
 			value: "#659aff80",
 			varCss: "--nt-hover-bg",
 			constantCss: `
@@ -22,9 +21,9 @@ export const hoverClickColorCategory: Category = {
 		},
 		{
 			type: "color",
-			id: "Playlisthover",
-			name: "Playlist hover Background color",
-			description: "The background color for videos in a playlist when you hover over them.",
+			id: "PlaylistHoverBackgroundColor",
+			name: "Playlist Hover",
+			description: "Specific background color for video items within a playlist when hovered.",
 			value: "#659aff80",
 			varCss: "--nt-playlist-hover-bg",
 			constantCss: `
@@ -35,25 +34,25 @@ export const hoverClickColorCategory: Category = {
 		},
 		{
 			type: "color",
-			id: "BorderHoverColor",
-			name: "Border hover color",
-			description: "The color of the border/shadow when hovering over elements.",
+			id: "GlobalHoverBorderColor",
+			name: "Border Hover",
+			description: "The color applied to outlines or shadows when you hover over an interactive element.",
 			value: "#099DFFFF",
 			varCss: "--nt-hover-color",
 		},
 		{
 			type: "color",
-			id: "BorderClickColor",
-			name: "Border Click color",
-			description: "The color of the border/shadow when clicking on elements.",
+			id: "GlobalClickBorderColor",
+			name: "Border Click",
+			description: "The temporary color flash for borders or shadows when you click on an element.",
 			value: "#ffea00ff",
 			varCss: "--nt-click-color",
 		},
 		{
 			type: "checkbox",
-			id: "Interactions",
-			name: "Enable Smooth Interactions",
-			description: "Adds transition effects to various UI elements for a smoother experience.",
+			id: "EnableSmoothInteractions",
+			name: "Smooth Transitions",
+			description: "Enables polished CSS transitions for hovering and clicking, making the interface feel more fluid and responsive.",
 			value: true,
 			enableCss: `
                 ytd-live-chat-frame,

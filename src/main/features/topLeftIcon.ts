@@ -2,7 +2,7 @@ import { getUserSetting } from "../../styleshift/core/storageManager";
 import { registerSettingListener } from "../../styleshift/settings/functions";
 
 async function updateLogoUrl() {
-	const url = await getUserSetting("ReplaceYTURL");
+	const url = await getUserSetting("TopLeftIconImageUrl");
 	if (url) {
 		document.documentElement.style.setProperty("--nt-top-icon-url", `url("${url}")`);
 	}
@@ -12,4 +12,4 @@ async function updateLogoUrl() {
 updateLogoUrl();
 
 // Listener
-registerSettingListener("ReplaceYTURL", updateLogoUrl);
+registerSettingListener("TopLeftIconImageUrl", updateLogoUrl);

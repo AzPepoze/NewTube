@@ -2,11 +2,15 @@
 	let {
 		target,
 		onResize = () => {},
+		onResizeStart = () => {},
+		onResizeEnd = () => {},
 		minWidth = 300,
 		minHeight = 200,
 	}: {
 		target: HTMLElement;
 		onResize?: (size: { width: number; height: number; x: number; y: number }) => void;
+		onResizeStart?: () => void;
+		onResizeEnd?: () => void;
 		minWidth?: number;
 		minHeight?: number;
 	} = $props();
@@ -21,6 +25,7 @@
 		e.stopPropagation();
 
 		activeDir = dir;
+		onResizeStart();
 
 		const startX = e.clientX;
 		const startY = e.clientY;
@@ -101,6 +106,7 @@
 
 		function onMouseUp() {
 			activeDir = null;
+			onResizeEnd();
 			document.removeEventListener("mousemove", onMouseMove);
 			document.removeEventListener("mouseup", onMouseUp);
 			document.body.style.cursor = "";

@@ -98,8 +98,8 @@ async function bootstrapExtension(): Promise<void> {
 	await populateMissingDefaultSettings();
 
 	// Set up global theme listeners
-	registerSettingListener("App_Light_Theme", syncAllThemes, true);
-	registerSettingListener("Setting_BG_Transparent", syncAllThemes, true);
+	registerSettingListener("EnableAppLightTheme", syncAllThemes, true);
+	registerSettingListener("EnableSettingsBackgroundBlur", syncAllThemes, true);
 
 	// Initialize individual setting behaviors
 	const allSettings = await getAllStyleshiftSettings();

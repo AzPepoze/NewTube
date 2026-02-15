@@ -11,8 +11,8 @@ export const EXTERNAL_STORAGE_KEYS = [
 	"defaultStyleshiftItems",
 	"customStyleshiftItems",
 	"Themes",
-	"Enabled_Extension",
-	"Realtime_Extension",
+	"EnableExtension",
+	"EnableRealtimeExtension",
 	"Developer_mode",
 	"Welcome_Shown",
 ];
