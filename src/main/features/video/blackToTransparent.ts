@@ -36,7 +36,10 @@ void main() {
 
 function createShader(gl: WebGL2RenderingContext, type: number, source: string) {
 	const shader = gl.createShader(type);
-	if (!shader) return null;
+	if (!shader) {
+		logger.error("black-to-transparent", "Could not create shader object");
+		return null;
+	}
 	gl.shaderSource(shader, source);
 	gl.compileShader(shader);
 	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
@@ -44,11 +47,16 @@ function createShader(gl: WebGL2RenderingContext, type: number, source: string) 
 		gl.deleteShader(shader);
 		return null;
 	}
+	logger.info("black-to-transparent", `Shader of type ${type === gl.VERTEX_SHADER ? "VERTEX" : "FRAGMENT"} compiled successfully`);
 	return shader;
 }
 
 function initWebGL() {
-	if (!canvas) return false;
+	logger.info("black-to-transparent", "Initializing WebGL");
+	if (!canvas) {
+		logger.error("black-to-transparent", "Canvas not found in initWebGL");
+		return false;
+	}
 	gl = canvas.getContext("webgl2", { alpha: true, premultipliedAlpha: false });
 	if (!gl) {
 		logger.error("black-to-transparent", "WebGL2 not supported");
@@ -57,10 +65,16 @@ function initWebGL() {
 
 	const vShader = createShader(gl, gl.VERTEX_SHADER, vsSource);
 	const fShader = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
-	if (!vShader || !fShader) return false;
+	if (!vShader || !fShader) {
+		logger.error("black-to-transparent", "Failed to create shaders");
+		return false;
+	}
 
 	program = gl.createProgram();
-	if (!program) return false;
+	if (!program) {
+		logger.error("black-to-transparent", "Failed to create program");
+		return false;
+	}
 	gl.attachShader(program, vShader);
 	gl.attachShader(program, fShader);
 	gl.linkProgram(program);
@@ -87,6 +101,7 @@ function initWebGL() {
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
+	logger.info("black-to-transparent", "WebGL initialized successfully");
 	return true;
 }
 
@@ -110,27 +125,43 @@ async function render() {
 	};
 
 	if (isYoutubeFullscreen || video.paused || video.ended || video.readyState < 2) {
-		if (canvas) canvas.style.display = "none";
-		video.style.opacity = "1";
+		if (canvas && canvas.style.display !== "none") {
+			logger.info("black-to-transparent", "Hiding canvas due to video state or fullscreen", {
+				isYoutubeFullscreen,
+				paused: video.paused,
+				ended: video.ended,
+				readyState: video.readyState
+			});
+			canvas.style.display = "none";
+			video.style.opacity = "1";
+		}
 		scheduleNext();
 		return;
 	}
 
 	if (!canvas) {
+		logger.info("black-to-transparent", "Creating canvas");
 		canvas = document.createElement("canvas");
 		canvas.id = "newtube-black-to-transparent";
 		canvas.style.position = "absolute";
 		canvas.style.pointerEvents = "none";
 		canvas.style.zIndex = "1";
 		video.parentElement?.appendChild(canvas);
-		if (!initWebGL()) return;
+		if (!initWebGL()) {
+			logger.error("black-to-transparent", "Failed to initialize WebGL, stopping render loop");
+			return;
+		}
 	}
 
 	const rect = video.getBoundingClientRect();
 	const parentRect = video.parentElement?.getBoundingClientRect() || { top: 0, left: 0 };
 	
+	if (canvas.style.display !== "block") {
+		logger.info("black-to-transparent", "Showing canvas");
+		canvas.style.display = "block";
+	}
+
 	Object.assign(canvas.style, {
-		display: "block",
 		width: `${rect.width}px`,
 		height: `${rect.height}px`,
 		top: `${rect.top - parentRect.top}px`,
@@ -145,7 +176,10 @@ async function render() {
 	}
 
 	if (gl && program && videoTexture && canvas.width > 0) {
-		video.style.opacity = "0";
+		if (video.style.opacity !== "0") {
+			logger.info("black-to-transparent", "Setting video opacity to 0 and starting to draw frames");
+			video.style.opacity = "0";
+		}
 		gl.clearColor(0, 0, 0, 0);
 		gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -153,20 +187,34 @@ async function render() {
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 	} else {
-		video.style.opacity = "1";
+		if (video.style.opacity !== "1") {
+			logger.warn("black-to-transparent", "Missing GL resources or invalid canvas width, reverting to video display", {
+				gl: !!gl,
+				program: !!program,
+				videoTexture: !!videoTexture,
+				canvasWidth: canvas.width
+			});
+			video.style.opacity = "1";
+		}
 	}
 
 	scheduleNext();
 }
 
 export async function setupBlackToTransparent() {
-	if (!(await getUserSetting("BlackToTransparent"))) return;
-	if (enabled) return;
+	const isEnabled = await getUserSetting("ExperimentalBlackToTransparent");
+	logger.info("black-to-transparent", "Setting up BlackToTransparent. Enabled in settings:", isEnabled);
+	if (!isEnabled) return;
+	if (enabled) {
+		logger.info("black-to-transparent", "Already enabled, skipping setup");
+		return;
+	}
 	enabled = true;
 
 	render();
 
 	navigateCleanup = onYoutubeNavigate(() => {
+		logger.info("black-to-transparent", "Youtube navigate detected, resetting canvas");
 		if (canvas) {
 			canvas.remove();
 			canvas = null;
@@ -178,6 +226,7 @@ export async function setupBlackToTransparent() {
 	});
 
 	fullscreenCleanup = onYoutubeFullscreen((fullscreen) => {
+		logger.info("black-to-transparent", "Fullscreen changed:", fullscreen);
 		if (fullscreen && canvas) {
 			canvas.style.display = "none";
 			getVideoElement().then(v => { if (v) v.style.opacity = "1"; });
@@ -186,6 +235,7 @@ export async function setupBlackToTransparent() {
 }
 
 export function destroyBlackToTransparent() {
+	logger.info("black-to-transparent", "Destroying BlackToTransparent");
 	enabled = false;
 	if (animationFrame) cancelAnimationFrame(animationFrame);
 	if (renderTimeout) clearTimeout(renderTimeout);
@@ -205,7 +255,8 @@ export function destroyBlackToTransparent() {
 	});
 }
 
-registerSettingListener("BlackToTransparent", (val) => {
+registerSettingListener("ExperimentalBlackToTransparent", (val) => {
+	logger.info("black-to-transparent", "Setting listener triggered:", val);
 	if (val) {
 		setupBlackToTransparent();
 	} else {

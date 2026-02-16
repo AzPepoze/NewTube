@@ -27,16 +27,30 @@ export async function initializeDefaultCustomItems(): Promise<void> {
  */
 export async function populateMissingDefaultSettings(): Promise<void> {
 	const availableSettings = await getSettingsList(true);
-	const currentSettings = cachedStorageData["currentSettings"] || {};
+	let changed = false;
 
 	for (const [settingId, config] of Object.entries(availableSettings) as [string, any]) {
-		if ("value" in config && currentSettings[settingId] == null) {
-			currentSettings[settingId] = config.value;
-			logger.info("maintenance", "Populated default for:", settingId, config.value);
+		if ("value" in config) {
+			const isExternal = EXTERNAL_STORAGE_KEYS.includes(settingId);
+			const currentValue = isExternal ? cachedStorageData[settingId] : (cachedStorageData["currentSettings"] || {})[settingId];
+
+			if (currentValue == null) {
+				if (isExternal) {
+					cachedStorageData[settingId] = config.value;
+					logger.info("maintenance", "Populated default root key for:", settingId, config.value);
+				} else {
+					if (!cachedStorageData["currentSettings"]) cachedStorageData["currentSettings"] = {};
+					cachedStorageData["currentSettings"][settingId] = config.value;
+					logger.info("maintenance", "Populated default user setting for:", settingId, config.value);
+				}
+				changed = true;
+			}
 		}
 	}
 
-	cachedStorageData["currentSettings"] = currentSettings;
+	if (changed) {
+		await persistCachedDataToStorage();
+	}
 }
 
 /**
@@ -54,15 +68,15 @@ export async function performStorageGarbageCollection(): Promise<void> {
 
 	// Remove obsolete user settings
 	for (const key of Object.keys(userSettings)) {
-		if (!activeSettingIds.includes(key)) {
-			logger.info("maintenance", "Removing obsolete setting:", key);
+		if (!activeSettingIds.includes(key) || EXTERNAL_STORAGE_KEYS.includes(key)) {
+			logger.info("maintenance", `Removing ${EXTERNAL_STORAGE_KEYS.includes(key) ? "duplicated" : "obsolete"} setting from currentSettings:`, key);
 			delete userSettings[key];
 		}
 	}
 
 	// Remove obsolete root keys
 	for (const key of Object.keys(cachedStorageData)) {
-		if (!EXTERNAL_STORAGE_KEYS.includes(key)) {
+		if (key !== "currentSettings" && !EXTERNAL_STORAGE_KEYS.includes(key)) {
 			logger.info("maintenance", "Removing obsolete root key:", key);
 			delete cachedStorageData[key];
 		}

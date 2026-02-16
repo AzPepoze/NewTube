@@ -107,28 +107,36 @@ export async function executeScriptString({
 	sourceIdentifier = "StyleShift",
 	executionArguments = "",
 }: ExecutionOptions): Promise<void> {
-	logger.debug("runtime", "Trying to run script", sourceIdentifier);
-	logger.debug("runtime", scriptContent);
+	logger.debug("runtime", "Trying to run script from source:", sourceIdentifier);
+	
+	if (!scriptContent) {
+		logger.debug("runtime", "Script content is empty for source:", sourceIdentifier);
+		return;
+	}
 
 	if (typeof scriptContent === "function") {
+		logger.debug("runtime", "Executing script as function");
 		scriptContent();
 		return;
 	}
 
-	if (!scriptContent) return;
-
 	let finalScript = scriptContent;
+	logger.debug("runtime", "Original script content:", finalScript);
 
 	if (shouldSanitize) {
 		if (isSafeCode(finalScript, sourceIdentifier)) {
+			logger.debug("runtime", "Script passed safety check, applying shorthand replacements");
 			// Replace shorthand function calls with full global paths
 			for (const [scope, methods] of Object.entries(activeStyleshiftFunctions)) {
 				for (const methodName of methods) {
 					const pattern = new RegExp(`\\b${methodName}\\b`, "g");
-					finalScript = finalScript.replace(
-						pattern,
-						`window["StyleShift"]["${scope}"]["${methodName}"]`,
-					);
+					if (pattern.test(finalScript)) {
+						logger.debug("runtime", `Replacing shorthand ${methodName} with window["StyleShift"]["${scope}"]["${methodName}"]`);
+						finalScript = finalScript.replace(
+							pattern,
+							`window["StyleShift"]["${scope}"]["${methodName}"]`,
+						);
+					}
 				}
 			}
 		} else {
@@ -140,11 +148,14 @@ export async function executeScriptString({
 	logger.debug("runtime", "Final script for execution:", finalScript);
 
 	if (!IS_IN_EXTENSION_SETTINGS_PAGE) {
+		logger.debug("runtime", "Sending runScript message to background for script execution");
 		chrome.runtime.sendMessage({
 			Command: "runScript",
 			Script: finalScript,
 			args: executionArguments,
 		});
+	} else {
+		logger.debug("runtime", "In extension settings page, runScript message not sent");
 	}
 }
 

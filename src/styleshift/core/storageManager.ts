@@ -96,6 +96,7 @@ export async function saveToStorage(key: string, value: any, delayPersistence = 
  * Writes the entire cached data object to Chrome local storage.
  */
 export async function persistCachedDataToStorage(): Promise<boolean> {
+	if (!isStorageInitialized) return false;
 	logger.info("STORAGE", "Persisting data to disk:", currentContextDomain);
 	await chrome.storage.local.set({ [currentContextDomain]: cachedStorageData });
 	return true;

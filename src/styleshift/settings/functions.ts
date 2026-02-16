@@ -36,17 +36,27 @@ const SETTING_TYPE_BEHAVIORS = {
 
 			logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
 
-			if (activeSettingsState[setting.id] === currentValue) return;
+			if (activeSettingsState[setting.id] === currentValue) {
+				logger.debug("settings", `Value unchanged for ${setting.id}, skipping functions`);
+				return;
+			}
 			activeSettingsState[setting.id] = currentValue;
 
 			if (setting.updateFunction) {
+				logger.debug("settings", `Executing updateFunction for ${setting.id}`);
 				executeSettingScript(setting, "updateFunction");
 			}
 
 			if (currentValue) {
-				if (setting.enableFunction) executeSettingScript(setting, "enableFunction");
+				if (setting.enableFunction) {
+					logger.debug("settings", `Executing enableFunction for ${setting.id}`);
+					executeSettingScript(setting, "enableFunction");
+				}
 			} else {
-				if (setting.disableFunction) executeSettingScript(setting, "disableFunction");
+				if (setting.disableFunction) {
+					logger.debug("settings", `Executing disableFunction for ${setting.id}`);
+					executeSettingScript(setting, "disableFunction");
+				}
 			}
 		}
 
@@ -219,9 +229,13 @@ export async function triggerSettingUpdate(settingId: string) {
 	logger.debug("settings", "Triggering update for:", settingId);
 	const state = updateThrottleState[settingId] || "Idle";
 
-	if (state === "Waiting") return;
+	if (state === "Waiting") {
+		logger.debug("settings", "Already waiting for update:", settingId);
+		return;
+	}
 
 	if (state === "Processing") {
+		logger.debug("settings", "Currently processing, setting to waiting:", settingId);
 		updateThrottleState[settingId] = "Waiting";
 		await waitOneFrame();
 		return triggerSettingUpdate(settingId);
@@ -230,13 +244,17 @@ export async function triggerSettingUpdate(settingId: string) {
 	updateThrottleState[settingId] = "Processing";
 
 	if (settingUpdateHandlers[settingId]) {
+		logger.debug("settings", "Executing update handler for:", settingId);
 		await settingUpdateHandlers[settingId]();
+	} else {
+		logger.debug("settings", "No update handler found for:", settingId);
 	}
 
 	const currentValue = await getFromStorage(settingId);
 
 	// Execute registered listeners
 	if (settingUpdateListeners[settingId]) {
+		logger.debug("settings", `Executing ${settingUpdateListeners[settingId].length} listeners for:`, settingId);
 		for (const listener of settingUpdateListeners[settingId]) {
 			listener(currentValue);
 		}

@@ -62,7 +62,7 @@ const defaultStyleshiftItems: Category[] = [
 			{
 				type: "checkbox",
 				id: "EnableSettingsBackgroundBlur",
-				name: "Glass Settings",
+				name: "Glass UI",
 				description: "Applies a frosted-glass blur effect to the background of this settings window.",
 				value: true,
 			},
