@@ -185,9 +185,16 @@
 			class:open={isOpen}
 			onclick={toggleDropdown}
 		>
-			<span class="current-value">
-				{setting.options[value]?.name || value}
-			</span>
+			<div class="STYLESHIFT-Dropdown-Display">
+				{#each optionsList as option}
+					<span class="tester-item" aria-hidden="true">
+						{setting.options[option]?.name || option}
+					</span>
+				{/each}
+				<span class="current-value">
+					{setting.options[value]?.name || value}
+				</span>
+			</div>
 			<span class="arrow">▼</span>
 		</button>
 
@@ -272,6 +279,32 @@
 		}
 	}
 
+	.STYLESHIFT-Dropdown-Display {
+		display: grid;
+		grid-template-areas: "stack";
+		flex: 1;
+		min-width: 0;
+		justify-items: center;
+		align-items: center;
+	}
+
+	.tester-item {
+		grid-area: stack;
+		visibility: hidden;
+		white-space: nowrap;
+		height: 0;
+		overflow: hidden;
+	}
+
+	.current-value {
+		grid-area: stack;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-align: center;
+		width: 100%;
+	}
+
 	.STYLESHIFT-Dropdown-Menu {
 		position: absolute;
 		z-index: 10000;
@@ -325,12 +358,5 @@
 			opacity: 1;
 			transform: translateX(0);
 		}
-	}
-
-	.current-value {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		text-align: center;
 	}
 </style>

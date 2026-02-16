@@ -7,7 +7,8 @@ export const blurCategory: Category = {
 			type: "numberSlide",
 			id: "GlobalBlurAmount",
 			name: "Blur Intensity",
-			description: "Adjusts the overall strength of the blur effect applied to various YouTube interface elements. Higher values create a more pronounced frosted-glass look.",
+			description:
+				"Adjusts the overall strength of the blur effect applied to various YouTube interface elements. Higher values create a more pronounced frosted-glass look.",
 			value: 5,
 			min: 0,
 			max: 50,
@@ -39,7 +40,7 @@ export const blurCategory: Category = {
                     `,
 				},
 				main: {
-					name: "Main Bars Only",
+					name: "Main Interfaces",
 					enableCss: `
                         #masthead > #background,
                         #guide-content
@@ -48,9 +49,9 @@ export const blurCategory: Category = {
                         }
                     `,
 				},
-				none: { 
+				none: {
 					name: "None",
-					enableCss: "" 
+					enableCss: "",
 				},
 			},
 		},
