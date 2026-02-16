@@ -27,6 +27,11 @@
 	<div class="Welcome-Overlay" transition:fade={{ duration: 1000 }}>
 		<div class="Glow-Effect"></div>
 
+		<!-- Stretched Background Meme -->
+		<div class="Meme-Background-Full">
+			<img src={getAssetUrl("welcome/yippee.gif")} alt="" />
+		</div>
+
 		<div
 			class="Welcome-Content-Wrapper"
 			in:scale={{ start: 0.7, duration: 2500, easing: quintOut }}
@@ -43,21 +48,26 @@
 						</div>
 
 						<div class="Main-Title">
-							<h2 class="Text-Gradient" in:fly|global={{ y: 20, duration: 800, delay: 600 }}>
-								I'm back
+							<h2 in:fly|global={{ y: 20, duration: 800, delay: 600 }}>
+								{#each "Welcome to NewTube".split("") as char, i (i)}
+									<span class="wave-char white" style="animation-delay: {i * 50}ms"
+										>{char === " " ? "\u00A0" : char}</span
+									>
+								{/each}
 							</h2>
-							<p class="Text-Sub" in:fly|global={{ y: 20, duration: 800, delay: 900 }}>
-								did you miss me?
-							</p>
 						</div>
 
 						<div
 							class="Action-Area"
 							in:fly|global={{ y: 30, duration: 1000, delay: 1400, easing: backOut }}
 						>
-							<button class="Start-Button" onclick={nextStep}>
-								<span class="btn-text">YAY!</span>
-							</button>
+							<div class="Button-With-Meme">
+								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme left" />
+								<button class="Start-Button" onclick={nextStep}>
+									<span class="btn-text">YAY!</span>
+								</button>
+								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme right" />
+							</div>
 						</div>
 					</div>
 				{:else}
@@ -70,13 +80,28 @@
 							{/each}
 						</div>
 
+						<div class="Support-Section" in:fly|global={{ y: 20, duration: 800, delay: 500 }}>
+							<p class="Text-Sub">
+								NewTube is a free, open-source project. If you enjoy using it, please consider
+								supporting its development to help me keep improving the experience for
+								everyone!
+							</p>
+							<p class="Text-Sub secondary">
+								If you encounter any issues, please report them on GitHub.
+							</p>
+						</div>
+
 						<div
 							class="Action-Area"
 							in:fly|global={{ y: 30, duration: 1000, delay: 1000, easing: backOut }}
 						>
-							<button class="Start-Button highlight" onclick={close}>
-								<span class="btn-text">Let's GO!!!</span>
-							</button>
+							<div class="Button-With-Meme">
+								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme left" />
+								<button class="Start-Button highlight" onclick={close}>
+									<span class="btn-text">Let's GO!!!</span>
+								</button>
+								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme right" />
+							</div>
 						</div>
 					</div>
 				{/if}
@@ -92,12 +117,12 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background: #000000;
+		background: #000;
 		z-index: 999999;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: #fff;
 		font-family: "Inter", system-ui, sans-serif;
 		overflow: hidden;
 	}
@@ -109,6 +134,7 @@
 		background: radial-gradient(circle at center, rgba(127, 93, 183, 0.12) 0%, transparent 60%);
 		animation: pulseGlow 8s infinite alternate ease-in-out;
 		pointer-events: none;
+		z-index: 2;
 	}
 
 	@keyframes pulseGlow {
@@ -119,6 +145,25 @@
 		to {
 			transform: scale(1.3);
 			opacity: 0.7;
+		}
+	}
+
+	.Meme-Background-Full {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 1;
+		opacity: 0.15;
+		pointer-events: none;
+		overflow: hidden;
+
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: fill;
+			filter: blur(4px);
 		}
 	}
 
@@ -167,19 +212,52 @@
 
 	.Main-Title {
 		h2 {
-			font-size: 84px;
+			font-size: 64px;
 			font-weight: 900;
 			margin: 0;
-			letter-spacing: -4px;
-			line-height: 1;
+			letter-spacing: -2px;
+			line-height: 1.1;
 		}
+	}
 
-		.Text-Sub {
-			font-size: 24px;
-			color: rgba(255, 255, 255, 0.3);
-			margin-top: 20px;
-			letter-spacing: 3px;
-			font-weight: 500;
+	.Text-Sub {
+		font-size: 24px;
+		color: rgba(255, 255, 255, 0.3);
+		margin-top: 20px;
+		letter-spacing: 2px;
+		font-weight: 500;
+		max-width: 600px;
+		line-height: 1.4;
+
+		&.secondary {
+			font-size: 18px;
+			margin-top: 10px;
+			opacity: 0.8;
+		}
+	}
+
+	.Support-Section {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 5px;
+	}
+
+	.Button-With-Meme {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		position: relative;
+	}
+
+	.Side-Meme {
+		width: 100px;
+		height: 100px;
+		object-fit: contain;
+		filter: drop-shadow(0 0 10px rgba(127, 93, 183, 0.3));
+
+		&.left {
+			transform: scaleX(-1);
 		}
 	}
 
@@ -189,22 +267,40 @@
 		display: flex;
 		justify-content: center;
 		color: #fff;
-		margin-bottom: 20px;
+		margin-bottom: 10px;
 	}
 
 	.wave-char {
 		display: inline-block;
-		animation: textWave 2s infinite ease-in-out;
+		animation: textWavePurple 2s infinite ease-in-out;
+
+		&.white {
+			animation-name: textWaveWhite;
+		}
 	}
 
-	@keyframes textWave {
+	@keyframes textWavePurple {
 		0%,
 		100% {
 			transform: translateY(0);
+			text-shadow: 0 0 10px rgba(127, 93, 183, 0.3);
 		}
 		50% {
 			transform: translateY(-15px);
 			color: #7f5db7;
+			text-shadow: 0 0 20px rgba(127, 93, 183, 0.8);
+		}
+	}
+
+	@keyframes textWaveWhite {
+		0%,
+		100% {
+			transform: translateY(0);
+			text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+		}
+		50% {
+			transform: translateY(-15px);
+			text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
 		}
 	}
 
@@ -213,6 +309,20 @@
 		-webkit-background-clip: text;
 		background-clip: text;
 		-webkit-text-fill-color: transparent;
+		animation: titleFloat 4s infinite ease-in-out;
+		display: inline-block;
+	}
+
+	@keyframes titleFloat {
+		0%,
+		100% {
+			transform: translateY(0) scale(1);
+			filter: drop-shadow(0 0 0px rgba(127, 93, 183, 0));
+		}
+		50% {
+			transform: translateY(-10px) scale(1.02);
+			filter: drop-shadow(0 0 20px rgba(127, 93, 183, 0.5));
+		}
 	}
 
 	.Start-Button {
@@ -237,7 +347,7 @@
 		&:hover {
 			transform: scale(1.08) translateY(-5px);
 			box-shadow: 0 20px 50px rgba(255, 255, 255, 0.15);
-			background: #ffffff;
+			background: #fff;
 
 			&.highlight {
 				background: #9374c9;
