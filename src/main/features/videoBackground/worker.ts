@@ -1,5 +1,5 @@
-import { VideoBGRenderer } from "./videoBackgroundRenderer";
-import { logger } from "../../shared/logger";
+import { VideoBGRenderer } from "./renderer";
+import { logger } from "../../../shared/logger";
 
 let renderer = new VideoBGRenderer();
 

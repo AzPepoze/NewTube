@@ -1,8 +1,9 @@
-import { waitOneFrame } from "../../styleshift/shared/normal";
-import { loadWorker } from "../../styleshift/core/runtimeController";
-import { getFromStorage, getUserSetting } from "../../styleshift/core/storageManager";
-import { registerSettingListener } from "../../styleshift/settings/functions";
+import { waitOneFrame } from "../../../styleshift/shared/normal";
+import { loadWorker } from "../../../styleshift/core/runtimeController";
+import { getFromStorage, getUserSetting } from "../../../styleshift/core/storageManager";
+import { registerSettingListener } from "../../../styleshift/settings/functions";
 import { calculateVdoHeight, detectBlackBars } from "./removeBlackBarsLogic";
+import { isYoutubeSmallMode, isYoutubeFullscreen, onYoutubeFullscreen } from "../../modules/youtube";
 
 let video: HTMLVideoElement | null = null;
 let canvas: HTMLCanvasElement | null = null;
@@ -23,6 +24,7 @@ let lastIntervalTime = 0;
 let currentInterval = 0;
 let debugContainer: HTMLDivElement | null = null;
 let sessionId = 0;
+let fullscreenCleanup: (() => void) | null = null;
 
 const ultraWideRatio = (21 / 9).toFixed(2);
 let isUltraWideMode = false;
@@ -73,6 +75,7 @@ function updateDebugUI(finalDetectedHeight: number, vHeight: number) {
 			<span>Crop:</span> <span>${cropPercent.toFixed(1)}%</span>
 			<span>vHeight:</span> <span>${vHeight}px</span>
 			<span>UltraWide:</span> <span>${isUltraWideMode}</span>
+			<span>Fullscreen:</span> <span>${isYoutubeFullscreen}</span>
 		</div>
 	`;
 	debugContainer.style.display = "block";
@@ -141,7 +144,25 @@ async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number
 
 async function checkBlackBars() {
 	const mySession = sessionId;
-	if (!enabled || !video || sessionId !== mySession) return;
+	if (!enabled || !video || sessionId !== mySession || isYoutubeSmallMode) return;
+
+	const disableInFullscreen = await getUserSetting("RemoveBlackBarsDisableFullscreen");
+	if (disableInFullscreen && isYoutubeFullscreen) {
+		if (lastHeight !== 0) {
+			applyCrop(0, video.videoHeight);
+		}
+		// Continue waiting for next frame, but don't process
+		if ("requestVideoFrameCallback" in video) {
+			vfcId = video.requestVideoFrameCallback(() => {
+				if (sessionId === mySession) checkBlackBars();
+			});
+		} else {
+			animationId = requestAnimationFrame(() => {
+				if (sessionId === mySession) checkBlackBars();
+			});
+		}
+		return;
+	}
 
 	if (isChecking) {
 		droppedFrames++;
@@ -382,6 +403,11 @@ export async function setupRemoveBlackBars() {
 	};
 	findVideo();
 	window.addEventListener("yt-navigate-finish", findVideo);
+	fullscreenCleanup = onYoutubeFullscreen(() => {
+		if (enabled && video) {
+			checkBlackBars();
+		}
+	});
 }
 
 export function destroyRemoveBlackBars() {
@@ -393,6 +419,11 @@ export function destroyRemoveBlackBars() {
 	if (worker) {
 		worker.terminate();
 		worker = null;
+	}
+
+	if (fullscreenCleanup) {
+		fullscreenCleanup();
+		fullscreenCleanup = null;
 	}
 
 	const player = document.querySelector(".html5-video-container") as HTMLElement;

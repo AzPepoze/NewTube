@@ -186,7 +186,7 @@
 			onclick={toggleDropdown}
 		>
 			<div class="STYLESHIFT-Dropdown-Display">
-				{#each optionsList as option}
+				{#each optionsList as option (option)}
 					<span class="tester-item" aria-hidden="true">
 						{setting.options[option]?.name || option}
 					</span>

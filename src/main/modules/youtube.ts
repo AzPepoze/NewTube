@@ -5,11 +5,13 @@ export let ytdApp: HTMLElement | null = null;
 export let videoElement: HTMLVideoElement | null = null;
 export let playerElement: HTMLElement | null = null;
 export let isYoutubeFullscreen = false;
+export let isYoutubeSmallMode = false;
 
 let playerObserver: MutationObserver | null = null;
 
 const navigateListeners: (() => void)[] = [];
 const fullscreenListeners: ((isFullscreen: boolean) => void)[] = [];
+const smallModeListeners: ((isSmallMode: boolean) => void)[] = [];
 
 /**
  * Retrieves the main YouTube app element (ytd-app).
@@ -93,6 +95,21 @@ export function onYoutubeFullscreen(callback: (isFullscreen: boolean) => void) {
 	};
 }
 
+/**
+ * Registers a callback to be executed when the YouTube player enters or exits small mode (mini-player).
+ * @param callback The function to execute, receives a boolean indicating small mode state.
+ * @returns A cleanup function to unregister the callback.
+ */
+export function onYoutubeSmallMode(callback: (isSmallMode: boolean) => void) {
+	smallModeListeners.push(callback);
+	return () => {
+		const index = smallModeListeners.indexOf(callback);
+		if (index > -1) {
+			smallModeListeners.splice(index, 1);
+		}
+	};
+}
+
 // Global listener for YouTube navigation
 window.addEventListener("yt-navigate-finish", () => {
 	const videoId = getYoutubeVideoId();
@@ -109,20 +126,24 @@ window.addEventListener("yt-navigate-finish", () => {
 	});
 
 	// Re-attach observer to the new player element if it changed
-	setupFullscreenObserver();
+	setupPlayerObserver();
 });
 
-async function setupFullscreenObserver() {
+async function setupPlayerObserver() {
 	if (playerObserver) {
 		playerObserver.disconnect();
 	}
 
 	const player = await getPlayerElement();
-	logger.info("youtube", "Setting up fullscreen observer on:", player);
+	logger.info("youtube", "Setting up player observer on:", player);
 
 	if (player) {
-		playerObserver = new MutationObserver(() => {
+		const checkPlayerState = () => {
 			const fullscreen = player.classList.contains("ytp-fullscreen");
+			const smallMode =
+				Array.from(player.classList).some((cls) => cls.includes("small")) ||
+				player.classList.contains("ytp-player-minimized");
+
 			if (fullscreen !== isYoutubeFullscreen) {
 				isYoutubeFullscreen = fullscreen;
 				logger.info("youtube", `Fullscreen state changed: ${isYoutubeFullscreen}`);
@@ -134,7 +155,21 @@ async function setupFullscreenObserver() {
 					}
 				});
 			}
-		});
+
+			if (smallMode !== isYoutubeSmallMode) {
+				isYoutubeSmallMode = smallMode;
+				logger.info("youtube", `Small mode state changed: ${isYoutubeSmallMode}`);
+				smallModeListeners.forEach((callback) => {
+					try {
+						callback(isYoutubeSmallMode);
+					} catch (error) {
+						console.error("Error in YouTube small mode listener:", error);
+					}
+				});
+			}
+		};
+
+		playerObserver = new MutationObserver(checkPlayerState);
 
 		playerObserver.observe(player, {
 			attributes: true,
@@ -142,15 +177,11 @@ async function setupFullscreenObserver() {
 		});
 
 		// Initial check
-		const initialFullscreen = player.classList.contains("ytp-fullscreen");
-		if (initialFullscreen !== isYoutubeFullscreen) {
-			isYoutubeFullscreen = initialFullscreen;
-			fullscreenListeners.forEach((callback) => callback(isYoutubeFullscreen));
-		}
+		checkPlayerState();
 	} else {
-		logger.warn("youtube", "Could not find player element for fullscreen observer");
+		logger.warn("youtube", "Could not find player element for player observer");
 	}
 }
 
 // Initial setup
-setupFullscreenObserver();
+setupPlayerObserver();

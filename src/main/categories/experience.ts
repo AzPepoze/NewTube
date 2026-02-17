@@ -1,6 +1,6 @@
 import { Category } from "../../styleshift/types/store";
-import { setupRemoveBlackBars, destroyRemoveBlackBars } from "../features/removeBlackBars";
-import { enableVideoBackground, disableVideoBackground, updateVideoBgSettings } from "../features/videoBackground";
+import { setupRemoveBlackBars, destroyRemoveBlackBars } from "../features/removeBlackBars/removeBlackBars";
+import { enableVideoBackground, disableVideoBackground, updateVideoBgSettings } from "../features/videoBackground/main";
 
 const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
@@ -15,7 +15,8 @@ export const experienceCategory: Category = {
 			type: "checkbox",
 			id: "VideoBackground",
 			name: "Enable Background Video",
-			description: "Creates an immersive, cinematic experience by projecting a blurred, ambient version of the current video onto the page background.",
+			description:
+				"Creates an immersive, cinematic experience by projecting a blurred, ambient version of the current video onto the page background.",
 			value: false,
 			enableFunction: enableVideoBackground,
 			disableFunction: disableVideoBackground,
@@ -24,7 +25,8 @@ export const experienceCategory: Category = {
 			type: "dropdown",
 			id: "VideoBackgroundRenderEngine",
 			name: "Render Engine",
-			description: "Select 'GPU' for high-performance hardware acceleration via WebGL, or 'CPU' if you encounter visual glitches.",
+			description:
+				"Select 'GPU' for high-performance hardware acceleration via WebGL, or 'CPU' if you encounter visual glitches.",
 			value: "GPU",
 			updateFunction: updateVideoBgSettings,
 			options: {
@@ -37,7 +39,8 @@ export const experienceCategory: Category = {
 			type: "checkbox",
 			id: "VideoBackgroundWorker",
 			name: "Worker Thread",
-			description: "Runs the background rendering on a separate processing thread to keep the main YouTube interface smooth.",
+			description:
+				"Runs the background rendering on a separate processing thread to keep the main YouTube interface smooth.",
 			value: true,
 			enableFunction: updateVideoBgSettings,
 			disableFunction: updateVideoBgSettings,
@@ -51,7 +54,8 @@ export const experienceCategory: Category = {
 			type: "numberSlide",
 			id: "VideoBackgroundQuality",
 			name: "Resolution",
-			description: "Controls the internal resolution of the background effect. Lower values significantly reduce GPU/CPU load.",
+			description:
+				"Controls the internal resolution of the background effect. Lower values significantly reduce GPU/CPU load.",
 			value: 50,
 			min: 10,
 			max: 100,
@@ -75,7 +79,8 @@ export const experienceCategory: Category = {
 			type: "numberSlide",
 			id: "VideoBackgroundOpacity",
 			name: "Opacity",
-			description: "Sets the transparency level of the background effect, allowing it to blend with your page theme.",
+			description:
+				"Sets the transparency level of the background effect, allowing it to blend with your page theme.",
 			value: 100,
 			min: 0,
 			max: 100,
@@ -87,7 +92,8 @@ export const experienceCategory: Category = {
 			type: "checkbox",
 			id: "VideoBackgroundCheckLag",
 			name: "Lag Alert",
-			description: "Actively monitors system performance and notifies you if the background effect is causing significant frame drops.",
+			description:
+				"Actively monitors system performance and notifies you if the background effect is causing significant frame drops.",
 			value: true,
 			enableFunction: updateVideoBgSettings,
 			disableFunction: updateVideoBgSettings,
@@ -97,7 +103,8 @@ export const experienceCategory: Category = {
 			type: "checkbox",
 			id: "VideoBackgroundStick",
 			name: "Stick to Video",
-			description: "Attaches the background effect directly to the video player container instead of filling the entire page.",
+			description:
+				"Attaches the background effect directly to the video player container instead of filling the entire page.",
 			value: false,
 			enableFunction: updateVideoBgSettings,
 			disableFunction: updateVideoBgSettings,
@@ -107,7 +114,8 @@ export const experienceCategory: Category = {
 			type: "checkbox",
 			id: "VideoBackgroundDebug",
 			name: "Debug Info",
-			description: "Overlays real-time rendering statistics including FPS, latency, and engine status for troubleshooting.",
+			description:
+				"Overlays real-time rendering statistics including FPS, latency, and engine status for troubleshooting.",
 			value: false,
 			enableFunction: updateVideoBgSettings,
 			disableFunction: updateVideoBgSettings,
@@ -122,7 +130,8 @@ export const experienceCategory: Category = {
 			type: "checkbox",
 			id: "RemoveBlackBars",
 			name: "Enable Removal",
-			description: "Automatically detects and crops out horizontal black bars (letterboxing) from the top and bottom of videos.",
+			description:
+				"Automatically detects and crops out horizontal black bars (letterboxing) from the top and bottom of videos.",
 			value: false,
 			enableFunction: setupRemoveBlackBars,
 			disableFunction: destroyRemoveBlackBars,

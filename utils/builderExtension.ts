@@ -304,7 +304,7 @@ async function build() {
 		fs.ensureDirSync(firefoxWorkersPath);
 
 		await esbuild.build({
-			entryPoints: [path.join(__dirname, "../src/main/features/videoBackgroundWorker.ts")],
+			entryPoints: [path.join(__dirname, "../src/main/features/videoBackground/worker.ts")],
 			bundle: true,
 			outfile: path.join(firefoxWorkersPath, "videoBackgroundWorker.js"),
 			platform: "browser",

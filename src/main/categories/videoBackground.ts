@@ -1,5 +1,5 @@
 import { Category } from "../../styleshift/types/store";
-import { enableVideoBackground, disableVideoBackground, updateVideoBgSettings } from "../features/videoBackground";
+import { enableVideoBackground, disableVideoBackground, updateVideoBgSettings } from "../features/videoBackground/main";
 
 const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
@@ -10,7 +10,8 @@ export const videoBackgroundCategory: Category = {
 			type: "checkbox",
 			id: "VideoBackground",
 			name: "Background Video",
-			description: "Creates an immersive, cinematic experience by projecting a blurred, ambient version of the current video onto the page background. (High resource usage)",
+			description:
+				"Creates an immersive, cinematic experience by projecting a blurred, ambient version of the current video onto the page background. (High resource usage)",
 			value: false,
 			enableFunction: enableVideoBackground,
 			disableFunction: disableVideoBackground,
@@ -19,7 +20,8 @@ export const videoBackgroundCategory: Category = {
 			type: "dropdown",
 			id: "VideoBackgroundRenderEngine",
 			name: "Render Engine",
-			description: "Select 'GPU' for high-performance hardware acceleration via WebGL, or 'CPU' if you encounter visual glitches or stability issues.",
+			description:
+				"Select 'GPU' for high-performance hardware acceleration via WebGL, or 'CPU' if you encounter visual glitches or stability issues.",
 			value: "GPU",
 			updateFunction: updateVideoBgSettings,
 			options: {
@@ -36,14 +38,14 @@ export const videoBackgroundCategory: Category = {
 			type: "checkbox",
 			id: "VideoBackgroundWorker",
 			name: "Worker Thread",
-			description: "Runs the background rendering on a separate processing thread to keep the main YouTube interface smooth and responsive.",
+			description:
+				"Runs the background rendering on a separate processing thread to keep the main YouTube interface smooth and responsive.",
 			value: true,
 			enableFunction: updateVideoBgSettings,
 			disableFunction: updateVideoBgSettings,
 			lock: {
 				condition: !isFirefox,
-				message:
-					"I didn't want to lock this feature for Firefox only, but Chromium browsers (Chrome, Edge, etc.) are making it really hard to get workers running correctly. Maybe I'm just stupid and can't make it work, but honestly, Chrome's rendering is already so fast that you won't see much of a performance boost anyway.",
+				message: "I didn't want to lock this feature for Firefox only, but Chromium browsers (Chrome, Edge, etc.) are making it really hard to get workers running correctly. Maybe I'm just stupid and can't make it work, but honestly, Chrome's rendering is already so fast that you won't see much of a performance boost anyway.",
 			},
 			require: { VideoBackground: true },
 		},
@@ -51,17 +53,28 @@ export const videoBackgroundCategory: Category = {
 			type: "checkbox",
 			id: "VideoBackgroundCheckLag",
 			name: "Lag Alert",
-			description: "Actively monitors system performance and notifies you if the background effect is causing significant frame drops.",
+			description:
+				"Actively monitors system performance and notifies you if the background effect is causing significant frame drops.",
 			value: true,
 			enableFunction: updateVideoBgSettings,
 			disableFunction: updateVideoBgSettings,
 			require: { VideoBackground: true },
 		},
 		{
+			type: "checkbox",
+			id: "VideoBackgroundDisableFullscreen",
+			name: "Disable in Fullscreen",
+			description: "Stops the background effect when the video is in fullscreen mode to save resources.",
+			value: true,
+			updateFunction: updateVideoBgSettings,
+			require: { VideoBackground: true },
+		},
+		{
 			type: "numberSlide",
 			id: "VideoBackgroundQuality",
 			name: "Resolution",
-			description: "Controls the internal resolution of the background effect. Lower values significantly reduce GPU/CPU load.",
+			description:
+				"Controls the internal resolution of the background effect. Lower values significantly reduce GPU/CPU load.",
 			value: 50,
 			min: 10,
 			max: 100,
@@ -97,7 +110,8 @@ export const videoBackgroundCategory: Category = {
 			type: "numberSlide",
 			id: "VideoBackgroundContrast",
 			name: "Contrast",
-			description: "Enhances or reduces the difference between the light and dark areas of the ambient background.",
+			description:
+				"Enhances or reduces the difference between the light and dark areas of the ambient background.",
 			value: 1,
 			min: 0,
 			max: 4,
@@ -121,7 +135,8 @@ export const videoBackgroundCategory: Category = {
 			type: "numberSlide",
 			id: "VideoBackgroundOpacity",
 			name: "Opacity",
-			description: "Sets the transparency level of the background effect, allowing it to blend with your page theme.",
+			description:
+				"Sets the transparency level of the background effect, allowing it to blend with your page theme.",
 			value: 100,
 			min: 0,
 			max: 100,
@@ -145,7 +160,8 @@ export const videoBackgroundCategory: Category = {
 			type: "checkbox",
 			id: "VideoBackgroundStick",
 			name: "Stick to Video",
-			description: "Attaches the background effect directly to the video player container instead of filling the entire page.",
+			description:
+				"Attaches the background effect directly to the video player container instead of filling the entire page.",
 			value: false,
 			enableFunction: updateVideoBgSettings,
 			disableFunction: updateVideoBgSettings,
@@ -155,7 +171,8 @@ export const videoBackgroundCategory: Category = {
 			type: "checkbox",
 			id: "VideoBackgroundDebug",
 			name: "Debug Info",
-			description: "Overlays real-time rendering statistics including FPS, latency, and engine status for troubleshooting.",
+			description:
+				"Overlays real-time rendering statistics including FPS, latency, and engine status for troubleshooting.",
 			value: false,
 			enableFunction: updateVideoBgSettings,
 			disableFunction: updateVideoBgSettings,
