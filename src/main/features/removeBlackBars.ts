@@ -56,7 +56,7 @@ function updateDebugUI(finalDetectedHeight: number, vHeight: number) {
 	}
 
 	const needCrop = finalDetectedHeight > 10;
-	const cropPercent = (finalDetectedHeight * 2 / vHeight) * 100;
+	const cropPercent = ((finalDetectedHeight * 2) / vHeight) * 100;
 
 	debugContainer.innerHTML = `
 		<div style="font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 5px; padding-bottom: 2px;">NewTube Remove Bars Debug</div>
@@ -94,15 +94,6 @@ async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number
 	const lazyAmount = await getUserSetting("RemoveBlackBarsLazyAmount");
 
 	if (Math.abs(finalDetectedHeight - lastHeight) > 10 || (finalDetectedHeight > 10 && lastHeight === 0)) {
-		const player = document.querySelector(".html5-video-container") as HTMLElement;
-		if (player) {
-			if (finalDetectedHeight > lastHeight) {
-				player.style.transition = "none";
-			} else {
-				player.style.transition = "all 0.5s ease-out";
-			}
-		}
-		lastHeight = finalDetectedHeight;
 		applyCrop(finalDetectedHeight, vHeight);
 	}
 
@@ -353,24 +344,25 @@ function disableUltraWide() {
 function applyCrop(barHeight: number, totalHeight: number) {
 	const player = document.querySelector(".html5-video-container") as HTMLElement;
 	if (!player || !video) return;
+	player.style.aspectRatio = "";
+
+	// Bar bigger than before, snap immediately to avoid showing bars during transition
+	if (barHeight > lastHeight) {
+		player.style.transition = "none";
+	} else {
+		player.style.transition = "all 0.5s ease-out";
+	}
 
 	if (barHeight <= 10) {
-		player.style.transform = "";
-		player.style.height = "";
-		video.style.transform = "";
+		player.style.height = "100%";
 		disableUltraWide();
 	} else {
 		const contentHeight = totalHeight - barHeight * 2;
-		const scale = totalHeight / contentHeight;
-		player.style.transform = `scale(${scale})`;
-		player.style.height = "100%";
-
-		// Ensure the video is centered within the scaled container
-		video.style.position = "absolute";
-		video.style.top = "50%";
-		video.style.left = "50%";
-		video.style.transform = "translate(-50%, -50%)";
+		const scale = contentHeight / totalHeight;
+		player.style.height = `${scale * 100}%`;
 	}
+
+	lastHeight = barHeight;
 }
 
 export async function setupRemoveBlackBars() {
