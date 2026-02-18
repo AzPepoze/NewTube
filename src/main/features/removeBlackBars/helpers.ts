@@ -1,11 +1,12 @@
 export interface BarDetectionData {
 	imgData: Uint8ClampedArray;
 	vHeight: number;
-	checkStep: number;
 	threshold: number;
 	sR: number;
 	sG: number;
 	sB: number;
+	pixelBudget?: number;
+	currentLastHeight?: number;
 }
 
 export function checkPixelDiff(
@@ -55,9 +56,10 @@ export function calculateVdoHeight(heights: (number | "inf")[], currentLastHeigh
 	return mostCommonHeight;
 }
 
-export function detectBlackBars(data: BarDetectionData, ctx?: any) {
-	const { imgData, vHeight, checkStep, threshold, sR, sG, sB } = data;
+export async function detectBlackBars(data: BarDetectionData, ctx?: any) {
+	const { imgData, vHeight, threshold, sR, sG, sB, pixelBudget } = data;
 	const heightsFound: (number | "inf")[] = [];
+	let pixelsChecked = 0;
 
 	if (ctx) ctx.fillStyle = "red";
 
@@ -66,23 +68,35 @@ export function detectBlackBars(data: BarDetectionData, ctx?: any) {
 		let bottom = -1;
 
 		// Top scan
-		for (let i = 5; i < vHeight / 2; i += checkStep) {
+		for (let i = 5; i < vHeight / 2; i++) {
+			pixelsChecked++;
 			const base = (i * 5 + x) * 4;
 			if (checkPixelDiff(imgData[base], imgData[base + 1], imgData[base + 2], sR, sG, sB, threshold)) {
 				top = i;
 				break;
 			}
-			if (ctx) ctx.fillRect(x, i, 1, checkStep);
+			if (ctx) ctx.fillRect(x, i, 1, 1);
+			
+			if (pixelBudget && pixelsChecked >= pixelBudget) {
+				await new Promise((resolve) => setTimeout(resolve, 1));
+				pixelsChecked = 0;
+			}
 		}
 
 		// Bottom scan
-		for (let i = vHeight - 5; i > vHeight / 2; i -= checkStep) {
+		for (let i = vHeight - 5; i > vHeight / 2; i--) {
+			pixelsChecked++;
 			const base = (i * 5 + x) * 4;
 			if (checkPixelDiff(imgData[base], imgData[base + 1], imgData[base + 2], sR, sG, sB, threshold)) {
 				bottom = vHeight - i;
 				break;
 			}
-			if (ctx) ctx.fillRect(x, i, 1, checkStep);
+			if (ctx) ctx.fillRect(x, i, 1, 1);
+
+			if (pixelBudget && pixelsChecked >= pixelBudget) {
+				await new Promise((resolve) => setTimeout(resolve, 1));
+				pixelsChecked = 0;
+			}
 		}
 
 		if (top !== -1 && bottom !== -1) {

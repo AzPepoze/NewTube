@@ -57,9 +57,9 @@ export const removeBlackBarsCategory: Category = {
 		{
 			type: "checkbox",
 			id: "RemoveBlackBarsLazyCheck",
-			name: "Lazy Check",
+			name: "Pixel Budget",
 			description:
-				"Improves performance by skipping analysis on some frames. This significantly reduces CPU usage with minimal impact on how quickly black bars are detected.",
+				"Limits the number of pixels analyzed in each frame. Spreads the detection process over multiple frames to prevent CPU spikes and interface lag.",
 			value: false,
 			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },
@@ -67,13 +67,13 @@ export const removeBlackBarsCategory: Category = {
 		{
 			type: "numberSlide",
 			id: "RemoveBlackBarsLazyAmount",
-			name: "Check Interval",
+			name: "Budget Amount",
 			description:
-				"Adjusts the delay between each black bar analysis. Higher values save more battery and CPU power but make the detection slightly slower to react to changes.",
+				"The maximum number of pixels to check per frame. Lower values are lighter on the CPU but take more frames (drops) to complete a full scan.",
 			value: 50,
-			min: -1,
-			max: 200,
-			step: 1,
+			min: 50,
+			max: 10000,
+			step: 50,
 			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },
 		},

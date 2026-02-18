@@ -3,7 +3,10 @@ import { state } from "./state";
 
 const ultraWideRatio = (21 / 9).toFixed(2);
 
-export async function updateDebugUI(finalDetectedHeight: number, vHeight: number) {
+export async function updateDebugUI(finalDetectedHeight?: number, vHeight?: number) {
+	if (finalDetectedHeight !== undefined) state.lastHeight = finalDetectedHeight;
+	if (vHeight !== undefined) state.vHeight = vHeight;
+
 	if (!state.debugContainer) {
 		state.debugContainer = document.createElement("div");
 		state.debugContainer.id = "newtube-bars-debug";
@@ -30,8 +33,11 @@ export async function updateDebugUI(finalDetectedHeight: number, vHeight: number
 		container.appendChild(state.debugContainer);
 	}
 
-	const needCrop = finalDetectedHeight > 10;
-	const cropPercent = ((finalDetectedHeight * 2) / vHeight) * 100;
+	const currentVHeight = vHeight || state.vHeight || video?.videoHeight || 0;
+	const currentDetectedHeight = finalDetectedHeight !== undefined ? finalDetectedHeight : state.lastHeight;
+
+	const needCrop = currentDetectedHeight > 10;
+	const cropPercent = currentVHeight > 0 ? ((currentDetectedHeight * 2) / currentVHeight) * 100 : 0;
 
 	state.debugContainer.innerHTML = `
 		<div style="font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 5px; padding-bottom: 2px;">NewTube Remove Bars Debug</div>
@@ -43,10 +49,10 @@ export async function updateDebugUI(finalDetectedHeight: number, vHeight: number
 			<span>Sample:</span> <span>
 				<div style="width: 100%; height: 16px; background: ${state.lastSampleColor}; border: 1px solid rgba(255,255,255,0.8); border-radius: 4px; box-shadow: 0 0 2px rgba(0,0,0,0.5);"></div>
 			</span>
-			<span>Detected:</span> <span>${finalDetectedHeight}px</span>
+			<span>Detected:</span> <span>${currentDetectedHeight}px</span>
 			<span>Need Crop:</span> <span style="color: ${needCrop ? "#00ff00" : "#ff4444"}">${needCrop}</span>
 			<span>Crop:</span> <span>${cropPercent.toFixed(1)}%</span>
-			<span>vHeight:</span> <span>${vHeight}px</span>
+			<span>vHeight:</span> <span>${currentVHeight}px</span>
 			<span>UltraWide:</span> <span>${state.isUltraWideMode}</span>
 			<span>Fullscreen:</span> <span>${isYoutubeFullscreen}</span>
 		</div>

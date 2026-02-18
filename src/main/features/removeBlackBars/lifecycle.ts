@@ -18,7 +18,6 @@ export async function updateRemoveBlackBarsSettings(value?: any, settingId?: str
 				settings.debugCanvas = value;
 				break;
 			case "RemoveBlackBarsDebugInfo":
-				logger.info("RemoveBlackBars", "Updating debug info setting", { value });
 				settings.debugInfo = value;
 				break;
 			case "RemoveBlackBarsLazyCheck":
@@ -73,7 +72,10 @@ export async function enableRemoveBlackBars() {
 export function disableRemoveBlackBars() {
 	state.enabled = false;
 
-	if (state.animationId) cancelAnimationFrame(state.animationId);
+	if (state.animationId) {
+		cancelAnimationFrame(state.animationId);
+		clearTimeout(state.animationId);
+	}
 	if (state.videoFrameCallbackId && videoElement && "cancelVideoFrameCallback" in videoElement) {
 		videoElement.cancelVideoFrameCallback(state.videoFrameCallbackId);
 	}
@@ -115,6 +117,7 @@ export function disableRemoveBlackBars() {
 
 	state.lastHeight = 0;
 	state.droppedFrames = 0;
+	state.vHeight = 0;
 	state.processLatency = 0;
 	state.startTime = 0;
 	state.lastIntervalTime = 0;
