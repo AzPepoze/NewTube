@@ -10,6 +10,7 @@ export interface VideoBgState {
 	overlay: HTMLDivElement | null;
 
 	animationFrame: number | null;
+	videoFrameCallbackId: number | null;
 	renderTimeout: number | null;
 	layoutAnimationFrame: number | null;
 	frameCount: number;
@@ -40,6 +41,7 @@ export const state: VideoBgState = {
 	localRenderer: null,
 	overlay: null,
 	animationFrame: null,
+	videoFrameCallbackId: null,
 	renderTimeout: null,
 	layoutAnimationFrame: null,
 	frameCount: 0,

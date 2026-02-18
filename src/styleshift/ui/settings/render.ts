@@ -6,7 +6,7 @@ import Confirm from "../components/general/Confirm.svelte";
 import type { Setting } from "../../types/store";
 
 export function renderWindow(props: any, target: HTMLElement = document.createElement("div")) {
-	return mount(Window as any, {
+	return mount(Window, {
 		target,
 		intro: true,
 		props,
@@ -14,7 +14,7 @@ export function renderWindow(props: any, target: HTMLElement = document.createEl
 }
 
 export function renderTaskbar(target: HTMLElement = document.createElement("div")) {
-	return mount(Taskbar as any, {
+	return mount(Taskbar, {
 		target,
 		intro: true,
 	});
@@ -25,9 +25,9 @@ export function renderSetting(
 	onUpdate?: (value: any) => void,
 	target: HTMLElement = document.createElement("div"),
 ) {
-	mount(SettingRenderer as any, {
+	mount(SettingRenderer, {
 		target,
-		props: { setting, onUpdate: onUpdate } as any,
+		props: { setting, onUpdate: onUpdate },
 	});
 	return (target.firstElementChild as HTMLElement) || target;
 }
@@ -41,7 +41,7 @@ export function renderComponent(component: any, props: any = {}, target: HTMLEle
 }
 
 export function confirm(props: any, target: HTMLElement = document.createElement("div")) {
-	return mount(Confirm as any, {
+	return mount(Confirm, {
 		target,
 		intro: true,
 		props,

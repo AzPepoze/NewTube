@@ -313,7 +313,7 @@ async function build() {
 		});
 
 		await esbuild.build({
-			entryPoints: [path.join(__dirname, "../src/main/features/removeBlackBarsWorker.ts")],
+			entryPoints: [path.join(__dirname, "../src/main/features/removeBlackBars/worker.ts")],
 			bundle: true,
 			outfile: path.join(firefoxWorkersPath, "removeBlackBarsWorker.js"),
 			platform: "browser",
@@ -348,8 +348,10 @@ async function build() {
 		console.log("--------------------------------");
 	} catch (error) {
 		console.error("Build Error:", error);
-		console.log("Retrying build in 500ms...");
-		setTimeout(build, 500);
+		if (!isOnce) {
+			console.log("Retrying build in 500ms...");
+			setTimeout(build, 500);
+		}
 	} finally {
 		isBuilding = false;
 		try {

@@ -2,8 +2,9 @@ import { state } from "./state";
 import { settings } from "./settings";
 import { fadeIn, fadeOut, updateDebugInfo, updateLayout } from "./ui";
 import { checkStaticVDO, sendToWorker } from "./helpers";
-import { getVideoElement, isYoutubeFullscreen, isYoutubeSmallMode } from "../../modules/youtube";
+import { getVideoElement } from "../../modules/youtube";
 import { disableVideoBackground } from "./lifecycle";
+import { shouldFeatureShow } from "../helpers";
 
 export function handleLagMonitoring(frameTime: number, disableCallback: () => void) {
 	const isSlow = frameTime > 100 || state.lastProcessTime > 120;
@@ -51,8 +52,8 @@ export const render = async () => {
 
 	// Schedule next frame (Priority: rVFC > 30fps Fallback)
 	if ("requestVideoFrameCallback" in video) {
-		state.renderMethod = "rVFC";
-		(video as any).requestVideoFrameCallback(() => {
+		state.renderMethod = "videoFrameCallback";
+		state.videoFrameCallbackId = video.requestVideoFrameCallback(() => {
 			if (state.enabled && state.sessionId === mySession) render();
 		});
 	} else {
@@ -65,8 +66,7 @@ export const render = async () => {
 	}
 
 	// Exit if hidden or fullscreen or small mode
-	const isFullscreenDisabled = settings.disableFullscreen && isYoutubeFullscreen;
-	const shouldShow = (!!video.src || settings.stick) && !isFullscreenDisabled && !isYoutubeSmallMode;
+	const shouldShow = shouldFeatureShow(settings.disableFullscreen, settings.stick);
 	if (!shouldShow) {
 		if (state.isFadedIn) fadeOut();
 		return;

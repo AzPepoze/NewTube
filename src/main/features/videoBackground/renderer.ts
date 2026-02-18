@@ -188,7 +188,7 @@ export class VideoBGRenderer {
 		}
 
 		if (this.settings.engine === "CPU") {
-			this.ctx2d = this.canvas.getContext("2d", { alpha: false }) as any;
+			this.ctx2d = this.canvas.getContext("2d", { alpha: false });
 			this.preCanvas = new OffscreenCanvas(this.canvas.width, this.canvas.height);
 			this.preCtx2d = this.preCanvas.getContext("2d", { alpha: true });
 			logger.info("video-bg-renderer", "CPU initialized successfully", {
@@ -263,9 +263,9 @@ export class VideoBGRenderer {
 
 			// Final output: Draw preCanvas onto main canvas with blur
 			if (this.settings.blur > 0) {
-				(ctx2d as any).filter = `blur(${this.settings.blur}px)`;
+				ctx2d.filter = `blur(${this.settings.blur}px)`;
 			} else {
-				(ctx2d as any).filter = "none";
+				ctx2d.filter = "none";
 			}
 			ctx2d.drawImage(this.preCanvas, 0, 0, this.canvas.width, this.canvas.height);
 		}

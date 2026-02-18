@@ -4,7 +4,7 @@ import { registerSettingListener } from "../../../styleshift/settings/functions"
 import { showBg } from "../background";
 import { logger } from "../../../shared/logger";
 import { VideoBGRenderer } from "./renderer";
-import { onYoutubeNavigate, onYoutubeFullscreen, onYoutubeSmallMode } from "../../modules/youtube";
+import { onYoutubeNavigate, onYoutubeFullscreen, onYoutubeSmallMode, videoElement } from "../../modules/youtube";
 import { state } from "./state";
 import { settings, loadInitialSettings } from "./settings";
 import { fadeOut, resetLastRect } from "./ui";
@@ -230,6 +230,9 @@ export async function disableVideoBackground(force = false) {
 	}
 
 	if (state.animationFrame) cancelAnimationFrame(state.animationFrame);
+	if (state.videoFrameCallbackId && videoElement && "cancelVideoFrameCallback" in videoElement) {
+		videoElement.cancelVideoFrameCallback(state.videoFrameCallbackId);
+	}
 	if (state.renderTimeout) clearTimeout(state.renderTimeout);
 	if (state.layoutAnimationFrame) cancelAnimationFrame(state.layoutAnimationFrame);
 
@@ -280,6 +283,7 @@ export async function disableVideoBackground(force = false) {
 		layoutAnimationFrame: null,
 		renderTimeout: null,
 		animationFrame: null,
+		videoFrameCallbackId: null,
 		frameCount: 0,
 		lastTime: 0,
 		laggedFrames: 0,

@@ -47,7 +47,10 @@ function createShader(gl: WebGL2RenderingContext, type: number, source: string) 
 		gl.deleteShader(shader);
 		return null;
 	}
-	logger.info("black-to-transparent", `Shader of type ${type === gl.VERTEX_SHADER ? "VERTEX" : "FRAGMENT"} compiled successfully`);
+	logger.info(
+		"black-to-transparent",
+		`Shader of type ${type === gl.VERTEX_SHADER ? "VERTEX" : "FRAGMENT"} compiled successfully`,
+	);
 	return shader;
 }
 
@@ -116,7 +119,7 @@ async function render() {
 
 	const scheduleNext = () => {
 		if ("requestVideoFrameCallback" in video) {
-			(video as any).requestVideoFrameCallback(render);
+			video.requestVideoFrameCallback(render);
 		} else {
 			renderTimeout = setTimeout(() => {
 				animationFrame = requestAnimationFrame(render);
@@ -130,7 +133,7 @@ async function render() {
 				isYoutubeFullscreen,
 				paused: video.paused,
 				ended: video.ended,
-				readyState: video.readyState
+				readyState: video.readyState,
 			});
 			canvas.style.display = "none";
 			video.style.opacity = "1";
@@ -155,7 +158,7 @@ async function render() {
 
 	const rect = video.getBoundingClientRect();
 	const parentRect = video.parentElement?.getBoundingClientRect() || { top: 0, left: 0 };
-	
+
 	if (canvas.style.display !== "block") {
 		logger.info("black-to-transparent", "Showing canvas");
 		canvas.style.display = "block";
@@ -188,12 +191,16 @@ async function render() {
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 	} else {
 		if (video.style.opacity !== "1") {
-			logger.warn("black-to-transparent", "Missing GL resources or invalid canvas width, reverting to video display", {
-				gl: !!gl,
-				program: !!program,
-				videoTexture: !!videoTexture,
-				canvasWidth: canvas.width
-			});
+			logger.warn(
+				"black-to-transparent",
+				"Missing GL resources or invalid canvas width, reverting to video display",
+				{
+					gl: !!gl,
+					program: !!program,
+					videoTexture: !!videoTexture,
+					canvasWidth: canvas.width,
+				},
+			);
 			video.style.opacity = "1";
 		}
 	}
@@ -229,7 +236,9 @@ export async function setupBlackToTransparent() {
 		logger.info("black-to-transparent", "Fullscreen changed:", fullscreen);
 		if (fullscreen && canvas) {
 			canvas.style.display = "none";
-			getVideoElement().then(v => { if (v) v.style.opacity = "1"; });
+			getVideoElement().then((v) => {
+				if (v) v.style.opacity = "1";
+			});
 		}
 	});
 }
@@ -250,7 +259,7 @@ export function destroyBlackToTransparent() {
 		videoTexture = null;
 	}
 
-	getVideoElement().then(video => {
+	getVideoElement().then((video) => {
 		if (video) video.style.opacity = "1";
 	});
 }

@@ -108,7 +108,7 @@ export async function executeScriptString({
 	executionArguments = "",
 }: ExecutionOptions): Promise<void> {
 	logger.debug("runtime", "Trying to run script from source:", sourceIdentifier);
-	
+
 	if (!scriptContent) {
 		logger.debug("runtime", "Script content is empty for source:", sourceIdentifier);
 		return;
@@ -131,7 +131,10 @@ export async function executeScriptString({
 				for (const methodName of methods) {
 					const pattern = new RegExp(`\\b${methodName}\\b`, "g");
 					if (pattern.test(finalScript)) {
-						logger.debug("runtime", `Replacing shorthand ${methodName} with window["StyleShift"]["${scope}"]["${methodName}"]`);
+						logger.debug(
+							"runtime",
+							`Replacing shorthand ${methodName} with window["StyleShift"]["${scope}"]["${methodName}"]`,
+						);
 						finalScript = finalScript.replace(
 							pattern,
 							`window["StyleShift"]["${scope}"]["${methodName}"]`,

@@ -1,5 +1,9 @@
 import { Category } from "../../styleshift/types/store";
-import { setupRemoveBlackBars, destroyRemoveBlackBars } from "../features/removeBlackBars/removeBlackBars";
+import {
+	enableRemoveBlackBars,
+	disableRemoveBlackBars,
+	updateRemoveBlackBarsSettings,
+} from "../features/removeBlackBars/main";
 
 const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
@@ -13,8 +17,8 @@ export const removeBlackBarsCategory: Category = {
 			description:
 				"Automatically detects and crops out horizontal black bars (letterboxing) from the top and bottom of videos to fill your screen better.",
 			value: false,
-			enableFunction: setupRemoveBlackBars,
-			disableFunction: destroyRemoveBlackBars,
+			enableFunction: enableRemoveBlackBars,
+			disableFunction: disableRemoveBlackBars,
 		},
 		{
 			type: "checkbox",
@@ -23,6 +27,7 @@ export const removeBlackBarsCategory: Category = {
 			description:
 				"Optimizes the cropping logic specifically for ultrawide (21:9) monitors and videos, ensuring they fill the player correctly without stretching.",
 			value: true,
+			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },
 		},
 		{
@@ -32,6 +37,7 @@ export const removeBlackBarsCategory: Category = {
 			description:
 				"Automatically disables the black bar removal feature when the video player is in fullscreen mode. This can help prevent visual artifacts on some displays.",
 			value: false,
+			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },
 		},
 		{
@@ -45,6 +51,7 @@ export const removeBlackBarsCategory: Category = {
 				condition: !isFirefox,
 				message: "I didn't want to lock this feature for Firefox only, but Chromium browsers (Chrome, Edge, etc.) are making it really hard to get workers running correctly. Maybe I'm just stupid and can't make it work, but honestly, Chrome's rendering is already so fast that you won't see much of a performance boost anyway.",
 			},
+			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },
 		},
 		{
@@ -54,6 +61,7 @@ export const removeBlackBarsCategory: Category = {
 			description:
 				"Improves performance by skipping analysis on some frames. This significantly reduces CPU usage with minimal impact on how quickly black bars are detected.",
 			value: false,
+			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },
 		},
 		{
@@ -66,6 +74,7 @@ export const removeBlackBarsCategory: Category = {
 			min: -1,
 			max: 200,
 			step: 1,
+			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },
 		},
 		{
@@ -75,6 +84,7 @@ export const removeBlackBarsCategory: Category = {
 			description:
 				"Visualizes the analysis process by showing a small canvas in the corner. Green lines indicate where the black bars were detected and cropped.",
 			value: false,
+			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },
 		},
 		{
@@ -84,6 +94,7 @@ export const removeBlackBarsCategory: Category = {
 			description:
 				"Displays real-time technical statistics such as analysis latency, frame drops, and detection coordinates directly over the video player.",
 			value: false,
+			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },
 		},
 	],

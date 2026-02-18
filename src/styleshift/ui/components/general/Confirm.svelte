@@ -64,7 +64,7 @@
 					name: "Confirm",
 					color: "#7f5db7",
 					clickFunction: () => handleAction(onConfirm),
-				} as any}
+				}}
 			/>
 			<Button
 				setting={{
