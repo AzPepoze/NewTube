@@ -1,5 +1,5 @@
 import { Category } from "../../styleshift/types/store";
-import { setupThemeByVideo } from "../features/theme";
+import { enableThemeByVideo, disableThemeByVideo } from "../features/theme";
 import { mainCss } from "../features/mainCss";
 
 export const colorThemeCategory: Category = {
@@ -9,7 +9,8 @@ export const colorThemeCategory: Category = {
 			type: "checkbox",
 			id: "EnableBaseMainCss",
 			name: "Base Theming",
-			description: "Enables the foundational CSS required for custom themes to apply correctly across YouTube's complex interface. Highly recommended.",
+			description:
+				"Enables the foundational CSS required for custom themes to apply correctly across YouTube's complex interface. Highly recommended.",
 			value: true,
 			enableCss: mainCss,
 		},
@@ -17,7 +18,8 @@ export const colorThemeCategory: Category = {
 			type: "checkbox",
 			id: "EnableStyleSync",
 			name: "Sync YouTube Styles",
-			description: "Forces YouTube's internal design system to use your custom colors. This ensures consistency in menus, buttons, and badges.",
+			description:
+				"Forces YouTube's internal design system to use your custom colors. This ensures consistency in menus, buttons, and badges.",
 			value: true,
 			enableCss: `
                 html, [watch-color-update] {
@@ -60,17 +62,20 @@ export const colorThemeCategory: Category = {
 			type: "checkbox",
 			id: "EnableThemeByVideo",
 			name: "Dynamic Video Theme",
-			description: "Automatically extracts the most prominent colors from the current video's thumbnail and applies them to your entire theme in real-time.",
+			description:
+				"Automatically extracts the most prominent colors from the current video's thumbnail and applies them to your entire theme in real-time.",
 			value: false,
-			enableFunction: setupThemeByVideo,
+			enableFunction: enableThemeByVideo,
+			disableFunction: disableThemeByVideo,
 		},
 		{
 			type: "checkbox",
 			id: "EnableSolidThemeByVideo",
 			name: "Solid Dynamic Background",
-			description: "When using Dynamic Video Theme, this makes the background tint solid instead of semi-transparent.",
+			description:
+				"When using Dynamic Video Theme, this makes the background tint solid instead of semi-transparent.",
 			value: false,
-			require: { EnableThemeByVideo: true }
+			require: { EnableThemeByVideo: true },
 		},
 		{
 			type: "color",
@@ -84,7 +89,8 @@ export const colorThemeCategory: Category = {
 			type: "color",
 			id: "TransparentThemeColor",
 			name: "Surface Accent",
-			description: "A semi-transparent version of the theme color used for hover states and subtle backgrounds.",
+			description:
+				"A semi-transparent version of the theme color used for hover states and subtle backgrounds.",
 			value: "#659aff33",
 			varCss: "--nt-theme-transparent",
 		},

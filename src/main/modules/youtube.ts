@@ -6,6 +6,7 @@ export let videoElement: HTMLVideoElement | null = null;
 export let playerElement: HTMLElement | null = null;
 export let isYoutubeFullscreen = false;
 export let isYoutubeSmallMode = false;
+export let isYoutubeVideoPage = !!new URLSearchParams(window.location.search).get("v");
 
 let playerObserver: MutationObserver | null = null;
 
@@ -115,6 +116,7 @@ window.addEventListener("yt-navigate-finish", () => {
 	const videoId = getYoutubeVideoId();
 	logger.info("youtube", `Navigation finished: ${videoId || "Not a video page"}`);
 
+	isYoutubeVideoPage = !!videoId;
 	videoElement = null; // Reset cached video element on navigation
 	playerElement = null; // Reset cached player element on navigation
 	navigateListeners.forEach((callback) => {

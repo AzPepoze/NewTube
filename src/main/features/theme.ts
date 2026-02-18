@@ -1,7 +1,14 @@
 import ColorThief from "colorthief";
 import { rgbToHsv, hsvToRgb, getDocumentBody } from "../../styleshift/shared/normal";
 import { getUserSetting } from "../../styleshift/core/storageManager";
-import { onYoutubeNavigate, getYoutubeVideoId } from "../modules/youtube";
+import { onYoutubeNavigate, getYoutubeVideoId, onYoutubeFullscreen } from "../modules/youtube";
+import { shouldFeatureShow } from "./helpers";
+
+const state = {
+	enabled: false,
+	navigateCleanup: null as (() => void) | null,
+	fullscreenCleanup: null as (() => void) | null,
+};
 
 function getSortedPalette(palette: [number, number, number][]) {
 	function calScore(color: [number, number, number]) {
@@ -32,10 +39,50 @@ async function getSampleColor(img: HTMLImageElement): Promise<[number, number, n
 	}
 }
 
-export function setupThemeByVideo() {
+export async function clearTheme() {
+	const body = await getDocumentBody();
+	if (!body) return;
+
+	const props = [
+		"--nt-theme-color",
+		"--nt-theme-transparent",
+		"--nt-theme-accent",
+		"--nt-playlist-hover-bg",
+		"--nt-text-link",
+		"--nt-text-channel",
+		"--nt-topbar-bg",
+		"--nt-search-bg-hover",
+		"--nt-timestamp-bg",
+		"--nt-text-secondary",
+		"--nt-text-timestamp",
+		"--nt-text-primary",
+		"--nt-bg-main",
+		"--nt-timeline-bg",
+		"--nt-timeline-load",
+		"--nt-player-bg",
+	];
+
+	props.forEach((prop) => body.style.removeProperty(prop));
+}
+
+export function enableThemeByVideo() {
+	state.enabled = true;
+
 	const updateTheme = async () => {
+		if (!state.enabled) return;
+
 		const videoId = getYoutubeVideoId();
-		if (!videoId) return;
+		if (!videoId) {
+			clearTheme();
+			return;
+		}
+
+		// Use stick: true to avoid clearing the theme during navigation
+		// while the video element is being recreated.
+		if (!shouldFeatureShow(false, true)) {
+			clearTheme();
+			return;
+		}
 
 		// Use mqdefault first, try maxres if possible?
 		// Actually legacy used maxresdefault then 0.jpg as fallback
@@ -73,7 +120,7 @@ export function setupThemeByVideo() {
 			color = [color[0] + getAdd, color[1] + getAdd, color[2] + getAdd];
 
 			const body = await getDocumentBody();
-			if (!body) return;
+			if (!body || !state.enabled) return;
 
 			const setProp = (name: string, val: string) => body.style.setProperty(name, val);
 
@@ -137,5 +184,19 @@ export function setupThemeByVideo() {
 	};
 
 	updateTheme();
-	onYoutubeNavigate(updateTheme);
+	state.navigateCleanup = onYoutubeNavigate(updateTheme);
+	state.fullscreenCleanup = onYoutubeFullscreen(updateTheme);
+}
+
+export function disableThemeByVideo() {
+	state.enabled = false;
+	if (state.navigateCleanup) {
+		state.navigateCleanup();
+		state.navigateCleanup = null;
+	}
+	if (state.fullscreenCleanup) {
+		state.fullscreenCleanup();
+		state.fullscreenCleanup = null;
+	}
+	clearTheme();
 }

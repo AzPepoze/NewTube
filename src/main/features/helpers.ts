@@ -1,4 +1,9 @@
-import { isYoutubeSmallMode, isYoutubeFullscreen, videoElement } from "../modules/youtube";
+import {
+	isYoutubeSmallMode,
+	isYoutubeFullscreen,
+	videoElement,
+	isYoutubeVideoPage,
+} from "../modules/youtube";
 
 /**
  * Shared logic to determine if a video feature should be active/visible.
@@ -10,8 +15,9 @@ export function shouldFeatureShow(
 	disableFullscreen: boolean,
 	stick: boolean = false,
 ): boolean {
+	if (!isYoutubeVideoPage && !stick) return false;
 	const video = videoElement;
-	if (!video && !stick) return false;
+	if ((!video || !video.isConnected) && !stick) return false;
 	if (video && !video.src && !stick) return false;
 	if (isYoutubeSmallMode) return false;
 	if (disableFullscreen && isYoutubeFullscreen) return false;
