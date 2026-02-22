@@ -1,5 +1,5 @@
 import { Category } from "../../styleshift/types/store";
-import { setupFlyout } from "../features/video/flyout";
+import { enableFlyout } from "../features/video/flyout";
 import { setupAutoShowChatReplay } from "../features/video/chat";
 
 export const enhancementCategory: Category = {
@@ -59,7 +59,7 @@ export const enhancementCategory: Category = {
 			name: "Flyout Player",
 			description: "Attaches a small, persistent version of the video player to the corner of your screen when you scroll down to read comments. Keeps the video visible at all times.",
 			value: false,
-			enableFunction: setupFlyout,
+			enableFunction: enableFlyout,
 			enableCss: `
       .newtube-flyout-mode {
         position: fixed !important;

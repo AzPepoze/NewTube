@@ -1,6 +1,6 @@
 import { onYoutubeNavigate } from "../../modules/youtube";
 
-export function setupFlyout() {
+export function enableFlyout() {
 	const observer = new IntersectionObserver(
 		(entries) => {
 			entries.forEach((entry) => {

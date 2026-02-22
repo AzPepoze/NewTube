@@ -17,7 +17,7 @@ export const EXTERNAL_STORAGE_KEYS = [
 	"Welcome_Shown",
 ];
 
-export const ALLOWED_DATA_KEYS = ["currentSettings", "customStyleshiftItems"];
+export const ALLOWED_STORAGE_KEYS = ["currentSettings", "customStyleshiftItems"];
 
 /**
  * Loads all data from Chrome local storage for the current domain context.

@@ -5,7 +5,7 @@ import { showUserConfirmation } from "@ui/extension";
 
 export async function checkAndShowWelcome() {
 	const hasShown = await getRootValue("Welcome_Shown");
-	
+
 	if (!hasShown) {
 		const hasTime = await showUserConfirmation(
 			"Do you have a moment?",

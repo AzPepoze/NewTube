@@ -23,7 +23,6 @@ import { scrollbarCategory } from "./categories/scrollbar";
 import { uiCleanerCategory } from "./categories/uiCleaner";
 import { fontsCategory } from "./categories/fonts";
 import { betaFeaturesCategory } from "./categories/betaFeatures";
-import { cssFixesCategory } from "./categories/cssFixes";
 
 const defaultStyleshiftItems: Category[] = [
 	// --- Video Experience ---
@@ -57,7 +56,6 @@ const defaultStyleshiftItems: Category[] = [
 	scrollbarCategory,
 	uiCleanerCategory,
 	betaFeaturesCategory,
-	cssFixesCategory,
 ];
 
 export function getDefaultItems() {

@@ -100,56 +100,18 @@ export const topbarSearchCategory: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "EnableSearchAnimation",
-			name: "Search Animation",
+			id: "EnableEnhancedSearchStyle",
+			name: "Enhanced Search Style",
 			description: "Adds a sleek slide-in and fade animation when the search bar is focused, enhancing the overall feel of the header.",
 			value: true,
 			enableCss: `
-                div.gstl50.sbddA {
-                    display: block !important;
-                    overflow: hidden;
-                    transition: all 0.4s ease;
-                    transform: translate(50px, 0);
-                    pointer-events: none;
-                    opacity: 0;
-                }
-                html:has(input#search:focus) div.gstl50.sbddA {
-                    transform: none !important;
-                    pointer-events: visible !important;
-                    opacity: 1 !important;
-                }
+                .ytSearchboxComponentInputBox {
+					border: none !important;
+				}
 
-                /* Search Icon Animation & Suggestion Styling */
-                @keyframes show-searchIcon {
-                    0% { opacity: 0; left: 20px; }
-                    100% { opacity: 1; left: 0px; }
-                }
-
-                yt-searchbox [class*="SearchIcon"] {
-                    display: block !important;
-                    width: 20px !important;
-                    position: absolute;
-                    animation: show-searchIcon 0.4s;
-                }
-               
-                .sbsbI {
-                    background: black;
-                    padding: 5px 10px;
-                    border-radius: var(--nt-border-radius);
-                    outline: solid white 1px;
-                    color: white !important;
-                    transition: all 0.2s;
-                }
-                .sbsbI:hover {
-                    background: white !important;
-                    color: black !important;
-                }
-                .sbpqsA:before {
-                    filter: invert(0.5);
-                }
-                .ytSearchboxComponentInputBox::placeholder {
-                    color: var(--nt-text-secondary) !important;
-                }
+				.ytSearchboxComponentSearchButton {
+					border-radius: var(--nt-border-radius);
+				}
             `,
 		},
 	],

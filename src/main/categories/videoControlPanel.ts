@@ -11,21 +11,30 @@ export const videoControlPanelCategory: Category = {
 				"Moves the entire video control bar (play, volume, settings) from an overlay on top of the video to a dedicated space directly underneath it.",
 			value: true,
 			enableCss: `
-      #player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode),
-	  #ytd-player {
-        padding-bottom: var(--nt-player-below-space, 70px);
-      }
-      div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) .ytp-chrome-bottom {
-        overflow: visible !important;
-        padding-top: 0px !important;
-      }
-      #player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-chrome-bottom {
-        transform: translate(0px, var(--nt-player-below-space, 70px));
-      }
-      #player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)) {
-        margin-bottom: var(--nt-player-below-space, 70px);
-      }
-    `,
+				#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode),
+				#ytd-player
+				{
+					padding-bottom: var(--nt-player-below-space, 70px);
+				}
+
+				div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) .ytp-chrome-bottom {
+					overflow: visible !important;
+					padding-top: 0px !important;
+				}
+
+				#player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-chrome-bottom {
+					transform: translate(0px, var(--nt-player-below-space, 70px));
+				}
+
+				#player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)) {
+					margin-bottom: var(--nt-player-below-space, 70px);
+				}
+
+				#player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)) #ytp-caption-window-container,
+				#player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)) .ytp-overlays-container{
+					height: calc(100% - var(--nt-player-below-space)) !important;
+				}
+			`,
 		},
 		{
 			type: "numberSlide",
@@ -98,10 +107,10 @@ export const videoControlPanelCategory: Category = {
 			value: "#00000080",
 			varCss: "--nt-player-bg",
 			constantCss: `
-      .ytp-chrome-bottom, .ytp-gradient-bottom {
-        background-color: var(--nt-player-bg) !important;
-      }
-    `,
+			.ytp-gradient-bottom {
+				background-color: var(--nt-player-bg) !important;
+			}
+			`,
 		},
 		{
 			type: "checkbox",

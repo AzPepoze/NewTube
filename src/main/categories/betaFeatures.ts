@@ -1,5 +1,4 @@
 import { Category } from "../../styleshift/types/store";
-import { enableNewYoutubeLayout, disableNewYoutubeLayout } from "../features/beta";
 import { setupAudioVisualizer, destroyAudioVisualizer } from "../features/visualizer";
 import { setupBlackToTransparent, destroyBlackToTransparent } from "../features/video/blackToTransparent";
 
@@ -11,6 +10,13 @@ export const betaFeaturesCategory: Category = {
 			html: "Warning: These features are experimental and may not work as expected. A page reload is often required.",
 		},
 		{
+			id: "EnableAppLightTheme",
+			name: "Light Theme",
+			description: "Switches the NewTube settings interface to a bright light theme.",
+			type: "checkbox",
+			value: false,
+		},
+		{
 			type: "checkbox",
 			id: "ExperimentalBlackToTransparent",
 			name: "Black to Transparent",
@@ -18,15 +24,6 @@ export const betaFeaturesCategory: Category = {
 			value: false,
 			enableFunction: setupBlackToTransparent,
 			disableFunction: destroyBlackToTransparent,
-		},
-		{
-			type: "checkbox",
-			id: "ExperimentalForceNewLayout",
-			name: "Force New Layout",
-			description: "Tries to force YouTube to use its newest experimental UI layout. This may break some other NewTube features and usually requires a full page reload.",
-			value: false,
-			enableFunction: enableNewYoutubeLayout,
-			disableFunction: disableNewYoutubeLayout,
 		},
 		{
 			type: "checkbox",

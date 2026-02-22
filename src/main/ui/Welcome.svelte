@@ -27,11 +27,6 @@
 	<div class="Welcome-Overlay" transition:fade={{ duration: 1000 }}>
 		<div class="Glow-Effect"></div>
 
-		<!-- Stretched Background Meme -->
-		<div class="Meme-Background-Full">
-			<img src={getAssetUrl("welcome/yippee.gif")} alt="" />
-		</div>
-
 		<div
 			class="Welcome-Content-Wrapper"
 			in:scale={{ start: 0.7, duration: 2500, easing: quintOut }}
@@ -145,25 +140,6 @@
 		to {
 			transform: scale(1.3);
 			opacity: 0.7;
-		}
-	}
-
-	.Meme-Background-Full {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		z-index: 1;
-		opacity: 0.15;
-		pointer-events: none;
-		overflow: hidden;
-
-		img {
-			width: 100%;
-			height: 100%;
-			object-fit: fill;
-			filter: blur(4px);
 		}
 	}
 
@@ -302,15 +278,6 @@
 			transform: translateY(-15px);
 			text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
 		}
-	}
-
-	.Text-Gradient {
-		background: linear-gradient(to bottom, #fff 40%, #7f5db7);
-		-webkit-background-clip: text;
-		background-clip: text;
-		-webkit-text-fill-color: transparent;
-		animation: titleFloat 4s infinite ease-in-out;
-		display: inline-block;
 	}
 
 	@keyframes titleFloat {

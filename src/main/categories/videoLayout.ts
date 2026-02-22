@@ -10,20 +10,20 @@ export const videoLayoutCategory: Category = {
 			description: "Aligns the video title and description to the center of the page when in default view.",
 			value: true,
 			enableCss: `
-      #title.ytd-watch-metadata, #container.ytd-video-primary-info-renderer {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-block: 30px;
-      }
-      ytd-watch-metadata.ytd-watch-flexy {
-        display: flex;
-        flex-direction: column;
-      }
-      h1.ytd-watch-metadata {
-        text-align: center;
-      }
-    `,
+				#title.ytd-watch-metadata, #container.ytd-video-primary-info-renderer {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					margin-block: 30px;
+				}
+				ytd-watch-metadata.ytd-watch-flexy {
+					display: flex;
+					flex-direction: column;
+				}
+				h1.ytd-watch-metadata {
+					text-align: center;
+				}
+			`,
 		},
 		{
 			type: "checkbox",
@@ -32,10 +32,10 @@ export const videoLayoutCategory: Category = {
 			description: "Centers the video title overlay specifically when watching in theater or fullscreen mode.",
 			value: true,
 			enableCss: `
-      .ytp-big-mode .ytp-title-text {
-        text-align: center;
-      }
-    `,
+				.ytp-big-mode .ytp-title-text {
+					text-align: center;
+				}
+    		`,
 		},
 		{
 			type: "numberSlide",
@@ -48,10 +48,10 @@ export const videoLayoutCategory: Category = {
 			step: 5,
 			varCss: "--nt-video-bottom-space",
 			constantCss: `
-      #below {
-        margin-top: var(--nt-video-bottom-space, 0px) !important;
-      }
-    `,
+				#below {
+					margin-top: var(--nt-video-bottom-space, 0px) !important;
+				}
+    		`,
 		},
 		{
 			type: "numberSlide",
@@ -64,10 +64,10 @@ export const videoLayoutCategory: Category = {
 			step: 10,
 			varCss: "--nt-playlist-height-normal",
 			constantCss: `
-      #items.ytd-playlist-panel-renderer {
-        max-height: var(--nt-playlist-height-normal, 600px) !important;
-      }
-    `,
+				#items.ytd-playlist-panel-renderer {
+					max-height: var(--nt-playlist-height-normal, 600px) !important;
+				}
+    		`,
 		},
 		{
 			type: "numberSlide",
@@ -80,10 +80,10 @@ export const videoLayoutCategory: Category = {
 			step: 10,
 			varCss: "--nt-playlist-height-theater",
 			constantCss: `
-      ytd-watch-flexy[theater] #items.ytd-playlist-panel-renderer {
-        max-height: var(--nt-playlist-height-theater, 800px) !important;
-      }
-    `,
+				ytd-watch-flexy[theater] #items.ytd-playlist-panel-renderer {
+					max-height: var(--nt-playlist-height-theater, 800px) !important;
+				}
+    		`,
 		},
 	],
 };

@@ -1,7 +1,7 @@
 import { convertToExportSetting } from "../core/exportConverter";
 import { saveAndRefreshAll, jszipInstance as jszip } from "../core/runtimeController";
 import {
-	EXTERNAL_STORAGE_KEYS as styleshiftAllowedKeys,
+	ALLOWED_STORAGE_KEYS,
 	cachedStorageData as savedData,
 	getRootValue,
 	saveRootValue,
@@ -273,7 +273,7 @@ export async function enterTextPrompt({ title = "Enter text", placeholder = "", 
 		onChange: (callback: (value: string) => void) => void;
 	};
 	const textInput = await textInputFactory();
-	textInput.onChange(() => {});
+	textInput.onChange(() => { });
 	textInput.textEditor.style.height = "inherit";
 	contentWindow.append(textInput.textEditor);
 
@@ -363,7 +363,7 @@ export async function importStyleshiftData(styleshiftData: object) {
 	});
 
 	try {
-		for (const thisKey of styleshiftAllowedKeys) {
+		for (const thisKey of ALLOWED_STORAGE_KEYS) {
 			savedData[thisKey] = styleshiftData[thisKey];
 		}
 
@@ -395,7 +395,7 @@ export async function importStyleshiftData(styleshiftData: object) {
 export function exportStyleshiftData() {
 	const exportStyleshiftData = {};
 
-	for (const thisKey of styleshiftAllowedKeys) {
+	for (const thisKey of ALLOWED_STORAGE_KEYS) {
 		if (savedData[thisKey]) {
 			exportStyleshiftData[thisKey] = deepClone(savedData[thisKey]);
 		}
@@ -688,7 +688,10 @@ export async function disableExtension() {
  * @param {string} id - The unique identifier for the data to be retrieved.
  * @returns {Promise<string>} The JSON string representation of the retrieved data.
  */
-export async function loadStyleshiftValue(id) {
+export async function loadStyleshiftValue(id: string) {
+	if (!ALLOWED_STORAGE_KEYS.includes(id)) {
+		throw new Error(`Access denied for key: ${id}`);
+	}
 	return JSON.stringify(await getRootValue(id));
 }
 
@@ -702,7 +705,10 @@ export async function loadStyleshiftValue(id) {
  * @param {string} value - The JSON string representing the data to be saved.
  * @returns {Promise<any>} The result of the save operation.
  */
-export async function saveStyleshiftValue(id, value: string) {
+export async function saveStyleshiftValue(id: string, value: string) {
+	if (!ALLOWED_STORAGE_KEYS.includes(id)) {
+		throw new Error(`Access denied for key: ${id}`);
+	}
 	return await saveRootValue(id, JSON.parse(value));
 }
 

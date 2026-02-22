@@ -1,4 +1,6 @@
+import { sleep } from "@/styleshift/shared/normal";
 import { onYoutubeNavigate } from "../../modules/youtube";
+import { logger } from "@/shared/logger";
 
 export function setupAutoTheater() {
 	const checkTheater = () => {
@@ -14,36 +16,17 @@ export function setupAutoTheater() {
 	onYoutubeNavigate(() => setTimeout(checkTheater, 1000));
 }
 
-export function setupRemoveAmbient() {
-	const disableAmbient = () => {
-		// This selector is complex and might need adjustment.
-		// It looks for the settings menu item for "Ambient mode".
-		const ambientSwitch = Array.from(
-			document.querySelectorAll(".ytp-settings-menu-item .ytp-menuitem-label"),
-		).find((el) => el.textContent === "Ambient mode");
-		if (ambientSwitch) {
-			const parent = ambientSwitch.parentElement as HTMLElement;
-			// If the switch is checked, click it to turn it off.
-			if (parent && parent.getAttribute("aria-checked") === "true") {
-				parent.click();
-				// close the settings menu if it's open
-				const settingsButton = document.querySelector("button.ytp-settings-button") as HTMLElement;
-				if (settingsButton) settingsButton.click();
-			}
+export function enableAutoRemoveAmbient() {
+	const removeAmbient = async () => {
+		const ambientContainer = document.querySelector("#cinematics-container")
+		logger.debug("AutoRemoveAmbient", "Attempting to remove ambient container");
+		if (ambientContainer) {
+			ambientContainer.remove();
+			logger.debug("AutoRemoveAmbient", "Removed ambient container");
+		} else {
+			await sleep(1000);
+			removeAmbient();
 		}
 	};
-
-	// We need to open the settings menu to check the ambient mode status
-	const checkAndDisable = () => {
-		const settingsButton = document.querySelector("button.ytp-settings-button") as HTMLElement;
-		if (settingsButton) {
-			settingsButton.click(); // Open settings
-			setTimeout(() => {
-				disableAmbient();
-			}, 200); // Wait for menu to render
-		}
-	};
-
-	setTimeout(checkAndDisable, 3000);
-	onYoutubeNavigate(() => setTimeout(checkAndDisable, 2000));
+	removeAmbient();
 }

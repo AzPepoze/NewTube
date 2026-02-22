@@ -1,5 +1,5 @@
 import { Category } from "../../styleshift/types/store";
-import { setupAutoTheater, setupRemoveAmbient } from "../features/video/general";
+import { setupAutoTheater, enableAutoRemoveAmbient } from "../features/video/general";
 import { setupAutoPip, setupAutoExitPip } from "../features/video/pip";
 import { setupUpdateTimestamp } from "../features/video/timestamp";
 
@@ -47,10 +47,10 @@ export const videoAutomationCategory: Category = {
 		{
 			type: "checkbox",
 			id: "AutoRemoveAmbientMode",
-			name: "Kill Ambient Mode",
+			name: "Auto Remove Ambient Mode",
 			description: "Automatically disables YouTube's native ambient lighting effect to prevent visual conflicts.",
 			value: true,
-			enableFunction: setupRemoveAmbient,
+			enableFunction: enableAutoRemoveAmbient,
 		},
 		{
 			type: "checkbox",

@@ -53,13 +53,6 @@ const defaultStyleshiftItems: Category[] = [
 				value: false,
 			},
 			{
-				id: "EnableAppLightTheme",
-				name: "Light Theme",
-				description: "Switches the NewTube settings interface to a bright light theme.",
-				type: "checkbox",
-				value: false,
-			},
-			{
 				type: "checkbox",
 				id: "EnableSettingsBackgroundBlur",
 				name: "Glass UI",
