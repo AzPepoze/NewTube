@@ -3,7 +3,7 @@ import { showUserConfirmation } from "../ui/extension";
 import { persistCachedDataToStorage, saveUserSetting, getRootValue, saveRootValue, suppressStoragePersistence } from "./storageManager";
 import { updateStyleshiftItems } from "../settings/items";
 import { performStorageGarbageCollection } from "./storageMaintenance";
-import { triggerSettingUpdate, triggerSettingsUpdateBatch } from "../settings/functions";
+import { triggerSettingsUpdateBatch } from "../settings/functions";
 import { createNotification } from "../shared/extension";
 import { sleep } from "../shared/normal";
 

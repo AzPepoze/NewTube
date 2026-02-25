@@ -43,7 +43,7 @@
 		position: relative;
 		margin-block: -10px;
 		margin-left: 10px;
-		color: var(--White-70);
+		color: white;
 
 		&:global([selected]) {
 			background: white;
@@ -63,7 +63,6 @@
 
 		&:hover:not([selected]) {
 			background: var(--White-10);
-			color: white;
 			margin-left: 0px;
 			transform: translateX(4px);
 		}

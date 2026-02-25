@@ -6,7 +6,6 @@ import { state } from "./state";
 import { settings, loadInitialSettings } from "./settings";
 import { checkBlackBars } from "./logic";
 import { disableUltraWide } from "./ui";
-import { logger } from "@/shared/logger";
 
 export async function updateRemoveBlackBarsSettings(value?: any, settingId?: string) {
 	if (typeof settingId === "string") {

@@ -12,7 +12,6 @@ import { styleshiftCategoryList } from "../settings/defaultItems";
 import { showStylesheet, hideStylesheet } from "../settings/styleSheet";
 import { Category, Setting } from "../types/store";
 import {
-	createStyleshiftWindow,
 	globalNotificationContainer,
 	playUiAnimation,
 	showSelection,

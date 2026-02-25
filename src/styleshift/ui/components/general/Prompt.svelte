@@ -3,13 +3,13 @@
     import Modal from "./Modal.svelte";
     import { fly } from "svelte/transition";
     import { quintOut } from "svelte/easing";
-    import { onMount } from "svelte";
+    import { onMount, untrack } from "svelte";
 
     let {
         title = "Enter Text",
         content = "",
         placeholder = "Type here...",
-        value = "",
+        value: initialValue = "",
         multiline = false,
         onConfirm,
         onCancel,
@@ -24,7 +24,7 @@
     } = $props();
 
     let isOpen = $state(true);
-    let inputValue = $state(value);
+    let inputValue = $state(untrack(() => initialValue));
     let inputEl = $state<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
     function handleAction(callback?: (val?: any) => void, val?: any) {

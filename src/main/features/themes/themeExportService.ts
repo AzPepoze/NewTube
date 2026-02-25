@@ -1,6 +1,5 @@
 import { copyToClipboard, downloadFile, createNotification, createError } from "@/styleshift/shared/extension";
 import { jszipInstance, initializeDeveloperEnvironment } from "@/styleshift/core/runtimeController";
-import { convertToExportSetting } from "@/styleshift/core/exportConverter";
 import { logger } from "@/shared/logger";
 
 /**

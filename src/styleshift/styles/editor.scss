@@ -2,14 +2,6 @@
 @use "animation";
 
 .STYLESHIFT-Main {
-	:where(*:not(.cm-editor *)) {
-		color: var(--Font-Color);
-	}
-
-	.monaco-editor .overflow-guard {
-		border-radius: 10px;
-	}
-
 	.STYLESHIFT-Code-Editor {
 		resize: vertical;
 		overflow: hidden;
@@ -151,6 +143,10 @@
 			background: var(--Setting-Frame-BG);
 			padding: 10px;
 			overflow: visible;
+		}
+
+		.STYLESHIFT-Setting-Frame {
+			border-radius: 20px;
 		}
 
 		.STYLESHIFT-Category-Frame .STYLESHIFT-Setting-Frame,
