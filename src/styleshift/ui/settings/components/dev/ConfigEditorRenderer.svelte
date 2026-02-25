@@ -200,6 +200,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 20px;
+		border-radius: 10px;
 	}
 
 	.STYLESHIFT-Config-Setting-Info {
