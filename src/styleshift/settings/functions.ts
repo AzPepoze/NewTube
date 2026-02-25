@@ -267,6 +267,28 @@ export async function triggerSettingUpdate(settingId: string) {
 }
 
 /**
+ * Triggers updates for multiple settings at once, optimizing performance by skipping per-setting frame waits.
+ */
+export async function triggerSettingsUpdateBatch(settingIds: string[]) {
+	logger.debug("settings", "Triggering batch update for:", settingIds.length, "settings");
+
+	for (const id of settingIds) {
+		if (settingUpdateHandlers[id]) {
+			await settingUpdateHandlers[id]();
+		}
+
+		const currentValue = await getFromStorage(id);
+		if (settingUpdateListeners[id]) {
+			for (const listener of settingUpdateListeners[id]) {
+				listener(currentValue);
+			}
+		}
+	}
+
+	await waitOneFrame();
+}
+
+/**
  * Registers a callback to be executed whenever a specific setting changes.
  */
 export function registerSettingListener(settingId: string, callback: (value: any) => void, runImmediately = false) {

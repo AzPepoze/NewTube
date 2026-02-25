@@ -12,6 +12,8 @@
 	const minimize = "assets/icons/minimize.svg";
 	const maximize = "assets/icons/maximize.svg";
 	const restore = "assets/icons/restore.svg";
+	const exportIcon = "assets/icons/export.svg";
+	const saveIcon = "assets/icons/save.svg";
 
 	import { getAssetUrl } from "@ui/utils";
 
@@ -29,6 +31,8 @@
 		minimize,
 		maximize,
 		restore,
+		export: exportIcon,
+		save: saveIcon,
 	};
 
 	let {
@@ -77,6 +81,7 @@
 		vertical-align: middle;
 		pointer-events: none;
 		object-fit: contain;
+		border-radius: 5px;
 
 		&.with-filter {
 			filter: brightness(0) invert(1);

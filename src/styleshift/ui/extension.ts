@@ -18,6 +18,7 @@ export async function createStyleshiftWindow({
 	skipAnimation = false,
 	title = "StyleShift",
 	fullscreen = false,
+	center = false,
 }) {
 	// Ensure developer tools are ready if mode is enabled
 	if (await getRootValue("Developer_mode")) {
@@ -52,6 +53,7 @@ export async function createStyleshiftWindow({
 			width,
 			height,
 			fullscreen,
+			center,
 			onClose: closeWindowHandler,
 			children: (_target: HTMLElement) => {
 				return "";
@@ -96,6 +98,7 @@ export let globalNotificationContainer: HTMLElement;
 	await getDocumentHead();
 	const notificationOverlay = settingsUi.fillScreen(false);
 	notificationOverlay.classList.add("STYLESHIFT-Main");
+	notificationOverlay.style.zIndex = "20000";
 	await applyThemeToElement(notificationOverlay);
 
 	setTimeout(async () => {
@@ -184,6 +187,81 @@ export async function showUserConfirmation(
 		);
 
 		function handleResolve(val: boolean) {
+			resolve(val);
+			setTimeout(() => {
+				unmount(component);
+				mountPoint.remove();
+			}, 400);
+		}
+	});
+}
+
+/**
+ * Displays a selection dialog with multiple buttons.
+ * @returns {Promise<string | null>} The label of the clicked button or null if cancelled.
+ */
+export async function showSelection(
+	message: string,
+	title: string = "Select Option",
+	buttons: { label: string; color?: string }[] = [],
+	options: { align?: "left" | "center" | "right" } = {},
+): Promise<string | null> {
+	return new Promise((resolve) => {
+		const mountPoint = document.createElement("div");
+		document.body.appendChild(mountPoint);
+
+		const component = settingsUi.confirm(
+			{
+				title,
+				message,
+				align: options.align || "center",
+				buttons: buttons.map((btn) => ({
+					label: btn.label,
+					color: btn.color || "#7f5db7",
+					onClick: () => handleResolve(btn.label),
+				})),
+				onClose: () => handleResolve(null),
+			},
+			mountPoint,
+		);
+
+		function handleResolve(val: string | null) {
+			resolve(val);
+			setTimeout(() => {
+				unmount(component);
+				mountPoint.remove();
+			}, 400);
+		}
+	});
+}
+
+/**
+ * Displays a prompt dialog with an input field to the user.
+ */
+export async function showUserPrompt(
+	title: string = "Enter Text",
+	placeholder: string = "Type here...",
+	value: string = "",
+	options: { content?: string; multiline?: boolean } = {},
+): Promise<string | null> {
+	return new Promise((resolve) => {
+		const mountPoint = document.createElement("div");
+		document.body.appendChild(mountPoint);
+
+		const component = settingsUi.prompt(
+			{
+				title,
+				placeholder,
+				value,
+				content: options.content || "",
+				multiline: options.multiline || false,
+				onConfirm: (val: string) => handleResolve(val),
+				onCancel: () => handleResolve(null),
+			},
+			mountPoint,
+		);
+
+		function handleResolve(val: string | null) {
 			resolve(val);
 			setTimeout(() => {
 				unmount(component);

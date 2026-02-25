@@ -1,9 +1,11 @@
 import { logger } from "../../shared/logger";
 import { showUserConfirmation } from "../ui/extension";
-import { persistCachedDataToStorage, saveUserSetting, getRootValue } from "./storageManager";
+import { persistCachedDataToStorage, saveUserSetting, getRootValue, saveRootValue, suppressStoragePersistence } from "./storageManager";
 import { updateStyleshiftItems } from "../settings/items";
 import { performStorageGarbageCollection } from "./storageMaintenance";
-import { triggerSettingUpdate } from "../settings/functions";
+import { triggerSettingUpdate, triggerSettingsUpdateBatch } from "../settings/functions";
+import { createNotification } from "../shared/extension";
+import { sleep } from "../shared/normal";
 
 /**
  * Resolves a stored color ID into a CSS-ready RGBA string.
@@ -27,7 +29,24 @@ export async function resolveRgbaFromStorage(colorBaseId: string): Promise<strin
 /**
  * Imports preset data into the current user settings.
  */
-export async function importPresetToSettings(presetData: any): Promise<void> {
+/**
+ * Imports preset data into the current user settings.
+ */
+export async function importPresetToSettings(presetData: any, persist = true, themeName: string | null = null): Promise<void> {
+	if (!persist) suppressStoragePersistence(true);
+	let loaderUi: any = null;
+
+	if (themeName) {
+		const isReverting =
+			themeName.toLowerCase().includes("setting") || themeName.toLowerCase().includes("previous");
+		loaderUi = await createNotification({
+			icon: "🎨",
+			title: isReverting ? `Restoring: ${themeName}` : `Applying Theme: ${themeName}`,
+			content: "Preparing settings...",
+			timeout: -1,
+		});
+	}
+
 	let changesDetected = false;
 	const changedKeys: string[] = [];
 
@@ -36,7 +55,7 @@ export async function importPresetToSettings(presetData: any): Promise<void> {
 		if (typeof value === "string" && (value.startsWith("{") || value.startsWith("["))) {
 			try {
 				processedValue = JSON.parse(value);
-			} catch (_ignore) {}
+			} catch (_ignore) { }
 		}
 
 		if (key === "ADDScript" && typeof processedValue === "string" && processedValue.trim() !== "") {
@@ -55,6 +74,8 @@ Do you want to execute the JS code?`,
 		changesDetected = true;
 	};
 
+	if (loaderUi) loaderUi.setContent("Parsing theme data...");
+
 	if (Object.prototype.toString.call(presetData) === "[object Object]") {
 		for (const [key, value] of Object.entries(presetData)) {
 			await processEntry(key, value);
@@ -66,12 +87,28 @@ Do you want to execute the JS code?`,
 	}
 
 	if (changesDetected) {
-		await persistCachedDataToStorage();
-		// Trigger CSS updates for all changed settings
-		for (const key of changedKeys) {
-			await triggerSettingUpdate(key);
+		if (themeName !== undefined) {
+			await saveRootValue("ActiveTheme", themeName, !persist);
 		}
+
+		if (loaderUi) loaderUi.setContent("Applying visual changes...");
+
+		if (persist) {
+			await persistCachedDataToStorage();
+		}
+		await triggerSettingsUpdateBatch(changedKeys);
+
+		if (loaderUi) {
+			loaderUi.setIcon("✅");
+			loaderUi.setContent("Theme applied successfully!");
+			await sleep(1500);
+			loaderUi.close();
+		}
+	} else if (loaderUi) {
+		loaderUi.close();
 	}
+
+	if (!persist) suppressStoragePersistence(false);
 }
 
 /**
@@ -90,9 +127,11 @@ export async function importPresetFromString(presetString: string): Promise<void
 /**
  * Exports the current user settings as a data object.
  */
-export async function exportCurrentSettingsObject(): Promise<any> {
+export async function exportCurrentSettingsObject(includeMaintenance = true): Promise<any> {
 	await updateStyleshiftItems();
-	await performStorageGarbageCollection();
+	if (includeMaintenance) {
+		await performStorageGarbageCollection();
+	}
 	return await getRootValue("currentSettings");
 }
 

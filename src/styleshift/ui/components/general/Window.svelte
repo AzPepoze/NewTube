@@ -12,6 +12,7 @@
 		width = "600px",
 		height = "400px",
 		fullscreen = false,
+		center = false,
 		children,
 	}: {
 		title?: string;
@@ -19,6 +20,7 @@
 		width?: string;
 		height?: string;
 		fullscreen?: boolean;
+		center?: boolean;
 		children: any;
 	} = $props();
 
@@ -29,7 +31,12 @@
 	let isMinimized = $state(false);
 	let isDragging = $state(false);
 	let isResizing = $state(false);
-	let previousRect = $state({ top: "10%", left: "25%", width: "50%", height: "80%" });
+	let previousRect = $state({
+		top: "10%",
+		left: "25%",
+		width: "50%",
+		height: "80%",
+	});
 
 	function handleClose(e?: MouseEvent) {
 		if (e) e.stopPropagation();
@@ -98,15 +105,16 @@
 			let newLeft = startLeft + (e.clientX - startX);
 			let newTop = startTop + (e.clientY - startY);
 
-			// Boundary checks: Allow 90% of the window to go off-screen
-			// But keep the top bar (40px) or at least 10% of height always reachable at the top
 			const minVisibleWidth = windowWidth * 0.1;
 			const minVisibleHeight = Math.max(40, windowHeight * 0.1);
 
-			if (newLeft < -windowWidth + minVisibleWidth) newLeft = -windowWidth + minVisibleWidth;
-			if (newTop < 0) newTop = 0; // Keep top bar on screen for dragging back
-			if (newLeft > viewportWidth - minVisibleWidth) newLeft = viewportWidth - minVisibleWidth;
-			if (newTop > viewportHeight - minVisibleHeight) newTop = viewportHeight - minVisibleHeight;
+			if (newLeft < -windowWidth + minVisibleWidth)
+				newLeft = -windowWidth + minVisibleWidth;
+			if (newTop < 0) newTop = 0;
+			if (newLeft > viewportWidth - minVisibleWidth)
+				newLeft = viewportWidth - minVisibleWidth;
+			if (newTop > viewportHeight - minVisibleHeight)
+				newTop = viewportHeight - minVisibleHeight;
 
 			windowEl.style.left = `${newLeft}px`;
 			windowEl.style.top = `${newTop}px`;
@@ -132,8 +140,23 @@
 			} else {
 				windowEl.style.width = width;
 				windowEl.style.height = height;
-				windowEl.style.top = "10%";
-				windowEl.style.left = "25%";
+
+				if (center) {
+					const vw = Math.max(
+						document.documentElement.clientWidth || 0,
+						window.innerWidth || 0,
+					);
+					const vh = Math.max(
+						document.documentElement.clientHeight || 0,
+						window.innerHeight || 0,
+					);
+
+					windowEl.style.top = `calc(${vh / 2}px - (${height} / 2))`;
+					windowEl.style.left = `calc(${vw / 2}px - (${width} / 2))`;
+				} else {
+					windowEl.style.top = "10%";
+					windowEl.style.left = "25%";
+				}
 			}
 			applyThemeToElement(windowEl);
 		}
@@ -144,7 +167,12 @@
 	});
 
 	$effect(() => {
-		if (!isMinimized && contentEl && contentEl.innerHTML === "" && typeof children === "function") {
+		if (
+			!isMinimized &&
+			contentEl &&
+			contentEl.innerHTML === "" &&
+			typeof children === "function"
+		) {
 			children(contentEl);
 		}
 	});
@@ -153,7 +181,7 @@
 <div
 	class="STYLESHIFT-Window-Container STYLESHIFT-Window STYLESHIFT-Main"
 	class:maximized={isMaximized || fullscreen}
-	class:fullscreen={fullscreen}
+	class:fullscreen
 	class:dragging={isDragging}
 	class:resizing={isResizing}
 	class:minimized={isMinimized}
@@ -175,11 +203,19 @@
 			role="presentation"
 		>
 			<div class="STYLESHIFT-Window-Title">
-				<img src={getAssetUrl("icon/32.png")} alt="" class="title-icon" />
+				<img
+					src={getAssetUrl("icon/32.png")}
+					alt=""
+					class="title-icon"
+				/>
 				<span>{title}</span>
 			</div>
 			<div class="STYLESHIFT-Window-Controls">
-				<button class="control-btn minimize" onclick={(e) => toggleMinimize(e)} title="Minimize">
+				<button
+					class="control-btn minimize"
+					onclick={(e) => toggleMinimize(e)}
+					title="Minimize"
+				>
 					<Icon name="minimize" size={14} />
 				</button>
 				<button
@@ -187,9 +223,16 @@
 					onclick={(e) => toggleMaximize(e)}
 					title={isMaximized ? "Restore" : "Maximize"}
 				>
-					<Icon name={isMaximized ? "restore" : "maximize"} size={14} />
+					<Icon
+						name={isMaximized ? "restore" : "maximize"}
+						size={14}
+					/>
 				</button>
-				<button class="control-btn close" onclick={(e) => handleClose(e)} title="Close">
+				<button
+					class="control-btn close"
+					onclick={(e) => handleClose(e)}
+					title="Close"
+				>
 					<Icon name="close" size={16} />
 				</button>
 			</div>

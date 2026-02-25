@@ -5,6 +5,16 @@ import { logger } from "../../shared/logger";
 
 export let cachedStorageData: any = {};
 let isStorageInitialized = false;
+let isPersistenceSuppressed = false;
+
+export function suppressStoragePersistence(suppress: boolean) {
+	isPersistenceSuppressed = suppress;
+	if (suppress) {
+		logger.info("STORAGE", "Persistence suppressed (Preview Mode)");
+	} else {
+		logger.info("STORAGE", "Persistence restored");
+	}
+}
 
 export const EXTERNAL_STORAGE_KEYS = [
 	"currentSettings",
@@ -15,6 +25,7 @@ export const EXTERNAL_STORAGE_KEYS = [
 	"EnableRealtimeExtension",
 	"Developer_mode",
 	"Welcome_Shown",
+	"ActiveTheme",
 ];
 
 export const ALLOWED_STORAGE_KEYS = ["currentSettings", "customStyleshiftItems"];
@@ -73,6 +84,7 @@ export async function saveUserSetting(settingId: string, value: any, delayPersis
 		cachedStorageData["currentSettings"] = {};
 	}
 	cachedStorageData["currentSettings"][settingId] = value;
+	cachedStorageData["ActiveTheme"] = null; // Reset active theme on any change
 	logger.info("STORAGE", "Updating user setting:", settingId, value);
 
 	if (!delayPersistence) {
@@ -96,7 +108,7 @@ export async function saveToStorage(key: string, value: any, delayPersistence = 
  * Writes the entire cached data object to Chrome local storage.
  */
 export async function persistCachedDataToStorage(): Promise<boolean> {
-	if (!isStorageInitialized) return false;
+	if (!isStorageInitialized || isPersistenceSuppressed) return false;
 	logger.info("STORAGE", "Persisting data to disk:", currentContextDomain);
 	await chrome.storage.local.set({ [currentContextDomain]: cachedStorageData });
 	return true;

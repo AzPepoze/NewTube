@@ -1,0 +1,574 @@
+<script lang="ts">
+	import { getRootValue, saveRootValue, persistCachedDataToStorage } from "@/styleshift/core/storageManager";
+	import { exportCurrentSettingsObject, importPresetToSettings } from "@/styleshift/core/presetManager";
+	import { showUserConfirmation } from "@ui/extension";
+	import { chooseSelection, createNotification } from "@/styleshift/shared/extension";
+	import Icon from "@ui/settings/components/main/Icon.svelte";
+	import { enterPrompt } from "@/styleshift/shared/extension";
+	import { exportThemeToClipboard, exportThemeAsZip } from "./themeExportService";
+	import Button from "@ui/settings/components/main/Button.svelte";
+	import { onMount } from "svelte";
+	import ThemeCard from "./ThemeCard.svelte";
+
+	let {
+		closeWindow,
+	}: {
+		closeWindow?: () => void;
+	} = $props();
+
+	type ThemeLibrary = Record<string, any>;
+
+	let themes = $state<ThemeLibrary>({});
+	let themeNames = $derived(Object.keys(themes));
+	let activeThemeName = $state<string | null>(null);
+	let loadingThemeName = $state<string | null>(null);
+	let backupSettings = $state<any>(null);
+	let originalActiveTheme = $state<string | null>(null);
+
+	async function refreshActiveTheme() {
+		activeThemeName = await getRootValue("ActiveTheme");
+	}
+
+	async function loadThemes() {
+		const storedThemes = await getRootValue("Themes");
+		if (storedThemes && typeof storedThemes === "object") {
+			themes = storedThemes;
+		}
+
+		// Backup current settings for "Cancel" functionality
+		const currentSettings = await getRootValue("currentSettings");
+		backupSettings = JSON.parse(JSON.stringify(currentSettings));
+		originalActiveTheme = await getRootValue("ActiveTheme");
+
+		refreshActiveTheme();
+	}
+
+	async function saveCurrentAsTheme() {
+		const name = await enterPrompt({
+			title: "Save Current Theme",
+			placeholder: "Enter theme name...",
+		});
+
+		if (!name || name.trim() === "") return;
+
+		const currentSettings = await exportCurrentSettingsObject();
+		const updatedThemes = { ...themes, [name]: currentSettings };
+
+		await saveRootValue("Themes", $state.snapshot(updatedThemes), true);
+		await saveRootValue("ActiveTheme", name);
+		themes = updatedThemes;
+		activeThemeName = name;
+
+		createNotification({
+			icon: "✨",
+			title: "Theme Saved",
+			content: `"${name}" has been added to your collection.`,
+		});
+	}
+
+	async function applyTheme(name: string) {
+		const themeData = themes[name];
+		if (!themeData) return;
+
+		loadingThemeName = name;
+		activeThemeName = name; // Instant feedback
+
+		// Apply without saving to disk for instant preview
+		await importPresetToSettings($state.snapshot(themeData), false, name);
+
+		loadingThemeName = null;
+	}
+
+	async function deleteTheme(name: string) {
+		if (await showUserConfirmation(`Are you sure you want to delete "${name}"?`, "Delete Theme")) {
+			const updatedThemes = { ...themes };
+			delete updatedThemes[name];
+
+			await saveRootValue("Themes", $state.snapshot(updatedThemes));
+			themes = updatedThemes;
+
+			createNotification({
+				icon: "🗑️",
+				title: "Theme Deleted",
+				content: `"${name}" removed from collection.`,
+			});
+		}
+	}
+	async function handleOk() {
+		await persistCachedDataToStorage();
+		closeWindow?.();
+	}
+
+	async function handleCancel() {
+		if (backupSettings) {
+			await importPresetToSettings(
+				$state.snapshot(backupSettings),
+				false,
+				originalActiveTheme || "Previous Settings",
+			);
+		}
+		closeWindow?.();
+	}
+	async function exportTheme(name: string) {
+		const themeData = themes[name];
+		if (!themeData) return;
+
+		const selection = await chooseSelection({
+			title: `Export "${name}"`,
+			message: "How would you like to export this theme?\n(Click outside to cancel)",
+			buttons: [
+				{ label: "Clipboard", color: "var(--Theme-0)" },
+				{ label: "ZIP File", color: "var(--Theme-0)" },
+			],
+		});
+
+		if (selection === "Clipboard") {
+			exportThemeToClipboard(name, $state.snapshot(themeData));
+		} else if (selection === "ZIP File") {
+			await exportThemeAsZip(name, $state.snapshot(themeData));
+		}
+	}
+
+	function getThemePreview(themeData: any) {
+		let bgColor = themeData["MainThemeColor"] || themeData["MainThemeColorC"] || "var(--Theme-0)";
+		const bgImg = themeData["BackgroundImageUrl"] || "";
+
+		// Ensure hex color doesn't have double alpha when appending
+		if (bgColor.startsWith("#") && bgColor.length > 7) {
+			bgColor = bgColor.slice(0, 7);
+		}
+
+		return { bgColor, bgImg };
+	}
+
+	onMount(() => {
+		loadThemes();
+
+		let debounceTimer: any;
+		const storageListener = (changes: any, area: string) => {
+			if (area === "local") {
+				clearTimeout(debounceTimer);
+				debounceTimer = setTimeout(() => {
+					refreshActiveTheme();
+				}, 100);
+			}
+		};
+
+		chrome.storage.onChanged.addListener(storageListener);
+		return () => {
+			clearTimeout(debounceTimer);
+			chrome.storage.onChanged.removeListener(storageListener);
+		};
+	});
+</script>
+
+<div class="NEWTUBE-ThemeManager">
+	<div class="theme-grid" class:has-themes={themeNames.length > 0}>
+		{#each themeNames as name}
+			{@const preview = getThemePreview(themes[name])}
+			<ThemeCard
+				{name}
+				{preview}
+				isActive={activeThemeName === name}
+				isLoading={loadingThemeName === name}
+				onApply={applyTheme}
+				onExport={exportTheme}
+				onDelete={deleteTheme}
+			/>
+		{/each}
+
+		{#if themeNames.length === 0}
+			<div class="empty-state">
+				<div class="empty-icon">🛍️</div>
+				<p>Your theme collection is empty.</p>
+				<p class="sub">Save your current setup to see it here!</p>
+			</div>
+		{/if}
+	</div>
+
+	<!-- Floating Action Button for Saving -->
+	<button class="fab-save-btn" onclick={saveCurrentAsTheme} title="Save Current Settings">
+		<Icon name="save" size={20} />
+	</button>
+
+	<!-- Floating Footer for OK/Cancel -->
+	<div class="floating-manager-footer">
+		<Button
+			setting={{
+				type: "button",
+				name: "OK",
+				color: "var(--Theme-0)",
+				clickFunction: handleOk,
+			}}
+		/>
+		<Button
+			setting={{
+				type: "button",
+				name: "Cancel",
+				color: "var(--White-20, #646464)",
+				clickFunction: handleCancel,
+			} as any}
+		/>
+	</div>
+</div>
+
+<style lang="scss">
+	.NEWTUBE-ThemeManager {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		padding: 10px;
+		width: 100%;
+		height: 100%;
+		box-sizing: border-box;
+		min-height: 400px;
+		position: relative;
+	}
+
+	.theme-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		gap: 20px;
+		padding-bottom: 80px; /* Space for the floating footer */
+		align-content: start;
+
+		/* If we have themes, don't shrink */
+		&.has-themes {
+			flex: 1;
+		}
+	}
+
+	.theme-card {
+		position: relative;
+		background: var(--White-05);
+		border-radius: 16px;
+		border: 1px solid var(--White-10);
+		overflow: hidden;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		display: flex;
+		flex-direction: column;
+
+		&:hover {
+			transform: translateY(-5px);
+			border-color: var(--White-20);
+			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+
+			.preview-area {
+				transform: scale(1.05);
+			}
+		}
+
+		&.active {
+			border: 2px solid var(--Theme-0);
+			box-shadow: 0 0 15px var(--Theme-0);
+
+			.active-badge {
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				background: var(--Theme-0);
+				color: var(--White-100);
+				padding: 4px 8px;
+				border-radius: 6px;
+				font-size: 10px;
+				font-weight: 800;
+				z-index: 10;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+			}
+		}
+	}
+
+	.preview-area {
+		height: 120px;
+		background-size: cover;
+		background-position: center;
+		position: relative;
+		transition: transform 0.5s ease;
+		overflow: hidden;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		.overlay {
+			position: absolute;
+			inset: 0;
+			z-index: 1;
+		}
+
+		/* preview YouTube UI */
+		.preview-youtube {
+			position: relative;
+			z-index: 2;
+			width: 85%;
+			height: 85%;
+			background: var(--Black-10, rgba(0, 0, 0, 0.8));
+			border-radius: 6px;
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+			border: 1px solid var(--White-10);
+
+			.preview-nav {
+				height: 14px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0 6px;
+				border-bottom: 1px solid var(--White-05);
+
+				.preview-logo {
+					width: 16px;
+					height: 6px;
+					background: var(--White-20);
+					border-radius: 2px;
+				}
+				.preview-search {
+					width: 40px;
+					height: 6px;
+					background: var(--White-10);
+					border-radius: 3px;
+				}
+				.preview-avatar {
+					width: 6px;
+					height: 6px;
+					border-radius: 50%;
+					background: var(--Theme-0, #fff);
+				}
+			}
+
+			.preview-body {
+				flex: 1;
+				display: flex;
+				padding: 6px;
+				gap: 6px;
+
+				.preview-main {
+					flex: 1;
+					display: flex;
+					flex-direction: column;
+					gap: 4px;
+
+					.preview-player {
+						background: #000;
+						border-radius: 2px;
+						aspect-ratio: 16/9;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+					}
+
+					.preview-title {
+						height: 6px;
+						width: 90%;
+						background: var(--White-40);
+						border-radius: 2px;
+					}
+
+					.preview-channel-row {
+						display: flex;
+						align-items: center;
+						gap: 4px;
+						margin-top: 2px;
+
+						.preview-channel-avatar {
+							width: 10px;
+							height: 10px;
+							border-radius: 50%;
+							background: var(--White-20);
+						}
+
+						.preview-channel-info {
+							display: flex;
+							flex-direction: column;
+							gap: 2px;
+							flex: 1;
+
+							.preview-channel-name {
+								height: 3px;
+								width: 60%;
+								background: var(--White-40);
+								border-radius: 1px;
+							}
+							.preview-channel-sub {
+								height: 2px;
+								width: 40%;
+								background: var(--White-20);
+								border-radius: 1px;
+							}
+						}
+
+						.preview-subscribe {
+							width: 20px;
+							height: 8px;
+							background: var(--White-80);
+							border-radius: 4px;
+						}
+					}
+				}
+
+				.preview-sidebar {
+					flex: 1;
+					display: flex;
+					flex-direction: column;
+					gap: 4px;
+					padding-top: 2px;
+
+					.preview-thumb {
+						height: 18px;
+						background: var(--White-10);
+						border-radius: 2px;
+					}
+				}
+			}
+		}
+
+		.accent-bar {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: 4px;
+			z-index: 3;
+		}
+	}
+
+	.card-footer {
+		padding: 12px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		background: rgba(0, 0, 0, 0.5);
+		border-top: 1px solid var(--White-05);
+		pointer-events: auto;
+	}
+
+	.theme-name {
+		font-weight: 600;
+		color: var(--White-100, white);
+		font-size: 14px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		flex: 1;
+		margin-right: 10px;
+	}
+
+	.card-actions {
+		display: flex;
+		gap: 8px;
+
+		:global(.apply-btn) {
+			background: rgba(255, 255, 255, 0.1) !important;
+			border-radius: 8px !important;
+
+			&:hover {
+				background: var(--Theme-0) !important;
+				opacity: 0.8;
+			}
+		}
+
+		:global(.export-btn) {
+			background: var(--White-10) !important;
+			border-radius: 8px !important;
+
+			&:hover {
+				background: var(--Theme-0) !important;
+				opacity: 0.8;
+			}
+		}
+
+		:global(.delete-btn) {
+			background: var(--Red-10, rgba(255, 0, 0, 0.1)) !important;
+			border-radius: 8px !important;
+
+			&:hover {
+				background: var(--Red-40, rgba(255, 0, 0, 0.4)) !important;
+			}
+		}
+	}
+
+	.empty-state {
+		grid-column: 1 / -1;
+		padding: 60px 20px;
+		text-align: center;
+		color: var(--White-40);
+		background: var(--White-02);
+		border: 2px dashed var(--White-10);
+		border-radius: 20px;
+
+		.empty-icon {
+			font-size: 48px;
+			margin-bottom: 10px;
+		}
+
+		p {
+			margin: 5px 0;
+			font-size: 18px;
+			font-weight: 500;
+		}
+
+		.sub {
+			font-size: 14px;
+			opacity: 0.7;
+		}
+	}
+
+	.fab-save-btn {
+		position: absolute;
+		bottom: 25px;
+		right: 25px;
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		background: var(--Theme-0, #7f5db7);
+		color: white;
+		border: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+		cursor: pointer;
+		transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bounce effect */
+		z-index: 100;
+
+		&:hover {
+			transform: scale(1.15) translateY(-5px);
+			box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+			filter: brightness(1.2);
+		}
+
+		&:active {
+			transform: scale(0.95);
+		}
+	}
+
+	.floating-manager-footer {
+		position: absolute;
+		bottom: 20px;
+		left: 50%;
+		transform: translateX(-50%);
+		display: flex;
+		gap: 15px;
+		background: rgba(0, 0, 0, 0.6);
+		backdrop-filter: blur(15px);
+		padding: 12px 20px;
+		border-radius: 30px;
+		border: 1px solid var(--White-10);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+		z-index: 90;
+		width: 300px;
+
+		:global(.STYLESHIFT-Button) {
+			flex: 1;
+			margin: 0 !important;
+
+			:global(button) {
+				border-radius: 20px !important;
+				padding: 8px 0 !important;
+				min-height: 36px !important;
+			}
+		}
+	}
+</style>

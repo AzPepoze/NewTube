@@ -65,8 +65,9 @@ export function findExistCategory(category: Category) {
 function autoAddHightlight(array) {
 	for (const categoryObj of array) {
 		if (categoryObj.Highlight_color == null) {
-			const getColorId = randomNumberInRange(0, highlightColors.length - 1, categoryObj.Category);
-			logger.info("highlight", "random id", categoryObj.Category, getColorId);
+			const categoryName = categoryObj.Category || categoryObj.category || "General";
+			const getColorId = randomNumberInRange(0, highlightColors.length - 1, categoryName);
+			logger.debug("highlight", "random id", categoryName, getColorId);
 			categoryObj.Highlight_color = highlightColors[getColorId];
 		}
 	}

@@ -3,6 +3,7 @@ import Window from "../components/general/Window.svelte";
 import Taskbar from "../components/general/Taskbar.svelte";
 import SettingRenderer from "./components/main/SettingRenderer.svelte";
 import Confirm from "../components/general/Confirm.svelte";
+import Prompt from "../components/general/Prompt.svelte";
 import type { Setting } from "../../types/store";
 
 export function renderWindow(props: any, target: HTMLElement = document.createElement("div")) {
@@ -42,6 +43,14 @@ export function renderComponent(component: any, props: any = {}, target: HTMLEle
 
 export function confirm(props: any, target: HTMLElement = document.createElement("div")) {
 	return mount(Confirm, {
+		target,
+		intro: true,
+		props,
+	});
+}
+
+export function prompt(props: any, target: HTMLElement = document.createElement("div")) {
+	return mount(Prompt, {
 		target,
 		intro: true,
 		props,

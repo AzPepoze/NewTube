@@ -15,10 +15,14 @@ import {
 	createStyleshiftWindow,
 	globalNotificationContainer,
 	playUiAnimation,
+	showSelection,
 	showUserConfirmation,
+	showUserPrompt,
 } from "../ui/extension";
 import { settingsUi } from "../ui/settings/settingComponents";
 import { sleep, deepClone, downloadFile, getCurrentDomain, createUniqueId } from "./normal";
+
+export { downloadFile };
 import { logger } from "../../shared/logger";
 
 /*
@@ -233,88 +237,34 @@ For advanced user !!!
  * await enterTextPrompt({ title : "Enter your name", placeholder : "John Doe", content : "Please enter your name." });
  */
 export async function enterTextPrompt({ title = "Enter text", placeholder = "", content = "" }) {
-	const styleshiftWindow = await createStyleshiftWindow({
-		width: "40%",
-		height: "70%",
+	const result = await showUserPrompt(title, placeholder, "", {
+		content: content,
+		multiline: true,
 	});
 
-	styleshiftWindow.overlayFrame.style.background = "";
-	styleshiftWindow.overlayFrame.style.pointerEvents = "";
-	styleshiftWindow.overlayFrame.style.zIndex = "10001";
-
-	const contentWindow = styleshiftWindow.windowElement;
-
-	//---------------------------------
-
-	const header = await settingsUi.text({
-		type: "text",
-		html: title,
-		fontSize: 20,
-		align: "center",
-	});
-	dynamicAppend(contentWindow, header);
-
-	//---------------------------------
-
-	if (content) {
-		const description = await settingsUi.subText({
-			type: "subText",
-			text: content,
-			fontSize: 14,
-			align: "center",
-		});
-		dynamicAppend(contentWindow, description);
+	if (result === null) {
+		throw new Error("Canceled by the user");
 	}
 
-	//---------------------------------
+	return result;
+}
 
-	const textInputFactory = settingsUi.textEditor as unknown as () => {
-		textEditor: HTMLTextAreaElement;
-		onChange: (callback: (value: string) => void) => void;
-	};
-	const textInput = await textInputFactory();
-	textInput.onChange(() => { });
-	textInput.textEditor.style.height = "inherit";
-	contentWindow.append(textInput.textEditor);
+/**
+ * shows a stylish text input prompt modal.
+ * @param {{ title : string, placeholder : string, value : string }} Options
+ * @returns {Promise<string | null>}
+ */
+export async function enterPrompt({ title = "Enter text", placeholder = "", value = "" }) {
+	return await showUserPrompt(title, placeholder, value);
+}
 
-	if (placeholder) {
-		textInput.textEditor.placeholder = placeholder;
-	}
-
-	//---------------------------------
-
-	const buttonFrame = (await settingsUi.settingFrame(true, false)) as HTMLDivElement;
-	buttonFrame.style.gap = "10px";
-	dynamicAppend(contentWindow, buttonFrame);
-
-	//---------------------------------
-
-	const okButton = (await settingsUi.button({
-		name: "OK",
-		color: "#00ff00",
-		align: "center",
-	})) as { button: HTMLDivElement };
-	dynamicAppend(buttonFrame, okButton);
-
-	//---------------------------------
-
-	const cancelButton = (await settingsUi.button({
-		name: "Cancel",
-		color: "#ff0000",
-		align: "center",
-	})) as { button: HTMLDivElement };
-	dynamicAppend(buttonFrame, cancelButton);
-
-	return new Promise((resolve, reject) => {
-		okButton.button.addEventListener("click", () => {
-			styleshiftWindow.closeWindowHandler();
-			resolve(textInput.textEditor.value);
-		});
-		cancelButton.button.addEventListener("click", () => {
-			styleshiftWindow.closeWindowHandler();
-			reject();
-		});
-	});
+/**
+ * shows a stylish selection modal with multiple options.
+ * @param {{ message : string, title : string, buttons : { label : string, color? : string }[] }} Options
+ * @returns {Promise<string | null>}
+ */
+export async function chooseSelection({ message = "", title = "Select Option", buttons = [] }) {
+	return await showSelection(message, title, buttons);
 }
 
 /**

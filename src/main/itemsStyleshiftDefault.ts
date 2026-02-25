@@ -1,4 +1,5 @@
 import { openSettingPage } from "../styleshift/shared/extension";
+import { showThemeManager } from "./features/themes/themeManagerService";
 import { Category } from "../styleshift/types/store";
 
 const defaultStyleshiftItems: Category[] = [
@@ -48,7 +49,7 @@ const defaultStyleshiftItems: Category[] = [
 				id: "EnableRealtimeExtension",
 				name: "Realtime Updating",
 				description:
-					"Instantly applies visual changes as you move sliders or pick colors without needing to save.",
+					"Instantly applies visual changes as you move sliders or pick colors.",
 				type: "checkbox",
 				value: false,
 			},
@@ -70,6 +71,16 @@ const defaultStyleshiftItems: Category[] = [
 				step: 1,
 				varCss: "--setting-bg-blur-amount",
 				require: { EnableSettingsBackgroundBlur: true },
+			},
+			{
+				clickFunction: showThemeManager,
+				color: "#7f5db7",
+				description: "Browse and manage your collection of saved themes with live previews.",
+				fontSize: 15,
+				id: "OpenThemeManagerButton",
+				name: "🛍️ Themes 🛍️",
+				align: "center",
+				type: "button",
 			},
 			{
 				clickFunction: openSettingPage,

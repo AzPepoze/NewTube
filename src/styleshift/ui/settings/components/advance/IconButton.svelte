@@ -16,7 +16,12 @@
 	} = $props();
 </script>
 
-<button class="STYLESHIFT-Icon-Button STYLESHIFT-Glow-Hover {className}" onclick={onClick} {style} type="button">
+<button
+	class="STYLESHIFT-Icon-Button STYLESHIFT-Glow-Hover {className}"
+	onclick={onClick}
+	style={style + `min-width: ${size}px; min-height: ${size}px; padding: 10px;`}
+	type="button"
+>
 	{#if typeof icon === "string" && icon !== ""}
 		<Icon name={icon} {size} />
 	{:else}

@@ -125,23 +125,8 @@ export const animationCategory: Category = {
 			description: "Adds a smooth fade-in and slide-in motion effect when navigating between different video pages or search results.",
 			value: true,
 			enableCss: `
-                ytd-page-manager:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode)) {
+                ytd-page-manager {
                     transition: all 0.5s;
-                }
-
-                ytd-watch-flexy:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #secondary,
-                ytd-watch-flexy:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #below {
-                    transition: all 0.5s !important;
-                    opacity: 0 !important;
-                }
-
-                ytd-watch-flexy:not(:has(div.ytp-offline-slate)):has(div.html5-video-player.unstarted-mode:not(.ytp-small-mode)) #below {
-                    margin-top: 100px;
-                }
-
-                #secondary,
-                #below {
-                    transition: margin-top 1.5s, opacity 1.5s;
                 }
             `,
 		},
@@ -267,11 +252,11 @@ export const animationCategory: Category = {
 			description: "Adds a subtle slide animation to thumbnail buttons.",
 			value: true,
 			enableCss: `
-				yt-lockup-view-model {
+				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer {
 					transition: all 0.15s ease-out;
 				}
 
-				yt-lockup-view-model:hover {
+				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer:hover {
 					margin-left: -10px;
 				}
 			`
