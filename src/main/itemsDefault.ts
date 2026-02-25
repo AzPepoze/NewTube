@@ -22,6 +22,7 @@ import { hoverClickColorCategory } from "./categories/hoverClickColor";
 import { scrollbarCategory } from "./categories/scrollbar";
 import { uiCleanerCategory } from "./categories/uiCleaner";
 import { fontsCategory } from "./categories/fonts";
+import { enhancedCssCategory } from "./categories/enhancedCss";
 import { betaFeaturesCategory } from "./categories/betaFeatures";
 
 const defaultStyleshiftItems: Category[] = [
@@ -41,6 +42,7 @@ const defaultStyleshiftItems: Category[] = [
 	bordersShadowsCategory,
 	animationCategory,
 	hoverClickColorCategory,
+	enhancedCssCategory,
 	fontsCategory,
 
 	// --- Components ---

@@ -1,11 +1,12 @@
 import { Category } from "../../styleshift/types/store";
+import { ytPlayerWatchMode } from "../modules/youtube";
 
 export const animationCategory: Category = {
 	category: "🚶 Animations",
 	settings: [
 		{
 			type: "checkbox",
-			id: "GlobalAnimations",
+			id: "AnimationsGlobal",
 			name: "Global Animations",
 			description: "Enable or disable all added animations.",
 			enableCss: `
@@ -119,7 +120,7 @@ export const animationCategory: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "PageTransitions",
+			id: "AnimationPageTransitions",
 			name: "Page Transitions",
 			description: "Adds a smooth fade-in and slide-in motion effect when navigating between different video pages or search results.",
 			value: true,
@@ -146,7 +147,7 @@ export const animationCategory: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "MenuAnimations",
+			id: "AnimationMenu",
 			name: "Menu Animations",
 			description: "Applies a polished fade and scale-up animation to all dropdown menus, context menus, and popup windows.",
 			value: true,
@@ -169,7 +170,7 @@ export const animationCategory: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "SearchAnimation",
+			id: "AnimationSearch",
 			name: "Search Animation",
 			description: "Adds a subtle animation to the search bar and search suggestions.",
 			value: true,
@@ -196,7 +197,7 @@ export const animationCategory: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "EnableVideoPageTransitions",
+			id: "AnimationVideoTransitions",
 			name: "Smooth Loading",
 			description:
 				"Adds a subtle fade and scale animation when a new video starts playing, making the transition between videos feel more premium.",
@@ -214,28 +215,38 @@ export const animationCategory: Category = {
 		},
 		{
 			type: "checkbox",
-			id: "EnableThumbnailPreviewAnimations",
+			id: "AnimationThumbnailPreview",
 			name: "Thumbnail Previews Animation",
 			description: "Adds a subtle fade-in animation to thumbnail previews.",
 			value: true,
 			enableCss: `
+				@keyframes thumbnailPreviewAnimation {
+					from {
+						opacity: 0;
+						transform: scale(1.1);
+					}
+					to {
+						opacity: 1;
+						transform: scale(1);
+					}
+				}
+
 				animated-thumbnail-overlay-view-model {
-					animation: fadeIn 0.2s forwards;
+					animation: thumbnailPreviewAnimation 0.2s forwards;
 				}
 			`
 		},
 		{
 			type: "checkbox",
-			id: "EnableThumbnailButtonAnimations",
-			name: "Enhanced UI",
+			id: "AnimationThumbnailButton",
+			name: "Thumbnail Button Animation",
 			description: "Adds a subtle slide animation to thumbnail buttons.",
 			value: true,
 			enableCss: `
-
 				@keyframes thumbnailButtonShow {
 					from {
 						opacity: 0;
-						transform: translateX(40px);
+						transform: translateX(40px) rotate(45deg);
 					}
 					to {
 						opacity: 1;
@@ -245,7 +256,42 @@ export const animationCategory: Category = {
 
 				yt-thumbnail-hover-overlay-toggle-actions-view-model {
 					opacity: 0;
-					animation: thumbnailButtonShow 0.3s ease-out forwards;
+					animation: thumbnailButtonShow 0.5s forwards;
+				}
+			`
+		},
+		{
+			type: "checkbox",
+			id: "ThumbnailSlideOnHoverAnimation",
+			name: "Thumbnail Slide On Hover",
+			description: "Adds a subtle slide animation to thumbnail buttons.",
+			value: true,
+			enableCss: `
+				yt-lockup-view-model {
+					transition: all 0.15s ease-out;
+				}
+
+				yt-lockup-view-model:hover {
+					margin-left: -10px;
+				}
+			`
+		},
+		{
+			type: "checkbox",
+			id: "AnimationVideoControlsPanel",
+			name: "Video Controls Panel Animation",
+			description: "Adds a subtle fade and slide animation to the video controls panel.",
+			value: true,
+			enableCss: `
+				${ytPlayerWatchMode} .ytp-chrome-bottom {
+					width: 98% !important;
+					left: unset !important;
+					transition: all 0.4s;
+				}
+			
+				${ytPlayerWatchMode} .ytp-autohide .ytp-chrome-bottom {
+					width: 0px !important;
+					left: unset !important;
 				}
 			`
 		}

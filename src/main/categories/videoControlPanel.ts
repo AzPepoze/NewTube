@@ -1,4 +1,6 @@
 import { Category } from "../../styleshift/types/store";
+import { ytVideoContainerWatchMode, ytPlayerWatchMode } from "../modules/youtube";
+
 
 export const videoControlPanelCategory: Category = {
 	category: "🎚️ Video Control Panel",
@@ -11,28 +13,32 @@ export const videoControlPanelCategory: Category = {
 				"Moves the entire video control bar (play, volume, settings) from an overlay on top of the video to a dedicated space directly underneath it.",
 			value: true,
 			enableCss: `
-				#player div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode),
+				${ytVideoContainerWatchMode},
 				#ytd-player
 				{
 					padding-bottom: var(--nt-player-below-space, 70px);
 				}
 
-				div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-small-mode) .ytp-chrome-bottom {
+				${ytVideoContainerWatchMode} .ytp-chrome-bottom {
 					overflow: visible !important;
 					padding-top: 0px !important;
 				}
 
-				#player-wide-container div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed) > .ytp-chrome-bottom {
+				${ytPlayerWatchMode} > .ytp-chrome-bottom {
 					transform: translate(0px, var(--nt-player-below-space, 70px));
 				}
 
-				#player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)) {
+				${ytPlayerWatchMode} {
 					margin-bottom: var(--nt-player-below-space, 70px);
 				}
 
-				#player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)) #ytp-caption-window-container,
-				#player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)) .ytp-overlays-container{
+				${ytPlayerWatchMode} #ytp-caption-window-container,
+				${ytPlayerWatchMode} .ytp-overlays-container{
 					height: calc(100% - var(--nt-player-below-space)) !important;
+				}
+
+				${ytPlayerWatchMode} .caption-window.ytp-caption-window-bottom{
+					margin-bottom: 0px !important;
 				}
 			`,
 		},
@@ -119,7 +125,7 @@ export const videoControlPanelCategory: Category = {
 			description: "Applies a frosted-glass blur effect to the background of the video control bar.",
 			value: true,
 			enableCss: `
-                .ytp-chrome-bottom, .ytp-gradient-bottom {
+                .ytp-gradient-bottom {
                     backdrop-filter: blur(var(--nt-player-blur-amount, 10px)) !important;
                 }
             `,
@@ -159,16 +165,29 @@ export const videoControlPanelCategory: Category = {
 		},
 		{
 			type: "color",
+			id: "ControlPanelButtonGroupColor",
+			name: "Button Group Color",
+			description: "Sets the background color for groups of buttons within the control bar, such as the play button or volume control.",
+			value: "#5bbdff20",
+			varCss: "--nt-theme-control-panel-button-group",
+			constantCss: `
+				:root {
+					--yt-spec-overlay-background-medium-light: var(--nt-theme-control-panel-button-group) !important;
+				}
+    		`,
+		},
+		{
+			type: "color",
 			id: "ControlPanelButtonHoverColor",
 			name: "Hover Glow",
 			description: "Sets the background highlight color when you hover over any button in the control bar.",
-			value: "#ffffff20",
-			varCss: "--nt-theme-transparent",
+			value: "#5bbdff20",
+			varCss: "--nt-theme-control-panel-hover",
 			constantCss: `
-      .ytp-button:hover {
-        background-color: var(--nt-theme-transparent) !important;
-      }
-    `,
+				:root {
+					--yt-spec-overlay-button-secondary: var(--nt-theme-control-panel-hover) !important;
+				}
+    		`,
 		},
 		{
 			type: "color",

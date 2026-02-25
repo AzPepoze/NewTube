@@ -1,19 +1,9 @@
 import { Category } from "../../styleshift/types/store";
 import { enableThemeByVideo, disableThemeByVideo } from "../features/theme";
-import { mainCss } from "../features/mainCss";
 
 export const colorThemeCategory: Category = {
 	category: "🎨 Color Theme",
 	settings: [
-		{
-			type: "checkbox",
-			id: "EnableBaseMainCss",
-			name: "Base Theming",
-			description:
-				"Enables the foundational CSS required for custom themes to apply correctly across YouTube's complex interface. Highly recommended.",
-			value: true,
-			enableCss: mainCss,
-		},
 		{
 			type: "checkbox",
 			id: "EnableStyleSync",

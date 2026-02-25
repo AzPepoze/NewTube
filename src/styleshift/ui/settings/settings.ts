@@ -169,7 +169,7 @@ export async function createMainSettingsUi({
 							index == lastIndex ||
 							(rightUi[index].getBoundingClientRect().top - 10 <= settingsContainerBox.top &&
 								rightUi[index + 1].getBoundingClientRect().top - 10 >=
-									settingsContainerBox.top) ||
+								settingsContainerBox.top) ||
 							(index == 0 &&
 								rightUi[index].getBoundingClientRect().top >= settingsContainerBox.top)
 						) {
@@ -378,6 +378,7 @@ export async function createCategoryUi(parent: HTMLElement, thisCategory: Catego
 
 	for (const thisSetting of thisCategory.settings) {
 		try {
+			if ((thisSetting as any).hidden) continue;
 			await createSettingUiElementWithAbleDeveloperMode(categoryFrame, thisSetting);
 		} catch (error) {
 			createError(`At ${thisCategory.category} - ${JSON.stringify(thisSetting, null, 2)}\n${error}`).then(

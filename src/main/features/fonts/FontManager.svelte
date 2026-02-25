@@ -148,7 +148,7 @@
 		{#if fonts.length > 0}
 			<div class="font-list">
 				{#each fonts as font, i (font.id)}
-					<div class="font-item" class:disabled={!font.enabled}>
+					<div class="font-item">
 						<div class="sort-buttons">
 							<IconButton
 								icon="arrowUp"
@@ -237,10 +237,6 @@
 		transition: all 0.2s;
 		gap: 15px;
 
-		&.disabled {
-			opacity: 0.5;
-			filter: grayscale(0.8);
-		}
 	}
 
 	.font-info {

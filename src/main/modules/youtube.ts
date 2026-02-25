@@ -14,6 +14,10 @@ const navigateListeners: (() => void)[] = [];
 const fullscreenListeners: ((isFullscreen: boolean) => void)[] = [];
 const smallModeListeners: ((isSmallMode: boolean) => void)[] = [];
 
+
+export const ytVideoContainerWatchMode = "#primary div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)";
+export const ytPlayerWatchMode = `#primary #player:has(div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed))`;
+
 /**
  * Retrieves the main YouTube app element (ytd-app).
  */
