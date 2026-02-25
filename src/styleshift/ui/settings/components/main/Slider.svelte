@@ -113,7 +113,7 @@
 		padding-inline: 8px;
 		padding-block: 4px;
 		text-align: center;
-		color: var(--Theme-0, #7f5db7);
+		color: var(--White-100);
 		font-family: inherit;
 		font-size: 14px;
 		font-weight: bold;

@@ -55,7 +55,7 @@
 		logger.debug("ui", `[Dropdown] Option selected: "${option}" for setting:`, setting.id || "no-id");
 		e.stopPropagation();
 		value = option;
-		
+
 		if (setting.id) {
 			await setAndSave(setting, value);
 			triggerSettingUpdate(setting.id);
@@ -245,7 +245,7 @@
 		gap: 10px;
 		background: var(--Black-30);
 		border: 1px gray solid;
-		color: var(--Theme-0, #7f5db7);
+		color: var(--White-100);
 		border-radius: 20px;
 		padding: 8px 15px;
 		width: 100%;

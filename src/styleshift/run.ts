@@ -1,4 +1,4 @@
-import { createError, createNotification } from "./shared/extension";
+import { createError, createNotification, toggleDeveloperMode } from "./shared/extension";
 import { logger } from "../shared/logger";
 import {
 	getCurrentDomain,
@@ -11,8 +11,6 @@ import {
 import { synchronizeAvailableFunctions } from "./core/runtimeController";
 import {
 	initializeStorageConnection,
-	getRootValue,
-	saveRootValue,
 	persistCachedDataToStorage,
 } from "./core/storageManager";
 import {
@@ -100,6 +98,18 @@ async function bootstrapExtension(): Promise<void> {
 	// Set up global theme listeners
 	registerSettingListener("EnableAppLightTheme", syncAllThemes, true);
 	registerSettingListener("EnableSettingsBackgroundBlur", syncAllThemes, true);
+	registerSettingListener(
+		"Developer_mode",
+		async (isDev) => {
+			await createNotification({
+				icon: isDev ? "🔨" : "✨",
+				title: isDev ? "Developer Mode Enabled" : "Developer Mode Disabled",
+				timeout: 3000,
+			});
+			updateAllUiComponents();
+		},
+		false,
+	);
 
 	// Initialize individual setting behaviors
 	const allSettings = await getAllStyleshiftSettings();
@@ -162,16 +172,7 @@ chrome.runtime.onMessage.addListener(async (message) => {
 		}
 
 		if (message === "Developer") {
-			const isDev = await getRootValue("Developer_mode");
-			await saveRootValue("Developer_mode", !isDev);
-
-			await createNotification({
-				icon: !isDev ? "🔨" : "✨",
-				title: !isDev ? "Developer Mode Enabled" : "Developer Mode Disabled",
-				timeout: 3000,
-			});
-
-			updateAllUiComponents();
+			await toggleDeveloperMode();
 		}
 
 		if (IS_IN_EXTENSION_SETTINGS_PAGE) return;

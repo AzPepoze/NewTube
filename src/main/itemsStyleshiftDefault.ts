@@ -54,6 +54,13 @@ const defaultStyleshiftItems: Category[] = [
 				value: false,
 			},
 			{
+				id: "Developer_mode",
+				name: "Developer Mode",
+				description: "Enables advanced features and detailed logging for developers.",
+				type: "checkbox",
+				value: false,
+			},
+			{
 				type: "checkbox",
 				id: "EnableSettingsBackgroundBlur",
 				name: "Glass UI",

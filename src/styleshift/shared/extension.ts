@@ -18,6 +18,7 @@ import {
 	showUserConfirmation,
 	showUserPrompt,
 } from "../ui/extension";
+import { triggerSettingUpdate } from "../settings/functions";
 import { settingsUi } from "../ui/settings/settingComponents";
 import { sleep, deepClone, downloadFile, getCurrentDomain, createUniqueId } from "./normal";
 
@@ -689,4 +690,16 @@ export async function createStyleshiftSettingUi(type: string, thisSetting: Setti
 	styleshiftContainer.append(uiElement);
 
 	return id;
+}
+
+/**
+ * Toggles the developer mode setting and triggers necessary updates.
+ * @example
+ * await toggleDeveloperMode();
+ */
+export async function toggleDeveloperMode() {
+	const isDev = await getRootValue("Developer_mode");
+	const newValue = !isDev;
+	await saveRootValue("Developer_mode", newValue);
+	await triggerSettingUpdate("Developer_mode");
 }
