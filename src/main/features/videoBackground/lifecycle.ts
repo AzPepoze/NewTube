@@ -1,7 +1,6 @@
 import { getDocumentBody } from "../../../styleshift/shared/normal";
 import { loadWorker } from "../../../styleshift/core/runtimeController";
 import { registerSettingListener } from "../../../styleshift/settings/functions";
-import { showBg } from "../background";
 import { logger } from "../../../shared/logger";
 import { VideoBGRenderer } from "./renderer";
 import { onYoutubeNavigate, onYoutubeFullscreen, onYoutubeSmallMode, videoElement } from "../../modules/youtube";
@@ -10,6 +9,7 @@ import { settings, loadInitialSettings } from "./settings";
 import { fadeOut, resetLastRect } from "./ui";
 import { render, updatePositionLoop } from "./logic";
 import { sendToWorker } from "./helpers";
+import { showBg } from "../background";
 
 export async function updateVideoBgSettings(value?: any, settingId?: string) {
 	if (typeof settingId === "string") {
@@ -219,8 +219,10 @@ export async function enableVideoBackground() {
 }
 
 export async function disableVideoBackground(force = false) {
-	if (state.enabled) logger.info("video-bg", "Disabling background video...", { force });
+	if (state.enabled) logger.info("video-bg", "Disabling background video...");
 	state.enabled = false;
+	showBg();
+
 
 	const container = state.container;
 	if (container) {
@@ -292,7 +294,6 @@ export async function disableVideoBackground(force = false) {
 		renderMethod: "Unknown",
 	});
 
-	showBg();
 }
 
 export function registerVideoBgListeners() {

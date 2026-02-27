@@ -238,6 +238,12 @@ ytd-compact-radio-renderer:active>div>ytd-thumbnail
 `;
 
 export const borderRadiusCss = `
+ytd-playlist-panel-video-renderer,
+ytd-menu-renderer yt-icon
+{
+	border-radius: var(--nt-border-radius);
+}
+
 ytd-multi-page-menu-renderer,
 ytd-player:not(.ytd-video-preview):not(.ytp-player-minimized) .html5-video-player:not(.ytp-fullscreen) .html5-video-container,
 .ytp-offline-slate-background,
@@ -285,7 +291,7 @@ ytd-live-chat-frame,
 .ytp-popup,
 .badge.ytd-badge-supported-renderer,
 .ytp-ce-website .ytp-ce-expanding-image,
-.ytp-ce-merchandise .ytp-ce-expanding-image
+.ytp-ce-merchandise .ytp-ce-expanding-image,
 {
 	border-radius: var(--nt-border-radius) !important;
 }
@@ -356,7 +362,6 @@ svg [fill="#FF0033"],
 svg [fill="red"],
 svg [fill="#F00"],
 button:not(.yt-share-target-renderer) path:not([fill="none"]),
-[role="button"] path,
 [role="option"]:not(.yt-third-party-share-target-section-renderer) path,
 .ytp-heat-map-graph,
 .guide-icon svg

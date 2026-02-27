@@ -24,7 +24,7 @@ async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number
 	}
 
 	if (
-		Math.abs(finalDetectedHeight - state.lastHeight) > 10 ||
+		Math.abs(finalDetectedHeight - state.lastHeight) > 5 ||
 		(finalDetectedHeight > 10 && state.lastHeight === 0)
 	) {
 		applyCrop(finalDetectedHeight, vHeight);

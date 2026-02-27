@@ -67,12 +67,15 @@ export async function showBg() {
 	getElement();
 	if (bgTintElement) {
 		bgTintElement.style.display = "block";
+
 		requestAnimationFrame(() => {
 			if (bgTintElement) bgTintElement.style.opacity = "1";
 		});
 	}
+
 	if (bgImageElement) {
 		bgImageElement.style.display = "block";
+
 		requestAnimationFrame(() => {
 			if (bgImageElement) bgImageElement.style.opacity = "1";
 		});

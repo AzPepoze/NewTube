@@ -47,6 +47,7 @@ export async function enableRemoveBlackBars() {
 	const mySession = state.sessionId;
 
 	const init = async () => {
+		state.lastHeight = 0;
 		if (!state.enabled || state.sessionId !== mySession) return;
 
 		const video = await getVideoElement();
