@@ -1,10 +1,10 @@
+import { logger } from "@/shared/logger";
 import { isYoutubeFullscreen, getVideoElement } from "../../modules/youtube";
 import { state } from "./state";
 
 const ultraWideRatio = (21 / 9).toFixed(2);
 
 export async function updateDebugUI(finalDetectedHeight?: number, vHeight?: number) {
-	if (finalDetectedHeight !== undefined) state.lastHeight = finalDetectedHeight;
 	if (vHeight !== undefined) state.vHeight = vHeight;
 
 	if (!state.debugContainer) {
@@ -112,26 +112,26 @@ export async function checkUltraWide() {
 }
 
 export async function applyCrop(barHeight: number, totalHeight: number) {
-	const player = document.querySelector(".html5-video-container") as HTMLElement;
 	const video = await getVideoElement();
-	if (!player || !video) return;
+	const videoContainer = video?.parentElement;
+	if (!videoContainer || !video) return;
 
 	// Bar bigger than before, snap immediately to avoid showing bars during transition
 	if (barHeight > state.lastHeight) {
-		player.style.transition = "none";
+		videoContainer.style.transition = "none";
 	} else {
-		player.style.transition = "all 0.5s ease-out";
+		videoContainer.style.transition = "all 0.5s ease-out";
 	}
 
 	if (barHeight <= 10) {
-		player.style.height = "100%";
+		videoContainer.style.height = "100%";
 		disableUltraWide();
 	} else {
 		const contentHeight = totalHeight - barHeight * 2;
 		const scale = contentHeight / totalHeight;
-		player.style.height = `${scale * 100}%`;
+		videoContainer.style.height = `${scale * 100}%`;
 	}
 
-	player.style.aspectRatio = "";
+	videoContainer.style.aspectRatio = "";
 	state.lastHeight = barHeight;
 }

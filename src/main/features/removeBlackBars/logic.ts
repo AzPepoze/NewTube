@@ -91,7 +91,7 @@ export async function checkBlackBars() {
 	if (state.isChecking) {
 		state.droppedFrames++;
 		if (settings.debugInfo) updateDebugUI();
-		scheduleNext(); 
+		scheduleNext();
 		logger.info("RemoveBlackBars", "Busy - Dropped Frame", { dropped: state.droppedFrames });
 		return;
 	}
@@ -110,7 +110,7 @@ export async function checkBlackBars() {
 	if (state.canvas.height !== vHeight) {
 		state.canvas.height = vHeight;
 	}
-	
+
 	if (settings.debugCanvas) {
 		const videoRect = video.getBoundingClientRect();
 		if (!state.canvas.parentElement) {
@@ -163,13 +163,13 @@ export async function checkBlackBars() {
 
 			state.worker.postMessage({
 				type: "detect",
-				data: { 
-					imgData, vHeight, threshold, sR, sG, sB, 
+				data: {
+					imgData, vHeight, threshold, sR, sG, sB,
 					pixelBudget,
 					currentLastHeight: state.lastHeight
 				},
 			}, [imgData.buffer]);
-			
+
 			// Schedule next immediately to start counting drops while worker works
 			scheduleNext();
 			return;
@@ -181,7 +181,7 @@ export async function checkBlackBars() {
 		imgData, vHeight, threshold, sR, sG, sB,
 		pixelBudget
 	}, settings.debugCanvas ? ctx : null);
-	
+
 	if (state.sessionId !== mySession) {
 		state.isChecking = false;
 		return;

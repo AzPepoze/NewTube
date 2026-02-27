@@ -24,6 +24,7 @@
 	let loadingThemeName = $state<string | null>(null);
 	let backupSettings = $state<any>(null);
 	let originalActiveTheme = $state<string | null>(null);
+	let wasThemeModified = $state(false);
 
 	async function refreshActiveTheme() {
 		activeThemeName = await getRootValue("ActiveTheme");
@@ -58,6 +59,7 @@
 		await saveRootValue("ActiveTheme", name);
 		themes = updatedThemes;
 		activeThemeName = name;
+		wasThemeModified = true;
 
 		createNotification({
 			icon: "✨",
@@ -75,6 +77,7 @@
 
 		// Apply without saving to disk for instant preview
 		await importPresetToSettings($state.snapshot(themeData), false, name);
+		wasThemeModified = true;
 
 		loadingThemeName = null;
 	}
@@ -100,7 +103,7 @@
 	}
 
 	async function handleCancel() {
-		if (backupSettings) {
+		if (wasThemeModified && backupSettings) {
 			await importPresetToSettings(
 				$state.snapshot(backupSettings),
 				false,
