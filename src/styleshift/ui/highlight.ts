@@ -1,5 +1,6 @@
 import { createUniqueId, onceElementRemove, waitDocumentLoaded } from "../shared/normal";
 import { getStyleshiftItems } from "../settings/items";
+import { Category } from "../types/store";
 import { createEditorUi, editorUi } from "./editor";
 import { showUserConfirmation } from "./extension";
 import { logger } from "../../shared/logger";
@@ -18,18 +19,20 @@ function debounce(callback: Function) {
 	}, debounceDelay);
 }
 
-function addHighlight(targetElement: HTMLElement, selectorValue) {
+function addHighlight(targetElement: HTMLElement, selectorValue: Category) {
 	logger.info("highlight", highlightElements);
 
 	const existUniqueId = targetElement.getAttribute("StyleShift-uniqueId");
 	if (existUniqueId) {
 		const obj = highlightElements[existUniqueId];
-		logger.info("highlight", obj.targetElement, targetElement);
-		obj.stop();
+		if (!obj.categories.includes(selectorValue)) {
+			obj.categories.push(selectorValue);
+		}
+		return obj;
 	}
 
 	const uniqueId = createUniqueId(10);
-
+	const categories = [selectorValue];
 	targetElement.setAttribute("StyleShift-uniqueId", uniqueId);
 
 	const color = `rgba(${selectorValue.Highlight_color}`;
@@ -54,7 +57,7 @@ function addHighlight(targetElement: HTMLElement, selectorValue) {
 	targetElement.append(highlighter);
 
 	highlighter.onclick = function () {
-		createEditorUi(targetElement, selectorValue);
+		createEditorUi(targetElement, categories);
 		stopHighlighter();
 	};
 
@@ -77,6 +80,7 @@ function addHighlight(targetElement: HTMLElement, selectorValue) {
 	const returnObj = {
 		highlighter: highlighter,
 		targetElement: targetElement,
+		categories: categories,
 		stop: stop,
 	};
 
@@ -111,7 +115,6 @@ export async function startHighlighter() {
 								) {
 									logger.info("highlight", "Add New Node", selectorValue.selector);
 									addHighlight(element, selectorValue);
-									break;
 								}
 							}
 						}

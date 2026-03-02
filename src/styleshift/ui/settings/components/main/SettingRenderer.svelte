@@ -10,7 +10,10 @@
 	import ImageInput from "./ImageInput.svelte";
 	import PreviewImage from "./PreviewImage.svelte";
 	import Icon from "./Icon.svelte";
-	import { getFromStorage, getRootValue } from "@/styleshift/core/storageManager";
+	import {
+		getFromStorage,
+		getRootValue,
+	} from "@/styleshift/core/storageManager";
 	import { settingsUi } from "@ui/settings/settingComponents";
 	import { executeScriptString } from "@/styleshift/core/runtimeController";
 	import { removeSetting } from "@settings/items";
@@ -22,7 +25,10 @@
 	import SettingFrame from "../SettingFrame.svelte";
 	import { addDrag, addDropTarget } from "../../reorder";
 	import { getTextAlign } from "../../utils";
-	import { registerSettingListener, unregisterSettingListener } from "@settings/functions";
+	import {
+		registerSettingListener,
+		unregisterSettingListener,
+	} from "@settings/functions";
 	import { SvelteMap } from "svelte/reactivity";
 
 	let {
@@ -41,21 +47,28 @@
 
 	// Requirements state
 	let requirementsMet = $state(true);
-	let requiredSettings = $state<Record<string, { name: string; value: any; type: string; options?: any }>>({});
+	let requiredSettings = $state<
+		Record<
+			string,
+			{ name: string; value: any; type: string; options?: any }
+		>
+	>({});
 	let isLocked = $derived(setting.lock?.condition ?? false);
 	let listeners = new SvelteMap<string, (val: any) => void>();
 
 	const textAlign = $derived(getTextAlign((setting as any).align));
 	const isVerticalSetting = $derived(
 		setting.type === "numberSlide" ||
-		setting.type === "color" ||
-		setting.type === "custom" ||
-		setting.type === "imageInput"
+			setting.type === "color" ||
+			setting.type === "custom" ||
+			setting.type === "imageInput",
 	);
 
 	// Initialize value from storage
 	async function init() {
-		isDeveloperMode = (await getRootValue("Developer_mode")) && (setting.editable ?? false);
+		isDeveloperMode =
+			(await getRootValue("Developer_mode")) &&
+			(setting.editable ?? false);
 		if ("id" in setting && setting.id) {
 			value = await getFromStorage(setting.id);
 		} else if ("value" in setting) {
@@ -63,16 +76,18 @@
 		}
 
 		if (setting.require && Object.keys(setting.require).length > 0) {
-			const allSettings = await (await import("@settings/items")).getSettingsList();
+			const allSettings = await (
+				await import("@settings/items")
+			).getSettingsList();
 			for (const reqId in setting.require) {
 				const reqSetting = allSettings[reqId];
 				if (reqSetting) {
 					const reqValue = await getFromStorage(reqId);
-					requiredSettings[reqId] = { 
-						name: (reqSetting as any).name || reqId, 
+					requiredSettings[reqId] = {
+						name: (reqSetting as any).name || reqId,
 						value: reqValue,
 						type: reqSetting.type,
-						options: (reqSetting as any).options
+						options: (reqSetting as any).options,
 					};
 
 					const listener = (newVal: any) => {
@@ -95,11 +110,11 @@
 		requirementsMet = Object.keys(setting.require).every((id) => {
 			const req = requiredSettings[id];
 			const requiredValue = setting.require![id];
-			
+
 			if (Array.isArray(requiredValue)) {
 				return req && requiredValue.includes(req.value);
 			}
-			
+
 			return req && req.value === requiredValue;
 		});
 	}
@@ -135,7 +150,9 @@
 				executeScriptString({
 					scriptContent: setting.uiFunction,
 					sourceIdentifier: `${setting.id} : uiFunction`,
-					executionArguments: JSON.stringify({ settingId: node.id }),
+					executionArguments: JSON.stringify({
+						settingId: node.id,
+					}),
 				});
 			}
 		}
@@ -149,7 +166,12 @@
 
 	$effect(() => {
 		if (isDeveloperMode && domNode && domNode.parentElement) {
-			addDropTarget(domNode, domNode.parentElement, setting, "setting");
+			addDropTarget(
+				domNode,
+				domNode.parentElement,
+				setting,
+				"setting",
+			);
 		}
 	});
 </script>
@@ -157,19 +179,37 @@
 <SettingFrame
 	id={setting.id}
 	type={setting.type}
-	className="{isDeveloperMode ? 'developer-mode' : ''} {isLocked ? 'STYLESHIFT-Setting-Hard-Locked' : ''} {!requirementsMet ? 'STYLESHIFT-Setting-Requirement-Warning' : ''}"
-	style="{isDeveloperMode && setting.type !== 'subText' && setting.type !== 'text' ? 'gap: 10px;' : ''} {isLocked || !requirementsMet ? 'flex-direction: column; align-items: stretch;' : ''}"
+	className="{isDeveloperMode ? 'developer-mode' : ''} {isLocked
+		? 'STYLESHIFT-Setting-Hard-Locked'
+		: ''} {!requirementsMet
+		? 'STYLESHIFT-Setting-Requirement-Warning'
+		: ''}"
+	style="{isDeveloperMode &&
+	setting.type !== 'subText' &&
+	setting.type !== 'text'
+		? 'gap: 10px;'
+		: ''} {isLocked || !requirementsMet
+		? 'flex-direction: column; align-items: stretch;'
+		: ''}"
 	useAction={(node) => {
 		domNode = node;
 		highlightAction(node, highlight);
 	}}
 	padding={setting.type !== "button" && setting.type !== "subText"}
-	transparent={setting.type === "button" || setting.type === "subText" || setting.type === "text"}
+	transparent={setting.type === "button" ||
+		setting.type === "subText" ||
+		setting.type === "text"}
 	vertical={isVerticalSetting}
 >
-	<div class="STYLESHIFT-Setting-Row-Content" class:is-vertical={isVerticalSetting}>
+	<div
+		class="STYLESHIFT-Setting-Row-Content"
+		class:is-vertical={isVerticalSetting}
+	>
 		{#if isDeveloperMode}
-			<button class="STYLESHIFT-Config-Button drag-handle" use:dragAction>
+			<button
+				class="STYLESHIFT-Config-Button drag-handle"
+				use:dragAction
+			>
 				<Icon name="drag" size={16} />
 			</button>
 		{/if}
@@ -187,7 +227,11 @@
 		{:else if setting.type === "dropdown"}
 			<Dropdown {setting} />
 		{:else if setting.type === "text"}
-			<Text html={setting.html} fontSize={setting.fontSize} {textAlign} />
+			<Text
+				html={setting.html}
+				fontSize={setting.fontSize}
+				{textAlign}
+			/>
 		{:else if setting.type === "subText"}
 			<Text
 				text={setting.text}
@@ -203,12 +247,18 @@
 		{:else if setting.type === "custom"}
 			<div use:customSettingAction></div>
 		{:else if setting.type === "combineSettings"}
-			<Description name={setting.name} description={setting.description} />
+			<Description
+				name={setting.name}
+				description={setting.description}
+			/>
 		{/if}
 
 		{#if isDeveloperMode}
 			<div class="STYLESHIFT-Config-Actions-Overlay">
-				<button class="STYLESHIFT-Config-Button edit" onclick={handleEdit}>
+				<button
+					class="STYLESHIFT-Config-Button edit"
+					onclick={handleEdit}
+				>
 					<Icon name="edit" size={16} />
 				</button>
 				<button
@@ -227,31 +277,71 @@
 	{#if isLocked || !requirementsMet}
 		<div class="STYLESHIFT-Setting-Warning-Section">
 			<div class="lock-info">
-				<Icon name="settings" size={18} className="lock-icon" />
 				<div class="lock-messages">
 					{#if isLocked}
-						<div class="lock-message">{setting.lock?.message || "This setting is currently locked."}</div>
+						<div class="lock-message">
+							{setting.lock?.message ||
+								"This setting is currently locked."}
+						</div>
 					{/if}
 					{#if !requirementsMet}
 						<div class="requirement-warning">
-							<div style="display: flex; align-items: center; gap: 5px; color: #ffcc00; font-weight: bold;">
+							<div
+								style="display: flex; align-items: center; gap: 5px; color: #ffcc00; font-weight: bold;"
+							>
 								This setting requires:
 							</div>
 							<ul class="requirement-list">
 								{#each Object.keys(setting.require || {}) as reqId (reqId)}
 									{#if requiredSettings[reqId]?.value !== setting.require[reqId]}
 										<li>
-											<span class="highlight">{(requiredSettings[reqId] as any).name}</span> 
-											{#if requiredSettings[reqId].type === 'checkbox'}
+											<span class="highlight">
+												{requiredSettings[
+													reqId
+												].name}
+											</span>
+											{#if requiredSettings[reqId].type === "checkbox"}
 												to be enabled
 											{:else}
-												to be 
-																							{#if Array.isArray(setting.require[reqId])}
-																								{#each setting.require[reqId] as val, i (val)}
-																									<span class="highlight">{(requiredSettings[reqId].options?.[val] as any)?.name || val}</span>
-																									{#if i < setting.require[reqId].length - 1} or {/if}
-																								{/each}
-																							{:else}													<span class="highlight">{(requiredSettings[reqId].options?.[setting.require[reqId]] as any)?.name || setting.require[reqId]}</span>
+												to be
+												{#if Array.isArray(setting.require[reqId])}
+													{#each setting.require[reqId] as val, i (val)}
+														<span
+															class="highlight"
+															>{(
+																requiredSettings[
+																	reqId
+																]
+																	.options?.[
+																	val
+																] as any
+															)
+																?.name ||
+																val}</span
+														>
+														{#if i < setting.require[reqId].length - 1}
+															or
+														{/if}
+													{/each}
+												{:else}
+													<span
+														class="highlight"
+														>{(
+															requiredSettings[
+																reqId
+															]
+																.options?.[
+																setting
+																	.require[
+																	reqId
+																]
+															] as any
+														)?.name ||
+															setting
+																.require[
+																reqId
+															]}</span
+													>
 												{/if}
 											{/if}
 										</li>
@@ -281,12 +371,20 @@
 		}
 	}
 
-	:global(.STYLESHIFT-Setting-Frame.STYLESHIFT-Setting-Hard-Locked .STYLESHIFT-Setting-Row-Content) {
+	:global(
+			.STYLESHIFT-Setting-Frame.STYLESHIFT-Setting-Hard-Locked
+				.STYLESHIFT-Setting-Row-Content
+		) {
 		pointer-events: none !important;
 		opacity: 0.6 !important;
 	}
 
-	:global(.STYLESHIFT-Setting-Frame.STYLESHIFT-Setting-Requirement-Warning:not(.STYLESHIFT-Setting-Hard-Locked) .STYLESHIFT-Setting-Row-Content) {
+	:global(
+			.STYLESHIFT-Setting-Frame.STYLESHIFT-Setting-Requirement-Warning:not(
+					.STYLESHIFT-Setting-Hard-Locked
+				)
+				.STYLESHIFT-Setting-Row-Content
+		) {
 		pointer-events: all;
 		opacity: 1;
 	}
@@ -295,8 +393,8 @@
 		margin-top: 10px;
 		padding: 10px 15px;
 		background: rgba(255, 204, 0, 0.1);
-		border-left: 3px solid #ffcc00;
-		border-radius: 4px;
+		border: 1px dashed #ffcc00;
+		border-radius: 5px;
 		z-index: 5;
 		pointer-events: all;
 	}
@@ -306,12 +404,6 @@
 		gap: 10px;
 		align-items: flex-start;
 		width: 100%;
-	}
-
-	:global(.lock-icon) {
-		flex-shrink: 0;
-		margin-top: 2px;
-		filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
 	}
 
 	.lock-messages {
@@ -345,7 +437,7 @@
 			font-weight: bold;
 			background: rgba(255, 255, 255, 0.1);
 			padding: 0 4px;
-			border-radius: 2px;
+			border-radius: 4px;
 		}
 	}
 </style>

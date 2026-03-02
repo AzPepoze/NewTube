@@ -3,11 +3,12 @@ import { setupVideoAnimations } from "../features/video/animations";
 
 export const videoPlayerCategory: Category = {
 	category: "📺 Video Player",
+	selector: "#movie_player",
 	settings: [
 		{
 			type: "checkbox",
-			id: "TransparentVideoPlayerBackground",
-			name: "Glass Player",
+			id: "RemoveVideoPlayerBackground",
+			name: "Remove Player Background",
 			description:
 				"Makes the video player's base background transparent. Essential for seeing custom page backgrounds and 'Background Video' effects behind the player.",
 			value: true,

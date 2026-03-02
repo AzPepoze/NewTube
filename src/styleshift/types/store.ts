@@ -6,6 +6,8 @@ export type Category = {
 	editable?: boolean;
 	settings: Setting[];
 	highlightColor?: string;
+	Highlight_color?: string;
+	Selector?: string;
 };
 
 export type Option = {
@@ -31,190 +33,190 @@ export type BaseSetting = {
 
 export type Setting = (
 	| {
-			type: "text";
-			id?: string;
+		type: "text";
+		id?: string;
 
-			html: string;
+		html: string;
 
-			align?: "left" | "center" | "right";
-			fontSize?: number;
+		align?: "left" | "center" | "right";
+		fontSize?: number;
 
-			editable?: boolean;
-	  }
+		editable?: boolean;
+	}
 	| {
-			type: "subText";
-			id?: string;
+		type: "subText";
+		id?: string;
 
-			text: string;
+		text: string;
 
-			align?: "left" | "center" | "right";
-			color?: string;
-			fontSize?: number;
+		align?: "left" | "center" | "right";
+		color?: string;
+		fontSize?: number;
 
-			editable?: boolean;
-	  }
+		editable?: boolean;
+	}
 	| {
-			type: "button";
-			id?: string;
-			name: string;
-			description?: string;
+		type: "button";
+		id?: string;
+		name: string;
+		description?: string;
 
-			icon?: string;
-			align?: "left" | "center" | "right";
-			color?: string;
-			fontSize?: number;
+		icon?: string;
+		align?: "left" | "center" | "right";
+		color?: string;
+		fontSize?: number;
 
-			clickFunction?: string | Function;
+		clickFunction?: string | Function;
 
-			editable?: boolean;
-	  }
+		editable?: boolean;
+	}
 	| {
-			type: "checkbox";
-			id: string;
-			name: string;
-			description?: string;
+		type: "checkbox";
+		id: string;
+		name: string;
+		description?: string;
 
-			value: boolean;
+		value: boolean;
 
-			constantCss?: string;
+		constantCss?: string;
 
-			setupFunction?: string | Function;
-			updateFunction?: string | Function;
+		setupFunction?: string | Function;
+		updateFunction?: string | Function;
 
-			enableCss?: string;
-			enableFunction?: string | Function;
+		enableCss?: string;
+		enableFunction?: string | Function;
 
-			disableCss?: string;
-			disableFunction?: string | Function;
+		disableCss?: string;
+		disableFunction?: string | Function;
 
-			editable?: boolean;
-	  }
+		editable?: boolean;
+	}
 	| {
-			type: "numberSlide";
-			id: string;
-			name: string;
-			description?: string;
+		type: "numberSlide";
+		id: string;
+		name: string;
+		description?: string;
 
-			min?: number;
-			max?: number;
-			step?: number;
-			value: number;
-			unit?: string;
+		min?: number;
+		max?: number;
+		step?: number;
+		value: number;
+		unit?: string;
 
-			//--------------
+		//--------------
 
-			varCss?: string;
+		varCss?: string;
 
-			constantCss?: string | Function;
+		constantCss?: string | Function;
 
-			setupFunction?: string | Function;
+		setupFunction?: string | Function;
 
-			updateFunction?: string | Function;
+		updateFunction?: string | Function;
 
-			//--------------
+		//--------------
 
-			editable?: boolean;
-	  }
+		editable?: boolean;
+	}
 	| {
-			type: "dropdown";
-			id: string;
-			name: string;
-			description?: string;
+		type: "dropdown";
+		id: string;
+		name: string;
+		description?: string;
 
-			value: string;
+		value: string;
 
-			//--------------
+		//--------------
 
-			constantCss?: string;
+		constantCss?: string;
 
-			setupFunction?: string | Function;
+		setupFunction?: string | Function;
 
-			updateFunction?: string | Function;
+		updateFunction?: string | Function;
 
-			options: { [key: string]: Option };
+		options: { [key: string]: Option };
 
-			//--------------
+		//--------------
 
-			editable?: boolean;
-	  }
+		editable?: boolean;
+	}
 	| {
-			type: "color";
-			id: string;
-			name: string;
-			description?: string;
-			showAlphaSlider?: boolean;
+		type: "color";
+		id: string;
+		name: string;
+		description?: string;
+		showAlphaSlider?: boolean;
 
-			value: string;
+		value: string;
 
-			//--------------
+		//--------------
 
-			varCss?: string;
+		varCss?: string;
 
-			constantCss?: string | Function;
+		constantCss?: string | Function;
 
-			setupFunction?: string | Function;
+		setupFunction?: string | Function;
 
-			updateFunction?: string | Function;
+		updateFunction?: string | Function;
 
-			//--------------
+		//--------------
 
-			editable?: boolean;
-	  }
+		editable?: boolean;
+	}
 	| {
-			type: "textInput";
-			id: string;
-			name: string;
-			description?: string;
+		type: "textInput";
+		id: string;
+		name: string;
+		description?: string;
 
-			value: string;
+		value: string;
 
-			updateFunction?: string | ((value: string) => void);
+		updateFunction?: string | ((value: string) => void);
 
-			//--------------
-			editable?: boolean;
-	  }
+		//--------------
+		editable?: boolean;
+	}
 	| {
-			type: "imageInput";
-			id: string;
-			name: string;
-			description?: string;
+		type: "imageInput";
+		id: string;
+		name: string;
+		description?: string;
 
-			value: string;
-			maxFileSize: number;
+		value: string;
+		maxFileSize: number;
 
-			//--------------
-			editable?: boolean;
-	  }
+		//--------------
+		editable?: boolean;
+	}
 	| {
-			type: "previewImage";
-			id: string;
+		type: "previewImage";
+		id: string;
 
-			//--------------
-			editable?: boolean;
-	  }
+		//--------------
+		editable?: boolean;
+	}
 	| {
-			type: "custom";
-			id: string;
+		type: "custom";
+		id: string;
 
-			//--------------
+		//--------------
 
-			constantCss?: string | ((value: any) => string);
-			setupFunction?: string | Function;
-			setup_?: string | Function;
-			uiFunction?: string | Function;
+		constantCss?: string | ((value: any) => string);
+		setupFunction?: string | Function;
+		setup_?: string | Function;
+		uiFunction?: string | Function;
 
-			//--------------
+		//--------------
 
-			editable?: boolean;
-	  }
+		editable?: boolean;
+	}
 	| {
-			type: "combineSettings";
-			id?: string;
-			name?: string;
-			description?: string;
-			syncId: string[];
-			updateFunction?: string;
-			editable?: boolean;
-	  }
+		type: "combineSettings";
+		id?: string;
+		name?: string;
+		description?: string;
+		syncId: string[];
+		updateFunction?: string;
+		editable?: boolean;
+	}
 ) &
 	BaseSetting;

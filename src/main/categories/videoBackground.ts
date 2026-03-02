@@ -5,6 +5,7 @@ const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
 export const videoBackgroundCategory: Category = {
 	category: "🎆 Background Video",
+	selector: "#movie_player",
 	settings: [
 		{
 			type: "checkbox",

@@ -29,11 +29,12 @@ export const thumbnailCategory: Category = {
 			id: "ThumbnailTimeHeight",
 			name: "Time Height",
 			description: "Adjusts the vertical size of the timestamp indicator.",
-			value: 12,
+			value: 20,
 			min: 0,
 			max: 100,
 			step: 1,
 			varCss: "--nt-timestamp-height",
+			unit: "px",
 			constantCss: `
                 ytd-thumbnail-overlay-time-status-renderer,
                 ytd-thumbnail-overlay-bottom-panel-renderer {

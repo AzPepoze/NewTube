@@ -114,7 +114,7 @@ export function updateDebugInfo(video: HTMLVideoElement, frameTime: number) {
 			<span>Engine:</span> <span>${engineDisplay}</span>
 			<span>Quality:</span> <span>${settings.quality * 100}%</span>
 			<span>Static:</span> <span>${state.isStatic}</span>
-			<span>Paused:</span> <span>${video.paused}</span>
+
 			<span>Capturing:</span> <span>${state.isCapturing}</span>
 			<span>Rendering:</span> <span>${state.isProcessing}</span>
 		</div>

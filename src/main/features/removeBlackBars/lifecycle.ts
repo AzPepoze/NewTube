@@ -5,7 +5,7 @@ import { onYoutubeFullscreen, getVideoElement, videoElement } from "../../module
 import { state } from "./state";
 import { settings, loadInitialSettings } from "./settings";
 import { checkBlackBars } from "./logic";
-import { disableUltraWide } from "./ui";
+import { disableUltraWide, applyCrop } from "./ui";
 
 export async function updateRemoveBlackBarsSettings(value?: any, settingId?: string) {
 	if (typeof settingId === "string") {
@@ -52,6 +52,7 @@ export async function enableRemoveBlackBars() {
 
 		const video = await getVideoElement();
 		if (video) {
+			applyCrop(0, video.videoHeight);
 			checkBlackBars();
 		} else {
 			await waitOneFrame();

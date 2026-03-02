@@ -9,6 +9,7 @@ const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
 export const removeBlackBarsCategory: Category = {
 	category: "🔳 Remove black bars on video",
+	selector: "#movie_player",
 	settings: [
 		{
 			type: "checkbox",
@@ -60,7 +61,7 @@ export const removeBlackBarsCategory: Category = {
 			name: "Pixel Budget",
 			description:
 				"Limits the number of pixels analyzed in each frame. Spreads the detection process over multiple frames to prevent CPU spikes and interface lag.",
-			value: false,
+			value: true,
 			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },
 		},

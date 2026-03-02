@@ -4,6 +4,7 @@ import { ytVideoContainerWatchMode, ytPlayerWatchMode } from "../modules/youtube
 
 export const videoControlPanelCategory: Category = {
 	category: "🎚️ Video Control Panel",
+	selector: "#movie_player",
 	settings: [
 		{
 			type: "checkbox",
@@ -98,6 +99,7 @@ export const videoControlPanelCategory: Category = {
                 .ytp-cards-button-icon {
                     transition: transform .2s !important;
                 }
+				
                 .ytp-chrome-bottom .ytp-button:hover,
                 .ytp-replay-button:hover,
                 .ytp-cards-button-icon:hover {

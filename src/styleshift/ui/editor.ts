@@ -74,9 +74,9 @@ let resizeObserver: ResizeObserver | null = null;
 	});
 })();
 
-export async function createEditorUi(targetElement, thisCategory: Category) {
+export async function createEditorUi(targetElement, categories: Category[]) {
 	currentEditObj["target"] = targetElement;
-	currentEditObj["Category"] = thisCategory;
-	editorUi.setGetCategory(() => [thisCategory]);
+	currentEditObj["Categories"] = categories;
+	editorUi.setGetCategory(() => categories);
 	editorUi.createUi();
 }

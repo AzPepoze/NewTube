@@ -7,6 +7,7 @@ import { disableVideoBackground } from "./lifecycle";
 import { shouldFeatureShow } from "../helpers";
 
 export function handleLagMonitoring(frameTime: number, disableCallback: () => void) {
+	if (document.hidden) return;
 	const isSlow = frameTime > 100 || state.lastProcessTime > 120;
 	const isHealthy = frameTime < 30 && state.lastProcessTime < 60;
 

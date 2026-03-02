@@ -166,8 +166,7 @@ export const shadowsOutlinesCss = `
 a.thumbnail > .ytcd-basic-item-large-image,
 ytcp-thumbnail-with-title,
 ytd-playlist-thumbnail,
-ytd-thumbnail,
-#thumbnail,
+ytd-thumbnail:not(.player-container-background-image),
 .thumbnail-container.ytd-notification-renderer,
 yt-img-shadow.ytd-channel-renderer,
 #author-thumbnail.ytd-commesimplebox-renderer,
@@ -261,7 +260,6 @@ ytd-video-preview .html5-video-container {
 ytcp-thumbnail-with-title,
 ytd-playlist-thumbnail,
 ytd-thumbnail,
-#thumbnail,
 .thumbnail-container.ytd-notification-renderer,
 [role="listbox"],
 .ytp-ce-video,
@@ -285,13 +283,14 @@ ytd-live-chat-frame,
 .ytp-popup.ytp-settings-menu,
 .ytp-sb-subscribe, .ytp-sb-unsubscribe,
 .iv-drawer,
-.iv-card, .iv-card a.iv-click-target,
+.iv-card,
+.iv-card a.iv-click-target,
 .ytp-cards-teaser-box,
 .miniplayer.ytd-miniplayer,
 .ytp-popup,
 .badge.ytd-badge-supported-renderer,
 .ytp-ce-website .ytp-ce-expanding-image,
-.ytp-ce-merchandise .ytp-ce-expanding-image,
+.ytp-ce-merchandise .ytp-ce-expanding-image
 {
 	border-radius: var(--nt-border-radius) !important;
 }
@@ -343,7 +342,7 @@ div.html5-video-player.ytp-fullscreen .ytp-gradient-bottom{
 }
 
 div.ytp-cued-thumbnail-overlay{
-	border-radius:10px !important;
+	border-radius: 10px !important;
 }
 
 yt-live-chat-message-input-renderer{
@@ -490,7 +489,7 @@ tp-yt-paper-button.ytd-text-inline-expander,
 #reply-button-end a,
 .yt-spec-button-shape-next--filled,
 .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text,
-.ytSearchboxComponentSearchButton,
+.ytSearchboxComponentSearchButton
 {
 	transition: all 0.1s;
 }
@@ -812,7 +811,7 @@ tp-yt-paper-button.ytd-text-inline-expander,
 #reply-button-end a,
 .yt-spec-button-shape-next--filled,
 .yt-spec-button-shape-next--call-to-action.yt-spec-button-shape-next--text,
-.ytSearchboxComponentSearchButton,
+.ytSearchboxComponentSearchButton
 {
 	border: 1px solid transparent !important;
 }

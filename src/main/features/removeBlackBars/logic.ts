@@ -5,7 +5,6 @@ import { updateDebugUI, applyCrop, checkUltraWide, disableUltraWide } from "./ui
 import { calculateVdoHeight, detectBlackBars } from "./helpers";
 import { isYoutubeFullscreen, getVideoElement } from "../../modules/youtube";
 import { shouldFeatureShow } from "../helpers";
-import { logger } from "@/shared/logger";
 
 async function initWorker() {
 	if (state.worker || state.workerLoadAttempted) return;
@@ -92,7 +91,6 @@ export async function checkBlackBars() {
 		state.droppedFrames++;
 		if (settings.debugInfo) updateDebugUI();
 		scheduleNext();
-		logger.info("RemoveBlackBars", "Busy - Dropped Frame", { dropped: state.droppedFrames });
 		return;
 	}
 

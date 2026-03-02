@@ -69,6 +69,7 @@ export const bordersShadowsCategory: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
+			unit: "px",
 			varCss: "--nt-border-radius",
 		},
 	],
