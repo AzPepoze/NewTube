@@ -3,11 +3,13 @@ import { rgbToHsv, hsvToRgb, getDocumentBody } from "../../styleshift/shared/nor
 import { getUserSetting } from "../../styleshift/core/storageManager";
 import { onYoutubeNavigate, getYoutubeVideoId, onYoutubeFullscreen } from "../modules/youtube";
 import { shouldFeatureShow } from "./helpers";
+import { registerSettingListener, unregisterSettingListener } from "../../styleshift/settings/functions";
 
 const state = {
 	enabled: false,
 	navigateCleanup: null as (() => void) | null,
 	fullscreenCleanup: null as (() => void) | null,
+	settingListeners: [] as (() => void)[],
 };
 
 function getSortedPalette(palette: [number, number, number][]) {
@@ -122,7 +124,7 @@ export function enableThemeByVideo() {
 			const body = await getDocumentBody();
 			if (!body || !state.enabled) return;
 
-			const setProp = (name: string, val: string) => body.style.setProperty(name, val);
+			const setProp = (name: string, val: string, priority?: string) => body.style.setProperty(name, val, priority);
 
 			// HSV Adjustments
 			const hsv = rgbToHsv({ r: color[0], g: color[1], b: color[2] });
@@ -148,15 +150,15 @@ export function enableThemeByVideo() {
 
 			const text2Hsv = { ...hsv, s: hsv.s * 0.8 };
 			const text2Rgb = hsvToRgb(text2Hsv);
-			setProp("--nt-text-secondary", `rgba(${text2Rgb.r}, ${text2Rgb.g}, ${text2Rgb.b}, 1)`);
+			setProp("--nt-text-secondary", `rgba(${text2Rgb.r}, ${text2Rgb.g}, ${text2Rgb.b}, 1)`, "important");
 
 			const timetextHsv = { ...hsv, s: hsv.s * 0.5 };
 			const timetextRgb = hsvToRgb(timetextHsv);
-			setProp("--nt-text-timestamp", `rgba(${timetextRgb.r}, ${timetextRgb.g}, ${timetextRgb.b}, 1)`);
+			setProp("--nt-text-timestamp", `rgba(${timetextRgb.r}, ${timetextRgb.g}, ${timetextRgb.b}, 1)`, "important");
 
 			const textHsv = { ...hsv, s: hsv.s * 0.4 };
 			const textRgb = hsvToRgb(textHsv);
-			setProp("--nt-text-primary", `rgba(${textRgb.r}, ${textRgb.g}, ${textRgb.b}, 1)`);
+			setProp("--nt-text-primary", `rgba(${textRgb.r}, ${textRgb.g}, ${textRgb.b}, 1)`, "important");
 
 			// Background Background
 			const bgHsv = { ...hsv, v: hsv.v * 0.15 };
@@ -186,6 +188,12 @@ export function enableThemeByVideo() {
 	updateTheme();
 	state.navigateCleanup = onYoutubeNavigate(updateTheme);
 	state.fullscreenCleanup = onYoutubeFullscreen(updateTheme);
+
+	const solidListener = () => updateTheme();
+
+	registerSettingListener("EnableSolidThemeByVideo", solidListener);
+
+	state.settingListeners.push(() => unregisterSettingListener("EnableSolidThemeByVideo", solidListener));
 }
 
 export function disableThemeByVideo() {
@@ -198,5 +206,9 @@ export function disableThemeByVideo() {
 		state.fullscreenCleanup();
 		state.fullscreenCleanup = null;
 	}
+
+	state.settingListeners.forEach((cleanup) => cleanup());
+	state.settingListeners = [];
+
 	clearTheme();
 }
