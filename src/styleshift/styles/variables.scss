@@ -2,13 +2,19 @@
 	/* --- Theme Core --- */
 	--Theme-0: #7f5db7;
 	--Theme-0-10: rgba(127, 93, 183, 0.1);
+	--Theme-0-12: rgba(127, 93, 183, 0.12);
+	--Theme-0-15: rgba(127, 93, 183, 0.15);
 	--Theme-0-20: rgba(127, 93, 183, 0.2);
 	--Theme-0-30: rgba(127, 93, 183, 0.3);
+	--Theme-0-40: rgba(127, 93, 183, 0.4);
 	--Theme-0-50: rgba(127, 93, 183, 0.5);
+	--Theme-0-Light: #9374c9;
+	--Theme-0-Text: #b39dd9;
 	--Theme-1: rgb(246, 196, 255);
 
 	/* --- Default Dark Theme --- */
 	--BG-Dark: rgba(43, 43, 43, 1);
+	--BG-Dark-Welcome: #111111;
 	--BG-Surface: rgba(255, 255, 255, 0.03);
 	--BG-Surface-Hover: rgba(255, 255, 255, 0.06);
 	--BG-Input: rgba(43, 43, 43, 0.8);
@@ -18,9 +24,13 @@
 	--Shadow-Color: rgba(0, 0, 0, 0.5);
 
 	/* --- Colors & Opacity --- */
+	--White-02: rgba(255, 255, 255, 0.02);
+	--White-03: rgba(255, 255, 255, 0.03);
 	--White-05: rgba(255, 255, 255, 0.05);
+	--White-06: rgba(255, 255, 255, 0.06);
 	--White-08: rgba(255, 255, 255, 0.08);
 	--White-10: rgba(255, 255, 255, 0.1);
+	--White-15: rgba(255, 255, 255, 0.15);
 	--White-17: rgba(255, 255, 255, 0.17);
 	--White-20: rgba(255, 255, 255, 0.2);
 	--White-30: rgba(255, 255, 255, 0.3);
@@ -28,10 +38,12 @@
 	--White-40: rgba(255, 255, 255, 0.4);
 	--White-50: rgba(255, 255, 255, 0.5);
 	--White-52: rgba(255, 255, 255, 0.32);
+	--White-60: rgba(255, 255, 255, 0.6);
 	--White-70: rgba(255, 255, 255, 0.7);
 	--White-80: rgba(255, 255, 255, 0.8);
 	--White-87: rgba(255, 255, 255, 0.53);
 	--White-90: rgba(255, 255, 255, 0.9);
+	--White-95: rgba(255, 255, 255, 0.95);
 
 	--Black-10: rgba(0, 0, 0, 0.1);
 	--Black-20: rgba(0, 0, 0, 0.2);
@@ -47,7 +59,11 @@
 	--Border-Radius: 12px;
 	--Drag-Top-BG: rgba(128, 128, 128, 0.2);
 
-	--Category-Title-BG: radial-gradient(at center top, rgb(255, 255, 255), var(--White-50));
+	--Category-Title-BG: radial-gradient(
+		at center top,
+		rgb(255, 255, 255),
+		var(--White-50)
+	);
 	--Category-Title-Text-Color: black;
 
 	--Category-Left-BG: linear-gradient(90deg, transparent, var(--White-10));

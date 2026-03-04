@@ -121,6 +121,12 @@ const defaultStyleshiftItems: Category[] = [
 				align: "center",
 				type: "button",
 			},
+			{
+				id: "KeyboardShortcuts",
+				name: "Keyboard Shortcuts",
+				description: "View all available keyboard shortcuts for quick access.",
+				type: "keyboardShortcuts",
+			},
 		],
 	},
 	{

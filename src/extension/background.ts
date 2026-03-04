@@ -112,7 +112,7 @@ chrome.runtime.onMessage.addListener(
 	},
 );
 
-async function handleMessage(recivedMsg: ContentScriptMessage, sender: chrome.runtime.MessageSender): Promise<boolean> {
+async function handleMessage(recivedMsg: ContentScriptMessage, sender: chrome.runtime.MessageSender): Promise<any> {
 	switch (recivedMsg.Command) {
 		case "runScript": {
 			if (!sender.tab?.id) return false;
@@ -166,7 +166,7 @@ async function handleMessage(recivedMsg: ContentScriptMessage, sender: chrome.ru
                 try {
                     ${preCode}
                     
-${scriptData}
+					${scriptData}
                 } catch (e) {
                     console.error("StyleShift: Script execution failed", e);
                 }
@@ -188,10 +188,40 @@ ${scriptData}
 			chrome.tabs.create({ url });
 			return true;
 		}
+
+		case "getCommands": {
+			return await new Promise((resolve) => {
+				let resolved = false;
+				try {
+					logger.info("message", "Calling chrome.commands.getAll()");
+					chrome.commands.getAll((commands) => {
+						if (!resolved) {
+							logger.info("message", "chrome.commands.getAll() callback:", commands);
+							resolved = true;
+							resolve(commands || []);
+						}
+					});
+					// Safety timeout in case callback never fires
+					setTimeout(() => {
+						if (!resolved) {
+							logger.warn("message", "getCommands timeout - resolving with empty array");
+							resolved = true;
+							resolve([]);
+						}
+					}, 5000);
+				} catch (_e) {
+					if (!resolved) {
+						logger.error("message", "Error in getCommands:", _e);
+						resolved = true;
+						resolve([]);
+					}
+				}
+			});
+		}
 	}
 
 	logger.info("message", "---------------------------------");
 	return false;
 }
 
-export {};
+export { };

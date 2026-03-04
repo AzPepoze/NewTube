@@ -6,12 +6,13 @@ import DevSettingSectionComponent from "./DevSettingSection.svelte";
 import ConfigSubSectionComponent from "./ConfigSubSection.svelte";
 import ConfigMainSectionComponent from "./ConfigMainSection.svelte";
 import AddSettingButtonComponent from "./AddSettingButton.svelte";
+import KeyboardShortcutsComponent from "./KeyboardShortcuts.svelte";
 
 export async function settingDeveloperTextEditor(
 	parent: HTMLElement,
 	thisSetting,
 	thisProperty,
-	updateUi = function (_value) {},
+	updateUi = function (_value) { },
 ) {
 	const mainUi = settingsUi.settingFrame(true, true, { x: false, y: false }, false, "STYLESHIFT-Config-Sub-Frame");
 
@@ -51,7 +52,7 @@ export async function settingDeveloperFrame(
 	) as HTMLDivElement;
 }
 
-export async function configMainSection(parent, thisSetting, props, updateUi = function () {}) {
+export async function configMainSection(parent, thisSetting, props, updateUi = function () { }) {
 	settingsUi.renderComponent(
 		ConfigMainSectionComponent,
 		{
@@ -114,6 +115,13 @@ export async function addSettingButton(categorySettings: Setting[]) {
 		},
 		target,
 	);
+
+	return { frame: (target.firstElementChild as HTMLDivElement) || target };
+}
+
+export async function keyboardShortcuts() {
+	const target = document.createElement("div");
+	settingsUi.renderComponent(KeyboardShortcutsComponent, {}, target);
 
 	return { frame: (target.firstElementChild as HTMLDivElement) || target };
 }

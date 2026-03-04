@@ -30,6 +30,7 @@
 		unregisterSettingListener,
 	} from "@settings/functions";
 	import { SvelteMap } from "svelte/reactivity";
+	import KeyboardShortcutsComponent from "../dev/KeyboardShortcuts.svelte";
 
 	let {
 		setting,
@@ -61,7 +62,8 @@
 		setting.type === "numberSlide" ||
 			setting.type === "color" ||
 			setting.type === "custom" ||
-			setting.type === "imageInput",
+			setting.type === "imageInput" ||
+			setting.type === "keyboardShortcuts",
 	);
 
 	// Initialize value from storage
@@ -164,6 +166,12 @@
 		}
 	}
 
+	function keyboardShortcutsAction(node: HTMLElement) {
+		if (setting.type === "keyboardShortcuts") {
+			settingsUi.renderComponent(KeyboardShortcutsComponent, {}, node);
+		}
+	}
+
 	$effect(() => {
 		if (isDeveloperMode && domNode && domNode.parentElement) {
 			addDropTarget(
@@ -251,6 +259,8 @@
 				name={setting.name}
 				description={setting.description}
 			/>
+		{:else if setting.type === "keyboardShortcuts"}
+			<div use:keyboardShortcutsAction></div>
 		{/if}
 
 		{#if isDeveloperMode}

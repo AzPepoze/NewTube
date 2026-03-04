@@ -218,5 +218,12 @@ export type Setting = (
 		updateFunction?: string;
 		editable?: boolean;
 	}
+	| {
+		type: "keyboardShortcuts";
+		id?: string;
+		name?: string;
+		description?: string;
+		editable?: boolean;
+	}
 ) &
 	BaseSetting;

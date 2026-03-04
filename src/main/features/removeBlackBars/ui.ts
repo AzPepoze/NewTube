@@ -1,4 +1,3 @@
-import { logger } from "@/shared/logger";
 import { isYoutubeFullscreen, getVideoElement } from "../../modules/youtube";
 import { state } from "./state";
 
