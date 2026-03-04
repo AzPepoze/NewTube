@@ -1,6 +1,7 @@
-import { openSettingPage } from "../styleshift/shared/extension";
-import { showThemeManager } from "./features/themes/themeManagerService";
+import { openSettingPage } from "@/styleshift/shared/extension";
 import { Category } from "../styleshift/types/store";
+import { showThemeManager } from "./features/themes/themeManagerService";
+import { toggleCustomize } from "@/styleshift/ui/highlight";
 
 const defaultStyleshiftItems: Category[] = [
 	{
@@ -31,6 +32,45 @@ const defaultStyleshiftItems: Category[] = [
 				name: "NEWTUBE",
 				align: "left",
 				type: "button",
+			},
+		],
+	},
+	{
+		category: "🎛️ Quick Pallette",
+		rainbow: true,
+		settings: [
+			{
+				clickFunction: showThemeManager,
+				color: "#7f5db7",
+				description: "Browse and manage your collection of saved themes with live previews.",
+				fontSize: 15,
+				id: "OpenThemeManagerButton",
+				name: "Themes",
+				align: "left",
+				type: "button",
+				icon: "🛍️"
+			},
+			{
+				clickFunction: toggleCustomize,
+				type: "button",
+				id: "StyleShiftToggleCustomize",
+				name: "Customize Elements",
+				description: "Toggle element selection mode.",
+				fontSize: 15,
+				color: "#3eadad",
+				align: "left",
+				icon: "🪒"
+			},
+			{
+				clickFunction: openSettingPage,
+				color: "#646464ff",
+				description: "Opens the full-page settings dashboard in a new tab.",
+				fontSize: 15,
+				id: "OpenDashboardButton",
+				name: "Full Settings Page",
+				align: "left",
+				type: "button",
+				icon: "⚙️"
 			},
 		],
 	},
@@ -79,27 +119,7 @@ const defaultStyleshiftItems: Category[] = [
 				varCss: "--setting-bg-blur-amount",
 				require: { EnableSettingsBackgroundBlur: true },
 			},
-			{
-				clickFunction: showThemeManager,
-				color: "#7f5db7",
-				description: "Browse and manage your collection of saved themes with live previews.",
-				fontSize: 15,
-				id: "OpenThemeManagerButton",
-				name: "🛍️ Themes 🛍️",
-				align: "center",
-				type: "button",
-			},
-			{
-				clickFunction: openSettingPage,
-				color: "#646464ff",
-				description: "Opens the full-page settings dashboard in a new tab.",
-				fontSize: 15,
-				icon: "",
-				id: "OpenDashboardButton",
-				name: "Full Settings Page",
-				align: "center",
-				type: "button",
-			},
+
 			{
 				clickFunction: 'window.open("https://github.com/AzPepoze/Newtube");',
 				color: "#2e16feff",

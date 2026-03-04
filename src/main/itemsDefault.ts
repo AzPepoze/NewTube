@@ -23,13 +23,9 @@ import { scrollbarCategory } from "./categories/scrollbar";
 import { uiCleanerCategory } from "./categories/uiCleaner";
 import { fontsCategory } from "./categories/fonts";
 import { enhancedCssCategory } from "./categories/enhancedCss";
-import { styleshiftCategory } from "./categories/styleshift";
 import { betaFeaturesCategory } from "./categories/betaFeatures";
 
 const defaultStyleshiftItems: Category[] = [
-	// --- StyleShift ---
-	styleshiftCategory,
-
 	// --- Video Experience ---
 	videoPlayerCategory,
 	videoControlPanelCategory,

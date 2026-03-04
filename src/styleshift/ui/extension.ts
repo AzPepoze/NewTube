@@ -291,3 +291,42 @@ export async function updateAllUiComponents(): Promise<void> {
 		removeConfigUi();
 	}
 }
+
+/**
+ * Displays an alert dialog with a message and OK button.
+ */
+export async function showAlert(
+	message: string,
+	title: string = "Alert",
+	options: { okLabel?: string; okColor?: string; align?: "left" | "center" | "right" } = {},
+): Promise<void> {
+	return new Promise((resolve) => {
+		const mountPoint = document.createElement("div");
+		document.body.appendChild(mountPoint);
+
+		const component = settingsUi.confirm(
+			{
+				title,
+				message,
+				align: options.align || "center",
+				buttons: [
+					{
+						label: options.okLabel || "OK",
+						color: options.okColor || "var(--Theme-0)",
+						onClick: () => handleResolve(),
+					},
+				],
+				onClose: () => handleResolve(),
+			},
+			mountPoint,
+		);
+
+		function handleResolve() {
+			resolve();
+			setTimeout(() => {
+				unmount(component);
+				mountPoint.remove();
+			}, 400);
+		}
+	});
+}

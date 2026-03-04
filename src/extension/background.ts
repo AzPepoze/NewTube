@@ -218,6 +218,12 @@ async function handleMessage(recivedMsg: ContentScriptMessage, sender: chrome.ru
 				}
 			});
 		}
+
+		case "editCommands": {
+			const url = "chrome://extensions/shortcuts";
+			chrome.tabs.create({ url });
+			return true;
+		}
 	}
 
 	logger.info("message", "---------------------------------");

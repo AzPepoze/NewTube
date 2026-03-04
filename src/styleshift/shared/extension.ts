@@ -14,6 +14,7 @@ import { Category, Setting } from "../types/store";
 import {
 	globalNotificationContainer,
 	playUiAnimation,
+	showAlert,
 	showSelection,
 	showUserConfirmation,
 	showUserPrompt,
@@ -21,9 +22,9 @@ import {
 import { triggerSettingUpdate } from "../settings/functions";
 import { settingsUi } from "../ui/settings/settingComponents";
 import { sleep, deepClone, downloadFile, getCurrentDomain, createUniqueId } from "./normal";
+import { logger } from "../../shared/logger";
 
 export { downloadFile };
-import { logger } from "../../shared/logger";
 
 /*
 -------------------------------------------------------
@@ -39,6 +40,53 @@ For Normal user !!!
  */
 export async function showUserConfirmationPrompt(ask: string, title: string = "Confirm Action") {
 	return await showUserConfirmation(ask, title);
+}
+
+/**
+ * shows a text input prompt window.
+ * @param {{ title : string, placeholder : string, content : string }} Options
+ * @returns {Promise<string>}
+ * @example
+ * await enterTextPrompt({ title : "Enter your name", placeholder : "John Doe", content : "Please enter your name." });
+ */
+export async function enterTextPrompt({ title = "Enter text", placeholder = "", content = "" }) {
+	const result = await showUserPrompt(title, placeholder, "", {
+		content: content,
+		multiline: true,
+	});
+
+	if (result === null) {
+		throw new Error("Canceled by the user");
+	}
+
+	return result;
+}
+
+/**
+ * shows a stylish text input prompt modal.
+ * @param {{ title : string, placeholder : string, value : string }} Options
+ * @returns {Promise<string | null>}
+ */
+export async function enterPrompt({ title = "Enter text", placeholder = "", value = "" }) {
+	return await showUserPrompt(title, placeholder, value);
+}
+
+/**
+ * shows a stylish selection modal with multiple options.
+ * @param {{ message : string, title : string, buttons : { label : string, color? : string }[] }} Options
+ * @returns {Promise<string | null>}
+ */
+export async function chooseSelection({ message = "", title = "Select Option", buttons = [] }) {
+	return await showSelection(message, title, buttons);
+}
+
+/**
+ * Shows a stylish alert dialog with a message.
+ * @param {{ message : string, title : string, okLabel? : string, okColor? : string }} Options
+ * @returns {Promise<void>}
+ */
+export async function alertPrompt({ message = "", title = "Alert", okLabel = "OK", okColor = "#7f5db7" }) {
+	return await showAlert(message, title, { okLabel, okColor });
 }
 
 /**
@@ -229,43 +277,7 @@ export async function createSuccess(content, timeout = 3000) {
 For advanced user !!!
 -------------------------------------------------------
 */
-/**
- * shows a text input prompt window.
- * @param {{ title : string, placeholder : string, content : string }} Options
- * @returns {Promise<string>}
- * @example
- * await enterTextPrompt({ title : "Enter your name", placeholder : "John Doe", content : "Please enter your name." });
- */
-export async function enterTextPrompt({ title = "Enter text", placeholder = "", content = "" }) {
-	const result = await showUserPrompt(title, placeholder, "", {
-		content: content,
-		multiline: true,
-	});
 
-	if (result === null) {
-		throw new Error("Canceled by the user");
-	}
-
-	return result;
-}
-
-/**
- * shows a stylish text input prompt modal.
- * @param {{ title : string, placeholder : string, value : string }} Options
- * @returns {Promise<string | null>}
- */
-export async function enterPrompt({ title = "Enter text", placeholder = "", value = "" }) {
-	return await showUserPrompt(title, placeholder, value);
-}
-
-/**
- * shows a stylish selection modal with multiple options.
- * @param {{ message : string, title : string, buttons : { label : string, color? : string }[] }} Options
- * @returns {Promise<string | null>}
- */
-export async function chooseSelection({ message = "", title = "Select Option", buttons = [] }) {
-	return await showSelection(message, title, buttons);
-}
 
 /**
  * Prompts the user to select a file.
