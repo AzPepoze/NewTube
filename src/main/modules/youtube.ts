@@ -32,14 +32,38 @@ export async function getYtdApp() {
 
 /**
  * Retrieves the YouTube video element.
- * Tries to find it in the player container first, then fallback to any video tag.
+ * Tries multiple selectors to find the actual HTML5 video element that supports PiP.
  */
 export async function getVideoElement(): Promise<HTMLVideoElement | null> {
 	if (!videoElement || !videoElement.isConnected) {
+		const candidates = [
+			document.querySelector("#movie_player video") as HTMLVideoElement,
+			document.querySelector(".html5-video-container video") as HTMLVideoElement,
+			document.querySelector(".html5-video-player video") as HTMLVideoElement,
+		];
+
 		videoElement =
-			(document.querySelector("#player-container video") as HTMLVideoElement) ||
-			(document.querySelector("video") as HTMLVideoElement);
-		if (videoElement) logger.info("youtube", "Found/Updated video element");
+			candidates.find((v) => v && v.isConnected && typeof v.requestPictureInPicture === "function") || null;
+
+		if (!videoElement) {
+			videoElement = candidates.find((v) => v && v.isConnected) || null;
+		}
+
+		if (!videoElement) {
+			const allVideos = document.querySelectorAll("video");
+			for (const video of allVideos) {
+				if (video.isConnected) {
+					videoElement = video as HTMLVideoElement;
+					break;
+				}
+			}
+		}
+
+		if (videoElement && videoElement.isConnected) {
+			logger.info("youtube", "Found/Updated video element");
+		} else {
+			videoElement = null;
+		}
 	}
 	return videoElement;
 }

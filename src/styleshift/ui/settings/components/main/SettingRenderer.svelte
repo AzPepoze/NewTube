@@ -297,7 +297,7 @@
 					{#if !requirementsMet}
 						<div class="requirement-warning">
 							<div
-								style="display: flex; align-items: center; gap: 5px; color: #ffcc00; font-weight: bold;"
+								style="display: flex; align-items: center; gap: 5px; color: #ffffff; font-weight: bold;"
 							>
 								This setting requires:
 							</div>
@@ -432,7 +432,7 @@
 	}
 
 	.requirement-warning {
-		color: #ffcc00;
+		color: #ffffff;
 	}
 
 	.requirement-list {

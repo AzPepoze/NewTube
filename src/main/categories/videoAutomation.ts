@@ -1,7 +1,8 @@
 import { Category } from "../../styleshift/types/store";
 import { setupAutoTheater, enableAutoRemoveAmbient } from "../features/video/general";
-import { setupAutoPip, setupAutoExitPip } from "../features/video/pip";
+import { enableAutoPip, enableAutoExitPip, disableAutoPip } from "../features/video/pip";
 import { setupUpdateTimestamp } from "../features/video/timestamp";
+import { IS_FIREFOX } from "../../styleshift/run";
 
 export const videoAutomationCategory: Category = {
 	category: "🤖 Video Automation",
@@ -21,11 +22,11 @@ export const videoAutomationCategory: Category = {
 			description: "Extends theater mode to fill the entire height of your window, hiding the header until you scroll.",
 			value: false,
 			enableCss: `
-      ytd-watch-flexy[theater] #full-bleed-container.ytd-watch-flexy {
-        height: calc(100vh - 56px) !important;
-        max-height: unset !important;
-      }
-    `,
+				ytd-watch-flexy[theater] #full-bleed-container.ytd-watch-flexy {
+					height: calc(100vh - 56px) !important;
+					max-height: unset !important;
+				}
+			`,
 			require: { EnableAutoTheaterMode: true },
 		},
 		{
@@ -34,7 +35,12 @@ export const videoAutomationCategory: Category = {
 			name: "Auto PiP",
 			description: "Automatically shrinks the video into a small floating window when you switch browser tabs.",
 			value: true,
-			enableFunction: setupAutoPip,
+			enableFunction: enableAutoPip,
+			disableFunction: disableAutoPip,
+			lock: {
+				condition: !IS_FIREFOX,
+				message: "Picture-in-Picture functionality has security limitations in Firefox and has been disabled for your protection.",
+			},
 		},
 		{
 			type: "checkbox",
@@ -42,7 +48,12 @@ export const videoAutomationCategory: Category = {
 			name: "Auto Exit PiP",
 			description: "Automatically restores the video to the main page as soon as you return to the tab.",
 			value: true,
-			enableFunction: setupAutoExitPip,
+			enableFunction: enableAutoExitPip,
+			disableFunction: disableAutoPip,
+			lock: {
+				condition: !IS_FIREFOX,
+				message: "Picture-in-Picture functionality has security limitations in Firefox and has been disabled for your protection.",
+			},
 		},
 		{
 			type: "checkbox",

@@ -54,7 +54,7 @@ export const logger = {
 
 			switch (level.toLowerCase()) {
 				case "error":
-					console.error(prefix, styleMain, styleLevel, styleCategory, ...args);
+					console.log(prefix, styleMain, styleLevel, styleCategory, ...args);
 					break;
 				case "warn":
 					console.warn(prefix, styleMain, styleLevel, styleCategory, ...args);
