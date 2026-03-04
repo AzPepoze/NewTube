@@ -61,7 +61,9 @@
 						message: `Cannot open shortcut settings in Firefox.\nPlease navigate to "about:addons" manually to manage shortcuts.`,
 					});
 				} else {
-					window.open("chrome://extensions/shortcuts", "_blank");
+					chrome.runtime.sendMessage({
+						Command: "editCommands",
+					});
 				}
 			},
 		}}

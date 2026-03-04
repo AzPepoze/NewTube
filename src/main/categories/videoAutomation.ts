@@ -33,7 +33,7 @@ export const videoAutomationCategory: Category = {
 			type: "checkbox",
 			id: "EnableAutoPictureInPicture",
 			name: "Auto PiP",
-			description: "Automatically shrinks the video into a small floating window when you switch browser tabs.",
+			description: "Automatically shrinks the video into a small floating window when you switch browser tabs.\n\nNote: Need to click somewhere on the page after back to the tab to make the Auto PiP work.\n(Security limitations sorry for inconvenience.)",
 			value: true,
 			enableFunction: enableAutoPip,
 			disableFunction: disableAutoPip,

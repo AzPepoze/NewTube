@@ -548,22 +548,6 @@
 		}
 	}
 
-	.kbd {
-		background: var(--White-06);
-		border: 1px solid var(--White-06);
-		padding: 6px 10px;
-		border-radius: 6px;
-		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco,
-			"Roboto Mono", "Courier New", monospace;
-		font-weight: 700;
-		letter-spacing: 0.6px;
-		margin-left: 8px;
-	}
-
-	.shortcut {
-		margin-top: 8px;
-	}
-
 	.shortcuts-section {
 		display: flex;
 		flex-direction: column;
@@ -574,15 +558,6 @@
 		border-radius: 8px;
 		border: 1px solid var(--White-05);
 		max-width: 600px;
-	}
-
-	.shortcuts-title {
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--White-60);
-		text-transform: uppercase;
-		letter-spacing: 1px;
-		margin: 0;
 	}
 
 	.shortcuts-subtitle {

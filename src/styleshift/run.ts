@@ -1,4 +1,4 @@
-import { createError, createNotification, toggleDeveloperMode } from "./shared/extension";
+import { createError, createNotification, disableExtension, enableExtension, toggleDeveloperMode } from "./shared/extension";
 import { logger } from "../shared/logger";
 import {
 	getCurrentDomain,
@@ -10,6 +10,7 @@ import {
 } from "./shared/normal";
 import { synchronizeAvailableFunctions } from "./core/runtimeController";
 import {
+	getRootValue,
 	initializeStorageConnection,
 	persistCachedDataToStorage,
 } from "./core/storageManager";
@@ -171,17 +172,25 @@ chrome.runtime.onMessage.addListener(async (message) => {
 			logger.info("lifecycle", "Incoming message:", message);
 		}
 
-		if (message === "Developer") {
+		if (message === "toggle_enable") {
+			if (getRootValue("EnableExtension")) {
+				disableExtension();
+			} else {
+				enableExtension();
+			}
+		}
+
+		if (message === "toggle_dev_mode") {
 			await toggleDeveloperMode();
 		}
 
 		if (IS_IN_EXTENSION_SETTINGS_PAGE) return;
 
-		if (message === "Customize") {
+		if (message === "toggle_customize") {
 			toggleCustomize();
 		}
 
-		if (message === "Setting") {
+		if (message === "toggle_settings") {
 			if (!isExtensionReady) {
 				const waitNotification = await createNotification({
 					icon: "⏳",

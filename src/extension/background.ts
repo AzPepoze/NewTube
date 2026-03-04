@@ -5,6 +5,7 @@
 
 import { logger } from "@/shared/logger";
 
+
 interface ContentScriptMessage {
 	Command: string;
 	workerId?: string;
