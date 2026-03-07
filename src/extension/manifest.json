@@ -1,98 +1,98 @@
 {
-	"manifest_version": 3,
-	"name": "StyleShift",
-	"author": "AzPepoze",
-	"version": "0.8.0",
-	"description": "Customize your YouTube website with a lot customizable.",
-	"homepage_url": "https://github.com/AzPepoze/StyleShift",
-	"minimum_chrome_version": "88",
-	"icons": {
-		"128": "assets/branding/128.png",
-		"64": "assets/branding/64.png",
-		"32": "assets/branding/32.png",
-		"16": "assets/branding/16.png"
-	},
-	"options_page": "setting/styleshift.html",
-	"action": {
-		"default_title": "StyleShift Settings"
-	},
-	"web_accessible_resources": [
-		{
-			"resources": [
-				"assets/*",
-				"modules/*",
-				"types/*",
-				"build-in.js",
-				"styleshift.js",
-				"style.css"
-			],
-			"matches": ["<all_urls>"]
-		}
-	],
-	"content_scripts": [
-		{
-			"matches": ["<all_urls>"],
-			"all_frames": true,
-			"js": ["styleshift.js"],
-			"css": ["style.css"],
-			"run_at": "document_start"
-		}
-	],
+  "manifest_version": 3,
+  "name": "StyleShift",
+  "author": "AzPepoze",
+  "version": "0.8.0",
+  "description": "Customize your YouTube website with a lot customizable.",
+  "homepage_url": "https://github.com/AzPepoze/StyleShift",
+  "minimum_chrome_version": "88",
+  "icons": {
+    "128": "assets/branding/128.png",
+    "64": "assets/branding/64.png",
+    "32": "assets/branding/32.png",
+    "16": "assets/branding/16.png"
+  },
+  "options_page": "setting/styleshift.html",
+  "action": {
+    "default_title": "StyleShift Settings"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/*",
+        "modules/*",
+        "types/*",
+        "build-in.js",
+        "styleshift.js",
+        "style.css"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "all_frames": true,
+      "js": ["styleshift.js"],
+      "css": ["style.css"],
+      "run_at": "document_start"
+    }
+  ],
 
-	"background": {
-		"service_worker": "background.js"
-	},
-	"commands": {
-		"toggle_enable": {
-			"suggested_key": {
-				"default": "Alt+Shift+Z",
-				"windows": "Alt+Shift+Z",
-				"chromeos": "Ctrl+Shift+Z",
-				"linux": "Alt+Shift+Z",
-				"mac": "Command+Shift+Z"
-			},
-			"description": "Toggle Enable",
-			"global": true
-		},
-		"toggle_settings": {
-			"suggested_key": {
-				"default": "Alt+Shift+X",
-				"windows": "Alt+Shift+X",
-				"chromeos": "Ctrl+Shift+X",
-				"linux": "Alt+Shift+X",
-				"mac": "Command+Shift+X"
-			},
-			"description": "Toggle Settings",
-			"global": true
-		},
-		"toggle_customize": {
-			"suggested_key": {
-				"default": "Alt+Shift+C",
-				"windows": "Alt+Shift+C",
-				"chromeos": "Ctrl+Shift+C",
-				"linux": "Alt+Shift+C",
-				"mac": "Command+Shift+C"
-			},
-			"description": "Toggle Customize Mode",
-			"global": true
-		},
-		"toggle_dev_mode": {
-			"suggested_key": {
-				"default": "Alt+Shift+A",
-				"windows": "Alt+Shift+A",
-				"chromeos": "Ctrl+Shift+A",
-				"linux": "Alt+Shift+A",
-				"mac": "Command+Shift+A"
-			},
-			"description": "Toggle Developer Mode",
-			"global": true
-		}
-	},
-	"permissions": ["storage", "unlimitedStorage", "scripting"],
-	"host_permissions": ["*://*/*"],
-	"browser_specific_settings": {
-		"gecko": {
-			"id": "StyleShift@AzPepoze"
-		}
-	}
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "toggle_enable": {
+      "suggested_key": {
+        "default": "Alt+Shift+Z",
+        "windows": "Alt+Shift+Z",
+        "chromeos": "Ctrl+Shift+Z",
+        "linux": "Alt+Shift+Z",
+        "mac": "Command+Shift+Z"
+      },
+      "description": "Toggle Enable",
+      "global": true
+    },
+    "toggle_settings": {
+      "suggested_key": {
+        "default": "Alt+Shift+X",
+        "windows": "Alt+Shift+X",
+        "chromeos": "Ctrl+Shift+X",
+        "linux": "Alt+Shift+X",
+        "mac": "Command+Shift+X"
+      },
+      "description": "Toggle Settings",
+      "global": true
+    },
+    "toggle_customize": {
+      "suggested_key": {
+        "default": "Alt+Shift+C",
+        "windows": "Alt+Shift+C",
+        "chromeos": "Ctrl+Shift+C",
+        "linux": "Alt+Shift+C",
+        "mac": "Command+Shift+C"
+      },
+      "description": "Toggle Customize Mode",
+      "global": true
+    },
+    "toggle_dev_mode": {
+      "suggested_key": {
+        "default": "Alt+Shift+A",
+        "windows": "Alt+Shift+A",
+        "chromeos": "Ctrl+Shift+A",
+        "linux": "Alt+Shift+A",
+        "mac": "Command+Shift+A"
+      },
+      "description": "Toggle Developer Mode",
+      "global": true
+    }
+  },
+  "permissions": ["storage", "unlimitedStorage", "scripting"],
+  "host_permissions": ["*://*/*"],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "StyleShift@AzPepoze"
+    }
+  }
 }

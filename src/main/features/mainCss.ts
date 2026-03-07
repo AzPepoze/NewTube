@@ -556,13 +556,6 @@ ytd-app{
 	transition: background 1s;
 }
 
-.ytp-chrome-bottom .ytp-button:hover,
-.ytp-replay-button:hover,
-.ytp-cards-button-icon:hover
-{
-	transform: scale(1.5) !important;
-}
-
 .iv-branding .ytp-button:hover{
 	transform: scale(1.1) !important;
 }
