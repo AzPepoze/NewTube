@@ -27,11 +27,11 @@
 	let wasThemeModified = $state(false);
 
 	async function refreshActiveTheme() {
-		activeThemeName = await getRootValue("ActiveTheme");
+		activeThemeName = await getRootValue("activeTheme");
 	}
 
 	async function loadThemes() {
-		const storedThemes = await getRootValue("Themes");
+		const storedThemes = await getRootValue("themes");
 		if (storedThemes && typeof storedThemes === "object") {
 			themes = storedThemes;
 		}
@@ -39,7 +39,7 @@
 		// Backup current settings for "Cancel" functionality
 		const currentSettings = await getRootValue("currentSettings");
 		backupSettings = JSON.parse(JSON.stringify(currentSettings));
-		originalActiveTheme = await getRootValue("ActiveTheme");
+		originalActiveTheme = await getRootValue("activeTheme");
 
 		refreshActiveTheme();
 	}
@@ -53,10 +53,10 @@
 		if (!name || name.trim() === "") return;
 
 		const currentSettings = await exportCurrentSettingsObject();
-		const updatedThemes = { ...themes, [name]: currentSettings };
+		const updatedThemes = { ...themes, [name]: { name, settings: currentSettings } };
 
-		await saveRootValue("Themes", $state.snapshot(updatedThemes), true);
-		await saveRootValue("ActiveTheme", name);
+		await saveRootValue("themes", $state.snapshot(updatedThemes), true);
+		await saveRootValue("activeTheme", name);
 		themes = updatedThemes;
 		activeThemeName = name;
 		wasThemeModified = true;
@@ -68,32 +68,40 @@
 		});
 	}
 
-	async function applyTheme(name: string) {
-		const themeData = themes[name];
-		if (!themeData) return;
+	async function applyTheme(id: string) {
+		const themeRecord = themes[id];
+		if (!themeRecord) return;
+		
+		const isNewFormat = !!themeRecord.settings;
+		const displayName = isNewFormat ? (themeRecord.name || id) : id;
+		const themeData = isNewFormat ? themeRecord.settings : themeRecord;
 
-		loadingThemeName = name;
-		activeThemeName = name; // Instant feedback
+		loadingThemeName = id;
+		activeThemeName = id; // Instant feedback
 
 		// Apply without saving to disk for instant preview
-		await importPresetToSettings($state.snapshot(themeData), false, name);
+		await importPresetToSettings($state.snapshot(themeData), false, displayName);
 		wasThemeModified = true;
 
 		loadingThemeName = null;
 	}
 
-	async function deleteTheme(name: string) {
-		if (await showUserConfirmation(`Are you sure you want to delete "${name}"?`, "Delete Theme")) {
-			const updatedThemes = { ...themes };
-			delete updatedThemes[name];
+	async function deleteTheme(id: string) {
+		const themeRecord = themes[id];
+		const isNewFormat = !!themeRecord?.settings;
+		const displayName = isNewFormat ? (themeRecord.name || id) : id;
 
-			await saveRootValue("Themes", $state.snapshot(updatedThemes));
+		if (await showUserConfirmation(`Are you sure you want to delete "${displayName}"?`, "Delete Theme")) {
+			const updatedThemes = { ...themes };
+			delete updatedThemes[id];
+
+			await saveRootValue("themes", $state.snapshot(updatedThemes));
 			themes = updatedThemes;
 
 			createNotification({
 				icon: "🗑️",
 				title: "Theme Deleted",
-				content: `"${name}" removed from collection.`,
+				content: `"${displayName}" removed from collection.`,
 			});
 		}
 	}
@@ -112,12 +120,16 @@
 		}
 		closeWindow?.();
 	}
-	async function exportTheme(name: string) {
-		const themeData = themes[name];
-		if (!themeData) return;
+	async function exportTheme(id: string) {
+		const themeRecord = themes[id];
+		if (!themeRecord) return;
+
+		const isNewFormat = !!themeRecord.settings;
+		const displayName = isNewFormat ? (themeRecord.name || id) : id;
+		const themeData = isNewFormat ? themeRecord.settings : themeRecord;
 
 		const selection = await chooseSelection({
-			title: `Export "${name}"`,
+			title: `Export "${displayName}"`,
 			message: "How would you like to export this theme?\n(Click outside to cancel)",
 			buttons: [
 				{ label: "Clipboard", color: "var(--Theme-0)" },
@@ -126,22 +138,23 @@
 		});
 
 		if (selection === "Clipboard") {
-			exportThemeToClipboard(name, $state.snapshot(themeData));
+			exportThemeToClipboard(displayName, $state.snapshot(themeData));
 		} else if (selection === "ZIP File") {
-			await exportThemeAsZip(name, $state.snapshot(themeData));
+			await exportThemeAsZip(displayName, $state.snapshot(themeData));
 		}
 	}
 
 	function getThemePreview(themeData: any) {
 		let bgColor = themeData["MainThemeColor"] || themeData["MainThemeColorC"] || "var(--Theme-0)";
 		const bgImg = themeData["BackgroundImageUrl"] || "";
+		const themeId = themeData["ThemeId"] || null;
 
 		// Ensure hex color doesn't have double alpha when appending
 		if (bgColor.startsWith("#") && bgColor.length > 7) {
 			bgColor = bgColor.slice(0, 7);
 		}
 
-		return { bgColor, bgImg };
+		return { bgColor, bgImg, themeId };
 	}
 
 	onMount(() => {
@@ -167,13 +180,19 @@
 
 <div class="NEWTUBE-ThemeManager">
 	<div class="theme-grid" class:has-themes={themeNames.length > 0}>
-		{#each themeNames as name (name)}
-			{@const preview = getThemePreview(themes[name])}
+		{#each themeNames as key (key)}
+			{@const record = themes[key]}
+			{@const isNew = !!record.settings}
+			{@const displayName = isNew ? (record.name || key) : key}
+			{@const themeData = isNew ? record.settings : record}
+			{@const preview = getThemePreview(themeData)}
 			<ThemeCard
-				{name}
+				id={key}
+				name={displayName}
 				{preview}
-				isActive={activeThemeName === name}
-				isLoading={loadingThemeName === name}
+				themeId={themeData.ThemeId || preview.themeId}
+				isActive={activeThemeName === key}
+				isLoading={loadingThemeName === key}
 				onApply={applyTheme}
 				onExport={exportTheme}
 				onDelete={deleteTheme}

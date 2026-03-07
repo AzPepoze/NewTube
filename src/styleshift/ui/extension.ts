@@ -21,7 +21,7 @@ export async function createStyleshiftWindow({
 	center = false,
 }) {
 	// Ensure developer tools are ready if mode is enabled
-	if (await getRootValue("Developer_mode")) {
+	if (await getRootValue("developerMode")) {
 		await initializeDeveloperEnvironment();
 	}
 
@@ -277,7 +277,7 @@ export async function showUserPrompt(
 export async function updateAllUiComponents(): Promise<void> {
 	logger.info("ui", "Refreshing all UI components...");
 
-	const isDevMode = await getRootValue("Developer_mode");
+	const isDevMode = await getRootValue("developerMode");
 
 	if (isDevMode && !isDevModulesLoaded) {
 		logger.info("ui", "Initializing developer environment...");

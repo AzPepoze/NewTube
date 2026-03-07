@@ -4,7 +4,7 @@ import { getRootValue, saveRootValue } from "@core/storageManager";
 import { showUserConfirmation } from "@ui/extension";
 
 export async function checkAndShowWelcome() {
-	const hasShown = await getRootValue("Welcome_Shown");
+	const hasShown = await getRootValue("welcomeShown");
 
 	if (!hasShown) {
 		const hasTime = await showUserConfirmation(
@@ -17,7 +17,7 @@ export async function checkAndShowWelcome() {
 		);
 
 		if (!hasTime) {
-			await saveRootValue("Welcome_Shown", true);
+			await saveRootValue("welcomeShown", true);
 			return;
 		}
 
@@ -30,7 +30,7 @@ export async function checkAndShowWelcome() {
 			intro: true,
 			props: {
 				onDone: async () => {
-					await saveRootValue("Welcome_Shown", true);
+					await saveRootValue("welcomeShown", true);
 					unmount(component);
 					target.remove();
 				}

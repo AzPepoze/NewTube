@@ -254,6 +254,21 @@ async function handleMessage(
       chrome.tabs.create({ url });
       return true;
     }
+
+    case "broadcastThemeUpdate": {
+        chrome.tabs.query({}, (tabs) => {
+            tabs.forEach(tab => {
+                if (tab.id && tab.url && tab.url.includes("youtube.com")) {
+                    try {
+                        chrome.tabs.sendMessage(tab.id, { Command: "themeDataUpdated" });
+                    } catch (e) {
+                         logger.error("message", "Error broadcasting to tab", e);
+                    }
+                }
+            });
+        });
+        return true;
+    }
   }
 
   logger.info("message", "---------------------------------");

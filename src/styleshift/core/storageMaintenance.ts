@@ -97,8 +97,8 @@ export async function initializeRequiredStorageStructures(): Promise<void> {
 		structuralChangesMade = true;
 	}
 
-	if ((await getRootValue("Themes")) == null) {
-		await saveRootValue("Themes", {}, true);
+	if ((await getRootValue("themes")) == null) {
+		await saveRootValue("themes", {}, true);
 		structuralChangesMade = true;
 	}
 

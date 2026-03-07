@@ -104,14 +104,14 @@ export async function createMainSettingsUi({
 					}
 				}
 
-				if (thisCategory.editable && (await getRootValue("Developer_mode"))) {
+				if (thisCategory.editable && (await getRootValue("developerMode"))) {
 					dynamicAppend(categoryFrame, await settingsUi.addSettingButton(thisCategory.settings));
 				}
 
 				await settingsUi.space(settingsContainer);
 			}
 
-			if (await getRootValue("Developer_mode")) {
+			if (await getRootValue("developerMode")) {
 				for (const thisCategory of getStyleshiftDevOnlyItems()) {
 					if (!createdDevOnlyCategory.includes(thisCategory.category)) {
 						await createCategoryUi(settingsContainer, thisCategory);
@@ -119,7 +119,7 @@ export async function createMainSettingsUi({
 				}
 			}
 
-			if (showCategoryList && scrollCategory && (await getRootValue("Developer_mode"))) {
+			if (showCategoryList && scrollCategory && (await getRootValue("developerMode"))) {
 				const addButton = (
 					await settingsUi.button({
 						name: "+",
@@ -328,7 +328,7 @@ export async function createConfigUiFunction(
 	editable = false,
 	configFunction: Function,
 ): Promise<Function | undefined> {
-	if (editable && (await getRootValue("Developer_mode"))) {
+	if (editable && (await getRootValue("developerMode"))) {
 		return configFunction;
 	}
 }

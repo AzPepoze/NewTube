@@ -2,23 +2,28 @@
 	import { fade } from "svelte/transition";
 	import IconButton from "@ui/settings/components/advance/IconButton.svelte";
 	import ThemePreviewUi from "./ThemePreviewUi.svelte";
+	import { NEWTUBE_STORE_THEMES_URL } from "@/main/constants";
 
 	let {
+		id,
 		name,
 		preview,
+		themeId,
 		isActive,
 		isLoading = false,
 		onApply,
 		onExport,
 		onDelete,
 	}: {
+		id: string;
 		name: string;
 		preview: { bgImg: string; bgColor: string };
+		themeId?: string;
 		isActive: boolean;
 		isLoading?: boolean;
-		onApply: (name: string) => void;
-		onExport: (name: string) => void;
-		onDelete: (name: string) => void;
+		onApply: (id: string) => void;
+		onExport: (id: string) => void;
+		onDelete: (id: string) => void;
 	} = $props();
 </script>
 
@@ -26,8 +31,8 @@
 	class="theme-card"
 	class:active={isActive}
 	class:loading={isLoading}
-	onclick={() => !isLoading && onApply(name)}
-	onkeydown={(e) => e.key === "Enter" && !isLoading && onApply(name)}
+	onclick={() => !isLoading && onApply(id)}
+	onkeydown={(e) => e.key === "Enter" && !isLoading && onApply(id)}
 	role="button"
 	tabindex="0"
 >
@@ -48,21 +53,32 @@
 			: "none"}
 		style:background-color={preview.bgColor}
 	>
-		<div
-			class="overlay"
-			style:background-color={preview.bgColor + "55"}
-		></div>
+		<div class="overlay"></div>
 		<ThemePreviewUi />
 		<div class="accent-bar" style:background-color={preview.bgColor}></div>
 	</div>
 	<div class="card-footer">
 		<span class="theme-name">{name}</span>
 		<div class="card-actions">
+			{#if themeId}
+				<IconButton
+					icon="openInNew"
+					onClick={(e) => {
+						e.stopPropagation();
+						window.open(
+							`${NEWTUBE_STORE_THEMES_URL}/${themeId}`,
+							"_blank",
+						);
+					}}
+					size={18}
+					className="link-btn"
+				/>
+			{/if}
 			<IconButton
 				icon="export"
 				onClick={(e) => {
 					e.stopPropagation();
-					onExport(name);
+					onExport(id);
 				}}
 				size={18}
 				className="export-btn"
@@ -71,7 +87,7 @@
 				icon="delete"
 				onClick={(e) => {
 					e.stopPropagation();
-					onDelete(name);
+					onDelete(id);
 				}}
 				size={18}
 				className="delete-btn"
@@ -155,7 +171,7 @@
 	}
 
 	.preview-area {
-		height: 120px;
+		height: 130px;
 		background-size: cover;
 		background-position: center;
 		position: relative;
@@ -169,6 +185,11 @@
 			position: absolute;
 			inset: 0;
 			z-index: 1;
+			background: linear-gradient(
+				to bottom,
+				rgba(0, 0, 0, 0.1) 0%,
+				rgba(0, 0, 0, 0.3) 100%
+			);
 		}
 
 		.accent-bar {
@@ -176,8 +197,9 @@
 			bottom: 0;
 			left: 0;
 			right: 0;
-			height: 4px;
+			height: 3px;
 			z-index: 3;
+			opacity: 0.9;
 		}
 	}
 

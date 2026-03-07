@@ -16,17 +16,19 @@ export function suppressStoragePersistence(suppress: boolean) {
 	}
 }
 
-export const EXTERNAL_STORAGE_KEYS = [
+import { getOptionalExternalStorageKeys } from "../../main/main";
+
+const INTERNAL_STORAGE_KEYS = [
 	"currentSettings",
 	"defaultStyleshiftItems",
 	"customStyleshiftItems",
-	"Themes",
-	"EnableExtension",
-	"EnableRealtimeExtension",
-	"Developer_mode",
-	"Welcome_Shown",
-	"ActiveTheme",
+	"enableExtension",
+	"enableRealtimeExtension",
+	"developerMode",
 ];
+
+const externalKeys = getOptionalExternalStorageKeys() || [];
+export const EXTERNAL_STORAGE_KEYS = [...INTERNAL_STORAGE_KEYS, ...externalKeys];
 
 export const ALLOWED_STORAGE_KEYS = ["currentSettings", "customStyleshiftItems"];
 
@@ -84,7 +86,7 @@ export async function saveUserSetting(settingId: string, value: any, delayPersis
 		cachedStorageData["currentSettings"] = {};
 	}
 	cachedStorageData["currentSettings"][settingId] = value;
-	cachedStorageData["ActiveTheme"] = null; // Reset active theme on any change
+	cachedStorageData["activeTheme"] = null;
 	logger.info("STORAGE", "Updating user setting:", settingId, value);
 
 	if (!delayPersistence) {

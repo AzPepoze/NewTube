@@ -27,7 +27,7 @@ import { updateAllUiComponents } from "./ui/extension";
 import { syncAllThemes } from "./ui/theme";
 import { extensionSettingsUi, extensionSettingsUiPromise } from "./ui/extensionSettings";
 import { toggleCustomize } from "./ui/highlight";
-import { appBootstrap } from "@/main/main";
+import { appBootstrap, shouldEnableExtension } from "@/main/main";
 
 //-------------------------------------------------------
 // Configuration & State
@@ -74,6 +74,11 @@ export function refreshExtensionState(): void {
  * Main entry point for the extension logic.
  */
 async function bootstrapExtension(): Promise<void> {
+    if (!shouldEnableExtension()) {
+        logger.info("lifecycle", "StyleShift extension disabled on this domain.");
+        return;
+    }
+
 	await getDocumentHead();
 
 	// Inject StyleShift container
@@ -100,7 +105,7 @@ async function bootstrapExtension(): Promise<void> {
 	registerSettingListener("EnableAppLightTheme", syncAllThemes, true);
 	registerSettingListener("EnableSettingsBackgroundBlur", syncAllThemes, true);
 	registerSettingListener(
-		"Developer_mode",
+		"developerMode",
 		async (isDev) => {
 			await createNotification({
 				icon: isDev ? "🔨" : "✨",
@@ -173,7 +178,7 @@ chrome.runtime.onMessage.addListener(async (message) => {
 		}
 
 		if (message === "toggle_enable") {
-			if (getRootValue("EnableExtension")) {
+			if (getRootValue("enableExtension")) {
 				disableExtension();
 			} else {
 				enableExtension();

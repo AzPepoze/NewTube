@@ -14,6 +14,7 @@
 	const restore = "assets/icons/restore.svg";
 	const exportIcon = "assets/icons/export.svg";
 	const saveIcon = "assets/icons/save.svg";
+	const openInNew = "assets/icons/openInNew.svg";
 
 	import { getAssetUrl } from "@ui/utils";
 
@@ -33,6 +34,7 @@
 		restore,
 		export: exportIcon,
 		save: saveIcon,
+		openInNew: openInNew,
 	};
 
 	let {
@@ -53,7 +55,9 @@
 
 	const isUrl = $derived(name.includes("://") || name.startsWith("data:"));
 	const iconPath = $derived(icons[name]);
-	const src = $derived(iconPath ? getAssetUrl(iconPath) : isUrl ? getAssetUrl(name) : "");
+	const src = $derived(
+		iconPath ? getAssetUrl(iconPath) : isUrl ? getAssetUrl(name) : "",
+	);
 	const isEmoji = $derived(!iconPath && !isUrl && name.length > 0);
 </script>
 
@@ -63,7 +67,9 @@
 		alt={name}
 		class="STYLESHIFT-Icon {className}"
 		class:with-filter={applyFilter && !color}
-		style="width: {size}px; height: {size}px; {color ? `filter: none;` : ''}{style}"
+		style="width: {size}px; height: {size}px; {color
+			? `filter: none;`
+			: ''}{style}"
 		style:color={color || undefined}
 	/>
 {:else if isEmoji}

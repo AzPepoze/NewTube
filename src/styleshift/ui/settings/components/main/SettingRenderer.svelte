@@ -69,7 +69,7 @@
 	// Initialize value from storage
 	async function init() {
 		isDeveloperMode =
-			(await getRootValue("Developer_mode")) &&
+			(await getRootValue("developerMode")) &&
 			(setting.editable ?? false);
 		if ("id" in setting && setting.id) {
 			value = await getFromStorage(setting.id);

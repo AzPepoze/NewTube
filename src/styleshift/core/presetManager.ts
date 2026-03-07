@@ -88,7 +88,7 @@ Do you want to execute the JS code?`,
 
 	if (changesDetected) {
 		if (themeName !== undefined) {
-			await saveRootValue("ActiveTheme", themeName, !persist);
+			await saveRootValue("activeTheme", themeName, !persist);
 		}
 
 		if (loaderUi) loaderUi.setContent("Applying visual changes...");

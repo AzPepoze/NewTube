@@ -710,8 +710,8 @@ export async function createStyleshiftSettingUi(type: string, thisSetting: Setti
  * await toggleDeveloperMode();
  */
 export async function toggleDeveloperMode() {
-	const isDev = await getRootValue("Developer_mode");
+	const isDev = await getRootValue("developerMode");
 	const newValue = !isDev;
-	await saveRootValue("Developer_mode", newValue);
-	await triggerSettingUpdate("Developer_mode");
+	await saveRootValue("developerMode", newValue);
+	await triggerSettingUpdate("developerMode");
 }

@@ -41,7 +41,7 @@ export async function updateRemoveBlackBarsSettings(value?: any, settingId?: str
 }
 
 export async function enableRemoveBlackBars() {
-	if ((await getFromStorage("EnableExtension")) === false) return;
+	if ((await getFromStorage("enableExtension")) === false) return;
 	if (state.enabled) return;
 	state.enabled = true;
 	const mySession = state.sessionId;
@@ -149,7 +149,7 @@ export function registerRemoveBlackBarsListeners() {
 		}),
 	);
 
-	registerSettingListener("EnableExtension", (val) => {
+	registerSettingListener("enableExtension", (val) => {
 		if (!val) {
 			disableRemoveBlackBars();
 		} else {

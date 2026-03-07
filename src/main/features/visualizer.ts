@@ -12,7 +12,7 @@ let navigateCleanup: (() => void) | null = null;
 
 export function setupAudioVisualizer() {
 	const init = async () => {
-		if ((await getFromStorage("EnableExtension")) === false) return;
+		if ((await getFromStorage("enableExtension")) === false) return;
 		if (audioCtx) return; // Already running
 
 		const video = await getVideoElement();
@@ -159,7 +159,7 @@ export function destroyAudioVisualizer() {
 	animationFrame = null;
 }
 
-registerSettingListener("EnableExtension", (val) => {
+registerSettingListener("enableExtension", (val) => {
 	if (!val) {
 		destroyAudioVisualizer();
 	} else {

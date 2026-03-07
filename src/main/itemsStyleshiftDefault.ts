@@ -1,3 +1,4 @@
+import { checkAndUpdateTheme } from "../store/themeStore";
 import { openSettingPage } from "@/styleshift/shared/extension";
 import { Category } from "../styleshift/types/store";
 import { showThemeManager } from "./features/themes/themeManagerService";
@@ -78,7 +79,7 @@ const defaultStyleshiftItems: Category[] = [
 		category: "⚙️ Extention's settings",
 		settings: [
 			{
-				id: "EnableExtension",
+				id: "enableExtension",
 				name: "Enable Extension",
 				type: "checkbox",
 				value: true,
@@ -86,7 +87,7 @@ const defaultStyleshiftItems: Category[] = [
 				enableFunction: "enableExtension()",
 			},
 			{
-				id: "EnableRealtimeExtension",
+				id: "enableRealtimeExtension",
 				name: "Realtime Updating",
 				description:
 					"Instantly applies visual changes as you move sliders or pick colors.",
@@ -94,11 +95,27 @@ const defaultStyleshiftItems: Category[] = [
 				value: false,
 			},
 			{
-				id: "Developer_mode",
+				id: "developerMode",
 				name: "Developer Mode",
 				description: "Enables advanced features and detailed logging for developers.",
 				type: "checkbox",
 				value: false,
+			},
+			{
+				id: "AutoUpdateTheme",
+				name: "Auto Update Themes",
+				description: "Automatically updates installed themes from the NewTube store when an update is available.",
+				type: "checkbox",
+				value: true,
+			},
+			{
+				id: "ManualThemeUpdateBtn",
+				name: "Check for Updates",
+				description: "Manually check if an update is available for your currently active theme.",
+				clickFunction: () => checkAndUpdateTheme(true),
+				type: "button",
+				color: "#3eadad",
+				align: "center",
 			},
 			{
 				type: "checkbox",

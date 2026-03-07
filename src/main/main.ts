@@ -1,4 +1,21 @@
 import { checkAndShowWelcome } from "./welcome";
+import { initWebsiteIntegration, checkAndUpdateTheme } from "../store/themeStore";
+import { NEWTUBE_STORE_ORIGINS } from "./constants";
+
+/**
+ * Checks if the extension logic should run on this URL.
+ * Prevents injecting heavy features into the NewTube theme store itself.
+ */
+export function shouldEnableExtension(): boolean {
+	const origin = window.location.origin;
+	// Don't run extension logic on the store site
+	if (NEWTUBE_STORE_ORIGINS.includes(origin)) {
+		// Still init website integration so the store communciates properly
+		initWebsiteIntegration();
+		return false;
+	}
+	return true;
+}
 
 /**
  * Main application bootstrap logic.
@@ -6,4 +23,12 @@ import { checkAndShowWelcome } from "./welcome";
  */
 export async function appBootstrap() {
 	await checkAndShowWelcome();
+	await checkAndUpdateTheme();
+}
+
+/**
+ * Provides optional external storage keys to the StyleShift storage manager.
+ */
+export function getOptionalExternalStorageKeys(): string[] {
+	return ["themes", "welcomeShown", "activeTheme"];
 }

@@ -51,7 +51,7 @@ export async function getVideoElement(): Promise<HTMLVideoElement | null> {
 
 		if (!videoElement) {
 			const allVideos = document.querySelectorAll("video");
-			for (const video of allVideos) {
+			for (const video of Array.from(allVideos)) {
 				if (video.isConnected) {
 					videoElement = video as HTMLVideoElement;
 					break;
