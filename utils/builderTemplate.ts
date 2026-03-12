@@ -116,13 +116,13 @@ Main Runner
 	// Add manual internal entries
 	allMetadata.push(
 		{
-			label: "set_value",
+			label: "setValue",
 			type: "function",
 			detail: "(id: string, value: any) => void",
 			info: `Sets a value in the ${config.name} storage.`,
 		},
 		{
-			label: "get_value",
+			label: "getValue",
 			type: "function",
 			detail: "(id: string) => any",
 			info: `Gets a value from the ${config.name} storage.`,
@@ -168,4 +168,4 @@ Main Runner
 	console.log(`- Types:     ${path.join(TEMPLATE_DIR, TYPE_FILE_NAME)}`);
 })();
 
-export {};
+export { };

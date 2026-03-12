@@ -28,6 +28,7 @@ import { syncAllThemes } from "./ui/theme";
 import { extensionSettingsUi, extensionSettingsUiPromise } from "./ui/extensionSettings";
 import { toggleCustomize } from "./ui/highlight";
 import { appBootstrap, shouldEnableExtension } from "@/main/main";
+import { STORE_TARGET_SITES } from "@/main/constants";
 
 //-------------------------------------------------------
 // Configuration & State
@@ -40,14 +41,16 @@ export const IS_FIREFOX = navigator.userAgent.toLowerCase().includes("firefox");
 export const EXTENSION_BASE_URL = chrome.runtime.getURL("").slice(0, -1);
 export const IS_IN_EXTENSION_SETTINGS_PAGE = window.location.origin === EXTENSION_BASE_URL;
 
+
 // Identify the current domain context for storage
 export let currentContextDomain: string;
 if (IS_IN_EXTENSION_SETTINGS_PAGE) {
 	const params = getCurrentUrlParameters();
-	currentContextDomain = params.domain || "youtube.com";
+	currentContextDomain = params.domain || STORE_TARGET_SITES[0];
 } else {
 	currentContextDomain = getCurrentDomain();
 }
+
 
 // Global container for StyleShift elements that shouldn't be directly in the body
 export const styleshiftContainer: HTMLElement = document.createElement("div");
@@ -74,10 +77,17 @@ export function refreshExtensionState(): void {
  * Main entry point for the extension logic.
  */
 async function bootstrapExtension(): Promise<void> {
-    if (!shouldEnableExtension()) {
-        logger.info("lifecycle", "StyleShift extension disabled on this domain.");
-        return;
-    }
+	// Initialize storage first so it's available even if extension logic is skipped
+	await initializeStorageConnection();
+	await initializeDefaultCustomItems();
+
+	if (!shouldEnableExtension()) {
+		logger.info("lifecycle", "StyleShift extension logic skipped on this domain (Core active).");
+		// Still need some basics for notifications to work on the store
+		await getDocumentHead();
+		await createStylesheetHolder();
+		return;
+	}
 
 	await getDocumentHead();
 
@@ -93,13 +103,12 @@ async function bootstrapExtension(): Promise<void> {
 		(await getDocumentHead()).appendChild(script);
 	}
 
-	// Initialize storage and sync functions
-	await initializeStorageConnection();
-	await initializeDefaultCustomItems();
+	// Initialize remaining components
 	await synchronizeAvailableFunctions();
 	await createStylesheetHolder();
 	await updateStyleshiftItems();
 	await populateMissingDefaultSettings();
+
 
 	// Set up global theme listeners
 	registerSettingListener("EnableAppLightTheme", syncAllThemes, true);
@@ -194,6 +203,23 @@ chrome.runtime.onMessage.addListener(async (message) => {
 		if (message === "toggle_customize") {
 			toggleCustomize();
 		}
+
+		if (message.Command === "themeDataUpdated") {
+			logger.info("lifecycle", "Theme update signal received, refreshing behaviors...");
+			await initializeStorageConnection();
+			await updateStyleshiftItems();
+
+			// Re-apply behaviors for all settings
+			const allSettings = await getAllStyleshiftSettings();
+			for (const setting of allSettings) {
+				if (setting.id === "Themes") continue;
+				await attachBehaviorToSetting(setting);
+			}
+
+			initializeAllActiveSettings();
+			updateAllUiComponents();
+		}
+
 
 		if (message === "toggle_settings") {
 			if (!isExtensionReady) {

@@ -1,6 +1,6 @@
 import { logger } from "../../shared/logger";
 import { showUserConfirmation } from "../ui/extension";
-import { persistCachedDataToStorage, saveUserSetting, getRootValue, saveRootValue, suppressStoragePersistence } from "./storageManager";
+import { persistCachedDataToStorage, saveRootValue, suppressStoragePersistence, getRootValue, saveUserSetting, saveCustomStyleshiftItems } from "./storageManager";
 import { updateStyleshiftItems } from "../settings/items";
 import { performStorageGarbageCollection } from "./storageMaintenance";
 import { triggerSettingsUpdateBatch } from "../settings/functions";
@@ -24,6 +24,34 @@ export async function resolveRgbaFromStorage(colorBaseId: string): Promise<strin
 	const alpha = Number(await getRootValue(colorBaseId + "O")) / 100;
 
 	return `rgba(${red},${green},${blue},${alpha})`;
+}
+
+/**
+ * Validates an array of custom Styleshift items for potential JavaScript code.
+ */
+export async function validateCustomItemsForJs(items: any[]): Promise<boolean> {
+	let hasJs = false;
+	for (const item of items) {
+		const jsProperties = ["clickFunction", "setupFunction", "updateFunction", "enableFunction", "disableFunction", "constantCss", "uiFunction"];
+		for (const prop of jsProperties) {
+			if (item[prop] && (typeof item[prop] === "function" || (typeof item[prop] === "string" && item[prop].trim() !== ""))) {
+				hasJs = true;
+				break;
+			}
+		}
+		if (hasJs) break;
+	}
+
+	if (hasJs) {
+		return await showUserConfirmation(
+			`⚠️*WARNING*⚠️
+These custom items contain JS code.
+You could be compromised if you continue.
+
+Do you want to install these items?`,
+		);
+	}
+	return true;
 }
 
 /**
@@ -51,6 +79,25 @@ export async function importPresetToSettings(presetData: any, persist = true, th
 	const changedKeys: string[] = [];
 
 	const processEntry = async (key: string, value: any) => {
+		if (key === "currentSettings" && typeof value === "object") {
+			for (const [subKey, subValue] of Object.entries(value)) {
+				await saveUserSetting(subKey, subValue, true);
+				changedKeys.push(subKey);
+			}
+			changesDetected = true;
+			return;
+		}
+
+		if (key === "customStyleshiftItems" && Array.isArray(value)) {
+			const approved = await validateCustomItemsForJs(value);
+			if (approved) {
+				await saveCustomStyleshiftItems(value, true);
+				changedKeys.push(key);
+				changesDetected = true;
+			}
+			return;
+		}
+
 		let processedValue = value;
 		if (typeof value === "string" && (value.startsWith("{") || value.startsWith("["))) {
 			try {
@@ -58,21 +105,12 @@ export async function importPresetToSettings(presetData: any, persist = true, th
 			} catch (_ignore) { }
 		}
 
-		if (key === "ADDScript" && typeof processedValue === "string" && processedValue.trim() !== "") {
-			const userApproved = await showUserConfirmation(
-				`⚠️*WARNING*⚠️
-This preset/Theme contains JS code.
-You could be compromised if you continue.
+		await saveUserSetting(key, processedValue, true);
 
-Do you want to execute the JS code?`,
-			);
-			await saveUserSetting(key, userApproved ? processedValue : "", true);
-		} else {
-			await saveUserSetting(key, processedValue, true);
-		}
 		changedKeys.push(key);
 		changesDetected = true;
 	};
+
 
 	if (loaderUi) loaderUi.setContent("Parsing theme data...");
 

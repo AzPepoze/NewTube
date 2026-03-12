@@ -1,4 +1,4 @@
-import { checkAndUpdateTheme } from "../store/themeStore";
+import { checkAndUpdateTheme } from "../styleshift/core/themeStore";
 import { openSettingPage } from "@/styleshift/shared/extension";
 import { Category } from "../styleshift/types/store";
 import { showThemeManager } from "./features/themes/themeManagerService";

@@ -22,6 +22,15 @@ export async function createStylesheetHolder() {
 }
 
 export function createStylesheet(id: string, constant: boolean = false) {
+	// Check if stylesheet already exists to avoid duplication
+	const existing = (constant ? stylesheetHolderConstant : stylesheetHolder).querySelector(
+		`style[STYLESHIFT_style_sheet_id="${id}"]`,
+	) as HTMLStyleElement;
+
+	if (existing) {
+		return existing;
+	}
+
 	const styleSheet = document.createElement("style");
 	styleSheet.setAttribute("STYLESHIFT_style_sheet_id", id);
 

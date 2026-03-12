@@ -1,11 +1,28 @@
 <script lang="ts">
-	import { getRootValue, saveRootValue, persistCachedDataToStorage } from "@/styleshift/core/storageManager";
-	import { exportCurrentSettingsObject, importPresetToSettings } from "@/styleshift/core/presetManager";
-	import { showUserConfirmation } from "@ui/extension";
-	import { chooseSelection, createNotification } from "@/styleshift/shared/extension";
+	import {
+		getRootValue,
+		saveRootValue,
+		persistCachedDataToStorage,
+	} from "@/styleshift/core/storageManager";
+	import {
+		exportCurrentSettingsObject,
+		importPresetToSettings,
+	} from "@/styleshift/core/settingsImporter";
+	import {
+		saveTheme as saveThemeManager,
+		applyTheme as applyThemeManager,
+		deleteTheme as deleteThemeManager,
+	} from "@/styleshift/core/themeManager";
+	import {
+		chooseSelection,
+		createNotification,
+	} from "@/styleshift/shared/extension";
 	import Icon from "@ui/settings/components/main/Icon.svelte";
 	import { enterPrompt } from "@/styleshift/shared/extension";
-	import { exportThemeToClipboard, exportThemeAsZip } from "./themeExportService";
+	import {
+		exportThemeToClipboard,
+		exportThemeAsZip,
+	} from "./themeExportService";
 	import Button from "@ui/settings/components/main/Button.svelte";
 	import { onMount } from "svelte";
 	import ThemeCard from "./ThemeCard.svelte";
@@ -53,34 +70,47 @@
 		if (!name || name.trim() === "") return;
 
 		const currentSettings = await exportCurrentSettingsObject();
-		const updatedThemes = { ...themes, [name]: { name, settings: currentSettings } };
 
-		await saveRootValue("themes", $state.snapshot(updatedThemes), true);
-		await saveRootValue("activeTheme", name);
-		themes = updatedThemes;
-		activeThemeName = name;
-		wasThemeModified = true;
+		// Use themeManager with EXTENSION as the target domain for extension-internal operations
+		const success = await saveThemeManager(
+			name,
+			currentSettings,
+			"EXTENSION",
+		);
 
-		createNotification({
-			icon: "✨",
-			title: "Theme Saved",
-			content: `"${name}" has been added to your collection.`,
-		});
+		if (success) {
+			// Update local state after successful save
+			const updatedThemes = {
+				...themes,
+				[name]: { name, settings: currentSettings },
+			};
+			await saveRootValue("activeTheme", name);
+			themes = updatedThemes;
+			activeThemeName = name;
+			wasThemeModified = true;
+		}
 	}
 
 	async function applyTheme(id: string) {
 		const themeRecord = themes[id];
 		if (!themeRecord) return;
-		
+
 		const isNewFormat = !!themeRecord.settings;
-		const displayName = isNewFormat ? (themeRecord.name || id) : id;
+		const displayName = isNewFormat ? themeRecord.name || id : id;
 		const themeData = isNewFormat ? themeRecord.settings : themeRecord;
 
 		loadingThemeName = id;
 		activeThemeName = id; // Instant feedback
 
-		// Apply without saving to disk for instant preview
-		await importPresetToSettings($state.snapshot(themeData), false, displayName);
+		// Use themeManager with EXTENSION as the target domain
+		await applyThemeManager(id, displayName, "EXTENSION");
+
+		// Apply to settings for instant preview
+		await importPresetToSettings(
+			$state.snapshot(themeData),
+			false,
+			displayName,
+		);
 		wasThemeModified = true;
 
 		loadingThemeName = null;
@@ -89,9 +119,16 @@
 	async function deleteTheme(id: string) {
 		const themeRecord = themes[id];
 		const isNewFormat = !!themeRecord?.settings;
-		const displayName = isNewFormat ? (themeRecord.name || id) : id;
+		const displayName = isNewFormat ? themeRecord.name || id : id;
 
-		if (await showUserConfirmation(`Are you sure you want to delete "${displayName}"?`, "Delete Theme")) {
+		// themeManager handles the confirmation
+		const success = await deleteThemeManager(
+			id,
+			displayName,
+			"EXTENSION",
+		);
+
+		if (success) {
 			const updatedThemes = { ...themes };
 			delete updatedThemes[id];
 
@@ -125,7 +162,7 @@
 		if (!themeRecord) return;
 
 		const isNewFormat = !!themeRecord.settings;
-		const displayName = isNewFormat ? (themeRecord.name || id) : id;
+		const displayName = isNewFormat ? themeRecord.name || id : id;
 		const themeData = isNewFormat ? themeRecord.settings : themeRecord;
 
 		const selection = await chooseSelection({
@@ -145,7 +182,10 @@
 	}
 
 	function getThemePreview(themeData: any) {
-		let bgColor = themeData["MainThemeColor"] || themeData["MainThemeColorC"] || "var(--Theme-0)";
+		let bgColor =
+			themeData["MainThemeColor"] ||
+			themeData["MainThemeColorC"] ||
+			"var(--Theme-0)";
 		const bgImg = themeData["BackgroundImageUrl"] || "";
 		const themeId = themeData["ThemeId"] || null;
 
@@ -183,7 +223,7 @@
 		{#each themeNames as key (key)}
 			{@const record = themes[key]}
 			{@const isNew = !!record.settings}
-			{@const displayName = isNew ? (record.name || key) : key}
+			{@const displayName = isNew ? record.name || key : key}
 			{@const themeData = isNew ? record.settings : record}
 			{@const preview = getThemePreview(themeData)}
 			<ThemeCard
@@ -209,7 +249,11 @@
 	</div>
 
 	<!-- Floating Action Button for Saving -->
-	<button class="fab-save-btn" onclick={saveCurrentAsTheme} title="Save Current Settings">
+	<button
+		class="fab-save-btn"
+		onclick={saveCurrentAsTheme}
+		title="Save Current Settings"
+	>
 		<Icon name="save" size={20} />
 	</button>
 

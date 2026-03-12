@@ -1,5 +1,5 @@
 import { checkAndShowWelcome } from "./welcome";
-import { initWebsiteIntegration, checkAndUpdateTheme } from "../store/themeStore";
+import { initWebsiteIntegration, checkAndUpdateTheme } from "../styleshift/core/themeStore";
 import { NEWTUBE_STORE_ORIGINS } from "./constants";
 
 /**

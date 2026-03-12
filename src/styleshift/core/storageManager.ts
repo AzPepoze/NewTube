@@ -107,6 +107,15 @@ export async function saveToStorage(key: string, value: any, delayPersistence = 
 }
 
 /**
+ * Specialized function to save custom items to the root of storage.
+ */
+export async function saveCustomStyleshiftItems(items: any[], delayPersistence = false): Promise<boolean> {
+	return await saveRootValue("customStyleshiftItems", items, delayPersistence);
+}
+
+
+
+/**
  * Writes the entire cached data object to Chrome local storage.
  */
 export async function persistCachedDataToStorage(): Promise<boolean> {
@@ -152,3 +161,5 @@ export async function getFromStorage(key: string): Promise<any> {
 export async function wipeAllExtensionStorage(): Promise<void> {
 	await chrome.storage.local.clear();
 }
+
+

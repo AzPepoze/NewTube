@@ -151,7 +151,11 @@
 
 		.STYLESHIFT-Category-Frame .STYLESHIFT-Setting-Frame,
 		.STYLESHIFT-Main-Setting-Frame:has(.STYLESHIFT-Setting-Frame) {
-			background: radial-gradient(at center top, var(--White-20), var(--White-10));
+			background: radial-gradient(
+				at center top,
+				var(--White-20),
+				var(--White-10)
+			);
 			overflow: visible;
 
 			&:hover {
@@ -349,6 +353,8 @@ textarea.STYLESHIFT-Selector-Text-Editor {
 	align-items: center;
 	z-index: 10000;
 	background: var(--Black-60);
+	top: 0;
+	left: 0;
 }
 
 .STYLESHIFT-DropDown-Container {
@@ -368,7 +374,11 @@ textarea.STYLESHIFT-Selector-Text-Editor {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: radial-gradient(at center top, rgb(99, 99, 99), rgba(66, 66, 66, 0.5));
+	background: radial-gradient(
+		at center top,
+		rgb(99, 99, 99),
+		rgba(66, 66, 66, 0.5)
+	);
 	color: white;
 	border: var(--White-10) solid 1px;
 	transition: all 0.2s;
