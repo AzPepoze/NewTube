@@ -1,3 +1,5 @@
+import { CategoryNameWithIcon } from "../types/store";
+
 /**
  * Resolves a potentially relative asset path to a full chrome-extension:// URL.
  * If the path is already a full URL or a data URL, it returns it as-is.
@@ -29,4 +31,31 @@ export function getAssetUrl(path: string): string {
 	}
 
 	return chrome.runtime.getURL(cleanPath);
+}
+
+/**
+ * Parses a category string or object into its icon and text components.
+ */
+export function getCategoryParts(category: string | CategoryNameWithIcon) {
+	if (!category) {
+		return { icon: "", text: "" };
+	}
+
+	if (typeof category === "object") {
+		return {
+			icon: category.icon || "",
+			text: category.label || "",
+		};
+	}
+
+	// Fallback to emoji parsing for backward compatibility
+	const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Emoji})/u;
+	const match = String(category).match(emojiRegex);
+	if (match) {
+		const icon = match[0];
+		const text = String(category).slice(icon.length).trim();
+		return { icon, text };
+	}
+
+	return { icon: "", text: String(category) };
 }

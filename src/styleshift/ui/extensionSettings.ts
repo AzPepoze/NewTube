@@ -5,7 +5,7 @@ export let extensionSettingsUi: Awaited<ReturnType<typeof createMainSettingsUi>>
 
 export const extensionSettingsUiPromise = (async () => {
 	extensionSettingsUi = await createMainSettingsUi({
-		getCategory: getAllStyleshiftItems,
+		getCategory: getAllStyleshiftItems as any,
 	});
 	return extensionSettingsUi;
 })();

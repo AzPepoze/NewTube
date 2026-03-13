@@ -1,7 +1,7 @@
 import { Category } from "../../styleshift/types/store";
 
 export const videoColorsCategory: Category = {
-	category: "🎨 Video Colors",
+	category: { icon: "format_paint", label: "Video Colors" },
 	selector: "#movie_player",
 	settings: [
 		{

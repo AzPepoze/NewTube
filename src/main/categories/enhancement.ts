@@ -3,7 +3,7 @@ import { enableFlyout } from "../features/video/flyout";
 import { setupAutoShowChatReplay } from "../features/video/chat";
 
 export const enhancementCategory: Category = {
-	category: "🎇 Enhancement",
+	category: { icon: "camera_enhance", label: "Enhancement" },
 	settings: [
 		{
 			type: "checkbox",

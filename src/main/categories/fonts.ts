@@ -3,7 +3,7 @@ import { settingsUi } from "../../styleshift/ui/settings/settingComponents";
 import FontManager from "../features/fonts/FontManager.svelte";
 
 export const fontsCategory: Category = {
-	category: "🔠 Fonts",
+	category: { icon: "text_fields", label: "Fonts" },
 	settings: [
 		{
 			type: "custom",
@@ -19,7 +19,7 @@ export const fontsCategory: Category = {
 				// Deduplicate imports by URL
 				const uniqueUrls = [...new Set(enabledFonts.map((f) => f.importUrl))];
 				const imports = uniqueUrls.map((url) => `@import url('${url}');`).join("\n");
-				
+
 				// Generate font stack.
 				const fontStack = enabledFonts
 					.map((f) =>

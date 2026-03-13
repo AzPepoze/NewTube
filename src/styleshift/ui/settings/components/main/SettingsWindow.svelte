@@ -1,69 +1,224 @@
 <script lang="ts">
 	import type { Category } from "@styleshift/types/store";
+	import { getCategoryParts } from "@ui/utils";
 	import Search from "./Search.svelte";
+	import LeftTitle from "../advance/LeftTitle.svelte";
 	import SettingRenderer from "./SettingRenderer.svelte";
+	import Title from "../advance/Title.svelte";
 
 	let {
 		categories = [],
 		showCategoryList = true,
+		devOnlyItems = [],
+		isDeveloperMode = false,
+		isDevModulesLoaded = false,
 		onClose: _onClose = () => {},
+		onAddCategory = (_name: string) => {},
 	}: {
 		categories: Category[];
 		showCategoryList?: boolean;
+		devOnlyItems?: Category[];
+		isDeveloperMode?: boolean;
+		isDevModulesLoaded?: boolean;
 		onClose?: () => void;
+		onAddCategory?: (name: string) => void;
 	} = $props();
 
 	let searchQuery = $state("");
 	let scrollContainer = $state<HTMLElement | null>(null);
-	let currentCategoryIndex = $state(0);
+	let leftSidebar = $state<HTMLElement | null>(null);
+	let activeCategoryLabel = $state("");
+	let sidebarWidth = $state(200);
+
+	// Helper: Check if item is a header separator
+	function isHeaderItem(item: any) {
+		return "isHeader" in item;
+	}
+
+	// Helper: Merge dev-only items into categories
+	function mergeDevItems(allCategories: any[]) {
+		if (!isDevModulesLoaded || !isDeveloperMode) return allCategories;
+
+		const devOnlyCategories = devOnlyItems.filter(
+			(item) => !isHeaderItem(item),
+		);
+
+		for (const devCategory of devOnlyCategories) {
+			const devCategoryJson = JSON.stringify(devCategory.category);
+			const existingIdx = allCategories.findIndex(
+				(item) =>
+					!isHeaderItem(item) &&
+					JSON.stringify(item.category) === devCategoryJson,
+			);
+
+			if (existingIdx > -1) {
+				// Append dev settings to existing category
+				allCategories[existingIdx].settings = [
+					...allCategories[existingIdx].settings,
+					...devCategory.settings,
+				];
+			} else {
+				// Add as new category if not exists
+				allCategories.push(devCategory);
+			}
+		}
+		return allCategories;
+	}
+
+	// Helper: Filter settings by search query
+	function filterBySearch(allCategories: any[], searchTerm: string) {
+		const lowerQuery = searchTerm.toLowerCase();
+
+		return allCategories
+			.map((item) => {
+				if (isHeaderItem(item)) return item;
+
+				return {
+					...item,
+					settings: item.settings.filter((setting) => {
+						const nameMatch =
+							"name" in setting &&
+							setting.name
+								.toLowerCase()
+								.includes(lowerQuery);
+						const descMatch =
+							"description" in setting &&
+							setting.description
+								?.toLowerCase()
+								.includes(lowerQuery);
+						return nameMatch || descMatch;
+					}),
+				};
+			})
+			.filter(
+				(item) => isHeaderItem(item) || item.settings.length > 0,
+			);
+	}
 
 	// Filtered categories and settings
 	let filteredData = $derived.by(() => {
-		if (!searchQuery) return categories;
+		// Copy categories (clone non-header items)
+		let result = categories.map((c) => {
+			return isHeaderItem(c) ? c : { ...(c as any) };
+		});
 
-		const query = searchQuery.toLowerCase();
-		return categories
-			.map((cat) => ({
-				...cat,
-				settings: cat.settings.filter(
-					(s) =>
-						("name" in s && s.name.toLowerCase().includes(query)) ||
-						("description" in s && s.description?.toLowerCase().includes(query)),
-				),
-			}))
-			.filter((cat) => cat.settings.length > 0);
+		// Merge dev-only settings into matching categories
+		result = mergeDevItems(result);
+
+		// Apply search filter if query exists
+		if (searchQuery) {
+			result = filterBySearch(result, searchQuery);
+		}
+
+		return result;
 	});
 
 	function handleScroll() {
 		if (!scrollContainer) return;
-		const frames = scrollContainer.querySelectorAll(".STYLESHIFT-Category-Frame");
+		const frames = scrollContainer.querySelectorAll(
+			".STYLESHIFT-Category-Frame",
+		);
 		const containerRect = scrollContainer.getBoundingClientRect();
 
-		frames.forEach((frame, index) => {
+		frames.forEach((frame) => {
 			const rect = frame.getBoundingClientRect();
-			if (rect.top <= containerRect.top + 50 && rect.bottom > containerRect.top + 50) {
-				currentCategoryIndex = index;
+			if (
+				rect.top <= containerRect.top + 100 &&
+				rect.bottom > containerRect.top + 100
+			) {
+				const label = (frame as HTMLElement).dataset.category;
+				if (label) activeCategoryLabel = label;
 			}
 		});
+	}
+
+	function handleResizeStart(e: MouseEvent) {
+		e.preventDefault();
+		const startX = e.clientX;
+		const startWidth = sidebarWidth;
+
+		function handleMouseMove(moveEvent: MouseEvent) {
+			const delta = moveEvent.clientX - startX;
+			sidebarWidth = Math.max(100, startWidth + delta);
+			if (leftSidebar) {
+				leftSidebar.style.width = `${sidebarWidth}px`;
+			}
+		}
+
+		function handleMouseUp() {
+			document.removeEventListener("mousemove", handleMouseMove);
+			document.removeEventListener("mouseup", handleMouseUp);
+		}
+
+		document.addEventListener("mousemove", handleMouseMove);
+		document.addEventListener("mouseup", handleMouseUp);
 	}
 </script>
 
 <div class="STYLESHIFT-Settings-Main">
 	{#if showCategoryList}
-		<div class="STYLESHIFT-Sidebar STYLESHIFT-Scrollable" data-left="true">
-			{#each categories as category, i (category.category)}
+		<div
+			bind:this={leftSidebar}
+			class="STYLESHIFT-Sidebar STYLESHIFT-Scrollable"
+			data-left="true"
+			style:width={`${sidebarWidth}px`}
+		>
+			{#each filteredData as item, i (i)}
+				{#if "isHeader" in item}
+					<div class="STYLESHIFT-Sidebar-Header">
+						{(item as any).label}
+					</div>
+				{:else}
+					{@const category = item as any}
+					{@const parts = getCategoryParts(category.category)}
+					<button
+						class="STYLESHIFT-Sidebar-Item-Wrapper"
+						onclick={() => {
+							const target =
+								scrollContainer?.querySelector(
+									`.STYLESHIFT-Category-Frame[data-category="${parts.text}"]`,
+								);
+							if (target) {
+								target.scrollIntoView({
+									behavior: "smooth",
+								});
+								activeCategoryLabel = parts.text;
+							}
+						}}
+					>
+						<LeftTitle
+							category={category.category}
+							selected={activeCategoryLabel === parts.text}
+						/>
+					</button>
+				{/if}
+			{/each}
+
+			{#if isDeveloperMode && isDevModulesLoaded}
 				<button
-					class="STYLESHIFT-Sidebar-Item"
-					class:selected={currentCategoryIndex === i}
+					class="STYLESHIFT-Add-Category-button"
 					onclick={() => {
-						const target = scrollContainer?.querySelectorAll(".STYLESHIFT-Category-Frame")[i];
-						if (target) target.scrollIntoView({ behavior: "smooth" });
+						const categoryName = prompt(
+							"Enter category name:",
+						);
+						if (categoryName) {
+							onAddCategory(categoryName);
+						}
 					}}
 				>
-					{category.category}
+					+
 				</button>
-			{/each}
+			{/if}
 		</div>
+		<div
+			class="STYLESHIFT-Resize-Handle"
+			role="button"
+			tabindex="0"
+			aria-label="Resize sidebar"
+			title="Drag to resize sidebar"
+			onmousedown={handleResizeStart}
+			style="cursor: col-resize; width: 4px; background: var(--Category-Left-BG); user-select: none;"
+		></div>
 	{/if}
 
 	<div class="STYLESHIFT-Content">
@@ -74,17 +229,29 @@
 			class="STYLESHIFT-Scrollable STYLESHIFT-Settings-List"
 			onscroll={handleScroll}
 		>
-			{#each filteredData as category (category.category)}
-				<div class="STYLESHIFT-Category-Frame">
-					<div class="STYLESHIFT-Category-Title">
-						{category.category}
-					</div>
-					<div class="STYLESHIFT-Settings-Group">
-						{#each category.settings as setting, j (setting.id || j)}
-							<SettingRenderer {setting} highlight={searchQuery} />
+			{#each filteredData as item, i (i)}
+				{#if "isHeader" in item}
+					<div class="STYLESHIFT-Category-Separator"></div>
+				{:else}
+					{@const category = item}
+					{@const parts = getCategoryParts(category.category)}
+					<div
+						class="STYLESHIFT-Category-Frame STYLESHIFT-Settings-Group"
+						data-category={parts.text}
+					>
+						<Title
+							text={parts.text}
+							icon={parts.icon}
+							rainbow={category.rainbow}
+						/>
+						{#each category.settings as setting, j (j)}
+							<SettingRenderer
+								{setting}
+								highlight={searchQuery}
+							/>
 						{/each}
 					</div>
-				</div>
+				{/if}
 			{/each}
 		</div>
 	</div>
@@ -107,27 +274,57 @@
 		display: flex;
 		flex-direction: column;
 		gap: 5px;
+		transition: width 0.2s ease-out;
 	}
 
-	.STYLESHIFT-Sidebar-Item {
+	.STYLESHIFT-Sidebar-Item-Wrapper {
 		background: transparent;
 		border: none;
-		padding: 10px;
+		padding: 0;
 		text-align: left;
-		color: var(--Category-Left-Title-Text-Color);
 		cursor: pointer;
-		border-radius: 10px;
-		transition: all 0.2s;
+		width: 100%;
+		display: block;
+	}
 
-		&:hover {
-			background: var(--Category-Left-Title-BG-Hover);
-			color: var(--Category-Left-Title-Text-Color-Hover);
-		}
+	.STYLESHIFT-Add-Category-button {
+		background: var(--category-left-bg-hover, rgba(255, 255, 255, 0.1));
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		color: #ffffff;
+		padding: 8px 5px;
+		margin: 3px 10px;
+		border-radius: 4px;
+		cursor: pointer;
+		font-weight: bold;
+		font-size: 16px;
+		transition: background-color 0.2s;
+	}
 
-		&.selected {
-			background: var(--Category-Left-Title-BG-Selected);
-			color: var(--Category-Left-Title-Text-Color-Selected);
-		}
+	.STYLESHIFT-Add-Category-button:hover {
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.STYLESHIFT-Sidebar-Header {
+		padding: 12px 10px 8px;
+		font-size: 1.2rem;
+		color: rgba(255, 255, 255, 0.5);
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		font-weight: 700;
+		margin-top: 8px;
+		margin-bottom: 4px;
+		border-top: 2px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.STYLESHIFT-Sidebar-Header:first-child {
+		border-top: none;
+		margin-top: 0;
+	}
+
+	.STYLESHIFT-Category-Separator {
+		height: 1px;
+		background: var(--White-10);
+		margin: 20px 0 10px;
 	}
 
 	.STYLESHIFT-Content {
@@ -146,16 +343,6 @@
 		flex-direction: column;
 		gap: 20px;
 		overflow-y: auto;
-	}
-
-	.STYLESHIFT-Category-Title {
-		font-size: 24px;
-		font-weight: 600;
-		padding: 10px;
-		background: var(--Category-Title-BG);
-		color: var(--Category-Title-Text-Color);
-		border-radius: 10px;
-		margin-bottom: 10px;
 	}
 
 	.STYLESHIFT-Settings-Group {

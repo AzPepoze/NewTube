@@ -2,7 +2,7 @@ import { Category } from "../../styleshift/types/store";
 import { enableSettingsButton, disableSettingsButton } from "../features/newtubeSettingsButton";
 
 export const topbarSearchCategory: Category = {
-	category: "🔎 Topbar & Search",
+	category: { icon: "search", label: "Topbar & Search" },
 	settings: [
 		{
 			type: "checkbox",

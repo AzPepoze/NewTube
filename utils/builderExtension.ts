@@ -10,18 +10,59 @@ const config = require("../extension.config.json");
 
 /*
 -------------------------------------------------------
-Configuration
+Configuration & Globals
 -------------------------------------------------------
 */
 const args = process.argv.slice(2);
 const isProduction = args.includes("--production");
 const isOnce = args.includes("--once");
 
+const BUILD_PATH = path.join(__dirname, "../out/build");
+const TEMP_PATH = path.join(__dirname, "../temp");
+const CHROMIUM_PATH = path.join(__dirname, "../out/dist/chromium");
+const FIREFOX_PATH = path.join(__dirname, "../out/dist/firefox");
+
 /*
 -------------------------------------------------------
-Utils Functions
+Plugins & Utils
 -------------------------------------------------------
 */
+const colors = {
+	reset: "\x1b[0m",
+	bright: "\x1b[1m",
+	dim: "\x1b[2m",
+	cyan: "\x1b[36m",
+	green: "\x1b[32m",
+	yellow: "\x1b[33m",
+	red: "\x1b[31m",
+	magenta: "\x1b[35m",
+};
+
+const log = {
+	info: (msg: string) => console.log(`${colors.cyan}ℹ${colors.reset} ${msg}`),
+	success: (msg: string) => console.log(`${colors.green}✔${colors.reset} ${msg}`),
+	warn: (msg: string) => console.log(`${colors.yellow}⚠${colors.reset} ${msg}`),
+	error: (msg: string, err?: any) => {
+		console.error(`${colors.red}✘${colors.reset} ${msg}`);
+		if (err) console.error(err);
+	},
+	step: (msg: string) => console.log(`${colors.bright}${colors.magenta}➜${colors.reset} ${msg}`),
+};
+
+const brandingPlugin = {
+	name: "branding",
+	setup(buildInstance) {
+		buildInstance.onEnd(async (_result) => {
+			const outfile = buildInstance.initialOptions.outfile;
+			if (outfile && fs.existsSync(outfile)) {
+				let content = await fs.readFile(outfile, "utf8");
+				content = await replaceBranding(content);
+				await fs.writeFile(outfile, content, "utf8");
+			}
+		});
+	},
+};
+
 function getFileNameFromPath(filePath) {
 	const parts = filePath.split("/");
 	return parts[parts.length - 1];
@@ -34,11 +75,6 @@ async function replaceBranding(content: string): Promise<string> {
 		.replace(/styleshift/g, config.name.toLowerCase());
 }
 
-/*
--------------------------------------------------------
-Firefox Compatibility Functions
--------------------------------------------------------
-*/
 async function replaceForFirefoxText(content: string): Promise<string> {
 	const replacements = [
 		{ from: /webkit-fill/g, to: "moz" },
@@ -48,103 +84,56 @@ async function replaceForFirefoxText(content: string): Promise<string> {
 		{ from: /webkit/g, to: "moz" },
 		{ from: /nowrap/g, to: "pre" },
 	];
-
 	return replacements.reduce((text, { from, to }) => text.replace(from, to), content);
 }
 
-async function processFileReplacements(filePath, isFirefox = false) {
-	try {
-		let content = await fs.readFile(filePath, "utf8");
+const commonLoader = {
+	".ttf": "file",
+	".woff": "file",
+	".woff2": "file",
+	".eot": "file",
+	".png": "file",
+};
 
-		if (
-			!filePath.endsWith(".css") &&
-			!filePath.endsWith(".js") &&
-			!filePath.endsWith(".json") &&
-			!filePath.endsWith(".html")
-		) {
-			return;
-		}
-
-		// Always replace branding
-		content = await replaceBranding(content);
-
-		// Firefox specific
-		if (isFirefox) {
-			if (filePath.endsWith(".css") || filePath.endsWith(".js")) {
-				content = await replaceForFirefoxText(content);
-			}
-
-			if (filePath.endsWith("manifest.json")) {
-				const manifest = JSON.parse(content);
-				if (manifest.background && manifest.background.service_worker) {
-					manifest.background.scripts = [manifest.background.service_worker];
-					delete manifest.background.service_worker;
-				}
-
-				// Add workers to web_accessible_resources for Firefox
-				if (manifest.web_accessible_resources && manifest.web_accessible_resources[0]) {
-					if (!manifest.web_accessible_resources[0].resources.includes("workers/*")) {
-						manifest.web_accessible_resources[0].resources.push("workers/*");
-					}
-				}
-
-				content = JSON.stringify(manifest, null, "\t");
-			}
-		}
-
-		await fs.writeFile(filePath, content, "utf8");
-		console.log(`Processed: ${getFileNameFromPath(filePath)} ${isFirefox ? "(Firefox)" : ""}`);
-	} catch (err: any) {
-		console.error("Error processing file:", err.message);
-	}
-}
+const commonAlias = {
+	"@": path.join(__dirname, "../src"),
+	"@main": path.join(__dirname, "../src"),
+	"@styleshift": path.join(__dirname, "../src/styleshift"),
+	"@core": path.join(__dirname, "../src/styleshift/core"),
+	"@ui": path.join(__dirname, "../src/styleshift/ui"),
+	"@settings": path.join(__dirname, "../src/styleshift/settings"),
+	"@functions": path.join(__dirname, "../src/styleshift/shared"),
+};
 
 /*
 -------------------------------------------------------
-Build Functions
+Build Helpers
 -------------------------------------------------------
 */
-async function processFunctions(codePath) {
-	let code = await fs.readFile(codePath, "utf8");
-	const functionNames = [];
+// processFunctions is no longer needed with the IIFE approach, but we'll keep a simpler version
+// if we ever need it for ad-hoc processing. For now, we prefer IIFE bundling.
+async function generateBuildInFunctions(_buildPath) {
+	const functionsListPath = path.join(__dirname, "../src/styleshift/shared/extension.ts");
+	let functionsListData = "";
 
-	code = code.replace(/\bexport\s+(async\s+)?function\s+([\w$]+)\s*\(/g, (_, asyncKeyword, name) => {
-		functionNames.push(name);
-		return `${asyncKeyword || ""}function ${name}(`;
-	});
+	if (fs.existsSync(functionsListPath)) {
+		const functionsList = fs.readFileSync(functionsListPath, "utf8");
+		const functionNames = [...new Set([...functionsList.matchAll(/\bexport\s+(?:async\s+)?function\s+(\w+)\s*\(/g)].map((x) => x[1]))];
+		const wrappableFunctions = functionNames.filter((name) => !new Set(["_call_function", "fireFunctionEventWithReturn", "onFunctionEvent"]).has(name));
 
-	functionNames.forEach((name) => {
-		const wrapRegex = new RegExp(`\\b(async\\s+)?function\\s+${name}\\s*\\(`, "g");
-		const callRegex = new RegExp(`\\b${name}\\s*\\(`, "g");
-		code = code
-			.replace(
-				wrapRegex,
-				(_, asyncKeyword) => `StyleShift["buildIn"]["${name}"] = ${asyncKeyword || ""}function (`,
-			)
-			.replace(callRegex, `StyleShift["buildIn"]["${name}"](`);
-	});
+		functionsListData = wrappableFunctions
+			.map((name) => `StyleShift["buildIn"]["${name}"] = async function(...args){return await StyleShift["buildIn"]["_call_function"]("${name}",...args)};`)
+			.join("\n");
+	}
 
-	return code;
-}
+	const sharedJsPath = path.join(TEMP_PATH, "shared_bundled.js");
+	let sharedCode = "";
+	if (fs.existsSync(sharedJsPath)) {
+		sharedCode = fs.readFileSync(sharedJsPath, "utf8");
+	}
 
-async function generateBuildInFunctions(buildPath) {
-	const functionsList = fs.readFileSync(path.join(__dirname, "../src/styleshift/shared/extension.ts"), "utf-8");
-
-	const functionNames = [
-		...new Set([...functionsList.matchAll(/\bexport\s+(?:async\s+)?function\s+(\w+)\s*\(/g)].map((x) => x[1])),
-	];
-
-	const functionsListData = functionNames
-		.map(
-			(name) =>
-				`StyleShift["buildIn"]["${name}"] = async function(...args){return await StyleShift["buildIn"]["_call_function"]("${name}",...args)};`,
-		)
-		.join("");
-
-	const normalFunctions = await fs.readFile(path.join(__dirname, "../temp/normal.js"), "utf8");
-	const buildInFunctions = await fs.readFile(path.join(buildPath, "build-in.js"), "utf8");
-
-	return `var StyleShift = window.StyleShift || {};
+	return `(function() {
+	var StyleShift = window.StyleShift || {};
 	StyleShift["buildIn"] = StyleShift["buildIn"] || {};
 	StyleShift["custom"] = StyleShift["custom"] || {};
 	StyleShift["logger"] = StyleShift["logger"] || {
@@ -153,15 +142,53 @@ async function generateBuildInFunctions(buildPath) {
 			error: (category, ...args) => console.error("%c StyleShift %c [ERROR] %c [" + category.toUpperCase() + "]", "color: #bada55", "color: #ff0000", "color: #6a6a6a", ...args),
 			debug: (category, ...args) => console.debug("%c StyleShift %c [DEBUG] %c [" + category.toUpperCase() + "]", "color: #bada55", "color: #888888", "color: #6a6a6a", ...args),
 		};
-	(() => { ${normalFunctions} })();
-	(() => { ${buildInFunctions} })();
+	
+	// Inject Bundled Shared & WebPage Logic
+	var SharedScope = {};
+	${sharedCode}
+	if (typeof SharedScope === 'object') {
+		for (var key in SharedScope) {
+			if (typeof SharedScope[key] === 'function') StyleShift["buildIn"][key] = SharedScope[key];
+		}
+	}
+
 	${functionsListData}
-	window['StyleShift'] = StyleShift;`;
+
+	window['StyleShift'] = StyleShift;
+})();`;
+}
+
+async function processFileReplacements(filePath, isFirefox = false) {
+	try {
+		let content = await fs.readFile(filePath, "utf8");
+		if (![".css", ".js", ".json", ".html"].some(fileExtension => filePath.endsWith(fileExtension))) return;
+
+		content = await replaceBranding(content);
+		if (isFirefox) {
+			if (filePath.endsWith(".css") || filePath.endsWith(".js")) content = await replaceForFirefoxText(content);
+			if (filePath.endsWith("manifest.json")) {
+				const manifest = JSON.parse(content);
+				if (manifest.background?.service_worker) {
+					manifest.background.scripts = [manifest.background.service_worker];
+					delete manifest.background.service_worker;
+				}
+				if (manifest.web_accessible_resources?.[0]) {
+					if (!manifest.web_accessible_resources[0].resources.includes("workers/*")) {
+						manifest.web_accessible_resources[0].resources.push("workers/*");
+					}
+				}
+				content = JSON.stringify(manifest, null, "\t");
+			}
+		}
+		await fs.writeFile(filePath, content, "utf8");
+	} catch (err: any) {
+		log.error(`Error processing ${filePath}:`, err.message);
+	}
 }
 
 /*
 -------------------------------------------------------
-Main Build Process
+Main Build Function
 -------------------------------------------------------
 */
 let isBuilding = false;
@@ -169,197 +196,157 @@ let isBuilding = false;
 async function build() {
 	if (isBuilding) return;
 	isBuilding = true;
+	log.step("Initializing build...");
 
 	try {
-		console.log("Building");
-		const buildPath = path.join(__dirname, "../out/build");
-		const tempPath = path.join(__dirname, "../temp");
+		fs.ensureDirSync(BUILD_PATH);
+		fs.ensureDirSync(TEMP_PATH);
+		fs.ensureDirSync(path.join(BUILD_PATH, "assets/icons"));
+		fs.ensureDirSync(path.join(BUILD_PATH, "assets/fonts"));
+		fs.ensureDirSync(path.join(BUILD_PATH, "modules"));
 
-		// Ensure directories exist
-		fs.ensureDirSync(path.join(buildPath, "assets/icons"));
-		fs.ensureDirSync(path.join(buildPath, "modules"));
-
-		const brandingPlugin = {
-			name: "branding",
-			setup(buildInstance) {
-				buildInstance.onEnd(async (_result) => {
-					const outfile = buildInstance.initialOptions.outfile;
-					if (outfile && fs.existsSync(outfile)) {
-						let content = await fs.readFile(outfile, "utf8");
-						content = content.replace(/StyleShift/g, config.name);
-						content = content.replace(/STYLESHIFT/g, config.code_name);
-						content = content.replace(/styleshift/g, config.name.toLowerCase());
-						await fs.writeFile(outfile, content, "utf8");
-					}
-				});
-			},
-		};
-
-		// Build background script (TypeScript)
+		// 1. Background script
+		log.info("Building background script...");
+		const backgroundPath = path.join(BUILD_PATH, "background.js");
 		await esbuild.build({
 			entryPoints: [path.join(__dirname, "../src/extension/background.ts")],
 			bundle: true,
-			outfile: path.join(buildPath, "background.js"),
+			outfile: backgroundPath,
 			platform: "browser",
 			minify: isProduction,
 			plugins: [brandingPlugin],
 		});
+		log.success(`Background script built: ${getFileNameFromPath(backgroundPath)}`);
 
-		// Process functions
-		fs.copySync(path.join(__dirname, "../src/styleshift/shared/normal.ts"), path.join(tempPath, "normal.ts"));
+		// 2. Shared & Communication Functions (Bundled together)
+		log.info("Processing shared and communication functions...");
+		const sharedEntryTs = path.join(TEMP_PATH, "shared_entry.ts");
+		const sharedBundledJs = path.join(TEMP_PATH, "shared_bundled.js");
+		
+		const entryContent = `
+			export * from "@functions/normal";
+			export * from "@functions/advance";
+			export * from "@styleshift/communication/webPage";
+		`;
+		fs.outputFileSync(sharedEntryTs, entryContent);
 
-		const codePath = path.join(tempPath, "normal.ts");
-		const processedCode = await processFunctions(codePath);
-		fs.writeFileSync(codePath, processedCode);
-
-		// Build processed functions
 		await esbuild.build({
-			entryPoints: [path.join(tempPath, "normal.ts")],
-			bundle: false,
-			outfile: path.join(tempPath, "normal.js"),
+			entryPoints: [sharedEntryTs],
+			bundle: true,
+			outfile: sharedBundledJs,
 			platform: "browser",
 			minify: isProduction,
+			alias: commonAlias,
 			keepNames: true,
+			format: "iife",
+			globalName: "SharedScope",
 		});
+		log.success("Shared logic bundled.");
 
-		await esbuild.build({
-			entryPoints: [path.join(__dirname, "../src/styleshift/communication/webPage.ts")],
-			bundle: false,
-			outfile: path.join(buildPath, "build-in.js"),
-			platform: "browser",
-		});
+		// 3. Build-in.js Generation
+		const buildInPath = path.join(BUILD_PATH, "build-in.js");
+		const buildInContent = await generateBuildInFunctions(BUILD_PATH);
+		await fs.writeFile(buildInPath, buildInContent, "utf8");
+		log.success(`Build-in script generated: ${getFileNameFromPath(buildInPath)}`);
 
-		// Generate and write build-in functions
-		const buildInFunctionsData = await generateBuildInFunctions(buildPath);
-		await fs.writeFile(path.join(buildPath, "build-in.js"), buildInFunctionsData, "utf8");
-
+		// 4. Main script bundle
+		const mainScriptName = `${config.name.toLowerCase()}.js`;
+		log.info(`Bundling main script: ${mainScriptName}`);
 		await esbuild.build({
 			entryPoints: [path.join(__dirname, "../src/styleshift/run.ts")],
 			bundle: true,
-			outfile: path.join(buildPath, `${config.name.toLowerCase()}.js`),
+			outfile: path.join(BUILD_PATH, mainScriptName),
 			platform: "browser",
 			minify: isProduction,
 			publicPath: "/",
-			external: [
-				"jszip",
-				"codemirror",
-				"@codemirror/view",
-				"@codemirror/state",
-				"@codemirror/lang-javascript",
-				"@codemirror/lang-css",
-				"@codemirror/theme-one-dark",
-			],
-			alias: {
-				"@": path.join(__dirname, "../src"),
-				"@main": path.join(__dirname, "../src"),
-				"@styleshift": path.join(__dirname, "../src/styleshift"),
-				"@core": path.join(__dirname, "../src/styleshift/core"),
-				"@ui": path.join(__dirname, "../src/styleshift/ui"),
-				"@settings": path.join(__dirname, "../src/styleshift/settings"),
-				"@functions": path.join(__dirname, "../src/styleshift/shared"),
-			},
-			plugins: [
-				esbuildSvelte({
-					compilerOptions: {
-						css: "injected",
-					},
-				}),
-				brandingPlugin,
-			],
-			define: {
-				imgbb_api_key: JSON.stringify(process.env.IMGBB_API_KEY || ""),
-			},
-			loader: {
-				".ttf": "file",
-				".png": "file",
-			},
+			external: ["jszip", "codemirror", "@codemirror/view", "@codemirror/state", "@codemirror/lang-javascript", "@codemirror/lang-css", "@codemirror/theme-one-dark"],
+			alias: commonAlias,
+			plugins: [esbuildSvelte({ compilerOptions: { css: "injected" } }), brandingPlugin],
+			define: { imgbb_api_key: JSON.stringify(process.env.IMGBB_API_KEY || "") },
+			loader: commonLoader,
 			assetNames: "assets/[name]",
 		});
+		log.success("Main script bundled with Svelte components.");
 
-		// Copy extension files (excluding modules and TypeScript source files)
-		fs.copySync(path.join(__dirname, "../src/extension"), buildPath, {
-			filter: (src) => {
-				const relativePath = path.relative(path.join(__dirname, "../src/extension"), src);
-				// Exclude modules directory and TypeScript files
-				if (relativePath.startsWith("modules")) return false;
-				if (relativePath.endsWith(".ts")) return false;
-				return true;
-			},
+		// 5. Assets and Extension files
+		log.info("Copying assets and extension files...");
+		fs.copySync(path.join(__dirname, "../src/extension"), BUILD_PATH, {
+			filter: (src) => !path.relative(path.join(__dirname, "../src/extension"), src).startsWith("modules") && !src.endsWith(".ts"),
 		});
-
-		// Copy icons and assets to the new structure
 		if (fs.existsSync(path.join(__dirname, "../src/assets"))) {
-			fs.copySync(path.join(__dirname, "../src/assets"), path.join(buildPath, "assets"));
+			fs.copySync(path.join(__dirname, "../src/assets"), path.join(BUILD_PATH, "assets"));
 		}
 
-		// Create distribution builds
-		const chromiumPath = path.join(__dirname, "../out/dist/chromium");
-		const firefoxPath = path.join(__dirname, "../out/dist/firefox");
+		// Copy Material Icons fonts
+		const materialIconsPath = path.join(__dirname, "../node_modules/material-icons/iconfont");
+		if (fs.existsSync(materialIconsPath)) {
+			const fontsPath = path.join(BUILD_PATH, "assets/fonts");
+			fs.ensureDirSync(fontsPath);
+			const fontFiles = fs.readdirSync(materialIconsPath).filter(file => 
+				file.endsWith(".woff2") || file.endsWith(".woff") || file.endsWith(".ttf")
+			);
+			for (const file of fontFiles) {
+				fs.copySync(path.join(materialIconsPath, file), path.join(fontsPath, file));
+			}
+			log.success(`Copied ${fontFiles.length} Material Icons font files.`);
+		}
+		log.success("Assets copied.");
 
-		fs.copySync(buildPath, chromiumPath);
-		fs.copySync(buildPath, firefoxPath);
+		// 6. Distribution - DEPLOY TO DIST BEFORE PROCESSINGReplacements to ensure manifest.json is there
+		log.info("Deploying to distribution folders...");
+		fs.copySync(BUILD_PATH, CHROMIUM_PATH);
+		fs.copySync(BUILD_PATH, FIREFOX_PATH);
+		log.info("Processed Chromium and Firefox distributions.");
 
-		// Build workers for Firefox only
-		const firefoxWorkersPath = path.join(firefoxPath, "workers");
+		const firefoxWorkersPath = path.join(FIREFOX_PATH, "workers");
 		fs.ensureDirSync(firefoxWorkersPath);
-
-		await esbuild.build({
-			entryPoints: [path.join(__dirname, "../src/main/features/videoBackground/worker.ts")],
-			bundle: true,
-			outfile: path.join(firefoxWorkersPath, "videoBackgroundWorker.js"),
-			platform: "browser",
-			minify: isProduction,
-			plugins: [brandingPlugin],
-		});
-
-		await esbuild.build({
-			entryPoints: [path.join(__dirname, "../src/main/features/removeBlackBars/worker.ts")],
-			bundle: true,
-			outfile: path.join(firefoxWorkersPath, "removeBlackBarsWorker.js"),
-			platform: "browser",
-			minify: isProduction,
-			plugins: [brandingPlugin],
-		});
-
-		// Post-process distribution files
-		async function processDir(dir, isFirefox) {
-			const files = fs.readdirSync(dir);
-			for (const file of files) {
-				const fullPath = path.join(dir, file);
-				if (fs.statSync(fullPath).isDirectory()) {
-					await processDir(fullPath, isFirefox);
-				} else {
-					await processFileReplacements(fullPath, isFirefox);
-
-					// Rename file if it contains 'styleshift'
-					if (file.includes("styleshift")) {
-						const newFileName = file.replace("styleshift", config.name.toLowerCase());
-						const newPath = path.join(dir, newFileName);
-						fs.renameSync(fullPath, newPath);
-					}
-				}
+		const workerEntries = [
+			"../src/main/features/videoBackground/worker.ts",
+			"../src/main/features/removeBlackBars/worker.ts"
+		];
+		for (const entry of workerEntries) {
+			const entryPath = path.join(__dirname, entry);
+			if (fs.existsSync(entryPath)) {
+				await esbuild.build({
+					entryPoints: [entryPath],
+					bundle: true,
+					outfile: path.join(firefoxWorkersPath, path.basename(entry).replace(".ts", ".js")),
+					platform: "browser",
+					minify: isProduction,
+					plugins: [brandingPlugin],
+				});
 			}
 		}
 
-		await processDir(chromiumPath, false);
-		await processDir(firefoxPath, true);
+		const processDir = async (dir, isFirefox) => {
+			for (const file of fs.readdirSync(dir)) {
+				const fullPath = path.join(dir, file);
+				if (fs.statSync(fullPath).isDirectory()) await processDir(fullPath, isFirefox);
+				else {
+					await processFileReplacements(fullPath, isFirefox);
+					if (file.includes("styleshift")) {
+						fs.renameSync(fullPath, path.join(dir, file.replace("styleshift", config.name.toLowerCase())));
+					}
+				}
+			}
+		};
+		await processDir(CHROMIUM_PATH, false);
+		await processDir(FIREFOX_PATH, true);
 
-		console.log("Built!");
-		console.log("--------------------------------");
+		log.success("Build completed successfully!");
 	} catch (error) {
-		console.error("Build Error:", error);
+		log.error("Build failed:", error);
 		if (!isOnce) {
-			console.log("Retrying build in 500ms...");
-			setTimeout(build, 500);
+			log.info("Retrying in 1s...");
+			setTimeout(build, 1000);
 		}
 	} finally {
-		isBuilding = false;
 		try {
-			fs.removeSync(path.join(__dirname, "../temp"));
-		} catch (error) {
-			console.error("Cleanup Error:", error);
-			setTimeout(() => fs.removeSync(path.join(__dirname, "../temp")), 500);
+			fs.removeSync(TEMP_PATH);
+		} catch (e) {
+			log.warn("Failed to remove temp directory:" + e);
 		}
+		isBuilding = false;
 	}
 }
 
@@ -368,13 +355,13 @@ async function build() {
 Build Process Initialization
 -------------------------------------------------------
 */
-if (isOnce) {
-	build();
-} else {
-	chokidar.watch(path.join(__dirname, "../src")).on("all", async (event, pathInstance: string) => {
-		console.log(event, getFileNameFromPath(pathInstance));
+if (isOnce) build();
+else {
+	chokidar.watch(path.join(__dirname, "../src")).on("all", async (event, pathInstance) => {
+		if (isBuilding) return;
+		console.log(`${colors.dim}[${event}]${colors.reset} ${getFileNameFromPath(pathInstance)}`);
 		await build();
 	});
 }
 
-export {};
+export { };

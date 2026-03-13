@@ -5,7 +5,7 @@ import { setupUpdateTimestamp } from "../features/video/timestamp";
 import { IS_FIREFOX } from "../../styleshift/run";
 
 export const videoAutomationCategory: Category = {
-	category: "🤖 Video Automation",
+	category: { icon: "auto_awesome", label: "Video Automation" },
 	settings: [
 		{
 			type: "checkbox",
@@ -22,12 +22,11 @@ export const videoAutomationCategory: Category = {
 			description: "Extends theater mode to fill the entire height of your window, hiding the header until you scroll.",
 			value: false,
 			enableCss: `
-				ytd-watch-flexy[theater] #full-bleed-container.ytd-watch-flexy {
+				ytd-watch-flexy[theater]:not([fullscreen]) #full-bleed-container.ytd-watch-flexy {
 					height: calc(100vh - 56px) !important;
 					max-height: unset !important;
 				}
 			`,
-			require: { EnableAutoTheaterMode: true },
 		},
 		{
 			type: "checkbox",

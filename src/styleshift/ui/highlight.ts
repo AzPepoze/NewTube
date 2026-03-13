@@ -106,8 +106,10 @@ export async function startHighlighter() {
 					mutation.addedNodes.forEach((node) => {
 						if (node.nodeType === Node.ELEMENT_NODE) {
 							const element = node as HTMLElement;
-							for (const selectorValue of [...editableItems.Default, ...editableItems.Custom]) {
+							for (const item of [...editableItems.Default, ...editableItems.Custom]) {
+								const selectorValue = item as Category;
 								if (
+									selectorValue.category &&
 									selectorValue.selector &&
 									selectorValue.selector != "" &&
 									element.matches(selectorValue.selector) &&
@@ -140,8 +142,9 @@ export async function startHighlighter() {
 		});
 	}
 
-	for (const selectorValue of [...editableItems.Default, ...editableItems.Custom]) {
-		if (selectorValue.selector == "") continue;
+	for (const item of [...editableItems.Default, ...editableItems.Custom]) {
+		const selectorValue = item as Category;
+		if (!selectorValue.category || selectorValue.selector == "") continue;
 
 		const selectorFound = document.querySelectorAll(selectorValue.selector);
 

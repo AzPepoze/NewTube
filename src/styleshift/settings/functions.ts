@@ -1,9 +1,9 @@
-import { waitOneFrame } from "../shared/normal";
 import { executeSettingScript } from "../core/runtimeController";
 import { getFromStorage } from "../core/storageManager";
 import { Setting } from "../types/store";
 import { createStylesheet } from "./styleSheet";
 import { logger } from "../../shared/logger";
+import { waitOneFrame } from "../shared/advance";
 
 export const activeSettingsState: Record<string, any> = {};
 const settingUpdateHandlers: Record<string, Function> = {};

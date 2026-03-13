@@ -1,5 +1,5 @@
+import { onFunctionEvent } from "../shared/advance";
 import * as StyleShift_Functions from "../shared/extension";
-import { onFunctionEvent } from "../shared/normal";
 
 // function Clear_Bloat(thisSetting: any): any | null {
 // 	const settingtype = thisSetting.type;

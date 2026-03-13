@@ -2,7 +2,7 @@ import { Category } from "../../styleshift/types/store";
 import { setupVideoAnimations } from "../features/video/animations";
 
 export const videoPlayerCategory: Category = {
-	category: "📺 Video Player",
+	category: { icon: "play_circle", label: "Video Player" },
 	selector: "#movie_player",
 	settings: [
 		{

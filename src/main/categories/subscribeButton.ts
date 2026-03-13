@@ -1,7 +1,7 @@
 import { Category } from "../../styleshift/types/store";
 
 export const subscribeButtonCategory: Category = {
-	category: "▶️ Subscribe Button",
+	category: { icon: "notifications_active", label: "Subscribe Button" },
 	settings: [
 		{
 			type: "checkbox",

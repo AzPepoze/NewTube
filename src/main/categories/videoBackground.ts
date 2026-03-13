@@ -4,7 +4,7 @@ import { enableVideoBackground, disableVideoBackground, updateVideoBgSettings } 
 const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
 export const videoBackgroundCategory: Category = {
-	category: "🎆 Background Video",
+	category: { icon: "videocam", label: "Background Video" },
 	selector: "#movie_player",
 	settings: [
 		{

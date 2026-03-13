@@ -1,14 +1,14 @@
 import { dynamicAppend, createError } from "../../shared/extension";
-import { scrollOnClick } from "../../shared/normal";
+import { unmount } from "svelte";
 import { logger } from "../../../shared/logger";
-import { getStyleshiftDevOnlyItems } from "../../../main/itemsStyleshiftDev";
-import { addCategory, getSettingsList, getStyleshiftDataType, updateStyleshiftItems } from "../../settings/items";
+import { getSettingsList, getStyleshiftDataType, updateStyleshiftItems, addCategory } from "../../settings/items";
 import { Category } from "../../types/store";
 import { createStyleshiftWindow } from "../extension";
 import { settingsUi } from "./settingComponents";
-import { addDropTarget, clearDropTargets } from "./reorder";
+import { addDropTarget, addDrag } from "./reorder";
 import { getRootValue } from "@/styleshift/core/storageManager";
 import { isDevModulesLoaded } from "@/styleshift/core/runtimeController";
+import { getStyleshiftDevOnlyItems } from "../../../main/itemsStyleshiftDev";
 import { IS_IN_EXTENSION_SETTINGS_PAGE } from "@/styleshift/run";
 
 export function setupLeftTitleAnimation(title: HTMLElement) {
@@ -55,143 +55,17 @@ export async function createMainSettingsUi({
 	getCategory = null as (() => Category[] | Promise<Category[]>) | null,
 }) {
 	let settingsWindow: SettingsWindow | null = null;
-	let updateSettingInterval: any = null;
-	let scrollCategory: HTMLElement | null = null;
-	let settingsContainer: HTMLElement | null = null;
+	let svelteInstance: any = null;
 
 	const returnObj = {
-		renderContent: async function (skipAnimation = false) {
-			if (!settingsContainer) return;
-
-			clearDropTargets();
-			settingUiRegistry.clear();
-			settingsContainer.innerHTML = "";
-			if (scrollCategory) scrollCategory.innerHTML = "";
-
-			if (updateSettingInterval) clearInterval(updateSettingInterval);
-
-			const leftUi: HTMLElement[] = [];
-			const rightUi: HTMLElement[] = [];
-			const createdDevOnlyCategory: string[] = [];
-
-			const categories = getCategory ? await getCategory() : [];
-
-			for (const thisCategory of categories) {
-				const { categoryTitle, categoryFrame } = await createCategoryUi(settingsContainer, thisCategory);
-
-				const leftCategoryTitle = await settingsUi.leftTitle(thisCategory.category, skipAnimation);
-
-				scrollOnClick(leftCategoryTitle, categoryTitle);
-
-				if (showCategoryList && scrollCategory) {
-					leftUi.push(leftCategoryTitle);
-					scrollCategory.append(leftCategoryTitle);
-				}
-
-				rightUi.push(categoryTitle);
-
-				if (isDevModulesLoaded) {
-					const getDevOnlyCategory = getStyleshiftDevOnlyItems().find(
-						(x) => x.category == thisCategory.category,
-					);
-
-					if (getDevOnlyCategory) {
-						createdDevOnlyCategory.push(getDevOnlyCategory.category);
-
-						for (const thisSettingOnly of getDevOnlyCategory.settings) {
-							await createSettingUiElementWithAbleDeveloperMode(categoryFrame, thisSettingOnly);
-						}
-					}
-				}
-
-				if (thisCategory.editable && (await getRootValue("developerMode"))) {
-					dynamicAppend(categoryFrame, await settingsUi.addSettingButton(thisCategory.settings));
-				}
-
-				await settingsUi.space(settingsContainer);
-			}
-
-			if (await getRootValue("developerMode")) {
-				for (const thisCategory of getStyleshiftDevOnlyItems()) {
-					if (!createdDevOnlyCategory.includes(thisCategory.category)) {
-						await createCategoryUi(settingsContainer, thisCategory);
-					}
-				}
-			}
-
-			if (showCategoryList && scrollCategory && (await getRootValue("developerMode"))) {
-				const addButton = (
-					await settingsUi.button({
-						name: "+",
-						color: "#FFFFFF",
-						align: "center",
-						clickFunction: function () {
-							addCategory("🥳 newCategory");
-						},
-					})
-				).button;
-				addButton.className += " STYLESHIFT-Add-Category-button";
-
-				addButton.style.padding = "5px";
-				addButton.style.marginInline = "10px";
-				addButton.style.marginTop = "3px";
-
-				leftUi.push(addButton);
-				scrollCategory.append(addButton);
-
-				if (!skipAnimation) {
-					setupLeftTitleAnimation(addButton);
-				}
-			}
-
-			if (showCategoryList && !skipAnimation) {
-				requestAnimationFrame(function () {
-					for (let leftOrder = 0; leftOrder < leftUi.length; leftOrder++) {
-						const leftCategoryTitle = leftUi[leftOrder];
-						setTimeout(() => {
-							leftCategoryTitle.style.transform = "";
-							leftCategoryTitle.style.opacity = "";
-						}, 50 * leftOrder);
-					}
-				});
-			}
-
-			let currentSelectedLeft: HTMLElement;
-			let currentSelectedRight: HTMLElement;
-
-			if (showCategoryList && settingsContainer) {
-				updateSettingInterval = setInterval(async function () {
-					const lastIndex = rightUi.length - 1;
-
-					for (let index = 0; index <= lastIndex; index++) {
-						const settingsContainerBox = settingsContainer.getBoundingClientRect();
-						if (
-							index == lastIndex ||
-							(rightUi[index].getBoundingClientRect().top - 10 <= settingsContainerBox.top &&
-								rightUi[index + 1].getBoundingClientRect().top - 10 >=
-								settingsContainerBox.top) ||
-							(index == 0 &&
-								rightUi[index].getBoundingClientRect().top >= settingsContainerBox.top)
-						) {
-							if (currentSelectedLeft == leftUi[index]) {
-								break;
-							}
-							if (currentSelectedLeft) {
-								currentSelectedLeft.removeAttribute("selected");
-							}
-							if (currentSelectedRight) {
-								currentSelectedRight.removeAttribute("selected");
-							}
-							currentSelectedLeft = leftUi[index];
-							currentSelectedRight = rightUi[index];
-							currentSelectedLeft.setAttribute("selected", "");
-							currentSelectedRight.setAttribute("selected", "");
-
-							currentSelectedLeft.scrollIntoView({ behavior: "smooth", block: "nearest" });
-							break;
-						}
-					}
-				}, 100);
+		renderContent: async function (_skipAnimation = false) {
+			if (svelteInstance) {
+				const categories = getCategory ? await getCategory() : [];
+				const devOnlyItems = isDevModulesLoaded ? getStyleshiftDevOnlyItems() : [];
+				svelteInstance.categories = categories;
+				svelteInstance.devOnlyItems = devOnlyItems;
+				svelteInstance.isDeveloperMode = await getRootValue("developerMode");
+				svelteInstance.isDevModulesLoaded = isDevModulesLoaded;
 			}
 		},
 
@@ -210,57 +84,25 @@ export async function createMainSettingsUi({
 
 			logger.info("ui", "Created_styleshift_window");
 
-			const settingsContent = settingsWindow.contentElement;
 			const settingsWindowElement = settingsWindow.windowElement;
-
 			settingsWindowElement.style.minWidth = "500px";
 
-			const mainFrame = await settingsUi.settingFrame(false, false, { x: false, y: false }, true);
+			const categories = getCategory ? await getCategory() : [];
+			const devOnlyItems = isDevModulesLoaded ? getStyleshiftDevOnlyItems() : [];
+			const isDeveloperMode = await getRootValue("developerMode");
 
-			mainFrame.style.width = "calc(100% - 5px)";
-			mainFrame.style.height = "-webkit-fill-available";
-			mainFrame.style.gap = "10px";
-			mainFrame.style.overflow = "hidden";
-			settingsContent.append(mainFrame);
-
-			if (showCategoryList) {
-				scrollCategory = document.createElement("div");
-				scrollCategory.className = "STYLESHIFT-Scrollable";
-				scrollCategory.style.minWidth = "100px";
-				scrollCategory.style.width = "250px";
-				scrollCategory.setAttribute("Left", "true");
-				mainFrame.append(scrollCategory);
-
-				const resizeHandle = await settingsUi.resizeHandle(scrollCategory, "right");
-				mainFrame.append(resizeHandle);
-			}
-
-			const settingsFrame = await settingsUi.settingFrame(false, true, { x: false, y: false }, true);
-			settingsFrame.style.width = "-webkit-fill-available";
-			settingsFrame.style.height = "100%";
-			settingsFrame.style.gap = "10px";
-			mainFrame.append(settingsFrame);
-
-			const searchInput = document.createElement("input");
-			searchInput.className = "STYLESHIFT-Search";
-			searchInput.placeholder = "🔍 Search";
-			settingsFrame.append(searchInput);
-
-			settingsContainer = document.createElement("div");
-			settingsContainer.className = "STYLESHIFT-Scrollable";
-			settingsFrame.append(settingsContainer);
-
-			if (settingsWindow.closeButton) {
-				settingsWindow.closeButton.addEventListener(
-					"click",
-					() => {
-						returnObj.removeUi();
-					},
-					{ once: true },
-				);
-			}
-
-			await returnObj.renderContent(skipAnimation);
+			svelteInstance = settingsUi.settingsWindow(
+				{
+					categories,
+					showCategoryList,
+					devOnlyItems,
+					isDeveloperMode,
+					isDevModulesLoaded,
+					onClose: () => returnObj.removeUi(),
+					onAddCategory: (categoryName: string) => addCategory(categoryName),
+				},
+				settingsWindow.contentElement,
+			);
 
 			if (onCreate) {
 				onCreate(settingsWindow);
@@ -268,7 +110,11 @@ export async function createMainSettingsUi({
 		},
 		removeUi: function (skipAnimation = false, _delay = false) {
 			if (settingsWindow) {
-				if (updateSettingInterval) clearInterval(updateSettingInterval);
+				if (svelteInstance) {
+					unmount(svelteInstance);
+					svelteInstance = null;
+				}
+
 				if (skipAnimation) {
 					const overlayFrame = settingsWindow.overlayFrame;
 					requestAnimationFrame(() => {
@@ -278,31 +124,57 @@ export async function createMainSettingsUi({
 					settingsWindow.closeWindowHandler();
 				}
 				settingsWindow = null;
-				settingsContainer = null;
-				scrollCategory = null;
 			}
 		},
 		recreateUi: async function () {
-			logger.info("ui", "recreateUi triggered", { settingsWindow });
-			if (settingsWindow && scrollCategory && settingsContainer) {
+			logger.info("ui", "recreateUi triggered - full remount", { settingsWindow });
+			if (settingsWindow) {
 				await updateStyleshiftItems();
 
-				const lastScroll = [0, 0];
-				if (showCategoryList) {
-					lastScroll[0] = scrollCategory.scrollTop;
+				// Save scroll positions before unmounting
+				const sidebar = settingsWindow.contentElement.querySelector(".STYLESHIFT-Sidebar") as HTMLElement;
+				const content = settingsWindow.contentElement.querySelector(".STYLESHIFT-Settings-List") as HTMLElement;
+				const sidebarScrollTop = sidebar?.scrollTop || 0;
+				const contentScrollTop = content?.scrollTop || 0;
+				logger.info("ui", "Saved scroll positions", { sidebarScrollTop, contentScrollTop });
+
+				// Unmount old component
+				if (svelteInstance) {
+					unmount(svelteInstance);
+					svelteInstance = null;
 				}
-				lastScroll[1] = settingsContainer.scrollTop;
 
-				await returnObj.renderContent(true);
+				// Clear content element
+				settingsWindow.contentElement.innerHTML = "";
 
-				requestAnimationFrame(function () {
-					if (showCategoryList && scrollCategory) {
-						scrollCategory.scrollTo(0, lastScroll[0]);
-					}
-					if (settingsContainer) {
-						settingsContainer.scrollTo(0, lastScroll[1]);
-					}
+				// Remount with fresh data
+				const categories = getCategory ? await getCategory() : [];
+				const devOnlyItems = isDevModulesLoaded ? getStyleshiftDevOnlyItems() : [];
+				const isDeveloperMode = await getRootValue("developerMode");
+
+				svelteInstance = settingsUi.settingsWindow(
+					{
+						categories,
+						showCategoryList,
+						devOnlyItems,
+						isDeveloperMode,
+						isDevModulesLoaded,
+						onClose: () => returnObj.removeUi(),
+						onAddCategory: (categoryName: string) => addCategory(categoryName),
+					},
+					settingsWindow.contentElement,
+				);
+
+				// Restore scroll positions after remounting
+				requestAnimationFrame(() => {
+					const newSidebar = settingsWindow.contentElement.querySelector(".STYLESHIFT-Sidebar") as HTMLElement;
+					const newContent = settingsWindow.contentElement.querySelector(".STYLESHIFT-Settings-List") as HTMLElement;
+					if (newSidebar) newSidebar.scrollTop = sidebarScrollTop;
+					if (newContent) newContent.scrollTop = contentScrollTop;
+					logger.info("ui", "Restored scroll positions", { sidebarScrollTop, contentScrollTop });
 				});
+
+				logger.info("ui", "UI remounted successfully");
 			}
 		},
 		toggle: function () {
@@ -314,7 +186,7 @@ export async function createMainSettingsUi({
 		},
 
 		setGetCategory: function (newFunction: () => Category[] | Promise<Category[]> | null) {
-			getCategory = newFunction;
+			getCategory = newFunction as any;
 			if (settingsWindow) {
 				returnObj.recreateUi();
 			}
@@ -350,19 +222,38 @@ export async function createSettingUiElementWithAbleDeveloperMode(parent: HTMLDi
 	const dataType = getStyleshiftDataType(thisData);
 	const uiType = dataType == "category" ? "title" : (thisData as any).type;
 
+	if (uiType === "group" || uiType === "subTitle") {
+		thisData.editable = await getRootValue("developerMode");
+	}
+
 	const mainElement = await createBaseUiElement(uiType, thisData);
 	if (!mainElement) return null;
 
 	const anyElement = mainElement as any;
 	const container = anyElement.frame || anyElement.button || anyElement;
-	dynamicAppend(parent, mainElement);
+	dynamicAppend(parent, container);
 
 	if (dataType === "setting" && thisData.id) {
 		settingUiRegistry.set(thisData.id, { parent, container });
 	}
 
 	if (dataType === "category") {
-		addDropTarget(anyElement.frame || anyElement, parent, thisData as Category, "category");
+		addDropTarget(container, parent, thisData as Category, "category");
+		if (thisData.editable && (await getRootValue("developerMode"))) {
+			// Categories in sidebar are handled differently, but if rendered in main panel:
+			// addDrag(...)
+		}
+	}
+
+	if (dataType === "group" || uiType === "subTitle") {
+		const groupData = anyElement.data || thisData;
+		if (await getRootValue("developerMode")) {
+			const dragHandle = container.querySelector(".drag-handle") as HTMLElement;
+			if (dragHandle) {
+				addDrag(dragHandle, container, parent, groupData);
+			}
+		}
+		addDropTarget(container, parent, groupData, "group");
 	}
 
 	return mainElement;

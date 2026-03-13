@@ -1,7 +1,7 @@
 import { Category } from "../../styleshift/types/store";
 
 export const thumbnailCategory: Category = {
-	category: "📰 Thumbnail & Clip Cover",
+	category: { icon: "image_search", label: "Thumbnail & Clip Cover" },
 	settings: [
 		{
 			type: "numberSlide",

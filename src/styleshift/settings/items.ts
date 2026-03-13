@@ -11,7 +11,7 @@ import { logger } from "../../shared/logger";
 
 const highlightColors = [`255, 109, 109`, `167, 242, 255`, `255, 167, 248`, `188, 167, 255`, `255, 241, 167`];
 
-const styleshiftItems: { Default: Category[]; Custom: Category[] } = {
+const styleshiftItems: { Default: (Category | { isHeader: boolean; label: string })[]; Custom: Category[] } = {
 	Default: [],
 	Custom: [],
 };
@@ -32,8 +32,12 @@ export function getAllStyleshiftItems() {
 	return [...styleshiftItems.Default, ...styleshiftItems.Custom];
 }
 
+export function getAllStyleshiftCategoriesOnly(): Category[] {
+	return getAllStyleshiftItems().filter((item) => (item as any).category != null) as Category[];
+}
+
 export function getAllStyleshiftSettings() {
-	return getAllStyleshiftItems()
+	return getAllStyleshiftCategoriesOnly()
 		.map((item) => item.settings)
 		.flat();
 }
@@ -47,8 +51,8 @@ export function findExistSettings(setting: Setting) {
 	);
 }
 
-export function getSettingCategory(setting: Setting) {
-	for (const thisCategory of getAllStyleshiftItems()) {
+export function getSettingCategory(setting: Setting): Category | null {
+	for (const thisCategory of getAllStyleshiftCategoriesOnly()) {
 		for (const thisSetting of thisCategory.settings) {
 			if (thisSetting === setting) {
 				return thisCategory;
@@ -59,13 +63,14 @@ export function getSettingCategory(setting: Setting) {
 }
 
 export function findExistCategory(category: Category) {
-	return getAllStyleshiftItems().some((thisCategory) => thisCategory.category === category.category);
+	return getAllStyleshiftCategoriesOnly().some((thisCategory) => thisCategory.category === category.category);
 }
 
-function autoAddHightlight(array) {
-	for (const categoryObj of array) {
-		if (categoryObj.Highlight_color == null) {
-			const categoryName = categoryObj.Category || categoryObj.category || "General";
+function autoAddHightlight(array: (Category | { isHeader: boolean; label: string })[]) {
+	for (const item of array) {
+		const categoryObj = item as Category;
+		if (categoryObj.category && categoryObj.Highlight_color == null) {
+			const categoryName = typeof categoryObj.category === "string" ? categoryObj.category : categoryObj.category.label;
 			const getColorId = randomNumberInRange(0, highlightColors.length - 1, categoryName);
 			logger.debug("highlight", "random id", categoryName, getColorId);
 			categoryObj.Highlight_color = highlightColors[getColorId];
@@ -93,31 +98,26 @@ export async function updateStyleshiftItems() {
 	autoAddHightlight(getAllStyleshiftItems());
 
 	// Default
-
-	for (const thisCategory of styleshiftItems.Default) {
-		if (thisCategory.editable !== true) {
-			thisCategory.editable = false;
-		}
-	}
-
-	for (const thisSetting of styleshiftItems.Default.flatMap(function (thisSetting) {
-		return thisSetting.settings;
-	})) {
-		if (thisSetting.editable !== true) {
-			thisSetting.editable = false;
+	for (const item of styleshiftItems.Default) {
+		if ((item as any).category) {
+			const thisCategory = item as Category;
+			if (thisCategory.editable !== true) {
+				thisCategory.editable = false;
+			}
+			for (const thisSetting of thisCategory.settings) {
+				if (thisSetting.editable !== true) {
+					thisSetting.editable = false;
+				}
+			}
 		}
 	}
 
 	// Custom
-
 	for (const thisCategory of styleshiftItems.Custom) {
 		thisCategory.editable = true;
-	}
-
-	for (const thisSetting of styleshiftItems.Custom.flatMap(function (thisSetting) {
-		return thisSetting.settings;
-	})) {
-		thisSetting.editable = true;
+		for (const thisSetting of thisCategory.settings) {
+			thisSetting.editable = true;
+		}
 	}
 }
 
@@ -130,7 +130,7 @@ export async function getSettingsList(rebuild = false): Promise<{ [id: string]: 
 
 	settingsList = {};
 
-	for (const categoryObj of getAllStyleshiftItems()) {
+	for (const categoryObj of getAllStyleshiftCategoriesOnly()) {
 		for (const setting of categoryObj.settings) {
 			if ("id" in setting && setting.id != null) {
 				settingsList[setting.id] = setting;
@@ -213,6 +213,10 @@ export async function addCategory(categoryName: string) {
 	customItems.push(thisCategory);
 	logger.info("category", "Added Category", customItems);
 
+	// Track the new category ID for UI highlighting
+	const categoryId = typeof thisCategory.category === "string" ? thisCategory.category : thisCategory.category.label;
+	await saveToStorage("lastAddedCategory", categoryId);
+
 	saveCustomItemsAndRefreshExtensionState(customItems);
 }
 
@@ -233,8 +237,16 @@ export async function removeCategory(thisCategory) {
 export function getStyleshiftDataType(thisData) {
 	logger.info("data", thisData);
 
+	if (thisData.isHeader) {
+		return "header";
+	}
+
 	if (thisData.category != null) {
 		return "category";
+	}
+
+	if (thisData.type === "group") {
+		return "group";
 	}
 
 	return "setting";

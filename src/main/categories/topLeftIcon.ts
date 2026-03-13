@@ -2,7 +2,7 @@ import { Category } from "../../styleshift/types/store";
 import "../features/topLeftIcon"; // Import side-effects
 
 export const topLeftIconCategory: Category = {
-	category: "💠 Top-Left Icon",
+	category: { icon: "featured_video", label: "Top-Left Icon" },
 	settings: [
 		{
 			type: "checkbox",

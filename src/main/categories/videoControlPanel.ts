@@ -1,11 +1,13 @@
 import { Category } from "../../styleshift/types/store";
 import { ytVideoContainerWatchMode, ytPlayerWatchMode } from "../modules/youtube";
+import { createSubTitle } from "../../styleshift/ui/settings/components/advance/advance";
 
 
 export const videoControlPanelCategory: Category = {
-	category: "🎚️ Video Control Panel",
+	category: { icon: "settings_input_component", label: "Video Control Panel" },
 	selector: "#movie_player",
 	settings: [
+		createSubTitle("Layout", true),
 		{
 			type: "checkbox",
 			id: "EnableControlsBelowVideo",
@@ -14,8 +16,7 @@ export const videoControlPanelCategory: Category = {
 				"Moves the entire video control bar (play, volume, settings) from an overlay on top of the video to a dedicated space directly underneath it.",
 			value: true,
 			enableCss: `
-				${ytVideoContainerWatchMode},
-				#ytd-player
+				${ytVideoContainerWatchMode}
 				{
 					padding-bottom: var(--nt-player-below-space, 70px);
 				}
@@ -152,6 +153,7 @@ export const videoControlPanelCategory: Category = {
 			value: false,
 			enableCss: `.ytp-gradient-bottom { background-image: none !important; }`,
 		},
+		createSubTitle("Colors & Styling", true),
 		{
 			type: "color",
 			id: "ControlPanelTextColor",
@@ -213,6 +215,7 @@ export const videoControlPanelCategory: Category = {
                 .ytp-gradient-bottom { height: var(--nt-player-bg-height, 60px) !important; }
             `,
 		},
+		createSubTitle("Borders & Shadows", true),
 		{
 			type: "checkbox",
 			id: "EnableControlPanelBorder",

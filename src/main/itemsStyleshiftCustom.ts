@@ -2,7 +2,7 @@ import { Category } from "../styleshift/types/store";
 
 const customStyleshiftItems: Category[] = [
 	{
-		category: "🧪 Test Custom Category",
+		category: { icon: "science", label: "Test Custom Category" },
 		editable: true,
 		settings: [
 			{

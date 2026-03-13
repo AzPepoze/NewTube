@@ -8,7 +8,7 @@ import {
 const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
 export const removeBlackBarsCategory: Category = {
-	category: "🔳 Remove black bars on video",
+	category: { icon: "crop_square", label: "Remove black bars on video" },
 	selector: "#movie_player",
 	settings: [
 		{

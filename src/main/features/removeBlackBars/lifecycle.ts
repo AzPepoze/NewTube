@@ -1,4 +1,4 @@
-import { waitOneFrame } from "../../../styleshift/shared/normal";
+import { waitOneFrame } from "../../../styleshift/shared/advance";
 import { getFromStorage, getUserSetting } from "../../../styleshift/core/storageManager";
 import { registerSettingListener } from "../../../styleshift/settings/functions";
 import { onYoutubeFullscreen, getVideoElement, videoElement } from "../../modules/youtube";

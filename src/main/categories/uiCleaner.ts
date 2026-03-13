@@ -1,7 +1,7 @@
 import { Category } from "../../styleshift/types/store";
 
 export const uiCleanerCategory: Category = {
-	category: "🧹 UI Cleaner",
+	category: { icon: "layers_clear", label: "UI Cleaner" },
 	settings: [
 		{
 			type: "checkbox",

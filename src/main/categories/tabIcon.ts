@@ -2,7 +2,7 @@ import { Category } from "../../styleshift/types/store";
 import { setupTabIconChanger, disableTabIconChanger } from "../features/tabIcon";
 
 export const tabIconCategory: Category = {
-	category: "🔶 Tab Icon",
+	category: { icon: "tab", label: "Tab Icon" },
 	settings: [
 		{
 			type: "checkbox",

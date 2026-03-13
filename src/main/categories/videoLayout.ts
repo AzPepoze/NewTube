@@ -1,7 +1,7 @@
 import { Category } from "../../styleshift/types/store";
 
 export const videoLayoutCategory: Category = {
-	category: "📐 Video Layout",
+	category: { icon: "ondemand_video", label: "Video Layout" },
 	settings: [
 		{
 			type: "checkbox",

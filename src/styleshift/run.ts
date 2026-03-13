@@ -25,6 +25,7 @@ import { getAllStyleshiftItems, getAllStyleshiftSettings, updateStyleshiftItems 
 import "./communication/extension";
 import { updateAllUiComponents } from "./ui/extension";
 import { syncAllThemes } from "./ui/theme";
+import { Category } from "./types/store";
 import { extensionSettingsUi, extensionSettingsUiPromise } from "./ui/extensionSettings";
 import { toggleCustomize } from "./ui/highlight";
 import { appBootstrap, shouldEnableExtension } from "@/main/main";
@@ -138,7 +139,8 @@ async function bootstrapExtension(): Promise<void> {
 
 	// Normalize CSS selectors for all items
 	const items = getAllStyleshiftItems();
-	for (const category of items) {
+	for (const item of items) {
+		const category = item as Category;
 		if (category.selector) {
 			category.selector = rearrangeSelector(category.selector);
 		}

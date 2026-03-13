@@ -1,36 +1,107 @@
 <script lang="ts">
-	let { text, subtitle = false, rainbow = false, className = "" } = $props();
+	import Icon from "../main/Icon.svelte";
+
+	let {
+		text,
+		icon = "",
+		subtitle = false,
+		rainbow = false,
+		className = "",
+		leftSeparator = false,
+		editable = false,
+	} = $props();
 </script>
 
 {#if subtitle}
-	<div class="STYLESHIFT-Sub-Title {className}">
+	<div class="STYLESHIFT-Sub-Title {className}" class:STYLESHIFT-Left-Separator={leftSeparator}>
+		{#if editable}
+			<div class="STYLESHIFT-Group-Drag drag-handle">
+				<Icon name="drag" size={14} />
+			</div>
+		{/if}
 		{@html text}
 	</div>
 {:else}
 	<div class="STYLESHIFT-Category-Title {rainbow ? 'STYLESHIFT-Category-title-Rainbow' : ''} {className}">
+		{#if icon}
+			<span class="STYLESHIFT-Category-Title-Icon">
+				<Icon name={icon} size={24} color="black" />
+			</span>
+		{/if}
 		{text}
 	</div>
 {/if}
 
 <style lang="scss">
 	.STYLESHIFT-Category-Title {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
 		position: relative;
 		width: calc(100% - 6px);
 		font-size: 20px;
-		padding-block: 5px;
-		font-weight: 500;
+		padding-block: 10px;
+		font-weight: 600;
 		background: var(--Category-Title-BG);
 		color: black;
 		text-align: center;
 		border-radius: 20px;
 		margin: 3px;
+		margin-bottom: 10px;
 		user-select: text;
 		transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+		box-shadow: 0 4px 15px var(--Black-10);
+	}
+
+	.STYLESHIFT-Category-Title-Icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.STYLESHIFT-Sub-Title {
-		margin-block: 10px;
-		font-size: 15px;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-top: 25px;
+		margin-bottom: 15px;
+		margin-inline: 10px;
+		font-size: 16px;
+		font-weight: 600;
+		color: var(--White-80);
+		opacity: 0.9;
+		position: relative;
+
+		&.STYLESHIFT-Left-Separator {
+			padding-left: 12px;
+			&::before {
+				content: "";
+				position: absolute;
+				left: 0;
+				top: 2px;
+				bottom: 2px;
+				width: 4px;
+				background: var(--Theme-0);
+				border-radius: 4px;
+				box-shadow: 0 0 10px var(--Theme-0);
+			}
+		}
+	}
+
+	.STYLESHIFT-Group-Drag {
+		cursor: grab;
+		opacity: 0;
+		transition: opacity 0.2s;
+		color: var(--White-40);
+
+		&:hover {
+			color: var(--White-100);
+		}
+
+		:global(.STYLESHIFT-Sub-Title:hover) & {
+			opacity: 1;
+		}
 	}
 
 	.STYLESHIFT-Category-title-Rainbow {

@@ -1,12 +1,13 @@
 import { checkAndUpdateTheme } from "../styleshift/core/themeStore";
 import { openSettingPage } from "@/styleshift/shared/extension";
-import { Category } from "../styleshift/types/store";
+import { Category, SeparateCategory } from "../styleshift/types/store";
 import { showThemeManager } from "./features/themes/themeManagerService";
 import { toggleCustomize } from "@/styleshift/ui/highlight";
 
-const defaultStyleshiftItems: Category[] = [
+const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
+	{ isHeader: true, label: "Extension" },
 	{
-		category: "☕ Buy me a chocolate mlik! (I don't drink a coffee)",
+		category: { icon: "volunteer_activism", label: "Buy me a chocolate mlik! (I don't drink a coffee)" },
 		rainbow: true,
 		settings: [
 			{
@@ -22,7 +23,7 @@ const defaultStyleshiftItems: Category[] = [
 		selector: "",
 	},
 	{
-		category: "🎉 Join my Discord!",
+		category: { icon: "group", label: "Join my Discord!" },
 		rainbow: true,
 		settings: [
 			{
@@ -37,7 +38,7 @@ const defaultStyleshiftItems: Category[] = [
 		],
 	},
 	{
-		category: "🎛️ Quick Pallette",
+		category: { icon: "settings_input_component", label: "Quick Pallette" },
 		rainbow: true,
 		settings: [
 			{
@@ -76,7 +77,7 @@ const defaultStyleshiftItems: Category[] = [
 		],
 	},
 	{
-		category: "⚙️ Extention's settings",
+		category: { icon: "settings", label: "Extention's settings" },
 		settings: [
 			{
 				id: "enableExtension",
@@ -167,7 +168,7 @@ const defaultStyleshiftItems: Category[] = [
 		],
 	},
 	{
-		category: "↕️ Import / Export Theme",
+		category: { icon: "swap_vert", label: "Import / Export Theme" },
 		settings: [
 			{
 				clickFunction:
@@ -197,7 +198,7 @@ const defaultStyleshiftItems: Category[] = [
 		],
 	},
 	{
-		category: "⚡ Performance",
+		category: { icon: "flash_on", label: "Performance" },
 		settings: [
 			{
 				type: "checkbox",

@@ -5,7 +5,7 @@ import { logger } from "../shared/logger";
 
 const devOnlyItems: Category[] = [
 	{
-		category: "↕️ Import / Export Theme",
+		category: { icon: "swap_vert", label: "Import / Export Theme" },
 		settings: [
 			{
 				type: "subText",

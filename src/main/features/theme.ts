@@ -27,7 +27,7 @@ function getSortedPalette(palette: [number, number, number][]) {
 }
 
 async function getSampleColor(img: HTMLImageElement): Promise<[number, number, number]> {
-	const colorThief = new ColorThief();
+	const colorThief = new (ColorThief as any)();
 	const dominant = colorThief.getColor(img) as [number, number, number];
 	const hsv = rgbToHsv({ r: dominant[0], g: dominant[1], b: dominant[2] });
 

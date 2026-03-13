@@ -48,7 +48,7 @@
 		border: 1px solid var(--Border-Color);
 		box-shadow: 0px 4px 15px var(--Shadow-Color);
 		border-radius: 12px;
-		width: 350px;
+		width: 100%;
 		gap: 15px;
 		display: flex;
 		flex-direction: row !important;
@@ -59,7 +59,9 @@
 		min-height: fit-content;
 		color: var(--Font-Color);
 		backdrop-filter: var(--Window-Blur) var(--Window-Saturate);
-		transition: background-color 0.3s, backdrop-filter 0.3s;
+		transition:
+			background-color 0.3s,
+			backdrop-filter 0.3s;
 		padding: 12px;
 		box-sizing: border-box;
 

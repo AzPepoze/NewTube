@@ -1,4 +1,4 @@
-import { Category } from "../styleshift/types/store";
+import { Category, SeparateCategory } from "../styleshift/types/store";
 import { videoPlayerCategory } from "./categories/videoPlayer";
 import { videoAutomationCategory } from "./categories/videoAutomation";
 import { videoLayoutCategory } from "./categories/videoLayout";
@@ -25,8 +25,8 @@ import { fontsCategory } from "./categories/fonts";
 import { enhancedCssCategory } from "./categories/enhancedCss";
 import { betaFeaturesCategory } from "./categories/betaFeatures";
 
-const defaultStyleshiftItems: Category[] = [
-	// --- Video Experience ---
+const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
+	{ isHeader: true, label: "Video Experience" },
 	videoPlayerCategory,
 	videoControlPanelCategory,
 	videoColorsCategory,
@@ -35,7 +35,7 @@ const defaultStyleshiftItems: Category[] = [
 	videoBackgroundCategory,
 	removeBlackBarsCategory,
 
-	// --- Visual Style ---
+	{ isHeader: true, label: "Visual Style" },
 	colorThemeCategory,
 	backgroundCategory,
 	blurCategory,
@@ -45,7 +45,7 @@ const defaultStyleshiftItems: Category[] = [
 	enhancedCssCategory,
 	fontsCategory,
 
-	// --- Components ---
+	{ isHeader: true, label: "Components" },
 	subtitlesCategory,
 	thumbnailCategory,
 	topbarSearchCategory,
@@ -53,7 +53,7 @@ const defaultStyleshiftItems: Category[] = [
 	tabIconCategory,
 	subscribeButtonCategory,
 
-	// --- Utility & Cleanup ---
+	{ isHeader: true, label: "Utility & Cleanup" },
 	enhancementCategory,
 	scrollbarCategory,
 	uiCleanerCategory,

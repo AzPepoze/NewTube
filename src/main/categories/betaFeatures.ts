@@ -3,7 +3,7 @@ import { setupAudioVisualizer, destroyAudioVisualizer } from "../features/visual
 import { setupBlackToTransparent, destroyBlackToTransparent } from "../features/video/blackToTransparent";
 
 export const betaFeaturesCategory: Category = {
-	category: "🌠 Beta features!",
+	category: { icon: "new_label", label: "Beta features!" },
 	settings: [
 		{
 			type: "text",

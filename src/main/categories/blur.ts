@@ -1,7 +1,7 @@
 import { Category } from "../../styleshift/types/store";
 
 export const blurCategory: Category = {
-	category: "🪟 Blur",
+	category: { icon: "blur_on", label: "Blur" },
 	settings: [
 		{
 			type: "numberSlide",

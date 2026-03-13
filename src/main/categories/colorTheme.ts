@@ -2,7 +2,7 @@ import { Category } from "../../styleshift/types/store";
 import { enableThemeByVideo, disableThemeByVideo } from "../features/theme";
 
 export const colorThemeCategory: Category = {
-	category: "🎨 Color Theme",
+	category: { icon: "palette", label: "Color Theme" },
 	settings: [
 		{
 			type: "checkbox",

@@ -1,7 +1,7 @@
 import { Category } from "../../styleshift/types/store";
 
 export const subtitlesCategory: Category = {
-	category: "🔤 Subtitles & Captions",
+	category: { icon: "closed_caption", label: "Subtitles & Captions" },
 	settings: [
 		{
 			type: "checkbox",

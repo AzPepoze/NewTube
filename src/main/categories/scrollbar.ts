@@ -1,7 +1,7 @@
 import { Category } from "../../styleshift/types/store";
 
 export const scrollbarCategory: Category = {
-	category: "📜 Scrollbar",
+	category: { icon: "unfold_more", label: "Scrollbar" },
 	settings: [
 		{
 			type: "dropdown",

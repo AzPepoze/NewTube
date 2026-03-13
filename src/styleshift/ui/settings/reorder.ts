@@ -1,4 +1,4 @@
-import { insertAfter } from "../../shared/normal";
+import { insertAfter } from "@/styleshift/shared/advance";
 import { logger } from "../../../shared/logger";
 import { saveToStorage } from "../../core/storageManager";
 import { getSettingCategory, getCustomItems } from "../../settings/items";
@@ -192,33 +192,89 @@ export async function addDrag(
 				scroller.removeAttribute("draging");
 				clearCurrentPlaceholder();
 
+				logger.debug("drag", "Release detected", { lastHitEl, dragingSetting: dragingSetting?.Data });
+
 				if (lastHitEl) {
 					const info = dropTargets.get(lastHitEl);
 					if (info) {
-						const itemToMove = dragingSetting!.Data as Setting;
-						const sourceCategory = getSettingCategory(itemToMove);
-						if (sourceCategory !== null) {
-							const idx = sourceCategory.settings.indexOf(itemToMove);
-							if (idx > -1) sourceCategory.settings.splice(idx, 1);
-						}
+						const draggingData = dragingSetting!.Data;
+						const isGroup = (draggingData as any).type === "group";
+						const isCategory = (draggingData as any).category != null;
 
-						const targetCategory: Category | null =
-							info.dataType === "category"
-								? (info.data as Category)
-								: getSettingCategory(info.data as Setting);
+						logger.debug("drag", "Drop target found", { isCategory, isGroup, targetDataType: info.dataType });
 
-						if (targetCategory !== null && targetCategory.editable) {
-							let dropIndex = 0;
-							if (info.dataType !== "category") {
-								dropIndex =
-									targetCategory.settings.indexOf(info.data as Setting) +
-									(lastHitIsAfter ? 1 : 0);
+						if (isCategory) {
+							// Move category in custom items list
+							const customItems = getCustomItems();
+							const sourceIdx = customItems.indexOf(draggingData as Category);
+							if (sourceIdx > -1) {
+								customItems.splice(sourceIdx, 1);
+								const targetIdx = customItems.indexOf(info.data as Category) + (lastHitIsAfter ? 1 : 0);
+								customItems.splice(targetIdx, 0, draggingData as Category);
+								await saveToStorage("customStyleshiftItems", customItems);
+								logger.debug("drag", "Category moved", { sourceIdx, targetIdx, category: (draggingData as any).category });
 							}
-							targetCategory.settings.splice(dropIndex, 0, itemToMove);
+						} else {
+							// Move setting or group
+							const itemToMove = draggingData as Setting;
+							const sourceCategory = getSettingCategory(itemToMove);
 
-							await saveToStorage("customStyleshiftItems", getCustomItems());
+							if (sourceCategory !== null && sourceCategory.editable) {
+								if (isGroup) {
+									// Group move: find the range of settings
+									const sectionTitle = draggingData as any;
+									const allSettings = sourceCategory.settings;
+									const startIdx = allSettings.indexOf(sectionTitle);
+									let endIdx = allSettings.length;
+									for (let i = startIdx + 1; i < allSettings.length; i++) {
+										if ((allSettings[i] as any).type === "group" || (allSettings[i] as any).type === "subTitle") {
+											endIdx = i;
+											break;
+										}
+									}
+
+									const groupItems = allSettings.splice(startIdx, endIdx - startIdx);
+
+									const targetCategory: Category | null =
+										info.dataType === "category"
+											? (info.data as Category)
+											: getSettingCategory(info.data as Setting);
+
+									if (targetCategory !== null && targetCategory.editable) {
+										let dropIndex = 0;
+										if (info.dataType !== "category") {
+											dropIndex = targetCategory.settings.indexOf(info.data as Setting) + (lastHitIsAfter ? 1 : 0);
+										}
+										targetCategory.settings.splice(dropIndex, 0, ...groupItems);
+										logger.info("drag", "Group moved", { startIdx, endIdx, dropIndex, itemCount: groupItems.length });
+									}
+								} else {
+									// Single setting move
+									const idx = sourceCategory.settings.indexOf(itemToMove);
+									if (idx > -1) sourceCategory.settings.splice(idx, 1);
+
+									const targetCategory: Category | null =
+										info.dataType === "category"
+											? (info.data as Category)
+											: getSettingCategory(info.data as Setting);
+
+									if (targetCategory !== null && targetCategory.editable) {
+										let dropIndex = 0;
+										if (info.dataType !== "category") {
+											dropIndex = targetCategory.settings.indexOf(info.data as Setting) + (lastHitIsAfter ? 1 : 0);
+										}
+										targetCategory.settings.splice(dropIndex, 0, itemToMove);
+										logger.info("drag", "Setting moved", { sourceIdx: idx, dropIndex, settingId: (itemToMove as any).id });
+									}
+								}
+								await saveToStorage("customStyleshiftItems", getCustomItems());
+							}
 						}
+					} else {
+						logger.debug("drag", "No drop target found at release point");
 					}
+				} else {
+					logger.debug("drag", "Released outside any drop zone");
 				}
 
 				dragingSetting = null;

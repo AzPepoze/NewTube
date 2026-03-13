@@ -1,12 +1,19 @@
-import { applyDrag, sequencedTask } from "@/styleshift/shared/normal";
+import {
+	applyDrag,
+} from "@/styleshift/shared/advance";
+import {
+	sequencedTask,
+} from "@/styleshift/shared/normal";
+import { getCategoryParts } from "@/styleshift/ui/utils";
 import { getRootValue } from "@/styleshift/core/storageManager";
 import { triggerSettingUpdate } from "@settings/functions";
-import { Category } from "@styleshift/types/store";
+import { Category, CategoryNameWithIcon } from "@styleshift/types/store";
 import { settingsUi } from "@ui/settings/settingComponents";
 import { createConfigUiFunction, setupLeftTitleAnimation } from "@ui/settings/settings";
 
 import FrameComponent from "./Frame.svelte";
 import SpaceComponent from "./Space.svelte";
+import { Setting } from "../../../../types/store";
 import TitleComponent from "./Title.svelte";
 import LeftTitleComponent from "./LeftTitle.svelte";
 import TextEditorComponent from "./TextEditor.svelte";
@@ -175,7 +182,7 @@ export function drag(target: HTMLElement) {
 		icon: dragIcon,
 		className: "STYLESHIFT-Drag-Top",
 		size: 20,
-		onClick: () => {},
+		onClick: () => { },
 	}) as HTMLDivElement;
 
 	applyDrag(drag, target);
@@ -187,7 +194,7 @@ export function close() {
 		icon: closeIcon,
 		className: "STYLESHIFT-Close",
 		size: 20,
-		onClick: () => {},
+		onClick: () => { },
 	}) as HTMLDivElement;
 }
 
@@ -199,7 +206,8 @@ export async function title(thisCategory: Category) {
 		settingsUi.renderComponent(
 			TitleComponent,
 			{
-				text: thisCategory.category,
+				text: getCategoryParts(thisCategory.category).text,
+				icon: getCategoryParts(thisCategory.category).icon,
 				rainbow: thisCategory.rainbow,
 			},
 			target,
@@ -228,24 +236,46 @@ export async function title(thisCategory: Category) {
 	return { frame, configUiFunction };
 }
 
-export function leftTitle(category: string, skipAnimation: boolean) {
+export function leftTitle(
+	category: string | CategoryNameWithIcon,
+	skipAnimation: boolean,
+	isHeader: boolean = false,
+	separator: boolean = false,
+	isNew: boolean = false,
+) {
 	const title = settingsUi.renderComponent(LeftTitleComponent, {
 		category,
-		skipAnimation: skipAnimation,
+		skipAnimation,
+		isHeader,
+		separator,
+		isNew,
 	}) as HTMLDivElement;
 
-	if (!skipAnimation) {
+	if (!skipAnimation && !isHeader) {
 		setupLeftTitleAnimation(title);
 	}
 
 	return title;
 }
 
-export function subTitle(text: string) {
-	return settingsUi.renderComponent(TitleComponent, {
+export function subTitle(thisData: { text: string; leftSeparator?: boolean; editable?: boolean }) {
+	const { text, leftSeparator, editable } = thisData;
+	const frame = settingsUi.renderComponent(TitleComponent, {
 		text,
 		subtitle: true,
+		leftSeparator: leftSeparator || false,
+		editable: editable || false,
 	}) as HTMLDivElement;
+
+	return { frame, data: thisData };
+}
+
+export function createSubTitle(text: string, leftSeparator: boolean = false): Setting {
+	return {
+		type: "group",
+		text,
+		leftSeparator,
+	} as any;
 }
 
 export async function collapsedButton(buttonName: string, color: string, targetElement: HTMLElement) {

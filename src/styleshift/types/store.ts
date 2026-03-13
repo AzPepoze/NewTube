@@ -1,5 +1,5 @@
 export type Category = {
-	category: string;
+	category: string | CategoryNameWithIcon;
 	rainbow?: boolean;
 	selector?: string;
 
@@ -9,6 +9,9 @@ export type Category = {
 	Highlight_color?: string;
 	Selector?: string;
 };
+
+export type CategoryNameWithIcon = { icon: string; label: string };
+export type SeparateCategory = { isHeader: boolean; label: string };
 
 export type Option = {
 	name?: string;
@@ -223,6 +226,13 @@ export type Setting = (
 		id?: string;
 		name?: string;
 		description?: string;
+		editable?: boolean;
+	}
+	| {
+		type: "group";
+		id?: string;
+		text: string;
+		leftSeparator?: boolean;
 		editable?: boolean;
 	}
 ) &

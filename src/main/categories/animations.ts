@@ -2,7 +2,7 @@ import { Category } from "../../styleshift/types/store";
 import { ytPlayerWatchMode } from "../modules/youtube";
 
 export const animationCategory: Category = {
-	category: "🚶 Animations",
+	category: { icon: "slideshow", label: "Animations" },
 	settings: [
 		{
 			type: "checkbox",

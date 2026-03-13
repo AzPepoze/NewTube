@@ -18,4 +18,5 @@ export const settingsUi = {
 	...developerSettingUi,
 	...render,
 	...windows,
+	group: advanceSettingUi.subTitle,
 };

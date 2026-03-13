@@ -1,11 +1,9 @@
 <script lang="ts">
-	const search = "assets/icons/search.svg";
 	const edit = "assets/icons/edit.svg";
 	const del = "assets/icons/delete.svg";
 	const drag = "assets/icons/drag.svg";
 	const add = "assets/icons/add.svg";
 	const close = "assets/icons/close.svg";
-	const settings = "assets/icons/settings.svg";
 	const code = "assets/icons/code.svg";
 	const arrowUp = "assets/icons/arrowUp.svg";
 	const arrowDown = "assets/icons/arrowDown.svg";
@@ -19,13 +17,11 @@
 	import { getAssetUrl } from "@ui/utils";
 
 	const icons: Record<string, string> = {
-		search,
 		edit,
 		delete: del,
 		drag,
 		add,
 		close,
-		settings,
 		code,
 		arrowUp,
 		arrowDown,
@@ -58,7 +54,15 @@
 	const src = $derived(
 		iconPath ? getAssetUrl(iconPath) : isUrl ? getAssetUrl(name) : "",
 	);
-	const isEmoji = $derived(!iconPath && !isUrl && name.length > 0);
+	const isMaterialIcon = $derived(
+		!iconPath &&
+			!isUrl &&
+			typeof name === "string" &&
+			/^[a-z_0-9]+$/.test(name),
+	);
+	const isEmoji = $derived(
+		!iconPath && !isUrl && !isMaterialIcon && name.length > 0,
+	);
 </script>
 
 {#if src}
@@ -72,6 +76,14 @@
 			: ''}{style}"
 		style:color={color || undefined}
 	/>
+{:else if isMaterialIcon}
+	<i
+		class="material-icons STYLESHIFT-Icon STYLESHIFT-Material-Icon {className}"
+		style="font-size: {size}px; line-height: {size}px; width: {size}px; height: {size}px; {style}"
+		style:color={color || undefined}
+	>
+		{name}
+	</i>
 {:else if isEmoji}
 	<span
 		class="STYLESHIFT-Icon STYLESHIFT-Text-Icon {className}"
@@ -99,5 +111,22 @@
 		align-items: center;
 		justify-content: center;
 		font-style: normal;
+	}
+
+	.STYLESHIFT-Material-Icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-style: normal;
+		font-weight: normal;
+		font-family: "Material Icons" !important;
+		font-size: inherit;
+		font-feature-settings: "liga" 1;
+		line-height: 1;
+		text-transform: none;
+		letter-spacing: normal;
+		word-wrap: normal;
+		white-space: nowrap;
+		direction: ltr;
 	}
 </style>

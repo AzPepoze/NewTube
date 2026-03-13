@@ -19,7 +19,7 @@ export async function settingDeveloperTextEditor(
 	const textEditors = {};
 
 	for (const [title, property] of Object.entries(thisProperty)) {
-		mainUi.append(settingsUi.subTitle(title));
+		mainUi.append(settingsUi.subTitle({ text: title }).frame);
 		const settingDeveloperTextEditor = settingsUi.textEditor(thisSetting, property as string);
 		settingDeveloperTextEditor.afterOnChange(updateUi);
 		mainUi.append(settingDeveloperTextEditor.textEditor);

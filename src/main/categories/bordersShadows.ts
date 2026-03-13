@@ -1,7 +1,7 @@
 import { Category } from "../../styleshift/types/store";
 
 export const bordersShadowsCategory: Category = {
-	category: "🔳 Borders / Shadows",
+	category: { icon: "border_all", label: "Borders / Shadows" },
 	settings: [
 		{
 			type: "dropdown",
