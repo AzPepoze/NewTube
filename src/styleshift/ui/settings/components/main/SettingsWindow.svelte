@@ -165,7 +165,10 @@
 		>
 			{#each filteredData as item, i (i)}
 				{#if "isHeader" in item}
-					<div class="STYLESHIFT-Sidebar-Header">
+					<div
+						class="STYLESHIFT-Sidebar-Header"
+						style="animation-delay: {i * 50}ms;"
+					>
 						{(item as any).label}
 					</div>
 				{:else}
@@ -173,6 +176,7 @@
 					{@const parts = getCategoryParts(category.category)}
 					<button
 						class="STYLESHIFT-Sidebar-Item-Wrapper"
+						style="animation-delay: {i * 50}ms;"
 						onclick={() => {
 							const target =
 								scrollContainer?.querySelector(
@@ -258,6 +262,17 @@
 </div>
 
 <style lang="scss">
+	@keyframes sidebar-animation {
+		from {
+			opacity: 0;
+			transform: translateX(-10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+
 	.STYLESHIFT-Settings-Main {
 		display: flex;
 		flex-direction: row;
@@ -285,6 +300,7 @@
 		cursor: pointer;
 		width: 100%;
 		display: block;
+		animation: sidebar-animation 0.2s both;
 	}
 
 	.STYLESHIFT-Add-Category-button {
@@ -314,6 +330,7 @@
 		margin-top: 8px;
 		margin-bottom: 4px;
 		border-top: 2px solid rgba(255, 255, 255, 0.1);
+		animation: sidebar-animation 1s both;
 	}
 
 	.STYLESHIFT-Sidebar-Header:first-child {
