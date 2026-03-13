@@ -4,6 +4,24 @@ import { getUserSetting } from "../core/storageManager";
 let stylesheetHolder: HTMLElement;
 let stylesheetHolderConstant: HTMLElement;
 
+export async function injectMaterialIconsStyles() {
+	const materialIconsCss = `
+		@font-face {
+			font-family: "Material Icons";
+			font-style: normal;
+			font-weight: 400;
+			font-display: block;
+			src:
+				url("${chrome.runtime.getURL("assets/fonts/material-icons.woff2")}") format("woff2"),
+				url("${chrome.runtime.getURL("assets/fonts/material-icons.woff")}") format("woff"),
+				url("${chrome.runtime.getURL("assets/fonts/material-icons.ttf")}") format("truetype");
+		}
+	`;
+
+	const styleElement = createStylesheet("material-icons", true);
+	styleElement.textContent = materialIconsCss;
+}
+
 export async function createStylesheetHolder() {
 	stylesheetHolder = document.createElement("fieldset");
 	stylesheetHolder.id = "STYLESHIFT_stylesheet_holder";

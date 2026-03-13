@@ -2,17 +2,6 @@
 @use "animation";
 @use "notification";
 
-@font-face {
-	font-family: "Material Icons";
-	font-style: normal;
-	font-weight: 400;
-	font-display: block;
-	src:
-		url("./assets/fonts/material-icons.woff2") format("woff2"),
-		url("./assets/fonts/material-icons.woff") format("woff"),
-		url("./assets/fonts/material-icons.ttf") format("truetype");
-}
-
 .material-icons {
 	font-family: "Material Icons" !important;
 	font-weight: normal;

@@ -20,7 +20,7 @@ import {
 	initializeDefaultCustomItems,
 } from "./core/storageMaintenance";
 import { registerSettingListener, initializeAllActiveSettings, attachBehaviorToSetting } from "./settings/functions";
-import { createStylesheetHolder } from "./settings/styleSheet";
+import { createStylesheetHolder, injectMaterialIconsStyles } from "./settings/styleSheet";
 import { getAllStyleshiftItems, getAllStyleshiftSettings, updateStyleshiftItems } from "./settings/items";
 import "./communication/extension";
 import { updateAllUiComponents } from "./ui/extension";
@@ -87,6 +87,7 @@ async function bootstrapExtension(): Promise<void> {
 		// Still need some basics for notifications to work on the store
 		await getDocumentHead();
 		await createStylesheetHolder();
+		await injectMaterialIconsStyles();
 		return;
 	}
 
@@ -107,6 +108,7 @@ async function bootstrapExtension(): Promise<void> {
 	// Initialize remaining components
 	await synchronizeAvailableFunctions();
 	await createStylesheetHolder();
+	await injectMaterialIconsStyles();
 	await updateStyleshiftItems();
 	await populateMissingDefaultSettings();
 
