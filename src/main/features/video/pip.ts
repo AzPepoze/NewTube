@@ -83,11 +83,3 @@ export function enableAutoExitPip() {
 	document.addEventListener("visibilitychange", pipExitHandler);
 	logger.debug("pip", "Auto Exit PiP enabled");
 }
-
-export function disableAutoExitPip() {
-	if (pipExitHandler) {
-		document.removeEventListener("visibilitychange", pipExitHandler);
-		pipExitHandler = null;
-		logger.debug("pip", "Auto Exit PiP disabled");
-	}
-}

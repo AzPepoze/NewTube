@@ -35,7 +35,6 @@
 	let {
 		setting,
 		highlight = "",
-		onUpdate: _externalOnUpdate,
 	}: {
 		setting: Setting;
 		highlight?: string;

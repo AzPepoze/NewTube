@@ -52,7 +52,11 @@
 	}
 
 	async function handleSelect(e: MouseEvent, option: string) {
-		logger.debug("ui", `[Dropdown] Option selected: "${option}" for setting:`, setting.id || "no-id");
+		logger.debug(
+			"ui",
+			`[Dropdown] Option selected: "${option}" for setting:`,
+			setting.id || "no-id",
+		);
 		e.stopPropagation();
 		value = option;
 
@@ -60,7 +64,10 @@
 			await setAndSave(setting, value);
 			triggerSettingUpdate(setting.id);
 		} else if (typeof setting.updateFunction === "function") {
-			logger.debug("ui", `[Dropdown] Executing updateFunction for non-id setting`);
+			logger.debug(
+				"ui",
+				`[Dropdown] Executing updateFunction for non-id setting`,
+			);
 			(setting.updateFunction as Function)(value);
 		}
 
@@ -84,7 +91,8 @@
 				}
 			};
 			window.addEventListener("click", handleClickOutside);
-			return () => window.removeEventListener("click", handleClickOutside);
+			return () =>
+				window.removeEventListener("click", handleClickOutside);
 		}
 	});
 
@@ -100,7 +108,9 @@
 		if (!triggerEl || !menuEl) return;
 
 		if (!scrollParent) {
-			scrollParent = triggerEl.closest(".STYLESHIFT-Scrollable") as HTMLElement;
+			scrollParent = triggerEl.closest(
+				".STYLESHIFT-Scrollable",
+			) as HTMLElement;
 		}
 
 		const triggerRect = triggerEl.getBoundingClientRect();
@@ -217,7 +227,12 @@
 		style:visibility={isReady ? "visible" : "hidden"}
 		style:pointer-events={isReady ? "all" : "none"}
 		class:above={isMenuAbove}
-		transition:scale={{ duration: 300, start: 0.9, opacity: 0, easing: quintOut }}
+		transition:scale={{
+			duration: 300,
+			start: 0.9,
+			opacity: 0,
+			easing: quintOut,
+		}}
 	>
 		{#each optionsList as option, i (i)}
 			<button
@@ -339,7 +354,8 @@
 		transition: all 0.2s ease;
 		opacity: 0;
 		transform: translateX(-10px);
-		animation: itemSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+		animation: itemSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)
+			forwards;
 
 		&:hover {
 			background: var(--White-10);

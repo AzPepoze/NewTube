@@ -441,21 +441,6 @@ export function getCurrentDomain(): string {
 }
 
 /**
- * Scrolls to a target element when a button is clicked.
- * @param {HTMLElement} button - The button element.
- * @param {HTMLElement} target - The target element.
- * @example
- * scrollOnClick(document.querySelector("#mybutton"), document.querySelector("#mytarget"));
- */
-export function scrollOnClick(button: HTMLElement, target: HTMLElement): void {
-	button.addEventListener("click", function () {
-		target.scrollIntoView({ behavior: "smooth" });
-	});
-}
-
-
-
-/**
  * Rearranges a selector string.
  * @param {string} value - The selector string.
  * @returns {string}
@@ -467,17 +452,6 @@ export function rearrangeSelector(value: string): string {
 }
 
 /**
- * Checks if a value is an array of objects.
- * @param {any} value - The value to check.
- * @returns {boolean}
- * @example
- * isObjectArray([{ a: 1 }, { b: 2 }]); // true
- */
-export function isObjectArray(value: any): boolean {
-	return Array.isArray(value) && value.every((item) => typeof item === "object" && item !== null);
-}
-
-/**
  * Deep clones an object.
  * @param {any} data - The data to clone.
  * @returns {any}
@@ -486,22 +460,6 @@ export function isObjectArray(value: any): boolean {
  */
 export function deepClone(data: any): any {
 	return JSON.parse(JSON.stringify(data));
-}
-
-/**
- * Checks if two objects are the same.
- * @param {object} obj1 - The first object.
- * @param {object} obj2 - The second object.
- * @returns {boolean}
- * @example
- * isSameObj({ a: 1 }, { a: 1 }); // true
- */
-export function isSameObj(obj1: object, obj2: object): boolean {
-	if (Object.keys(obj1).length !== Object.keys(obj2).length) return false;
-	for (const key in obj1) {
-		if (obj1[key] !== obj2[key]) return false;
-	}
-	return true;
 }
 
 /**
@@ -546,25 +504,6 @@ export function downloadFile(data: BlobPart, filename: string): void {
 		document.body.removeChild(a);
 		window.URL.revokeObjectURL(url);
 	}, 0);
-}
-
-/**
- * Handles file input change event.
- * @param {HTMLInputelement} element - The input element.
- * @example
- * inputFile(document.querySelector("#fileInput"));
- */
-export function inputFile(element: HTMLInputElement): void {
-	element.addEventListener("change", async (event: Event) => {
-		const file = (event.target as HTMLInputElement).files[0];
-		if (!file) return;
-
-		try {
-			return file;
-		} catch (error) {
-			logger.error("Error reading file:", error);
-		}
-	});
 }
 
 /**
