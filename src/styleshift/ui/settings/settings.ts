@@ -56,6 +56,7 @@ export async function createMainSettingsUi({
 }) {
 	let settingsWindow: SettingsWindow | null = null;
 	let svelteInstance: any = null;
+	let cooldown = false;
 
 	const returnObj = {
 		renderContent: async function (_skipAnimation = false) {
@@ -80,6 +81,9 @@ export async function createMainSettingsUi({
 				skipAnimation,
 				title: "StyleShift Settings",
 				fullscreen: IS_IN_EXTENSION_SETTINGS_PAGE,
+				onWindowClosed: () => {
+					settingsWindow = null;
+				},
 			});
 
 			logger.info("ui", "Created_styleshift_window");
@@ -177,11 +181,15 @@ export async function createMainSettingsUi({
 				logger.info("ui", "UI remounted successfully");
 			}
 		},
-		toggle: function () {
+		toggle: async function () {
+			if (cooldown) return;
+			cooldown = true;
 			if (settingsWindow) {
 				returnObj.removeUi();
+				setTimeout(() => (cooldown = false), 200);
 			} else {
-				returnObj.createUi();
+				await returnObj.createUi();
+				setTimeout(() => (cooldown = false), 200);
 			}
 		},
 

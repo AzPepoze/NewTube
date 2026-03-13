@@ -19,6 +19,7 @@ export async function createStyleshiftWindow({
 	title = "StyleShift",
 	fullscreen = false,
 	center = false,
+	onWindowClosed = null as (() => void) | null,
 }) {
 	// Ensure developer tools are ready if mode is enabled
 	if (await getRootValue("developerMode")) {
@@ -45,6 +46,9 @@ export async function createStyleshiftWindow({
 			unmount(windowInstance);
 		}
 		overlayFrame.remove();
+		if (onWindowClosed) {
+			onWindowClosed();
+		}
 	};
 
 	windowInstance = settingsUi.renderWindow(
