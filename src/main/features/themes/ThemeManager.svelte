@@ -273,7 +273,7 @@
 				name: "Cancel",
 				color: "var(--White-20, #646464)",
 				clickFunction: handleCancel,
-			} as any}
+			}}
 		/>
 	</div>
 </div>

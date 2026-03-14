@@ -1,5 +1,4 @@
 import { Category } from "../../styleshift/types/styleshiftTypes";
-import { enableSettingsButton, disableSettingsButton } from "../features/newtubeSettingsButton";
 
 export const topbarSearchCategory: Category = {
 	category: { icon: "search", label: "Topbar & Search" },

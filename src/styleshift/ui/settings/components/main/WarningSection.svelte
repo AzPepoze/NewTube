@@ -55,7 +55,7 @@
 																reqId
 															]?.options?.[
 																val
-															] as any
+															] 
 														)?.name || val}</span
 													>
 													{#if i < require[reqId].length - 1}
@@ -67,8 +67,8 @@
 													>{(
 														requiredSettings[reqId]
 															?.options?.[
-															require[reqId] as any
-														] as any
+															require[reqId] 
+														] 
 													)?.name ||
 														require[reqId]}</span
 												>

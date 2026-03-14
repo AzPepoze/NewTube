@@ -1,3 +1,3 @@
 // Declare global variable for TS (will be defined by esbuild)
-declare const imgbbApiKey: string;
+declare const _imgbbApiKey: string;
 

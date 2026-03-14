@@ -19,7 +19,7 @@ export default defineConfig([
 	},
 	{
 		files: ["**/*.{js,mjs,cjs,ts,mts,cts,svelte}"],
-		ignores: ["node_modules"],
+		ignores: ["node_modules", "out", "out/**"],
 		languageOptions: { globals: { ...globals.browser, ...globals.node } },
 		rules: {
 			"prefer-const": "off",

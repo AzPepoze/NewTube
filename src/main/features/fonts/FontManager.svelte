@@ -18,7 +18,8 @@
 		enabled: boolean;
 	};
 
-	let { setting }: { setting: Extract<Setting, { type: "custom" }> } = $props();
+	let { setting }: { setting: Extract<Setting, { type: "custom" }> } =
+		$props();
 
 	let fonts = $state<FontEntry[]>([]);
 	let pasteText = $state("");
@@ -66,7 +67,9 @@
 			const url = new URL(urlStr);
 			const families = url.searchParams.getAll("family");
 			if (families.length > 0) {
-				return families.map((f) => f.split(":")[0].replace(/\+/g, " "));
+				return families.map((f) =>
+					f.split(":")[0].replace(/\+/g, " "),
+				);
 			}
 		} catch (_e) {}
 		return [];
@@ -87,7 +90,12 @@
 	}
 
 	async function handleRemove(id: string, name: string) {
-		if (await showUserConfirmation(`Are you sure you want to remove the font "${name}"?`, "Remove Font")) {
+		if (
+			await showUserConfirmation(
+				`Are you sure you want to remove the font "${name}"?`,
+				"Remove Font",
+			)
+		) {
 			fonts = fonts.filter((f) => f.id !== id);
 			await saveFonts();
 		}
@@ -96,7 +104,10 @@
 	async function moveUp(index: number) {
 		if (index === 0) return;
 		const newFonts = [...fonts];
-		[newFonts[index - 1], newFonts[index]] = [newFonts[index], newFonts[index - 1]];
+		[newFonts[index - 1], newFonts[index]] = [
+			newFonts[index],
+			newFonts[index - 1],
+		];
 		fonts = newFonts;
 		await saveFonts();
 	}
@@ -104,7 +115,10 @@
 	async function moveDown(index: number) {
 		if (index === fonts.length - 1) return;
 		const newFonts = [...fonts];
-		[newFonts[index], newFonts[index + 1]] = [newFonts[index + 1], newFonts[index]];
+		[newFonts[index], newFonts[index + 1]] = [
+			newFonts[index + 1],
+			newFonts[index],
+		];
 		fonts = newFonts;
 		await saveFonts();
 	}
@@ -127,16 +141,19 @@
 <div class="NEWTUBE-FontManager">
 	<!-- 1. Paste Section -->
 	<div class="section paste-section">
-		<Description name="Paste Section" description="Paste Google Fonts style or URL here." />
+		<Description
+			name="Paste Section"
+			description="Paste Google Fonts style or URL here."
+		/>
 		<TextEditor bind:value={pasteText} />
 		<div class="add-button-container">
 			<Button
-				setting={{ 
-					type: "button", 
-					name: "Add Font", 
-					color: "#7f5db7", 
+				setting={{
+					type: "button",
+					name: "Add Font",
+					color: "#7f5db7",
 					align: "center",
-					clickFunction: handleAdd
+					clickFunction: handleAdd,
 				}}
 			/>
 		</div>
@@ -144,7 +161,10 @@
 
 	<!-- 2. Manage Section -->
 	<div class="section manage-section">
-		<Description name="Manage Section" description="Enable, reorder, or delete fonts from your library." />
+		<Description
+			name="Manage Section"
+			description="Enable, reorder, or delete fonts from your library."
+		/>
 		{#if fonts.length > 0}
 			<div class="font-list">
 				{#each fonts as font, i (font.id)}
@@ -173,13 +193,18 @@
 									id: "", // Empty ID to use bind:value and avoid global storage
 									name: "",
 									value: font.enabled,
-									updateFunction: () => handleToggle(font.id)
-								} as any}
+									updateFunction: () =>
+										handleToggle(font.id),
+								}}
 								bind:value={font.enabled}
 							/>
 							<IconButton
 								icon="delete"
-								onClick={() => handleRemove(font.id, font.fontName)}
+								onClick={() =>
+									handleRemove(
+										font.id,
+										font.fontName,
+									)}
 								className="delete-btn"
 								size={20}
 							/>
@@ -236,7 +261,6 @@
 		border: 1px solid var(--White-10);
 		transition: all 0.2s;
 		gap: 15px;
-
 	}
 
 	.font-info {

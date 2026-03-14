@@ -97,10 +97,20 @@
 	tabindex="0"
 >
 	{#if icon}
-		<Icon name={icon} size={50} className="STYLESHIFT-Button-Icon" applyFilter={false} />
+		<Icon
+			name={icon}
+			size={50}
+			className="STYLESHIFT-Button-Icon"
+			applyFilter={false}
+		/>
 	{/if}
 
-	<Description {name} {description} {align} style="display: flex; color: inherit; font-size: {fontSize}px;" />
+	<Description
+		{name}
+		{description}
+		{align}
+		style="display: flex; color: inherit; font-size: {fontSize}px;"
+	/>
 </div>
 
 <style lang="scss">
@@ -118,7 +128,8 @@
 	}
 
 	.STYLESHIFT-Button:hover {
-		filter: brightness(1.5) drop-shadow(2px 2px 3px black) drop-shadow(-2px -2px 3px rgba(255, 255, 255, 0.37));
+		filter: brightness(1.5) drop-shadow(2px 2px 3px black)
+			drop-shadow(-2px -2px 3px rgba(255, 255, 255, 0.37));
 
 		:global(.STYLESHIFT-Main-Description .setting-name) {
 			font-weight: 400;

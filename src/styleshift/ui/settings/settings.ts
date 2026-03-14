@@ -220,7 +220,6 @@ export async function createMainSettingsUi({
 		setGetCategory: function (newFunction: () => Category[] | Promise<Category[]> | null) {
 			getCategory = newFunction as any;
 			if (settingsWindow) {
-				true
 				returnObj.recreateUi();
 			}
 		},

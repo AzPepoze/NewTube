@@ -9,12 +9,17 @@
 	let isOpen = $state(false);
 	let triggerEl = $state<HTMLElement | null>(null);
 
-	const options = Object.keys(mainSettingUi).filter((key) => key !== "search");
+	const options = Object.keys(mainSettingUi).filter(
+		(key) => key !== "search",
+	);
 
 	async function handleSelect(selected: string) {
 		const preset = uiPreset.find((p) => p.type === selected);
 		if (preset) {
-			await addSetting(categorySettings, { ...preset, editable: true });
+			await addSetting(categorySettings, {
+				...preset,
+				editable: true,
+			});
 		} else {
 			await addSetting(categorySettings, {
 				type: selected,
@@ -32,7 +37,7 @@
 			type: "button",
 			name: "+",
 			color: "#FFFFFF",
-			clickFunction: () => (isOpen = !isOpen)
+			clickFunction: () => (isOpen = !isOpen),
 		}}
 		style="border-radius: 1000px; padding: 10px; width: 100%;"
 	/>
@@ -45,8 +50,8 @@
 			id: "addSettingDropdown",
 			name: "Add Setting",
 			value: "",
-			options: Object.fromEntries(options.map(opt => [opt, {}])),
-			updateFunction: handleSelect
+			options: Object.fromEntries(options.map((opt) => [opt, {}])),
+			updateFunction: handleSelect,
 		}}
 	/>
 </div>

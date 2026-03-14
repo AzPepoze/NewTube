@@ -63,7 +63,7 @@
 						name: btn.label,
 						color: btn.color,
 						clickFunction: () => handleAction(btn.onClick),
-					} as any}
+					}}
 				/>
 			{/each}
 		{:else}
@@ -81,7 +81,7 @@
 					name: "Cancel",
 					color: "var(--White-20, #646464)",
 					clickFunction: () => handleAction(onCancel),
-				} as any}
+				}}
 			/>
 		{/if}
 	</div>

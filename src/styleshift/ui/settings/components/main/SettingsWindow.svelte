@@ -164,10 +164,10 @@
 							? '0ms'
 							: i * 50 + 'ms'};"
 					>
-						{(item as any).label}
+						{item.label}
 					</div>
 				{:else}
-					{@const category = item as any}
+					{@const category = item}
 					{@const parts = getCategoryParts(category.category)}
 					<button
 						class="STYLESHIFT-Sidebar-Item-Wrapper"
