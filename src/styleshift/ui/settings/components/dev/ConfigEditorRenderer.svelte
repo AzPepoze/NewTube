@@ -10,6 +10,8 @@
 
 	let activeTab = $state("general");
 
+	const displayName = $derived((setting as any).name || "New Setting");
+
 	const tabs = [
 		{ id: "general", label: "General", icon: "settings" },
 		{ id: "logic", label: "Logic & Code", icon: "code" },
@@ -71,7 +73,9 @@
 							try {
 								setting.options = JSON.parse(val);
 							} catch (_e) {
-								console.error("Invalid JSON for options");
+								console.error(
+									"Invalid JSON for options",
+								);
 							}
 						},
 					],
@@ -106,7 +110,9 @@
 						try {
 							setting.syncId = JSON.parse(val);
 						} catch (_e) {
-							setting.syncId = val.split(",").map((s) => s.trim());
+							setting.syncId = val
+								.split(",")
+								.map((s) => s.trim());
 						}
 					},
 				];
@@ -125,7 +131,13 @@
 		switch (type) {
 			case "checkbox":
 			case "dropdown":
-				Object.assign(props, { constant: 2, setup: 3, update: 3, enable: 0, disable: 0 });
+				Object.assign(props, {
+					constant: 2,
+					setup: 3,
+					update: 3,
+					enable: 0,
+					disable: 0,
+				});
 				break;
 			case "button":
 				Object.assign(props, { click: 3 });
@@ -133,10 +145,19 @@
 			case "numberSlide":
 			case "color":
 			case "textInput":
-				Object.assign(props, { var: 2, constant: 2, setup: 3, update: 3 });
+				Object.assign(props, {
+					var: 2,
+					constant: 2,
+					setup: 3,
+					update: 3,
+				});
 				break;
 			case "custom":
-				Object.assign(props, { constant: 2, setup: 3, ui: ["function"] });
+				Object.assign(props, {
+					constant: 2,
+					setup: 3,
+					ui: ["function"],
+				});
 				break;
 			case "combineSettings":
 				Object.assign(props, { update: 3 });
@@ -149,9 +170,11 @@
 <div class="STYLESHIFT-Config-Editor-Layout">
 	<header class="STYLESHIFT-Config-Header">
 		<div class="STYLESHIFT-Config-Setting-Info">
-			<div class="STYLESHIFT-Config-Type-Badge">{setting.type.replace("_", " ")}</div>
+			<div class="STYLESHIFT-Config-Type-Badge">
+				{setting.type.replace("_", " ")}
+			</div>
 			<h2 class="STYLESHIFT-Config-Title">
-				{(setting as any).name || "New Setting"} <span class="setting-id">- {setting.id}</span>
+				{displayName} <span class="setting-id">- {setting.id}</span>
 			</h2>
 		</div>
 
@@ -167,7 +190,11 @@
 				in:fly={{ y: 10, duration: 300, delay: 150 }}
 				out:fade={{ duration: 150 }}
 			>
-				<ConfigMainSection {setting} props={mainProps} updateUi={refreshExtensionState} />
+				<ConfigMainSection
+					{setting}
+					props={mainProps}
+					updateUi={refreshExtensionState}
+				/>
 			</div>
 		{:else if activeTab === "logic"}
 			<div

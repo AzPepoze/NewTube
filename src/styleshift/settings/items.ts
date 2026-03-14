@@ -234,20 +234,3 @@ export async function removeCategory(thisCategory) {
 
 //-------------------------------------------------
 
-export function getStyleshiftDataType(thisData) {
-	logger.info("data", thisData);
-
-	if (thisData.isHeader) {
-		return "header";
-	}
-
-	if (thisData.category != null) {
-		return "category";
-	}
-
-	if (thisData.type === "group") {
-		return "group";
-	}
-
-	return "setting";
-}

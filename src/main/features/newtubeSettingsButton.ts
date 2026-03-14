@@ -4,9 +4,6 @@ import { onYoutubeNavigate } from "../modules/youtube";
 
 let navigateCleanup: (() => void) | null = null;
 
-/**
- * Injects the NewTube settings button (✦) into the YouTube top bar.
- */
 export async function injectSettingsButton() {
 	const target = await waitForElement(
 		"ytmusic-nav-bar #right-content, #masthead-container #end, ytd-masthead #end, #end.ytd-masthead, #container > #end",
@@ -44,9 +41,6 @@ export async function injectSettingsButton() {
 		flex-shrink: 0;
 	`;
 
-	// Add the legacy hover-arrow style via a temporary style tag or inline if possible
-	// For simplicity and matching the user's request "don't change style",
-	// let's ensure the span and after elements have the right properties.
 	const span = btn.querySelector("span");
 	if (span) {
 		Object.assign(span.style, {
@@ -56,7 +50,6 @@ export async function injectSettingsButton() {
 		});
 	}
 
-	// We can't easily do :after in inline style, so we'll inject a small style block if not present
 	if (!document.getElementById("NEWTUBESET_STYLE")) {
 		const style = document.createElement("style");
 		style.id = "NEWTUBESET_STYLE";

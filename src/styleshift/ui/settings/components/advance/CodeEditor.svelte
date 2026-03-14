@@ -1,9 +1,18 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
-	import { codemirrorInstance, globalMetadataCache } from "@/styleshift/core/runtimeController";
+	import {
+		codemirrorInstance,
+		globalMetadataCache,
+	} from "@/styleshift/core/runtimeController";
 	import { logger } from "@/shared/logger";
 
-	let { value = $bindable(""), language = "javascript", height = 400, onBlur, onInput } = $props();
+	let {
+		value = $bindable(""),
+		language = "javascript",
+		height = 400,
+		onBlur,
+		onInput,
+	} = $props();
 
 	let container: HTMLDivElement;
 	let view: any;
@@ -31,7 +40,8 @@
 
 			function styleshiftCompletions(context: any) {
 				const word = context.matchBefore(/[\w$]*/);
-				if (!word || (word.from === word.to && !context.explicit)) return null;
+				if (!word || (word.from === word.to && !context.explicit))
+					return null;
 
 				logger.info(
 					"ui",
@@ -52,55 +62,73 @@
 				};
 			}
 
-			const styleshiftHover = hoverTooltip((view: any, pos: number, side: number) => {
-				const { from, to, text } = view.state.doc.lineAt(pos);
-				let start = pos,
-					end = pos;
-				while (start > from && /[\w$]/.test(text[start - from - 1])) start--;
-				while (end < to && /[\w$]/.test(text[end - from])) end++;
-				if ((start == pos && side < 0) || (end == pos && side > 0)) return null;
+			const styleshiftHover = hoverTooltip(
+				(view: any, pos: number, side: number) => {
+					const { from, to, text } = view.state.doc.lineAt(pos);
+					let start = pos,
+						end = pos;
+					while (
+						start > from &&
+						/[\w$]/.test(text[start - from - 1])
+					)
+						start--;
+					while (end < to && /[\w$]/.test(text[end - from]))
+						end++;
+					if (
+						(start == pos && side < 0) ||
+						(end == pos && side > 0)
+					)
+						return null;
 
-				const word = text.slice(start - from, end - from);
-				const metadata = globalMetadataCache.find((m) => m.label === word);
-				if (!metadata) return null;
+					const word = text.slice(start - from, end - from);
+					const metadata = globalMetadataCache.find(
+						(m) => m.label === word,
+					);
+					if (!metadata) return null;
 
-				return {
-					pos: start,
-					end,
-					above: true,
-					create() {
-						const dom = document.createElement("div");
-						dom.className = "cm-styleshift-tooltip";
+					return {
+						pos: start,
+						end,
+						above: true,
+						create() {
+							const dom = document.createElement("div");
+							dom.className = "cm-styleshift-tooltip";
 
-						const title = document.createElement("div");
-						title.className = "cm-tooltip-title";
-						title.style.fontWeight = "bold";
-						title.style.fontSize = "16px";
-						title.style.color = "var(--Theme-0)";
-						title.style.borderBottom = "1px solid var(--White-10)";
-						title.style.marginBottom = "8px";
-						title.style.paddingBottom = "4px";
-						title.textContent = metadata.label + (metadata.detail || "");
-						dom.appendChild(title);
+							const title = document.createElement("div");
+							title.className = "cm-tooltip-title";
+							title.style.fontWeight = "bold";
+							title.style.fontSize = "16px";
+							title.style.color = "var(--Theme-0)";
+							title.style.borderBottom =
+								"1px solid var(--White-10)";
+							title.style.marginBottom = "8px";
+							title.style.paddingBottom = "4px";
+							title.textContent =
+								metadata.label +
+								(metadata.detail || "");
+							dom.appendChild(title);
 
-						if (metadata.info) {
-							const info = document.createElement("div");
-							info.className = "cm-tooltip-info";
-							info.style.whiteSpace = "pre-wrap";
-							info.style.fontSize = "15px";
-							info.style.lineHeight = "1.5";
-							info.style.color = "var(--White-80)";
-							info.textContent = metadata.info.replace(/\r/g, "");
-							dom.appendChild(info);
-						}
+							if (metadata.info) {
+								const info =
+									document.createElement("div");
+								info.className = "cm-tooltip-info";
+								info.style.whiteSpace = "pre-wrap";
+								info.style.fontSize = "15px";
+								info.style.lineHeight = "1.5";
+								info.style.color = "var(--White-80)";
+								info.textContent =
+									metadata.info.replace(/\r/g, "");
+								dom.appendChild(info);
+							}
 
-						return { dom };
-					},
-				};
-			});
+							return { dom };
+						},
+					};
+				},
+			);
 
 			const extensions = [
-				basicSetup,
+				...basicSetup,
 				oneDark,
 				tooltips({
 					parent: document.body,
@@ -117,27 +145,26 @@
 						onBlur?.(view.state.doc.toString());
 					},
 				}),
+				styleshiftHover,
 			];
 
 			if (language === "javascript" || language === "js") {
-				extensions.push(
-					javascript({
-						extraKeywords: [],
-					}),
-				);
+				extensions.push(javascript());
 				extensions.push(
 					autocompletion({
 						override: [styleshiftCompletions],
 					}),
 				);
-				extensions.push(styleshiftHover);
 			} else if (language === "css") {
 				extensions.push(css());
 			}
 
 			view = new editorView({
 				state: editorState.create({
-					doc: typeof value === "string" ? value : String(value || ""),
+					doc:
+						typeof value === "string"
+							? value
+							: String(value || ""),
 					extensions,
 				}),
 				parent: container,
@@ -156,7 +183,11 @@
 	export function setValue(newVal: string) {
 		if (view) {
 			view.dispatch({
-				changes: { from: 0, to: view.state.doc.length, insert: newVal },
+				changes: {
+					from: 0,
+					to: view.state.doc.length,
+					insert: newVal,
+				},
 			});
 		}
 	}
@@ -166,7 +197,11 @@
 	}
 </script>
 
-<div bind:this={container} class="STYLESHIFT-Code-Editor-Container" style:height="{height}px"></div>
+<div
+	bind:this={container}
+	class="STYLESHIFT-Code-Editor-Container"
+	style:height="{height}px"
+></div>
 
 <style lang="scss">
 	.STYLESHIFT-Code-Editor-Container {

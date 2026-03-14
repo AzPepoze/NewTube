@@ -1,6 +1,7 @@
 import { checkAndShowWelcome } from "./welcome";
 import { initWebsiteIntegration, checkAndUpdateTheme } from "../styleshift/core/themeStore";
 import { NEWTUBE_STORE_ORIGINS } from "./constants";
+import { enableSettingsButton } from "./features/newtubeSettingsButton";
 
 /**
  * Checks if the extension logic should run on this URL.
@@ -22,6 +23,7 @@ export function shouldEnableExtension(): boolean {
  * This is called by the StyleShift core after it has initialized.
  */
 export async function appBootstrap() {
+	enableSettingsButton();
 	await checkAndShowWelcome();
 	await checkAndUpdateTheme();
 }

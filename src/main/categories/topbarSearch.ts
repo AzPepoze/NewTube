@@ -6,15 +6,6 @@ export const topbarSearchCategory: Category = {
 	settings: [
 		{
 			type: "checkbox",
-			id: "EnableSettingsButton",
-			name: "NewTube Settings Button",
-			description: "Adds a stylized NewTube (✦) icon to the top-right header for instant access to these settings without leaving the page.",
-			value: true,
-			enableFunction: enableSettingsButton,
-			disableFunction: disableSettingsButton,
-		},
-		{
-			type: "checkbox",
 			id: "EnableTopbarTransparency",
 			name: "Adaptive Topbar",
 			description: "Makes the top header bar transparent by default and applies your custom background color only when you begin to scroll down.",

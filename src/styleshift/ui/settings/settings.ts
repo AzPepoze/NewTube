@@ -1,11 +1,10 @@
-import { dynamicAppend, createError } from "../../shared/extension";
+import { createError } from "../../shared/extension";
 import { unmount } from "svelte";
 import { logger } from "../../../shared/logger";
-import { getSettingsList, getStyleshiftDataType, updateStyleshiftItems, addCategory } from "../../settings/items";
+import { getSettingsList, updateStyleshiftItems, addCategory } from "../../settings/items";
 import { Category } from "../../types/styleshiftTypes";
 import { createStyleshiftWindow } from "../extension";
 import { settingsUi } from "./settingComponents";
-import { addDropTarget, addDrag } from "./reorder";
 import { getRootValue } from "@/styleshift/core/storageManager";
 import { isDevModulesLoaded } from "@/styleshift/core/runtimeController";
 import { getStyleshiftDevOnlyItems } from "../../../main/itemsStyleshiftDev";
@@ -18,9 +17,22 @@ export function setupLeftTitleAnimation(title: HTMLElement) {
 
 const settingUiRegistry = new Map<string, { parent: HTMLElement; container: HTMLElement }>();
 
+export function registerSettingUi(settingId: string, parent: HTMLElement, container: HTMLElement) {
+	settingUiRegistry.set(settingId, { parent, container });
+}
+
+export function unregisterSettingUi(settingId: string) {
+	settingUiRegistry.delete(settingId);
+}
+
 export async function refreshSettingUi(settingId: string) {
+	logger.debug("ui", `Refreshing UI for setting: ${settingId}`);
+
 	const entry = settingUiRegistry.get(settingId);
-	if (!entry) return;
+	if (!entry) {
+		logger.debug("ui", `UI registry not found for setting: ${settingId}`);
+		return;
+	}
 
 	const { parent, container } = entry;
 	const settings = await getSettingsList();
@@ -37,6 +49,17 @@ export async function refreshSettingUi(settingId: string) {
 			container.replaceWith(newContainer);
 			settingUiRegistry.set(settingId, { parent, container: newContainer });
 		}
+	}
+}
+
+export function migrateSettingUiRegistry(oldId: string, newId: string) {
+	if (oldId === newId) return;
+
+	const entry = settingUiRegistry.get(oldId);
+	if (entry) {
+		settingUiRegistry.set(newId, entry);
+		settingUiRegistry.delete(oldId);
+		logger.debug("ui", `Migrated UI registry from ${oldId} to ${newId}`);
 	}
 }
 
@@ -206,15 +229,6 @@ export async function createMainSettingsUi({
 	return returnObj;
 }
 
-export async function createConfigUiFunction(
-	editable = false,
-	configFunction: Function,
-): Promise<Function | undefined> {
-	if (editable && (await getRootValue("developerMode"))) {
-		return configFunction;
-	}
-}
-
 async function createBaseUiElement(uiType: string, thisData: any) {
 	try {
 		const renderFunc = settingsUi[uiType as keyof typeof settingsUi];
@@ -226,69 +240,4 @@ async function createBaseUiElement(uiType: string, thisData: any) {
 		createError(`${error}\n\n${JSON.stringify(thisData, null, 2)}`);
 		return null;
 	}
-}
-
-export async function createSettingUiElementWithAbleDeveloperMode(parent: HTMLDivElement, thisData: any) {
-	const dataType = getStyleshiftDataType(thisData);
-	const uiType = dataType == "category" ? "title" : (thisData as any).type;
-
-	if (uiType === "group" || uiType === "subTitle") {
-		thisData.editable = await getRootValue("developerMode");
-	}
-
-	const mainElement = await createBaseUiElement(uiType, thisData);
-	if (!mainElement) return null;
-
-	const anyElement = mainElement as any;
-	const container = anyElement.frame || anyElement.button || anyElement;
-	dynamicAppend(parent, container);
-
-	if (dataType === "setting" && thisData.id) {
-		settingUiRegistry.set(thisData.id, { parent, container });
-	}
-
-	if (dataType === "category") {
-		addDropTarget(container, parent, thisData as Category, "category");
-		if (thisData.editable && (await getRootValue("developerMode"))) {
-			// Categories in sidebar are handled differently, but if rendered in main panel:
-			// addDrag(...)
-		}
-	}
-
-	if (dataType === "group" || uiType === "subTitle") {
-		const groupData = anyElement.data || thisData;
-		if (await getRootValue("developerMode")) {
-			const dragHandle = container.querySelector(".drag-handle") as HTMLElement;
-			if (dragHandle) {
-				addDrag(dragHandle, container, parent, groupData);
-			}
-		}
-		addDropTarget(container, parent, groupData, "group");
-	}
-
-	return mainElement;
-}
-
-export async function createCategoryUi(parent: HTMLElement, thisCategory: Category) {
-	const categoryFrame = await settingsUi.settingFrame(true, true);
-	categoryFrame.className += " STYLESHIFT-Category-Frame";
-	parent.append(categoryFrame);
-
-	const categoryTitle = ((await createSettingUiElementWithAbleDeveloperMode(categoryFrame, thisCategory)) as any)
-		.frame;
-
-	for (const thisSetting of thisCategory.settings) {
-		try {
-			if ((thisSetting as any).hidden) continue;
-			await createSettingUiElementWithAbleDeveloperMode(categoryFrame, thisSetting);
-		} catch (error) {
-			createError(`At ${thisCategory.category} - ${JSON.stringify(thisSetting, null, 2)}\n${error}`).then(
-				(notification) => {
-					notification.setTitle("StyleShift - Create ui error");
-				},
-			);
-		}
-	}
-
-	return { categoryTitle, categoryFrame };
 }

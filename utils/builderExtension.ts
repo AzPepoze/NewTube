@@ -222,7 +222,7 @@ async function build() {
 		log.info("Processing shared and communication functions...");
 		const sharedEntryTs = path.join(TEMP_PATH, "shared_entry.ts");
 		const sharedBundledJs = path.join(TEMP_PATH, "shared_bundled.js");
-		
+
 		const entryContent = `
 			export * from "@functions/normal";
 			export * from "@functions/advance";
@@ -282,7 +282,7 @@ async function build() {
 		if (fs.existsSync(materialIconsPath)) {
 			const fontsPath = path.join(BUILD_PATH, "assets/fonts");
 			fs.ensureDirSync(fontsPath);
-			const fontFiles = fs.readdirSync(materialIconsPath).filter(file => 
+			const fontFiles = fs.readdirSync(materialIconsPath).filter(file =>
 				file.endsWith(".woff2") || file.endsWith(".woff") || file.endsWith(".ttf")
 			);
 			for (const file of fontFiles) {

@@ -10,16 +10,18 @@
 	import ImageInput from "./ImageInput.svelte";
 	import PreviewImage from "./PreviewImage.svelte";
 	import Icon from "./Icon.svelte";
+	import WarningSection from "./WarningSection.svelte";
 	import {
 		getFromStorage,
 		getRootValue,
 	} from "@/styleshift/core/storageManager";
+	import { createError } from "@/styleshift/shared/extension";
 	import { settingsUi } from "@ui/settings/settingComponents";
 	import { executeScriptString } from "@/styleshift/core/runtimeController";
 	import { removeSetting } from "@settings/items";
 	import { refreshExtensionState } from "@/styleshift/run";
 	import { showConfigUi, removeConfigUi } from "@ui/config";
-	import { createUniqueId } from "@/styleshift/shared/normal";
+	import { createUniqueId, logger } from "@/styleshift/shared/normal";
 	import Description from "./Description.svelte";
 	import { highlight as highlightAction } from "@ui/settings/highlight";
 	import SettingFrame from "../SettingFrame.svelte";
@@ -29,6 +31,10 @@
 		registerSettingListener,
 		unregisterSettingListener,
 	} from "@settings/functions";
+	import {
+		registerSettingUi,
+		unregisterSettingUi,
+	} from "@ui/settings/settings";
 	import { SvelteMap } from "svelte/reactivity";
 	import KeyboardShortcutsComponent from "../dev/KeyboardShortcuts.svelte";
 
@@ -67,39 +73,46 @@
 
 	// Initialize value from storage
 	async function init() {
-		isDeveloperMode =
-			(await getRootValue("developerMode")) &&
-			(setting.editable ?? false);
-		if ("id" in setting && setting.id) {
-			value = await getFromStorage(setting.id);
-		} else if ("value" in setting) {
-			value = setting.value;
-		}
-
-		if (setting.require && Object.keys(setting.require).length > 0) {
-			const allSettings = await (
-				await import("@settings/items")
-			).getSettingsList();
-			for (const reqId in setting.require) {
-				const reqSetting = allSettings[reqId];
-				if (reqSetting) {
-					const reqValue = await getFromStorage(reqId);
-					requiredSettings[reqId] = {
-						name: (reqSetting as any).name || reqId,
-						value: reqValue,
-						type: reqSetting.type,
-						options: (reqSetting as any).options,
-					};
-
-					const listener = (newVal: any) => {
-						requiredSettings[reqId].value = newVal;
-						checkRequirements();
-					};
-					listeners.set(reqId, listener);
-					registerSettingListener(reqId, listener);
-				}
+		try {
+			isDeveloperMode =
+				(await getRootValue("developerMode")) &&
+				(setting.editable ?? false);
+			if ("id" in setting && setting.id) {
+				value = await getFromStorage(setting.id);
+			} else if ("value" in setting) {
+				value = setting.value;
 			}
-			checkRequirements();
+
+			if (setting.require && Object.keys(setting.require).length > 0) {
+				const allSettings = await (
+					await import("@settings/items")
+				).getSettingsList();
+				for (const reqId in setting.require) {
+					const reqSetting = allSettings[reqId];
+					if (reqSetting) {
+						const reqValue = await getFromStorage(reqId);
+						requiredSettings[reqId] = {
+							name: (reqSetting as any).name || reqId,
+							value: reqValue,
+							type: reqSetting.type,
+							options: (reqSetting as any).options,
+						};
+
+						const listener = (newVal: any) => {
+							requiredSettings[reqId].value = newVal;
+							checkRequirements();
+						};
+						listeners.set(reqId, listener);
+						registerSettingListener(reqId, listener);
+					}
+				}
+				checkRequirements();
+			}
+		} catch (error) {
+			createError(
+				`Failed to initialize setting "${setting.id || setting.type}".\n\nJSON: ${JSON.stringify(setting, null, 2)}`,
+			);
+			logger.error("settings", `Init error for ${setting.id}:`, error);
 		}
 	}
 
@@ -127,6 +140,9 @@
 			listeners.forEach((listener, id) => {
 				unregisterSettingListener(id, listener);
 			});
+			if (setting.id) {
+				unregisterSettingUi(setting.id);
+			}
 		};
 	});
 
@@ -143,31 +159,65 @@
 	}
 
 	function customSettingAction(node: HTMLElement) {
-		node.id = setting.id || createUniqueId(10);
-		if (setting.type === "custom") {
-			if (typeof setting.uiFunction === "function") {
-				setting.uiFunction(node);
-			} else if (typeof setting.uiFunction === "string") {
-				executeScriptString({
-					scriptContent: setting.uiFunction,
-					sourceIdentifier: `${setting.id} : uiFunction`,
-					executionArguments: JSON.stringify({
-						settingId: node.id,
-					}),
-				});
+		try {
+			node.id = setting.id || createUniqueId(10);
+			if (setting.type === "custom") {
+				if (typeof setting.uiFunction === "function") {
+					setting.uiFunction(node);
+				} else if (typeof setting.uiFunction === "string") {
+					executeScriptString({
+						scriptContent: setting.uiFunction,
+						sourceIdentifier: `${setting.id} : uiFunction`,
+						executionArguments: JSON.stringify({
+							settingId: node.id,
+						}),
+					});
+				}
 			}
+		} catch (error) {
+			createError(
+				`Failed to render custom setting "${setting.id}".\n\nJSON: ${JSON.stringify(setting, null, 2)}`,
+			);
+			logger.error(
+				"settings",
+				`Custom action error for ${setting.id}:`,
+				error,
+			);
 		}
 	}
 
 	function dragAction(node: HTMLElement) {
 		if (isDeveloperMode) {
-			addDrag(node, null, null, setting);
+			try {
+				addDrag(node, null, null, setting);
+			} catch (error) {
+				logger.error(
+					"settings",
+					`Drag action error for ${setting.id}:`,
+					error,
+				);
+			}
 		}
 	}
 
 	function keyboardShortcutsAction(node: HTMLElement) {
-		if (setting.type === "keyboardShortcuts") {
-			settingsUi.renderComponent(KeyboardShortcutsComponent, {}, node);
+		try {
+			if (setting.type === "keyboardShortcuts") {
+				settingsUi.renderComponent(
+					KeyboardShortcutsComponent,
+					{},
+					node,
+				);
+			}
+		} catch (error) {
+			createError(
+				`Failed to render keyboard shortcuts for "${setting.id}".\n\nJSON: ${JSON.stringify(setting, null, 2)}`,
+			);
+			logger.error(
+				"settings",
+				`Keyboard action error for ${setting.id}:`,
+				error,
+			);
 		}
 	}
 
@@ -201,6 +251,9 @@
 	useAction={(node) => {
 		domNode = node;
 		highlightAction(node, highlight);
+		if (setting.id && node.parentElement) {
+			registerSettingUi(setting.id, node.parentElement, node);
+		}
 	}}
 	padding={setting.type !== "button" && setting.type !== "subText"}
 	transparent={setting.type === "button" ||
@@ -283,86 +336,13 @@
 		{/if}
 	</div>
 
-	{#if isLocked || !requirementsMet}
-		<div class="STYLESHIFT-Setting-Warning-Section">
-			<div class="lock-info">
-				<div class="lock-messages">
-					{#if isLocked}
-						<div class="lock-message">
-							{setting.lock?.message ||
-								"This setting is currently locked."}
-						</div>
-					{/if}
-					{#if !requirementsMet}
-						<div class="requirement-warning">
-							<div
-								style="display: flex; align-items: center; gap: 5px; color: #ffffff; font-weight: bold;"
-							>
-								This setting requires:
-							</div>
-							<ul class="requirement-list">
-								{#each Object.keys(setting.require || {}) as reqId (reqId)}
-									{#if requiredSettings[reqId]?.value !== setting.require[reqId]}
-										<li>
-											<span class="highlight">
-												{requiredSettings[
-													reqId
-												].name}
-											</span>
-											{#if requiredSettings[reqId].type === "checkbox"}
-												to be enabled
-											{:else}
-												to be
-												{#if Array.isArray(setting.require[reqId])}
-													{#each setting.require[reqId] as val, i (val)}
-														<span
-															class="highlight"
-															>{(
-																requiredSettings[
-																	reqId
-																]
-																	.options?.[
-																	val
-																] as any
-															)
-																?.name ||
-																val}</span
-														>
-														{#if i < setting.require[reqId].length - 1}
-															or
-														{/if}
-													{/each}
-												{:else}
-													<span
-														class="highlight"
-														>{(
-															requiredSettings[
-																reqId
-															]
-																.options?.[
-																setting
-																	.require[
-																	reqId
-																]
-															] as any
-														)?.name ||
-															setting
-																.require[
-																reqId
-															]}</span
-													>
-												{/if}
-											{/if}
-										</li>
-									{/if}
-								{/each}
-							</ul>
-						</div>
-					{/if}
-				</div>
-			</div>
-		</div>
-	{/if}
+	<WarningSection
+		{isLocked}
+		lockMessage={setting.lock?.message}
+		{requirementsMet}
+		require={setting.require}
+		{requiredSettings}
+	/>
 </SettingFrame>
 
 <style lang="scss">
@@ -396,57 +376,5 @@
 		) {
 		pointer-events: all;
 		opacity: 1;
-	}
-
-	.STYLESHIFT-Setting-Warning-Section {
-		margin-top: 10px;
-		padding: 10px 15px;
-		background: rgba(255, 204, 0, 0.1);
-		border: 1px dashed #ffcc00;
-		border-radius: 5px;
-		z-index: 5;
-		pointer-events: all;
-	}
-
-	.lock-info {
-		display: flex;
-		gap: 10px;
-		align-items: flex-start;
-		width: 100%;
-	}
-
-	.lock-messages {
-		display: flex;
-		flex-direction: column;
-		gap: 5px;
-		font-size: 13px;
-		line-height: 1.4;
-	}
-
-	.lock-message {
-		font-weight: 500;
-		color: #ffffff;
-		white-space: normal;
-		overflow-wrap: break-word;
-	}
-
-	.requirement-warning {
-		color: #ffffff;
-	}
-
-	.requirement-list {
-		margin: 5px 0 0 18px;
-		padding: 0;
-		list-style: disc;
-		font-size: 12px;
-		opacity: 0.9;
-
-		.highlight {
-			color: #fff;
-			font-weight: bold;
-			background: rgba(255, 255, 255, 0.1);
-			padding: 0 4px;
-			border-radius: 4px;
-		}
 	}
 </style>

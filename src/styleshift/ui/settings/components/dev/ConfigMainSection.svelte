@@ -5,6 +5,8 @@
 
 	let { setting, props, updateUi = () => {} } = $props();
 
+	const settingSnapshot = $derived(JSON.stringify(setting));
+
 	async function handlePropertyUpdate(
 		property: string,
 		newValue: any,
@@ -61,9 +63,7 @@
 					type: "dropdown",
 					name: title,
 					value: propertyValue,
-					options: Object.fromEntries(
-						update.map((v) => [v, {}]),
-					),
+					options: Object.fromEntries(update.map((v) => [v, {}])),
 					updateFunction: updateFunc,
 				},
 				updateFunction: updateFunc,
@@ -143,11 +143,7 @@
 				typeof tempObj[property] === "object" &&
 				tempObj[property] !== null
 			) {
-				tempObj[property] = JSON.stringify(
-					tempObj[property],
-					null,
-					2,
-				);
+				tempObj[property] = JSON.stringify(tempObj[property], null, 2);
 			}
 
 			const textEditor = await settingsUi.settingDeveloperTextEditor(
@@ -197,7 +193,7 @@
 </script>
 
 <div class="STYLESHIFT-Config-Main-Section">
-	{#each Object.entries(props) as [title, propertyValueEntry] (title)}
+	{#each Object.entries(props) as [title, propertyValueEntry] (`${title}:${settingSnapshot}`)}
 		{@const property = Array.isArray(propertyValueEntry)
 			? propertyValueEntry[0]
 			: propertyValueEntry}

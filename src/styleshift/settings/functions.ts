@@ -220,6 +220,38 @@ export async function attachBehaviorToSetting(setting: Setting) {
 	return updateHandler;
 }
 
+/**
+ * Migrates runtime state (handlers, listeners, initializers) when a setting ID changes.
+ */
+export function migrateSettingRuntimeState(oldId: string, newId: string) {
+	if (oldId === newId) return;
+
+	if (settingUpdateHandlers[oldId]) {
+		settingUpdateHandlers[newId] = settingUpdateHandlers[oldId];
+		delete settingUpdateHandlers[oldId];
+	}
+
+	if (settingUpdateListeners[oldId]) {
+		settingUpdateListeners[newId] = settingUpdateListeners[oldId];
+		delete settingUpdateListeners[oldId];
+	}
+
+	if (settingInitializers[oldId]) {
+		settingInitializers[newId] = settingInitializers[oldId];
+		delete settingInitializers[oldId];
+	}
+
+	if (updateThrottleState[oldId]) {
+		updateThrottleState[newId] = updateThrottleState[oldId];
+		delete updateThrottleState[oldId];
+	}
+
+	if (activeSettingsState[oldId] !== undefined) {
+		activeSettingsState[newId] = activeSettingsState[oldId];
+		delete activeSettingsState[oldId];
+	}
+}
+
 const updateThrottleState: Record<string, "Idle" | "Waiting" | "Processing"> = {};
 
 /**

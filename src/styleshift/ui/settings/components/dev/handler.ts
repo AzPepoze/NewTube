@@ -1,9 +1,10 @@
 import { saveItems, synchronizeAvailableFunctions } from "@/styleshift/core/runtimeController";
 import { refreshExtensionState } from "@/styleshift/run";
 import { logger } from "@/shared/logger";
-import { triggerSettingUpdate } from "@/styleshift/settings/functions";
-import { refreshSettingUi } from "@/styleshift/ui/settings/settings";
+import { triggerSettingUpdate, migrateSettingRuntimeState, attachBehaviorToSetting } from "@/styleshift/settings/functions";
+import { refreshSettingUi, migrateSettingUiRegistry } from "@/styleshift/ui/settings/settings";
 import { getSettingsList } from "@/styleshift/settings/items";
+import { getUserSetting, saveToStorage } from "@/styleshift/core/storageManager";
 
 export async function handleLogicUpdate(callback?: Function) {
 	logger.debug("config", "Handling logic update...");
@@ -49,16 +50,27 @@ export async function applyPropertyUpdate(
 	const oldId = setting.id;
 	setting[property] = finalValue;
 
-	// Rebuild settings list if ID changed
+	// Handle ID rename migration
 	if (property === "id" && oldId !== finalValue) {
+		logger.debug("config", `Setting ID changing from ${oldId} to ${finalValue}, migrating...`);
+
+		const currentValue = await getUserSetting(oldId);
+		if (currentValue !== null) {
+			await saveToStorage(finalValue, currentValue);
+		}
+
+		migrateSettingRuntimeState(oldId, finalValue);
+		migrateSettingUiRegistry(oldId, finalValue);
+
 		await getSettingsList(true);
+		await attachBehaviorToSetting(setting);
 	}
 
 	if (customCallback && customCallback !== updateUI) {
 		await customCallback(finalValue);
 	}
 
-	// Targeted UI refresh
+	// Targeted UI refresh (for name, description, or value changes)
 	if (setting.id) {
 		await refreshSettingUi(setting.id);
 		await triggerSettingUpdate(setting.id);
