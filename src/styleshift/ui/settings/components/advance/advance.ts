@@ -9,7 +9,7 @@ import { getRootValue } from "@/styleshift/core/storageManager";
 import { triggerSettingUpdate } from "@settings/functions";
 import { Category, CategoryNameWithIcon } from "@/styleshift/types/styleshiftTypes";
 import { settingsUi } from "@ui/settings/settingComponents";
-import { createConfigUiFunction, setupLeftTitleAnimation } from "@ui/settings/settings";
+import { setupLeftTitleAnimation } from "@ui/settings/settings";
 
 import FrameComponent from "./Frame.svelte";
 import SpaceComponent from "./Space.svelte";
@@ -216,23 +216,19 @@ export async function title(thisCategory: Category) {
 
 	const frame = target as HTMLDivElement;
 
-	const configUiFunction = await createConfigUiFunction(
-		thisCategory.editable,
-		async function (parent: HTMLDivElement) {
-			await settingsUi.configMainSection(
-				parent,
-				thisCategory,
-				{
-					name: ["Category", frame],
-					Selector: "Selector",
-					Rainbow: "Rainbow",
-				},
-				updateUi,
-			);
+	// Configure advanced settings
+	await settingsUi.configMainSection(
+		frame,
+		thisCategory,
+		{
+			category: ["Category", frame],
+			Selector: "Selector",
+			Rainbow: "Rainbow",
 		},
+		updateUi,
 	);
 
-	return { frame, configUiFunction };
+	return { frame };
 }
 
 export function leftTitle(

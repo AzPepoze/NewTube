@@ -8,7 +8,13 @@
 	import Icon from "../main/Icon.svelte";
 	import { handleLogicUpdate } from "./handler";
 
-	let { setting, runType, extArray = ["function", "css"], onUpdateConfig, isWorkspace = false } = $props();
+	let {
+		setting,
+		runType,
+		extArray = ["function", "css"],
+		onUpdateConfig,
+		isWorkspace = false,
+	} = $props();
 
 	const runTypeNameMap = {
 		var: "Variable",
@@ -36,7 +42,12 @@
 	const extOptions = $derived(
 		extArray.map((ext) => ({
 			id: ext,
-			label: ext.toLowerCase() === "function" ? "JS" : ext.toLowerCase() === "css" ? "CSS" : ext,
+			label:
+				ext.toLowerCase() === "function"
+					? "JS"
+					: ext.toLowerCase() === "css"
+						? "CSS"
+						: ext,
 		})),
 	);
 
@@ -46,8 +57,12 @@
 		}
 	});
 
-	let title = $derived(runTypeNameMap[runType as keyof typeof runTypeNameMap] || runType);
-	let color = $derived(colorMap[runType as keyof typeof colorMap] || "#999999");
+	let title = $derived(
+		runTypeNameMap[runType as keyof typeof runTypeNameMap] || runType,
+	);
+	let color = $derived(
+		colorMap[runType as keyof typeof colorMap] || "#999999",
+	);
 
 	function handleRunScript() {
 		const property = runType + activeExt;
@@ -63,8 +78,16 @@
 
 	function renderEditor(node: HTMLElement, ext: string) {
 		const div = node as HTMLDivElement;
-		let typeName = ext.toLowerCase() === "function" ? "JS" : ext.toLowerCase() === "css" ? "CSS" : ext;
-		const typeLangMap: Record<string, string> = { JS: "javascript", CSS: "css" };
+		let typeName =
+			ext.toLowerCase() === "function"
+				? "JS"
+				: ext.toLowerCase() === "css"
+					? "CSS"
+					: ext;
+		const typeLangMap: Record<string, string> = {
+			JS: "javascript",
+			CSS: "css",
+		};
 
 		(async () => {
 			div.innerHTML = "";
@@ -83,12 +106,20 @@
 		const div = node as HTMLDivElement;
 		(async () => {
 			for (const ext of extArray) {
-				let typeName = ext.toLowerCase() === "function" ? "JS" : ext.toLowerCase() === "css" ? "CSS" : ext;
+				let typeName =
+					ext.toLowerCase() === "function"
+						? "JS"
+						: ext.toLowerCase() === "css"
+							? "CSS"
+							: ext;
 				const item = document.createElement("div");
 				item.style.marginBottom = "20px";
 				div.appendChild(item);
 
-				const typeLangMap: Record<string, string> = { JS: "javascript", CSS: "css" };
+				const typeLangMap: Record<string, string> = {
+					JS: "javascript",
+					CSS: "css",
+				};
 				const editor = await settingsUi.codeEditor(
 					item,
 					setting,
@@ -96,7 +127,9 @@
 					typeLangMap[typeName] || typeLangMap[ext] || typeName,
 					runType == "var" ? 100 : 400,
 				);
-				editor.afterOnChange(() => handleLogicUpdate(onUpdateConfig));
+				editor.afterOnChange(() =>
+					handleLogicUpdate(onUpdateConfig),
+				);
 			}
 		})();
 	}
@@ -109,7 +142,11 @@
 				<span class="section-title">{title}</span>
 				<div class="section-status-dot"></div>
 				{#if activeExt.toLowerCase() === "function"}
-					<button class="run-script-btn" onclick={handleRunScript} title="Run Script">
+					<button
+						class="run-script-btn"
+						onclick={handleRunScript}
+						title="Run Script"
+					>
 						<Icon name="code" size={14} />
 						Run
 					</button>
@@ -117,10 +154,17 @@
 			</div>
 
 			{#if extArray.length > 1}
-				<CapsuleTabs options={extOptions} bind:activeId={activeExt} />
+				<CapsuleTabs
+					options={extOptions}
+					bind:activeId={activeExt}
+				/>
 			{:else}
 				<span class="section-lang-hint">
-					{activeExt === "function" ? "JavaScript" : activeExt === "css" ? "CSS" : activeExt}
+					{activeExt === "function"
+						? "JavaScript"
+						: activeExt === "css"
+							? "CSS"
+							: activeExt}
 				</span>
 			{/if}
 		</header>

@@ -244,7 +244,7 @@ export async function initializeDeveloperEnvironment(): Promise<void> {
 			loaderUi.setContent(`${message}\n(Check console for details)`);
 		}
 
-		setTimeout(() => loaderUi.close(), 5000);
+		setTimeout(() => loaderUi.close(), 10000);
 		hasAttemptedDevModuleLoad = false;
 	}
 }
@@ -278,7 +278,7 @@ export async function loadWorker(fileName: string): Promise<Worker | null> {
 		return worker;
 	} catch (error) {
 		logger.warn("runtime", `Native Worker failed for ${fileName} with direct URL, trying Blob fallback:`, error);
-		
+
 		try {
 			const response = await fetch(scriptUrl);
 			const blob = await response.blob();
