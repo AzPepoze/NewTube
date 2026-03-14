@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 import { setupTabIconChanger, disableTabIconChanger } from "../features/tabIcon";
 
 export const tabIconCategory: Category = {

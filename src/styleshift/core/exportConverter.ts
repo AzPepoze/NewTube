@@ -1,5 +1,5 @@
 import { styleshiftPropertyList, typeConvertTable } from "../settings/defaultItems";
-import { Setting } from "../types/store";
+import { Setting } from "../types/styleshiftTypes";
 
 export async function convertToExportSetting(
 	thisSetting: Setting,

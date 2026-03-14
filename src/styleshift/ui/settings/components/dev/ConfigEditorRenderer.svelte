@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Setting } from "@styleshift/types/store";
+	import type { Setting } from "@/styleshift/types/styleshiftTypes";
 	import { fly, fade } from "svelte/transition";
 	import CapsuleTabs from "../../../components/general/CapsuleTabs.svelte";
 	import { refreshExtensionState } from "@/styleshift/run";

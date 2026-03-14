@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 
 export const subscribeButtonCategory: Category = {
 	category: { icon: "notifications_active", label: "Subscribe Button" },

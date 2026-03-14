@@ -1,4 +1,4 @@
-import { CategoryNameWithIcon } from "../types/store";
+import { CategoryNameWithIcon } from "../types/styleshiftTypes";
 
 /**
  * Resolves a potentially relative asset path to a full chrome-extension:// URL.

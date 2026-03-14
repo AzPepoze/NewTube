@@ -1,4 +1,4 @@
-import { Category, SeparateCategory } from "../styleshift/types/store";
+import { Category, SeparateCategory } from "../styleshift/types/styleshiftTypes";
 import { videoPlayerCategory } from "./categories/videoPlayer";
 import { videoAutomationCategory } from "./categories/videoAutomation";
 import { videoLayoutCategory } from "./categories/videoLayout";

@@ -2,7 +2,7 @@ import { dynamicAppend, createError } from "../../shared/extension";
 import { unmount } from "svelte";
 import { logger } from "../../../shared/logger";
 import { getSettingsList, getStyleshiftDataType, updateStyleshiftItems, addCategory } from "../../settings/items";
-import { Category } from "../../types/store";
+import { Category } from "../../types/styleshiftTypes";
 import { createStyleshiftWindow } from "../extension";
 import { settingsUi } from "./settingComponents";
 import { addDropTarget, addDrag } from "./reorder";
@@ -73,7 +73,7 @@ export async function createMainSettingsUi({
 		createUi: async function (skipAnimation = false) {
 			logger.info("ui", "Creating UI", { settingsWindow });
 			if (settingsWindow) {
-				returnObj.recreateUi();
+				returnObj.recreateUi(skipAnimation);
 				return;
 			}
 
@@ -130,8 +130,8 @@ export async function createMainSettingsUi({
 				settingsWindow = null;
 			}
 		},
-		recreateUi: async function () {
-			logger.info("ui", "recreateUi triggered - full remount", { settingsWindow });
+		recreateUi: async function (skipAnimation = true) {
+			logger.info("ui", "recreateUi triggered - full remount", { settingsWindow, skipAnimation });
 			if (settingsWindow) {
 				await updateStyleshiftItems();
 
@@ -163,6 +163,7 @@ export async function createMainSettingsUi({
 						devOnlyItems,
 						isDeveloperMode,
 						isDevModulesLoaded,
+						skipAnimation,
 						onClose: () => returnObj.removeUi(),
 						onAddCategory: (categoryName: string) => addCategory(categoryName),
 					},
@@ -196,6 +197,7 @@ export async function createMainSettingsUi({
 		setGetCategory: function (newFunction: () => Category[] | Promise<Category[]> | null) {
 			getCategory = newFunction as any;
 			if (settingsWindow) {
+				true
 				returnObj.recreateUi();
 			}
 		},

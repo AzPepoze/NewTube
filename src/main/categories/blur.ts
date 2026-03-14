@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 
 export const blurCategory: Category = {
 	category: { icon: "blur_on", label: "Blur" },

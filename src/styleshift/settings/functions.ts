@@ -1,6 +1,6 @@
 import { executeSettingScript } from "../core/runtimeController";
 import { getFromStorage } from "../core/storageManager";
-import { Setting } from "../types/store";
+import { Setting } from "../types/styleshiftTypes";
 import { createStylesheet } from "./styleSheet";
 import { logger } from "../../shared/logger";
 import { waitOneFrame } from "../shared/advance";

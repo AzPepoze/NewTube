@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 import { setupAutoTheater, enableAutoRemoveAmbient } from "../features/video/general";
 import { enableAutoPip, enableAutoExitPip, disableAutoPip } from "../features/video/pip";
 import { setupUpdateTimestamp } from "../features/video/timestamp";

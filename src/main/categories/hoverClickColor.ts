@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 
 export const hoverClickColorCategory: Category = {
 	category: { icon: "touch_app", label: "Hover & Click Color" },

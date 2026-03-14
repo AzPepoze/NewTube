@@ -2,7 +2,7 @@ import { insertAfter } from "@/styleshift/shared/advance";
 import { logger } from "../../../shared/logger";
 import { saveToStorage } from "../../core/storageManager";
 import { getSettingCategory, getCustomItems } from "../../settings/items";
-import type { Category, Setting } from "../../types/store";
+import type { Category, Setting } from "../../types/styleshiftTypes";
 import { refreshExtensionState } from "@/styleshift/run";
 
 let dragingSetting: { size: number; Data: Setting | Category } | null = null;

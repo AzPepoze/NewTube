@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 
 export const videoColorsCategory: Category = {
 	category: { icon: "format_paint", label: "Video Colors" },

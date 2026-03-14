@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Setting } from "@styleshift/types/store";
+	import type { Setting } from "@/styleshift/types/styleshiftTypes";
 	import PreviewImage from "./PreviewImage.svelte";
 	import Button from "./Button.svelte";
 	import { getAssetUrl } from "@ui/utils";

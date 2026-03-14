@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 
 export const videoLayoutCategory: Category = {
 	category: { icon: "ondemand_video", label: "Video Layout" },

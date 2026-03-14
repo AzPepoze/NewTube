@@ -1,6 +1,6 @@
 import { createUniqueId, onceElementRemove, waitDocumentLoaded } from "../shared/normal";
 import { getStyleshiftItems } from "../settings/items";
-import { Category } from "../types/store";
+import { Category } from "../types/styleshiftTypes";
 import { createEditorUi, editorUi } from "./editor";
 import { showUserConfirmation } from "./extension";
 import { logger } from "../../shared/logger";

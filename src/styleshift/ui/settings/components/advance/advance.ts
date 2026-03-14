@@ -7,13 +7,12 @@ import {
 import { getCategoryParts } from "@/styleshift/ui/utils";
 import { getRootValue } from "@/styleshift/core/storageManager";
 import { triggerSettingUpdate } from "@settings/functions";
-import { Category, CategoryNameWithIcon } from "@styleshift/types/store";
+import { Category, CategoryNameWithIcon } from "@/styleshift/types/styleshiftTypes";
 import { settingsUi } from "@ui/settings/settingComponents";
 import { createConfigUiFunction, setupLeftTitleAnimation } from "@ui/settings/settings";
 
 import FrameComponent from "./Frame.svelte";
 import SpaceComponent from "./Space.svelte";
-import { Setting } from "../../../../types/store";
 import TitleComponent from "./Title.svelte";
 import LeftTitleComponent from "./LeftTitle.svelte";
 import TextEditorComponent from "./TextEditor.svelte";
@@ -270,13 +269,6 @@ export function subTitle(thisData: { text: string; leftSeparator?: boolean; edit
 	return { frame, data: thisData };
 }
 
-export function createSubTitle(text: string, leftSeparator: boolean = false): Setting {
-	return {
-		type: "group",
-		text,
-		leftSeparator,
-	} as any;
-}
 
 export async function collapsedButton(buttonName: string, color: string, targetElement: HTMLElement) {
 	const parent = targetElement.parentElement;

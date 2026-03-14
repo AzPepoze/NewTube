@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 import { enableFlyout } from "../features/video/flyout";
 import { setupAutoShowChatReplay } from "../features/video/chat";
 

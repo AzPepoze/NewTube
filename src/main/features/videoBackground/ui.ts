@@ -1,6 +1,6 @@
 import { state } from "./state";
 import { settings } from "./settings";
-import { hideBg, showBg } from "../background";
+import { hideBg, showBg } from "../background/main";
 
 export function fadeIn() {
 	if (!state.container || state.isFadedIn) return;

@@ -1,4 +1,4 @@
-import { Category } from "../styleshift/types/store";
+import { Category } from "../styleshift/types/styleshiftTypes";
 
 const customStyleshiftItems: Category[] = [
 	{

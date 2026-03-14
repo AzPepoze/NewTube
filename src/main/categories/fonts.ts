@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 import { settingsUi } from "../../styleshift/ui/settings/settingComponents";
 import FontManager from "../features/fonts/FontManager.svelte";
 

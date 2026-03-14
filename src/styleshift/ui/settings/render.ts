@@ -4,7 +4,7 @@ import Taskbar from "../components/general/Taskbar.svelte";
 import SettingRenderer from "./components/main/SettingRenderer.svelte";
 import Confirm from "../components/general/Confirm.svelte";
 import Prompt from "../components/general/Prompt.svelte";
-import type { Setting } from "../../types/store";
+import type { Setting } from "../../types/styleshiftTypes";
 
 export function renderWindow(props: any, target: HTMLElement = document.createElement("div")) {
 	return mount(Window, {

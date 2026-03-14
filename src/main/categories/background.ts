@@ -1,5 +1,6 @@
-import { Category } from "../../styleshift/types/store";
-import { enableBg, enableBackgroundCss, updateBgImg, updateBgImgPosition } from "../features/background";
+import { Category } from "../../styleshift/types/styleshiftTypes";
+import { enableBg, enableBackgroundCss } from "../features/background/main";
+import { setCurrentVideoAsBackground } from "../features/background/youtube";
 
 export const backgroundCategory: Category = {
 	category: { icon: "image", label: "Background" },
@@ -8,11 +9,37 @@ export const backgroundCategory: Category = {
 			type: "checkbox",
 			id: "EnableBackground",
 			name: "Enable Background",
-			description: "Toggle the entire custom background system. When enabled, you can apply custom images, colors, and blurs to the page background.",
+			description: "Toggle the entire custom background system. When enabled, you can apply custom images, colors, blurs, or YouTube videos to the page background.",
 			value: true,
 			enableFunction: enableBg,
 			enableCss: enableBackgroundCss,
 		},
+		{
+			type: "dropdown",
+			id: "BackgroundMode",
+			name: "Background Mode",
+			description: "Select the type of background to display: Image (static or custom), Thumbnail (current video's thumbnail), or YouTube (embed a YouTube video).",
+			value: "Image",
+			options: {
+				Image: {
+					name: "Image",
+				},
+				Thumbnail: {
+					name: "Video Thumbnail",
+				},
+				YouTube: {
+					name: "YouTube Video",
+				},
+			},
+			require: { EnableBackground: true },
+		},
+
+		{
+			type: "subText",
+			text: "Image & Thumbnail Mode",
+			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
+		},
+
 		{
 			type: "imageInput",
 			id: "BackgroundImageUrl",
@@ -20,16 +47,15 @@ export const backgroundCategory: Category = {
 			description: "Upload or paste a URL for your custom background image. This image will be placed behind all YouTube content.",
 			value: "https://cdn.wallpapersafari.com/74/55/4dgN3G.jpg",
 			maxFileSize: 5000000,
-			require: { EnableBackground: true },
+			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
 		},
 		{
 			type: "checkbox",
 			id: "BackgroundThumbnailMode",
 			name: "Use Video Thumbnail",
-			description: "Automatically sets the current video's high-resolution thumbnail as the page background. This creates a unique look for every video you watch.",
+			description: "When enabled in Image mode, automatically sets the current video's high-resolution thumbnail as the page background instead of the static image. This creates a unique look for every video you watch.",
 			value: false,
-			enableFunction: updateBgImg,
-			require: { EnableBackground: true },
+			require: { EnableBackground: true, BackgroundMode: "Image" },
 		},
 		{
 			type: "color",
@@ -38,7 +64,7 @@ export const backgroundCategory: Category = {
 			description: "Applies a color overlay on top of your background image or as a solid background color if no image is used. Useful for improving readability.",
 			value: "#0000005e",
 			varCss: "--nt-bg-main",
-			require: { EnableBackground: true },
+			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
 		},
 		{
 			type: "numberSlide",
@@ -51,7 +77,7 @@ export const backgroundCategory: Category = {
 			step: 1,
 			varCss: "--nt-bg-opacity",
 			unit: "",
-			require: { EnableBackground: true },
+			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
 		},
 		{
 			type: "numberSlide",
@@ -63,7 +89,7 @@ export const backgroundCategory: Category = {
 			max: 50,
 			step: 1,
 			varCss: "--nt-bg-blur-amount",
-			require: { EnableBackground: true },
+			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
 		},
 		{
 			type: "numberSlide",
@@ -74,8 +100,7 @@ export const backgroundCategory: Category = {
 			min: 0,
 			max: 500,
 			step: 5,
-			updateFunction: updateBgImg,
-			require: { EnableBackground: true },
+			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
 		},
 		{
 			type: "numberSlide",
@@ -86,8 +111,7 @@ export const backgroundCategory: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
-			updateFunction: updateBgImgPosition,
-			require: { EnableBackground: true },
+			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
 		},
 		{
 			type: "numberSlide",
@@ -98,8 +122,7 @@ export const backgroundCategory: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
-			updateFunction: updateBgImgPosition,
-			require: { EnableBackground: true },
+			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
 		},
 		{
 			type: "checkbox",
@@ -109,7 +132,70 @@ export const backgroundCategory: Category = {
 			value: false,
 			enableCss: `:root { --nt-bg-repeat: repeat; }`,
 			disableCss: `:root { --nt-bg-repeat: no-repeat; }`,
-			require: { EnableBackground: true },
+			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
+		},
+
+		{
+			type: "subText",
+			text: "YouTube Video Mode",
+			require: { EnableBackground: true, BackgroundMode: "YouTube" },
+		},
+
+		{
+			type: "button",
+			id: "YouTubeSetCurrentVideoAsBackground",
+			name: "🎬 Set Current Video as Background",
+			description: "Click this button while viewing a YouTube video to automatically extract and set it as your background. Works with any accessible YouTube video.",
+			clickFunction: setCurrentVideoAsBackground,
+			color: "#FF0000",
+			fontSize: 14,
+			align: "center",
+			require: { EnableBackground: true, BackgroundMode: "YouTube" },
+		},
+
+		{
+			type: "textInput",
+			id: "YouTubeBackgroundVideoId",
+			name: "YouTube Video ID or Embed URL",
+			description: "Enter a YouTube video ID (e.g., jfKfPfyJRdk) OR paste the full embed URL from YouTube's share feature. To get the embed URL: Open the YouTube video → Click Share → Select Embed → Copy the src URL starting with 'https://www.youtube-nocookie.com/embed/...'",
+			value: "",
+			require: { EnableBackground: true, BackgroundMode: "YouTube" },
+		},
+		{
+			type: "checkbox",
+			id: "YouTubeBackgroundMuted",
+			name: "Mute",
+			description: "Keep the YouTube video muted. Muting is required for autoplay to work in most browsers.",
+			value: true,
+			require: { EnableBackground: true, BackgroundMode: "YouTube" },
+		},
+		{
+			type: "checkbox",
+			id: "YouTubeBackgroundControls",
+			name: "Show Controls",
+			description: "Display the YouTube player controls. If disabled, the player will be minimal and less intrusive.",
+			value: false,
+			require: { EnableBackground: true, BackgroundMode: "YouTube" },
+		},
+		{
+			type: "checkbox",
+			id: "YouTubeBackgroundLoop",
+			name: "Loop Video",
+			description: "Automatically loop the video when it reaches the end. Ideal for ambient or music videos.",
+			value: true,
+			require: { EnableBackground: true, BackgroundMode: "YouTube" },
+		},
+		{
+			type: "numberSlide",
+			id: "YouTubeBackgroundOpacity",
+			name: "YouTube Opacity",
+			description: "Controls the transparency of the YouTube video background. Lower values make it more transparent, revealing content behind it.",
+			value: 100,
+			min: 0,
+			max: 100,
+			step: 1,
+			varCss: "--nt-bg-youtube-opacity",
+			require: { EnableBackground: true, BackgroundMode: "YouTube" },
 		},
 	],
 };

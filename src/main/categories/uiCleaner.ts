@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 
 export const uiCleanerCategory: Category = {
 	category: { icon: "layers_clear", label: "UI Cleaner" },

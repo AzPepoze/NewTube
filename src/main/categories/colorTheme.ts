@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 import { enableThemeByVideo, disableThemeByVideo } from "../features/theme";
 
 export const colorThemeCategory: Category = {

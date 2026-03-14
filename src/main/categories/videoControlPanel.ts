@@ -1,13 +1,11 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 import { ytVideoContainerWatchMode, ytPlayerWatchMode } from "../modules/youtube";
-import { createSubTitle } from "../../styleshift/ui/settings/components/advance/advance";
 
 
 export const videoControlPanelCategory: Category = {
 	category: { icon: "settings_input_component", label: "Video Control Panel" },
 	selector: "#movie_player",
 	settings: [
-		createSubTitle("Layout", true),
 		{
 			type: "checkbox",
 			id: "EnableControlsBelowVideo",
@@ -63,15 +61,15 @@ export const videoControlPanelCategory: Category = {
 			description: "Re-aligns the play, volume, and playback buttons to the exact center of the control bar.",
 			value: true,
 			enableCss: `
-      .ytp-chrome-controls {
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: center !important;
-      }
-      .ytp-left-controls, .ytp-chapter-title.ytp-button, .ytp-chapter-container {
-        display: contents !important;
-      }
-    `,
+				.ytp-chrome-controls {
+					display: flex !important;
+					flex-direction: row !important;
+					justify-content: center !important;
+				}
+				.ytp-left-controls, .ytp-chapter-title.ytp-button, .ytp-chapter-container {
+					display: contents !important;
+				}
+			`,
 		},
 		{
 			type: "checkbox",
@@ -153,7 +151,6 @@ export const videoControlPanelCategory: Category = {
 			value: false,
 			enableCss: `.ytp-gradient-bottom { background-image: none !important; }`,
 		},
-		createSubTitle("Colors & Styling", true),
 		{
 			type: "color",
 			id: "ControlPanelTextColor",
@@ -162,10 +159,10 @@ export const videoControlPanelCategory: Category = {
 			value: "#ffffffff",
 			varCss: "--nt-text-primary",
 			constantCss: `
-      .ytp-time-current, .ytp-time-separator, .ytp-time-duration, .ytp-button {
-        color: var(--nt-text-primary) !important;
-      }
-    `,
+				.ytp-time-current, .ytp-time-separator, .ytp-time-duration, .ytp-button {
+					color: var(--nt-text-primary) !important;
+				}
+			`,
 		},
 		{
 			type: "color",
@@ -215,7 +212,6 @@ export const videoControlPanelCategory: Category = {
                 .ytp-gradient-bottom { height: var(--nt-player-bg-height, 60px) !important; }
             `,
 		},
-		createSubTitle("Borders & Shadows", true),
 		{
 			type: "checkbox",
 			id: "EnableControlPanelBorder",

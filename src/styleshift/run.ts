@@ -25,7 +25,7 @@ import { getAllStyleshiftItems, getAllStyleshiftSettings, updateStyleshiftItems 
 import "./communication/extension";
 import { updateAllUiComponents } from "./ui/extension";
 import { syncAllThemes } from "./ui/theme";
-import { Category } from "./types/store";
+import { Category } from "./types/styleshiftTypes";
 import { extensionSettingsUi, extensionSettingsUiPromise } from "./ui/extensionSettings";
 import { toggleCustomize } from "./ui/highlight";
 import { appBootstrap, shouldEnableExtension } from "@/main/main";
@@ -78,13 +78,11 @@ export function refreshExtensionState(): void {
  * Main entry point for the extension logic.
  */
 async function bootstrapExtension(): Promise<void> {
-	// Initialize storage first so it's available even if extension logic is skipped
 	await initializeStorageConnection();
 	await initializeDefaultCustomItems();
 
 	if (!shouldEnableExtension()) {
 		logger.info("lifecycle", "StyleShift extension logic skipped on this domain (Core active).");
-		// Still need some basics for notifications to work on the store
 		await getDocumentHead();
 		await createStylesheetHolder();
 		await injectMaterialIconsStyles();

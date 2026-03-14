@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 
 export const subtitlesCategory: Category = {
 	category: { icon: "closed_caption", label: "Subtitles & Captions" },

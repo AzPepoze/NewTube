@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 import { setupVideoAnimations } from "../features/video/animations";
 
 export const videoPlayerCategory: Category = {

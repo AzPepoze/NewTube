@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Category } from "@styleshift/types/store";
+	import type { Category } from "@/styleshift/types/styleshiftTypes";
 	import { getCategoryParts } from "@ui/utils";
 	import Search from "./Search.svelte";
 	import LeftTitle from "../advance/LeftTitle.svelte";
@@ -12,6 +12,7 @@
 		devOnlyItems = [],
 		isDeveloperMode = false,
 		isDevModulesLoaded = false,
+		skipAnimation = false,
 		onClose: _onClose = () => {},
 		onAddCategory = (_name: string) => {},
 	}: {
@@ -20,6 +21,7 @@
 		devOnlyItems?: Category[];
 		isDeveloperMode?: boolean;
 		isDevModulesLoaded?: boolean;
+		skipAnimation?: boolean;
 		onClose?: () => void;
 		onAddCategory?: (name: string) => void;
 	} = $props();
@@ -30,12 +32,10 @@
 	let activeCategoryLabel = $state("");
 	let sidebarWidth = $state(200);
 
-	// Helper: Check if item is a header separator
 	function isHeaderItem(item: any) {
 		return "isHeader" in item;
 	}
 
-	// Helper: Merge dev-only items into categories
 	function mergeDevItems(allCategories: any[]) {
 		if (!isDevModulesLoaded || !isDeveloperMode) return allCategories;
 
@@ -52,20 +52,17 @@
 			);
 
 			if (existingIdx > -1) {
-				// Append dev settings to existing category
 				allCategories[existingIdx].settings = [
 					...allCategories[existingIdx].settings,
 					...devCategory.settings,
 				];
 			} else {
-				// Add as new category if not exists
 				allCategories.push(devCategory);
 			}
 		}
 		return allCategories;
 	}
 
-	// Helper: Filter settings by search query
 	function filterBySearch(allCategories: any[], searchTerm: string) {
 		const lowerQuery = searchTerm.toLowerCase();
 
@@ -95,17 +92,13 @@
 			);
 	}
 
-	// Filtered categories and settings
 	let filteredData = $derived.by(() => {
-		// Copy categories (clone non-header items)
 		let result = categories.map((c) => {
 			return isHeaderItem(c) ? c : { ...(c as any) };
 		});
 
-		// Merge dev-only settings into matching categories
 		result = mergeDevItems(result);
 
-		// Apply search filter if query exists
 		if (searchQuery) {
 			result = filterBySearch(result, searchQuery);
 		}
@@ -155,7 +148,7 @@
 	}
 </script>
 
-<div class="STYLESHIFT-Settings-Main">
+<div class="STYLESHIFT-Settings-Main" class:skip-animation={skipAnimation}>
 	{#if showCategoryList}
 		<div
 			bind:this={leftSidebar}
@@ -167,7 +160,9 @@
 				{#if "isHeader" in item}
 					<div
 						class="STYLESHIFT-Sidebar-Header"
-						style="animation-delay: {i * 50}ms;"
+						style="animation-delay: {skipAnimation
+							? '0ms'
+							: i * 50 + 'ms'};"
 					>
 						{(item as any).label}
 					</div>
@@ -176,7 +171,9 @@
 					{@const parts = getCategoryParts(category.category)}
 					<button
 						class="STYLESHIFT-Sidebar-Item-Wrapper"
-						style="animation-delay: {i * 50}ms;"
+						style="animation-delay: {skipAnimation
+							? '0ms'
+							: i * 50 + 'ms'};"
 						onclick={() => {
 							const target =
 								scrollContainer?.querySelector(
@@ -301,6 +298,10 @@
 		width: 100%;
 		display: block;
 		animation: sidebar-animation 0.2s both;
+
+		:global(.skip-animation) & {
+			animation: none;
+		}
 	}
 
 	.STYLESHIFT-Add-Category-button {
@@ -327,6 +328,10 @@
 		text-transform: uppercase;
 		letter-spacing: 1px;
 		font-weight: 700;
+
+		:global(.skip-animation) & {
+			animation: none;
+		}
 		margin-top: 8px;
 		margin-bottom: 4px;
 		border-top: 2px solid rgba(255, 255, 255, 0.1);
@@ -360,6 +365,7 @@
 		flex-direction: column;
 		gap: 20px;
 		overflow-y: auto;
+		padding-inline: 20px;
 	}
 
 	.STYLESHIFT-Settings-Group {

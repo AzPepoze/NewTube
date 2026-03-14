@@ -1,5 +1,5 @@
 import { rearrangeSelector } from "@/styleshift/shared/normal";
-import { Setting } from "@styleshift/types/store";
+import { Setting } from "@/styleshift/types/styleshiftTypes";
 import { settingsUi } from "@ui/settings/settingComponents";
 
 import DevSettingSectionComponent from "./DevSettingSection.svelte";

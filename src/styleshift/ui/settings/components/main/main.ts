@@ -1,4 +1,4 @@
-import { Setting } from "@styleshift/types/store";
+import { Setting } from "@/styleshift/types/styleshiftTypes";
 import { settingsUi } from "@ui/settings/settingComponents";
 
 export async function search(onInput: (value: string) => void) {

@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 import "../features/topLeftIcon"; // Import side-effects
 
 export const topLeftIconCategory: Category = {

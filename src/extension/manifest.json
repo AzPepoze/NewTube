@@ -26,23 +26,15 @@
 				"styleshift.js",
 				"style.css"
 			],
-			"matches": [
-				"<all_urls>"
-			]
+			"matches": ["<all_urls>"]
 		}
 	],
 	"content_scripts": [
 		{
-			"matches": [
-				"<all_urls>"
-			],
+			"matches": ["<all_urls>"],
 			"all_frames": true,
-			"js": [
-				"styleshift.js"
-			],
-			"css": [
-				"style.css"
-			],
+			"js": ["styleshift.js"],
+			"css": ["style.css"],
 			"run_at": "document_start"
 		}
 	],
@@ -91,14 +83,8 @@
 			"description": "Toggle Developer Mode"
 		}
 	},
-	"permissions": [
-		"storage",
-		"unlimitedStorage",
-		"scripting"
-	],
-	"host_permissions": [
-		"*://*/*"
-	],
+	"permissions": ["storage", "unlimitedStorage", "scripting"],
+	"host_permissions": ["*://*/*"],
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "StyleShift@AzPepoze"

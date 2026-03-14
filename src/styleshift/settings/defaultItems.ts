@@ -1,4 +1,4 @@
-import { Category, Setting } from "../types/store";
+import { Category, Setting } from "../types/styleshiftTypes";
 
 export const styleshiftPropertyList: { [key: string]: string[] } = {
 	text: ["type", "id", "html", "align", "color", "fontSize", "editable"],

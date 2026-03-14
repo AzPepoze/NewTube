@@ -9,7 +9,7 @@ import { settings, loadInitialSettings } from "./settings";
 import { fadeOut, resetLastRect } from "./ui";
 import { render, updatePositionLoop } from "./logic";
 import { sendToWorker } from "./helpers";
-import { showBg } from "../background";
+import { showBg } from "../background/main";
 
 export async function updateVideoBgSettings(value?: any, settingId?: string) {
 	if (typeof settingId === "string") {

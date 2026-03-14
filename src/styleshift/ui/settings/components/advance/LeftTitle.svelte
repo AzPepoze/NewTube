@@ -2,7 +2,7 @@
 	import { onMount } from "svelte";
 	import { getCategoryParts } from "@ui/utils";
 	import Icon from "../main/Icon.svelte";
-	import type { CategoryNameWithIcon } from "@/styleshift/types/store";
+	import type { CategoryNameWithIcon } from "@/styleshift/types/styleshiftTypes";
 
 	let {
 		category = "" as string | CategoryNameWithIcon,

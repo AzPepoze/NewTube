@@ -2,7 +2,7 @@
 	import { setAndSave } from "@ui/settings/settingComponents";
 	import TextEditor from "@ui/settings/components/advance/TextEditor.svelte";
 	import { triggerSettingUpdate } from "@settings/functions";
-	import type { Setting } from "@styleshift/types/store";
+	import type { Setting } from "@/styleshift/types/styleshiftTypes";
 	import Button from "@ui/settings/components/main/Button.svelte";
 	import Description from "@ui/settings/components/main/Description.svelte";
 	import IconButton from "@ui/settings/components/advance/IconButton.svelte";

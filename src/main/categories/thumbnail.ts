@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 
 export const thumbnailCategory: Category = {
 	category: { icon: "image_search", label: "Thumbnail & Clip Cover" },

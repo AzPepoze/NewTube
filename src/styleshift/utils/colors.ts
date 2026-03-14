@@ -1,4 +1,4 @@
-import { Color_obj } from "../types/store";
+import { Color_obj } from "../types/styleshiftTypes";
 import { logger } from "../../shared/logger";
 
 export function colorObjToHex({ hex, alpha }: Color_obj): string {

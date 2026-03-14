@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Setting } from "@styleshift/types/store";
+	import type { Setting } from "@/styleshift/types/styleshiftTypes";
 	import Checkbox from "./Checkbox.svelte";
 	import Button from "./Button.svelte";
 	import Slider from "./Slider.svelte";

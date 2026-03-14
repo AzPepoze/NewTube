@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 import { setupAudioVisualizer, destroyAudioVisualizer } from "../features/visualizer";
 import { setupBlackToTransparent, destroyBlackToTransparent } from "../features/video/blackToTransparent";
 

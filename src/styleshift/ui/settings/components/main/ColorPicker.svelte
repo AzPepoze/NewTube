@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Setting } from "@styleshift/types/store";
+	import type { Setting } from "@/styleshift/types/styleshiftTypes";
 	import Slider from "./Slider.svelte";
 	import Description from "./Description.svelte";
 	import { getFromStorage, getRootValue } from "@/styleshift/core/storageManager";

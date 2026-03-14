@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 import { enableSettingsButton, disableSettingsButton } from "../features/newtubeSettingsButton";
 
 export const topbarSearchCategory: Category = {

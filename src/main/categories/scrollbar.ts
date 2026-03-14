@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 
 export const scrollbarCategory: Category = {
 	category: { icon: "unfold_more", label: "Scrollbar" },

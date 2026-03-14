@@ -10,7 +10,7 @@ import { initializeRequiredStorageStructures as setNullSave } from "../core/stor
 import { styleshiftContainer } from "../run";
 import { styleshiftCategoryList } from "../settings/defaultItems";
 import { showStylesheet, hideStylesheet } from "../settings/styleSheet";
-import { Category, Setting } from "../types/store";
+import { Category, Setting } from "../types/styleshiftTypes";
 import {
 	globalNotificationContainer,
 	playUiAnimation,

@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 
 export const bordersShadowsCategory: Category = {
 	category: { icon: "border_all", label: "Borders / Shadows" },

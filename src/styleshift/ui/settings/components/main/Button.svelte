@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Setting } from "@styleshift/types/store";
+	import type { Setting } from "@/styleshift/types/styleshiftTypes";
 	import { hexToRgb, rgbToHsv, hsvToRgb } from "../../../../shared/normal";
 	import Description from "./Description.svelte";
 	import Icon from "./Icon.svelte";

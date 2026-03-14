@@ -1,4 +1,4 @@
-import { Category } from "../../styleshift/types/store";
+import { Category } from "../../styleshift/types/styleshiftTypes";
 import { enableVideoBackground, disableVideoBackground, updateVideoBgSettings } from "../features/videoBackground/main";
 
 const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");

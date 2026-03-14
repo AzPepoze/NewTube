@@ -1,5 +1,5 @@
 import { getElementCenterPosition } from "../shared/normal";
-import { Category } from "../types/store";
+import { Category } from "../types/styleshiftTypes";
 import { startHighlighter } from "./highlight";
 import { createMainSettingsUi } from "./settings/settings";
 
