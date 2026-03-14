@@ -93,7 +93,8 @@ class YoutubeBackgroundMode implements IModeHandler {
 
 	async show(): Promise<void> {
 		this.youtubeElement = (getElement(bgYoutubeId) as HTMLIFrameElement) || this.youtubeElement;
-		await showElement(this.youtubeElement);
+		const opacity = await getUserSetting("YouTubeBackgroundOpacity") as number;
+		await showElement(this.youtubeElement, (opacity / 100).toString());
 	}
 
 	async hide(): Promise<void> {
@@ -109,7 +110,6 @@ class YoutubeBackgroundMode implements IModeHandler {
 		const videoIdOrUrl = await getUserSetting("YouTubeBackgroundVideoId");
 		const isMuted = await getUserSetting("YouTubeBackgroundMuted");
 		const showControls = await getUserSetting("YouTubeBackgroundControls");
-		const shouldLoop = await getUserSetting("YouTubeBackgroundLoop");
 
 		if (!videoIdOrUrl || typeof videoIdOrUrl !== "string" || videoIdOrUrl.trim() === "") {
 			logger.warn("YouTube background: No video ID or URL provided");
@@ -119,19 +119,15 @@ class YoutubeBackgroundMode implements IModeHandler {
 
 		const cleanInput = videoIdOrUrl.trim();
 		let embedUrl: string;
+		const videoId = cleanInput.split("?")[0]
 
-		if (cleanInput.includes("embed_config")) {
-			embedUrl = `https://www.youtube-nocookie.com/embed/${cleanInput}&${await this.buildParams(isMuted, showControls, shouldLoop)}`;
-		} else {
-			if (!/^[a-zA-Z0-9_-]{11}$/.test(cleanInput)) {
-				logger.warn("YouTube background: Invalid video ID format", { videoId: cleanInput });
-				this.youtubeElement.src = "";
-				return;
-			}
-			embedUrl = await this.buildEmbedUrl(cleanInput, isMuted, showControls, shouldLoop);
-		}
+		embedUrl = `https://www.youtube-nocookie.com/embed/${cleanInput}&${await this.buildParams(videoId, isMuted, showControls)}`;
 
 		this.youtubeElement.src = embedUrl;
+		const opacity = await getUserSetting("YouTubeBackgroundOpacity") as number;
+		const blur = await getUserSetting("YouTubeBackgroundBlur") as number;
+		this.youtubeElement.style.opacity = (opacity / 100).toString();
+		this.youtubeElement.style.filter = `blur(${blur}px)`;
 		this.youtubeElement.title = "YouTube video player";
 		this.youtubeElement.setAttribute("sandbox", "allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-storage-access-by-user-activation");
 		this.youtubeElement.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
@@ -140,20 +136,13 @@ class YoutubeBackgroundMode implements IModeHandler {
 		logger.info("YouTube background updated", { url: embedUrl });
 	}
 
-	private async buildEmbedUrl(videoId: string, muted: boolean, showControls: boolean, loop: boolean): Promise<string> {
-		const params = new URLSearchParams({
-			playlist: videoId,
-		});
-
-		return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}&${await this.buildParams(muted, showControls, loop)}`;
-	}
-
-	private async buildParams(muted: boolean, showControls: boolean, loop: boolean): Promise<string> {
+	private async buildParams(videoId: string, muted: boolean, showControls: boolean): Promise<string> {
 		const params = new URLSearchParams({
 			autoplay: "1",
 			controls: showControls ? "1" : "0",
 			mute: muted ? "1" : "0",
-			loop: loop ? "1" : "0",
+			loop: "1",
+			playlist: videoId,
 		});
 
 		return params.toString();
@@ -163,11 +152,16 @@ class YoutubeBackgroundMode implements IModeHandler {
 		registerSettingListener("YouTubeBackgroundVideoId", () => this.updateYoutube(), true);
 		registerSettingListener("YouTubeBackgroundMuted", () => this.updateYoutube(), true);
 		registerSettingListener("YouTubeBackgroundControls", () => this.updateYoutube(), true);
-		registerSettingListener("YouTubeBackgroundLoop", () => this.updateYoutube(), true);
 		registerSettingListener("YouTubeBackgroundOpacity", async () => {
 			const opacity = await getUserSetting("YouTubeBackgroundOpacity");
 			if (this.youtubeElement) {
 				this.youtubeElement.style.opacity = ((opacity as number) / 100).toString();
+			}
+		}, true);
+		registerSettingListener("YouTubeBackgroundBlur", async () => {
+			const blur = await getUserSetting("YouTubeBackgroundBlur");
+			if (this.youtubeElement) {
+				this.youtubeElement.style.filter = `blur(${blur}px)`;
 			}
 		}, true);
 	}

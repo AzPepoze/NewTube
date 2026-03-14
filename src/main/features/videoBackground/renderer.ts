@@ -50,11 +50,11 @@ export interface RenderSettings {
 
 export class VideoBGRenderer {
 	private canvas: HTMLCanvasElement | OffscreenCanvas | null = null;
-	private gl: WebGL2RenderingContext | null = null;
+	private gl: WebGLRenderingContext | WebGL2RenderingContext | null = null;
 	private ctx2d: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null = null;
 
 	private preCanvas: OffscreenCanvas | null = null;
-	private preGl: WebGL2RenderingContext | null = null;
+	private preGl: WebGLRenderingContext | WebGL2RenderingContext | null = null;
 	private preCtx2d: OffscreenCanvasRenderingContext2D | null = null;
 
 	private program: WebGLProgram | null = null;
@@ -80,7 +80,7 @@ export class VideoBGRenderer {
 
 	constructor() {}
 
-	private loadShader(gl: WebGL2RenderingContext, type: number, source: string): WebGLShader | null {
+	private loadShader(gl: WebGLRenderingContext | WebGL2RenderingContext, type: number, source: string): WebGLShader | null {
 		const shader = gl.createShader(type);
 		if (!shader) return null;
 		gl.shaderSource(shader, source);
@@ -93,7 +93,7 @@ export class VideoBGRenderer {
 		return shader;
 	}
 
-	private initProgram(gl: WebGL2RenderingContext, vs: string, fs: string): WebGLProgram | null {
+	private initProgram(gl: WebGLRenderingContext | WebGL2RenderingContext, vs: string, fs: string): WebGLProgram | null {
 		const vShader = this.loadShader(gl, gl.VERTEX_SHADER, vs);
 		const fShader = this.loadShader(gl, gl.FRAGMENT_SHADER, fs);
 		if (!vShader || !fShader) return null;
@@ -114,13 +114,17 @@ export class VideoBGRenderer {
 		this.settings = settings;
 
 		if (this.settings.engine === "GPU") {
-			this.gl = this.canvas.getContext("webgl2", { preserveDrawingBuffer: true }) as WebGL2RenderingContext;
+			this.gl = (this.canvas.getContext("webgl2", { preserveDrawingBuffer: true }) as WebGL2RenderingContext) ||
+				(this.canvas.getContext("webgl", { preserveDrawingBuffer: true }) as WebGLRenderingContext);
+
 			if (this.gl) {
 				const gl = this.gl;
 				this.preCanvas = new OffscreenCanvas(this.canvas.width, this.canvas.height);
-				this.preGl = this.preCanvas.getContext("webgl2", {
+				this.preGl = (this.preCanvas.getContext("webgl2", {
 					preserveDrawingBuffer: true,
-				}) as WebGL2RenderingContext;
+				}) as WebGL2RenderingContext) || (this.preCanvas.getContext("webgl", {
+					preserveDrawingBuffer: true,
+				}) as WebGLRenderingContext);
 				const preGl = this.preGl;
 
 				this.program = this.initProgram(gl, vsSource, fsSource);
@@ -188,12 +192,14 @@ export class VideoBGRenderer {
 		}
 
 		if (this.settings.engine === "CPU") {
-			this.ctx2d = this.canvas.getContext("2d", { alpha: false });
-			this.preCanvas = new OffscreenCanvas(this.canvas.width, this.canvas.height);
-			this.preCtx2d = this.preCanvas.getContext("2d", { alpha: true });
+			this.ctx2d = this.canvas.getContext("2d", { alpha: false }) as any;
+			this.preCanvas = new OffscreenCanvas(this.canvas.width || 100, this.canvas.height || 100);
+			this.preCtx2d = this.preCanvas.getContext("2d", { alpha: true }) as any;
 			logger.info("video-bg-renderer", "CPU initialized successfully", {
 				ctx2d: !!this.ctx2d,
 				preCtx2d: !!this.preCtx2d,
+				width: this.canvas.width,
+				height: this.canvas.height
 			});
 		}
 	}
@@ -228,7 +234,7 @@ export class VideoBGRenderer {
 
 		const alpha = 1.0 / this.settings.smooth;
 
-		if (this.settings.engine === "GPU" && this.gl && this.preGl) {
+		if (this.settings.engine === "GPU" && this.gl && this.preGl && this.program && this.preProgram) {
 			const gl = this.gl;
 			const preGl = this.preGl;
 
@@ -255,6 +261,11 @@ export class VideoBGRenderer {
 			gl.uniform2f(this.uniformLocations.mainBlurAmountLocation, 0, this.settings.blur);
 			gl.drawArrays(gl.TRIANGLES, 0, 6);
 		} else if (this.ctx2d && this.preCtx2d) {
+			if (this.settings.engine === "GPU") {
+				// We tried GPU but it failed or programs are null, fallback to CPU
+				this.settings.engine = "CPU";
+				logger.warn("video-bg-renderer", "Switching to CPU mode inside render because GPU resources are missing");
+			}
 			const ctx2d = this.ctx2d;
 			const preCtx2d = this.preCtx2d;
 			// Smoothing: Draw current frame with partial alpha over previous content

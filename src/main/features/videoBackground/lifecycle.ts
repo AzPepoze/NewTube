@@ -155,7 +155,13 @@ export async function enableVideoBackground() {
 
 		if (state.worker) {
 			state.worker.onmessage = (e) => {
-				if (e.data.type === "rendered") {
+				const { type, data } = e.data;
+				if (type === "initialized") {
+					logger.info("video-bg", "Worker initialization acknowledged");
+				} else if (type === "log") {
+					const { level, category, args } = data;
+					(logger as any)[level]?.(category, ...args);
+				} else if (type === "rendered") {
 					state.isProcessing = false;
 					if (state.pendingBitmap) {
 						const next = state.pendingBitmap;

@@ -42,7 +42,7 @@ ytd-app {
 #${bgYoutubeId} {
 	z-index: -1;
 	border: none;
-	opacity: var(--nt-bg-youtube-opacity, 1);
+	opacity: calc(var(--nt-bg-youtube-opacity, 100) / 100);
 }
 `;
 
@@ -73,11 +73,11 @@ export function getElement(id: string): HTMLElement | null {
 	return document.getElementById(id);
 }
 
-export async function showElement(element: HTMLElement | null) {
+export async function showElement(element: HTMLElement | null, opacity: string = "1") {
 	if (!element) return;
 	element.style.display = "block";
 	requestAnimationFrame(() => {
-		if (element) element.style.opacity = "1";
+		if (element) element.style.opacity = opacity;
 	});
 }
 

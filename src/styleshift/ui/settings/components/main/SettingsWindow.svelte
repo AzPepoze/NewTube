@@ -323,7 +323,7 @@
 
 	.STYLESHIFT-Sidebar-Header {
 		padding: 12px 10px 8px;
-		font-size: 1.2rem;
+		font-size: 14px;
 		color: rgba(255, 255, 255, 0.5);
 		text-transform: uppercase;
 		letter-spacing: 1px;

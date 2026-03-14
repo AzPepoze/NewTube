@@ -301,16 +301,16 @@ async function build() {
 		const firefoxWorkersPath = path.join(FIREFOX_PATH, "workers");
 		fs.ensureDirSync(firefoxWorkersPath);
 		const workerEntries = [
-			"../src/main/features/videoBackground/worker.ts",
-			"../src/main/features/removeBlackBars/worker.ts"
+			{ src: "../src/main/features/videoBackground/worker.ts", out: "videoBackgroundWorker.js" },
+			{ src: "../src/main/features/removeBlackBars/worker.ts", out: "removeBlackBarsWorker.js" }
 		];
 		for (const entry of workerEntries) {
-			const entryPath = path.join(__dirname, entry);
+			const entryPath = path.join(__dirname, entry.src);
 			if (fs.existsSync(entryPath)) {
 				await esbuild.build({
 					entryPoints: [entryPath],
 					bundle: true,
-					outfile: path.join(firefoxWorkersPath, path.basename(entry).replace(".ts", ".js")),
+					outfile: path.join(firefoxWorkersPath, entry.out),
 					platform: "browser",
 					minify: isProduction,
 					plugins: [brandingPlugin],

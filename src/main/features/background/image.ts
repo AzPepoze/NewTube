@@ -52,8 +52,8 @@ class ImageBackgroundMode implements IModeHandler {
 	}
 
 	private async updateImage(): Promise<void> {
-		const useThumb = await getUserSetting("BackgroundThumbnailMode");
-		if (useThumb) {
+		const backgroundMode = await getUserSetting("BackgroundMode");
+		if (backgroundMode === "Thumbnail") {
 			const videoId = getYoutubeVideoId();
 			if (videoId) {
 				this.bgImage.src = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
@@ -96,7 +96,7 @@ class ImageBackgroundMode implements IModeHandler {
 		};
 
 		registerSettingListener("BackgroundImageUrl", () => this.updateImage(), true);
-		registerSettingListener("BackgroundThumbnailMode", () => this.updateImage(), true);
+		registerSettingListener("BackgroundMode", () => this.updateImage(), true);
 		registerSettingListener("BackgroundImageSize", () => this.updateSize(), true);
 		registerSettingListener("BackgroundImagePositionX", () => this.updatePosition(), true);
 		registerSettingListener("BackgroundImagePositionY", () => this.updatePosition(), true);

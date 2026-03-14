@@ -11,7 +11,6 @@ import { topbarSearchCategory } from "./categories/topbarSearch";
 import { thumbnailCategory } from "./categories/thumbnail";
 import { enhancementCategory } from "./categories/enhancement";
 import { colorThemeCategory } from "./categories/colorTheme";
-import { subscribeButtonCategory } from "./categories/subscribeButton";
 import { topLeftIconCategory } from "./categories/topLeftIcon";
 import { tabIconCategory } from "./categories/tabIcon";
 import { bordersShadowsCategory } from "./categories/bordersShadows";
@@ -51,7 +50,6 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 	topbarSearchCategory,
 	topLeftIconCategory,
 	tabIconCategory,
-	subscribeButtonCategory,
 
 	{ isHeader: true, label: "Utility & Cleanup" },
 	enhancementCategory,

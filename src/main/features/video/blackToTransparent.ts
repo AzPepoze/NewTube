@@ -5,7 +5,9 @@ import { logger } from "../../../shared/logger";
 
 let enabled = false;
 let canvas: HTMLCanvasElement | null = null;
-let gl: WebGL2RenderingContext | null = null;
+let gl: WebGLRenderingContext | WebGL2RenderingContext | null = null;
+let ctx2d: CanvasRenderingContext2D | null = null;
+let useCPU = false;
 let program: WebGLProgram | null = null;
 let videoTexture: WebGLTexture | null = null;
 
@@ -14,27 +16,26 @@ let renderTimeout: number | null = null;
 let navigateCleanup: (() => void) | null = null;
 let fullscreenCleanup: (() => void) | null = null;
 
-const vsSource = `#version 300 es
-in vec2 a_position;
-out vec2 v_texCoord;
+const vsSource = `
+attribute vec2 a_position;
+varying vec2 v_texCoord;
 void main() {
     gl_Position = vec4(a_position, 0.0, 1.0);
     v_texCoord = a_position * 0.5 + 0.5;
     v_texCoord.y = 1.0 - v_texCoord.y;
 }`;
 
-const fsSource = `#version 300 es
+const fsSource = `
 precision mediump float;
 uniform sampler2D u_image;
-in vec2 v_texCoord;
-out vec4 outColor;
+varying vec2 v_texCoord;
 void main() {
-    vec4 color = texture(u_image, v_texCoord);
+    vec4 color = texture2D(u_image, v_texCoord);
     float v = max(color.r, max(color.g, color.b));
-    outColor = vec4(color.rgb, v);
+    gl_FragColor = vec4(color.rgb, v);
 }`;
 
-function createShader(gl: WebGL2RenderingContext, type: number, source: string) {
+function createShader(gl: WebGLRenderingContext | WebGL2RenderingContext, type: number, source: string) {
 	const shader = gl.createShader(type);
 	if (!shader) {
 		logger.error("black-to-transparent", "Could not create shader object");
@@ -60,11 +61,18 @@ function initWebGL() {
 		logger.error("black-to-transparent", "Canvas not found in initWebGL");
 		return false;
 	}
-	gl = canvas.getContext("webgl2", { alpha: true, premultipliedAlpha: false });
+
+	// Try WebGL 2 first, then fallback to WebGL 1
+	gl = (canvas.getContext("webgl2", { alpha: true, premultipliedAlpha: false }) as WebGL2RenderingContext) ||
+		(canvas.getContext("webgl", { alpha: true, premultipliedAlpha: false }) as unknown as WebGL2RenderingContext);
+
 	if (!gl) {
-		logger.error("black-to-transparent", "WebGL2 not supported");
+		logger.error("black-to-transparent", "WebGL not supported");
 		return false;
 	}
+
+	const isWebGL2 = gl instanceof (window.WebGL2RenderingContext || Object);
+	logger.info("black-to-transparent", `Using ${isWebGL2 ? "WebGL 2" : "WebGL 1"}`);
 
 	const vShader = createShader(gl, gl.VERTEX_SHADER, vsSource);
 	const fShader = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
@@ -151,8 +159,13 @@ async function render() {
 		canvas.style.zIndex = "1";
 		video.parentElement?.appendChild(canvas);
 		if (!initWebGL()) {
-			logger.error("black-to-transparent", "Failed to initialize WebGL, stopping render loop");
-			return;
+			logger.warn("black-to-transparent", "Failed to initialize WebGL, falling back to CPU");
+			ctx2d = canvas.getContext("2d", { alpha: true });
+			if (!ctx2d) {
+				logger.error("black-to-transparent", "Failed to initialize 2D context, stopping render loop");
+				return;
+			}
+			useCPU = true;
 		}
 	}
 
@@ -175,10 +188,12 @@ async function render() {
 	if (canvas.width !== Math.floor(rect.width) || canvas.height !== Math.floor(rect.height)) {
 		canvas.width = Math.floor(rect.width);
 		canvas.height = Math.floor(rect.height);
-		gl?.viewport(0, 0, canvas.width, canvas.height);
+		if (!useCPU) {
+			gl?.viewport(0, 0, canvas.width, canvas.height);
+		}
 	}
 
-	if (gl && program && videoTexture && canvas.width > 0) {
+	if (!useCPU && gl && program && videoTexture && canvas.width > 0) {
 		if (video.style.opacity !== "0") {
 			logger.info("black-to-transparent", "Setting video opacity to 0 and starting to draw frames");
 			video.style.opacity = "0";
@@ -189,6 +204,21 @@ async function render() {
 		gl.bindTexture(gl.TEXTURE_2D, videoTexture);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+	} else if (useCPU && ctx2d) {
+		if (video.style.opacity !== "0") {
+			video.style.opacity = "0";
+		}
+		ctx2d.drawImage(video, 0, 0, canvas.width, canvas.height);
+		const imgData = ctx2d.getImageData(0, 0, canvas.width, canvas.height);
+		const data = imgData.data;
+		for (let i = 0; i < data.length; i += 4) {
+			const r = data[i];
+			const g = data[i + 1];
+			const b = data[i + 2];
+			const v = Math.max(r, g, b);
+			data[i + 3] = v;
+		}
+		ctx2d.putImageData(imgData, 0, 0);
 	} else {
 		if (video.style.opacity !== "1") {
 			logger.warn(

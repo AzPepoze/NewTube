@@ -249,17 +249,47 @@ export async function initializeDeveloperEnvironment(): Promise<void> {
 	}
 }
 
+let workerPolicy: any = null;
+
+function getWorkerPolicy() {
+	if (workerPolicy) return workerPolicy;
+	if (typeof window !== "undefined" && (window as any).trustedTypes && (window as any).trustedTypes.createPolicy) {
+		try {
+			workerPolicy = (window as any).trustedTypes.createPolicy("styleshift-worker-policy", {
+				createScriptURL: (url: string) => url,
+			});
+		} catch (e) {
+			logger.warn("runtime", "Failed to create Trusted Types policy:", e);
+		}
+	}
+	return workerPolicy;
+}
+
 export async function loadWorker(fileName: string): Promise<Worker | null> {
 	const scriptUrl = chrome.runtime.getURL(`workers/${fileName}`);
-
 	logger.info("runtime", `Loading worker ${fileName}`);
 
+	const policy = getWorkerPolicy();
+	const trustedUrl = policy ? policy.createScriptURL(scriptUrl) : scriptUrl;
+
 	try {
-		const worker = new Worker(scriptUrl);
+		const worker = new Worker(trustedUrl);
 		logger.info("runtime", `Native Worker created successfully for ${fileName}`);
 		return worker;
 	} catch (error) {
-		logger.warn("runtime", `Native Worker failed for ${fileName}:`, error, "");
-		return null;
+		logger.warn("runtime", `Native Worker failed for ${fileName} with direct URL, trying Blob fallback:`, error);
+		
+		try {
+			const response = await fetch(scriptUrl);
+			const blob = await response.blob();
+			const blobUrl = URL.createObjectURL(blob);
+			const trustedBlobUrl = policy ? policy.createScriptURL(blobUrl) : blobUrl;
+			const worker = new Worker(trustedBlobUrl);
+			logger.info("runtime", `Worker created successfully via Blob for ${fileName}`);
+			return worker;
+		} catch (blobError) {
+			logger.error("runtime", `All worker creation methods failed for ${fileName}:`, blobError);
+			return null;
+		}
 	}
 }
