@@ -40,6 +40,7 @@
 		color = "",
 		applyFilter = true,
 		size = 20,
+		scale = 1,
 	}: {
 		name: string;
 		className?: string;
@@ -47,6 +48,7 @@
 		color?: string;
 		applyFilter?: boolean;
 		size?: number;
+		scale?: number;
 	} = $props();
 
 	const isUrl = $derived(name.includes("://") || name.startsWith("data:"));
@@ -71,7 +73,10 @@
 		alt={name}
 		class="STYLESHIFT-Icon {className}"
 		class:with-filter={applyFilter && !color}
-		style="width: {size}px; height: {size}px; {color
+		style="transform: scale({Math.min(
+			scale,
+			2,
+		)}); width: {size}px; height: {size}px; {color
 			? `filter: none;`
 			: ''}{style}"
 		style:color={color || undefined}

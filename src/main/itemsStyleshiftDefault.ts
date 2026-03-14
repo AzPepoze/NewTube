@@ -11,11 +11,14 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 		rainbow: true,
 		settings: [
 			{
-				clickFunction: 'window.open("https://www.paypal.com/paypalme/jakkritportraitist");',
-				color: "#0471ffff",
-				fontSize: 15,
-				icon: "https://upload.wikimedia.org/wikipedia/commons/b/b7/PayPal_Logo_Icon_2014.svg",
-				name: "Paypal",
+				clickFunction: 'window.open("https://github.com/sponsors/AzPepoze");',
+				color: "#e45eff",
+				fontSize: 20,
+				description: "Support the development of NewTube by becoming a sponsor. Your contribution helps fund new features, improvements, maintenance and my life.",
+				icon: "https://media.tenor.com/XmUpFK6JyU8AAAAj/cute-please.gif",
+				iconSize: 100,
+				iconScale: 1.3,
+				name: "GitHub Sponsors",
 				align: "left",
 				type: "button",
 			},
@@ -50,7 +53,7 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 				name: "Themes",
 				align: "left",
 				type: "button",
-				icon: "🛍️"
+				icon: "collections"
 			},
 			{
 				clickFunction: toggleCustomize,
@@ -61,7 +64,7 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 				fontSize: 15,
 				color: "#3eadad",
 				align: "left",
-				icon: "🪒"
+				icon: "select_all"
 			},
 			{
 				clickFunction: openSettingPage,
@@ -72,7 +75,7 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 				name: "Full Settings Page",
 				align: "left",
 				type: "button",
-				icon: "⚙️"
+				icon: "display_settings"
 			},
 		],
 	},

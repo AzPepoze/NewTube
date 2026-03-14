@@ -65,6 +65,8 @@ export type Setting = (
 		description?: string;
 
 		icon?: string;
+		iconSize?: number;
+		iconScale?: number;
 		align?: "left" | "center" | "right";
 		color?: string;
 		fontSize?: number;

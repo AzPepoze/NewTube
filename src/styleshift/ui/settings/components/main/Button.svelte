@@ -19,6 +19,8 @@
 	const name = $derived(setting.name);
 	const description = $derived(setting.description);
 	const icon = $derived(setting.icon);
+	const iconSize = $derived(setting.iconSize || 50);
+	const iconScale = $derived(setting.iconScale || 1);
 	const color = $derived(setting.color || "#ffffff");
 	const align = $derived(setting.align || "center");
 	const fontSize = $derived(setting.fontSize || 15);
@@ -99,7 +101,8 @@
 	{#if icon}
 		<Icon
 			name={icon}
-			size={50}
+			size={iconSize}
+			scale={iconScale}
 			className="STYLESHIFT-Button-Icon"
 			applyFilter={false}
 		/>
