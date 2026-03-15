@@ -10,7 +10,7 @@ export const videoPlayerCategory: Category = {
 			id: "RemoveVideoPlayerBackground",
 			name: "Remove Player Background",
 			description:
-				"Makes the video player's base background transparent. Essential for seeing custom page backgrounds and 'Background Video' effects behind the player.",
+				"Makes the video player's base background transparent. Essential for seeing custom page backgrounds and 'Video Ambient' effects behind the player.",
 			value: true,
 			enableCss: `.html5-video-player { background: transparent !important; }`,
 		},

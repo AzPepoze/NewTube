@@ -5,11 +5,53 @@ import { createStylesheet } from "./styleSheet";
 import { logger } from "../../shared/logger";
 import { waitOneFrame } from "../shared/advance";
 
+import { getAllStyleshiftSettings } from "./items";
+
 export const activeSettingsState: Record<string, any> = {};
 const settingUpdateHandlers: Record<string, Function> = {};
 
 const settingUpdateListeners: Record<string, Function[]> = {};
 const settingInitializers: Record<string, Function[]> = {};
+
+export async function deactivateAllActiveSettings() {
+	const allSettings = await getAllStyleshiftSettings();
+	for (const setting of allSettings) {
+		if (activeSettingsState[setting.id] !== undefined) {
+			switch (setting.type) {
+				case "checkbox":
+					if (activeSettingsState[setting.id] && setting.disableFunction) {
+						logger.debug("settings", `Executing disableFunction for ${setting.id} (checkbox)`);
+						executeSettingScript(setting, "disableFunction");
+					}
+					break;
+				case "dropdown":
+					const previousValue = activeSettingsState[setting.id];
+					if (previousValue && setting.options[previousValue]?.disableFunction) {
+						logger.debug("settings", `Executing disableFunction for ${setting.id} (dropdown option: ${previousValue})`);
+						executeSettingScript(setting.options[previousValue], "disableFunction");
+					}
+					break;
+			}
+			const stylesheet = document.getElementById(`styleshift-stylesheet-${setting.id}`);
+			if (stylesheet) {
+				stylesheet.remove();
+			}
+			delete activeSettingsState[setting.id];
+			logger.debug("settings", `Deactivated setting: ${setting.id}`);
+		}
+	}
+	logger.debug("settings", "All active settings deactivated.");
+}
+
+export async function reactivateAllSettings() {
+	logger.info("settings", "Re-activating all settings...");
+	const allSettings = await getAllStyleshiftSettings();
+	for (const setting of allSettings) {
+		if (setting.id === "Themes") continue;
+		await triggerSettingUpdate(setting.id, true);
+	}
+	logger.info("settings", "All settings re-activated.");
+}
 
 /**
  * Registry of initialization logic for different setting types.
@@ -257,8 +299,8 @@ const updateThrottleState: Record<string, "Idle" | "Waiting" | "Processing"> = {
 /**
  * Triggers the update logic for a specific setting, with basic throttling.
  */
-export async function triggerSettingUpdate(settingId: string) {
-	logger.debug("settings", "Triggering update for:", settingId);
+export async function triggerSettingUpdate(settingId: string, silent: boolean = false) {
+	logger.debug("settings", "Triggering update for:", settingId, silent ? "(silent)" : "");
 	const state = updateThrottleState[settingId] || "Idle";
 
 	if (state === "Waiting") {
@@ -270,7 +312,7 @@ export async function triggerSettingUpdate(settingId: string) {
 		logger.debug("settings", "Currently processing, setting to waiting:", settingId);
 		updateThrottleState[settingId] = "Waiting";
 		await waitOneFrame();
-		return triggerSettingUpdate(settingId);
+		return triggerSettingUpdate(settingId, silent);
 	}
 
 	updateThrottleState[settingId] = "Processing";
@@ -285,7 +327,7 @@ export async function triggerSettingUpdate(settingId: string) {
 	const currentValue = await getFromStorage(settingId);
 
 	// Execute registered listeners
-	if (settingUpdateListeners[settingId]) {
+	if (settingUpdateListeners[settingId] && !silent) {
 		logger.debug("settings", `Executing ${settingUpdateListeners[settingId].length} listeners for:`, settingId);
 		for (const listener of settingUpdateListeners[settingId]) {
 			listener(currentValue);

@@ -18,8 +18,13 @@ import {
 	showSelection,
 	showUserConfirmation,
 	showUserPrompt,
+	updateAllUiComponents,
 } from "../ui/extension";
-import { triggerSettingUpdate } from "../settings/functions";
+import {
+	triggerSettingUpdate,
+	deactivateAllActiveSettings,
+	reactivateAllSettings,
+} from "../settings/functions";
 import { settingsUi } from "../ui/settings/settingComponents";
 import { sleep, deepClone, downloadFile, getCurrentDomain, createUniqueId } from "./normal";
 import { logger } from "../../shared/logger";
@@ -644,6 +649,8 @@ Danger Zone !!!
  */
 export async function enableExtension() {
 	showStylesheet();
+	await reactivateAllSettings();
+	await updateAllUiComponents();
 }
 
 /**
@@ -652,6 +659,7 @@ export async function enableExtension() {
  * disableExtension();
  */
 export async function disableExtension() {
+	await deactivateAllActiveSettings();
 	hideStylesheet();
 }
 

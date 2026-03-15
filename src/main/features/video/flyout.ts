@@ -7,6 +7,10 @@ const FLYOUT_HEIGHT = 236;
 let isFlyoutEnabled = true;
 let flyoutOffset = loadFlyoutPosition();
 let isDragging = false;
+let globalObserver: IntersectionObserver | null = null;
+let navigateCleanup: (() => void) | null = null;
+let fullscreenCleanup: (() => void) | null = null;
+let smallModeCleanup: (() => void) | null = null;
 
 function loadFlyoutPosition() {
 	try {
@@ -22,7 +26,9 @@ function saveFlyoutPosition() {
 }
 
 export function enableFlyout() {
-	const observer = new IntersectionObserver(
+	if (globalObserver) return;
+
+	globalObserver = new IntersectionObserver(
 		async (entries) => {
 			for (const entry of entries) {
 				const moviePlayer = await getPlayerElement();
@@ -49,15 +55,15 @@ export function enableFlyout() {
 
 	const startObserving = () => {
 		const playerContainer = document.querySelector("#player-container");
-		if (playerContainer) {
-			observer.disconnect();
-			observer.observe(playerContainer);
+		if (playerContainer && globalObserver) {
+			globalObserver.disconnect();
+			globalObserver.observe(playerContainer);
 		}
 	};
 
 	startObserving();
 
-	onYoutubeNavigate(() => {
+	navigateCleanup = onYoutubeNavigate(() => {
 		isFlyoutEnabled = true;
 		getPlayerElement().then((moviePlayer) => {
 			if (moviePlayer) {
@@ -75,8 +81,39 @@ export function enableFlyout() {
 		}
 	};
 
-	onYoutubeFullscreen(handleStateChange);
-	onYoutubeSmallMode(handleStateChange);
+	fullscreenCleanup = onYoutubeFullscreen(handleStateChange);
+	smallModeCleanup = onYoutubeSmallMode(handleStateChange);
+}
+
+export function disableFlyout() {
+	if (globalObserver) {
+		globalObserver.disconnect();
+		globalObserver = null;
+	}
+
+	if (navigateCleanup) {
+		navigateCleanup();
+		navigateCleanup = null;
+	}
+
+	if (fullscreenCleanup) {
+		fullscreenCleanup();
+		fullscreenCleanup = null;
+	}
+
+	if (smallModeCleanup) {
+		smallModeCleanup();
+		smallModeCleanup = null;
+	}
+
+	getPlayerElement().then((moviePlayer) => {
+		if (moviePlayer) {
+			moviePlayer.classList.remove("newtube-flyout-mode");
+			moviePlayer.style.transform = "";
+			const closeBtn = moviePlayer.querySelector(".newtube-flyout-close");
+			if (closeBtn) closeBtn.remove();
+		}
+	});
 }
 
 function clampPosition() {

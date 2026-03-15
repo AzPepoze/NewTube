@@ -4,7 +4,7 @@ import { videoAutomationCategory } from "./categories/videoAutomation";
 import { videoLayoutCategory } from "./categories/videoLayout";
 import { videoColorsCategory } from "./categories/videoColors";
 import { videoControlPanelCategory } from "./categories/videoControlPanel";
-import { videoBackgroundCategory } from "./categories/videoBackground";
+import { videoAmbientCategory } from "./categories/videoAmbient";
 import { removeBlackBarsCategory } from "./categories/removeBlackBars";
 import { subtitlesCategory } from "./categories/subtitles";
 import { topbarSearchCategory } from "./categories/topbarSearch";
@@ -31,8 +31,11 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 	videoColorsCategory,
 	videoAutomationCategory,
 	videoLayoutCategory,
-	videoBackgroundCategory,
+	videoAmbientCategory,
 	removeBlackBarsCategory,
+
+	{ isHeader: true, label: "Your Experience" },
+	enhancementCategory,
 
 	{ isHeader: true, label: "Visual Style" },
 	colorThemeCategory,
@@ -52,7 +55,6 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 	tabIconCategory,
 
 	{ isHeader: true, label: "Utility & Cleanup" },
-	enhancementCategory,
 	scrollbarCategory,
 	uiCleanerCategory,
 	betaFeaturesCategory,

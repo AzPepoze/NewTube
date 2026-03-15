@@ -103,7 +103,7 @@ export function updateDebugInfo(video: HTMLVideoElement, frameTime: number) {
 	const engineDisplay = settings.engine === "GPU" ? "WebGL" : "2d canvas";
 
 	state.debugContainer.innerHTML = `
-		<div style="font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 5px; padding-bottom: 2px;">NewTube Background Video Debug</div>
+		<div style="font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 5px; padding-bottom: 2px;">NewTube Video Ambient Debug</div>
 		<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px 15px;">
 			<span>FPS:</span> <span>${fps} (${Math.round(frameTime)}ms)</span>
 			<span>Method:</span> <span>${state.renderMethod}</span>

@@ -11,58 +11,58 @@ import { render, updatePositionLoop } from "./logic";
 import { sendToWorker } from "./helpers";
 import { showBg } from "../background/main";
 
-export async function updateVideoBgSettings(value?: any, settingId?: string) {
+export async function updateVideoAmbientSettings(value?: any, settingId?: string) {
 	if (typeof settingId === "string") {
 		const oldEngine = settings.engine;
 		switch (settingId) {
-			case "VideoBackgroundBlur":
+			case "VideoAmbientBlur":
 				settings.blur = value;
 				break;
-			case "VideoBackgroundQuality":
+			case "VideoAmbientQuality":
 				settings.quality = value / 100;
 				break;
-			case "VideoBackgroundBrightness":
+			case "VideoAmbientBrightness":
 				settings.brightness = value;
 				break;
-			case "VideoBackgroundContrast":
+			case "VideoAmbientContrast":
 				settings.contrast = value;
 				break;
-			case "VideoBackgroundOpacity":
+			case "VideoAmbientOpacity":
 				settings.opacity = value;
 				break;
-			case "VideoBackgroundSize":
+			case "VideoAmbientSize":
 				settings.scale = value;
 				break;
-			case "VideoBackgroundSmooth":
+			case "VideoAmbientSmooth":
 				settings.smooth = value;
 				break;
-			case "VideoBackgroundStick":
+			case "VideoAmbientStick":
 				settings.stick = value;
 				break;
-			case "VideoBackgroundCheckLag":
+			case "VideoAmbientCheckLag":
 				settings.checkLag = value;
 				break;
-			case "VideoBackgroundDebug":
+			case "VideoAmbientDebug":
 				settings.debug = value;
 				break;
-			case "VideoBackgroundDisableFullscreen":
+			case "VideoAmbientDisableFullscreen":
 				settings.disableFullscreen = value;
 				break;
-			case "VideoBackgroundRenderEngine":
+			case "VideoAmbientRenderEngine":
 				settings.engine = value;
 				break;
-			case "VideoBackgroundWorker":
+			case "VideoAmbientWorker":
 				settings.worker = value;
 				break;
 		}
 
 		if (
-			(settingId === "VideoBackgroundRenderEngine" && oldEngine !== settings.engine && state.enabled) ||
-			(settingId === "VideoBackgroundWorker" && state.enabled)
+			(settingId === "VideoAmbientRenderEngine" && oldEngine !== settings.engine && state.enabled) ||
+			(settingId === "VideoAmbientWorker" && state.enabled)
 		) {
-			logger.info("video-bg", `Setting ${settingId} changed. Restarting...`);
-			await disableVideoBackground(true);
-			enableVideoBackground();
+			logger.info("video-ambient", `Setting ${settingId} changed. Restarting...`);
+			await disableVideoAmbient(true);
+			enableVideoAmbient();
 			return;
 		}
 	} else {
@@ -87,15 +87,15 @@ export async function updateVideoBgSettings(value?: any, settingId?: string) {
 	}
 }
 
-export async function enableVideoBackground() {
+export async function enableVideoAmbient() {
 	state.enabled = true;
 	const mySession = state.sessionId;
-	await updateVideoBgSettings();
+	await updateVideoAmbientSettings();
 
 	const init = async () => {
 		if (document.getElementById("newtube-bg-container") || !state.enabled || state.sessionId !== mySession)
 			return;
-		logger.info("video-bg", "Initializing background video...", { engine: settings.engine, session: mySession });
+		logger.info("video-ambient", "Initializing Video Ambient...", { engine: settings.engine, session: mySession });
 		const app = (await getDocumentBody()) || document.body;
 		if (!app || state.sessionId !== mySession) return;
 
@@ -142,7 +142,7 @@ export async function enableVideoBackground() {
 
 		state.worker?.terminate();
 		if (settings.worker) {
-			state.worker = await loadWorker("videoBackgroundWorker.js");
+			state.worker = await loadWorker("videoAmbientWorker.js");
 		} else {
 			state.worker = null;
 		}
@@ -157,7 +157,7 @@ export async function enableVideoBackground() {
 			state.worker.onmessage = (e) => {
 				const { type, data } = e.data;
 				if (type === "initialized") {
-					logger.info("video-bg", "Worker initialization acknowledged");
+					logger.info("video-ambient", "Worker initialization acknowledged");
 				} else if (type === "log") {
 					const { level, category, args } = data;
 					(logger as any)[level]?.(category, ...args);
@@ -201,7 +201,7 @@ export async function enableVideoBackground() {
 		state.container.appendChild(state.wrapper);
 		app.appendChild(state.container);
 
-		updateVideoBgSettings();
+		updateVideoAmbientSettings();
 		render();
 		updatePositionLoop();
 	};
@@ -224,8 +224,8 @@ export async function enableVideoBackground() {
 	});
 }
 
-export async function disableVideoBackground(force = false) {
-	if (state.enabled) logger.info("video-bg", "Disabling background video...");
+export async function disableVideoAmbient(force = false) {
+	if (state.enabled) logger.info("video-ambient", "Disabling Video Ambient...");
 	state.enabled = false;
 	showBg();
 
@@ -304,18 +304,18 @@ export async function disableVideoBackground(force = false) {
 
 export function registerVideoBgListeners() {
 	[
-		"VideoBackgroundBlur",
-		"VideoBackgroundQuality",
-		"VideoBackgroundBrightness",
-		"VideoBackgroundContrast",
-		"VideoBackgroundOpacity",
-		"VideoBackgroundSize",
-		"VideoBackgroundSmooth",
-		"VideoBackgroundRenderEngine",
-		"VideoBackgroundWorker",
-		"VideoBackgroundStick",
-		"VideoBackgroundCheckLag",
-		"VideoBackgroundDebug",
-		"VideoBackgroundDisableFullscreen",
-	].forEach((id) => registerSettingListener(id, (val) => updateVideoBgSettings(val, id)));
+		"VideoAmbientBlur",
+		"VideoAmbientQuality",
+		"VideoAmbientBrightness",
+		"VideoAmbientContrast",
+		"VideoAmbientOpacity",
+		"VideoAmbientSize",
+		"VideoAmbientSmooth",
+		"VideoAmbientRenderEngine",
+		"VideoAmbientWorker",
+		"VideoAmbientStick",
+		"VideoAmbientCheckLag",
+		"VideoAmbientDebug",
+		"VideoAmbientDisableFullscreen",
+	].forEach((id) => registerSettingListener(id, (val) => updateVideoAmbientSettings(val, id)));
 }

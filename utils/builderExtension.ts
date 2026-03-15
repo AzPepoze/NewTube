@@ -295,7 +295,7 @@ async function build() {
 		const firefoxWorkersPath = path.join(FIREFOX_PATH, "workers");
 		fs.ensureDirSync(firefoxWorkersPath);
 		const workerEntries = [
-			{ src: "../src/main/features/videoBackground/worker.ts", out: "videoBackgroundWorker.js" },
+			{ src: "../src/main/features/videoAmbient/worker.ts", out: "videoAmbientWorker.js" },
 			{ src: "../src/main/features/removeBlackBars/worker.ts", out: "removeBlackBarsWorker.js" }
 		];
 		for (const entry of workerEntries) {

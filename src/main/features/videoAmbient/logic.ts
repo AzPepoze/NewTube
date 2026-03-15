@@ -3,7 +3,7 @@ import { settings } from "./settings";
 import { fadeIn, fadeOut, updateDebugInfo, updateLayout } from "./ui";
 import { checkStaticVDO, sendToWorker } from "./helpers";
 import { getVideoElement } from "../../modules/youtube";
-import { disableVideoBackground } from "./lifecycle";
+import { disableVideoAmbient } from "./lifecycle";
 import { shouldFeatureShow } from "../helpers";
 
 export function handleLagMonitoring(frameTime: number, disableCallback: () => void) {
@@ -20,14 +20,14 @@ export function handleLagMonitoring(frameTime: number, disableCallback: () => vo
 		state.laggedFrames++;
 		if (state.laggedFrames > 10) {
 			const LAG_WARNING_MESSAGE = `NEWTUBE : I see that you so laggy.
-(I guess it cause by Background Video)
+(I guess it cause by Video Ambient)
                 
 Solution to fix this laggy:
 1.Try enable "Use hardware acceleration when available" in your browser setting.
-2.If your graphic card is quite poor try change Background Video to renders by CPU.
-3.Try decrease quality of Background Video
+2.If your graphic card is quite poor try change Video Ambient to renders by CPU.
+3.Try decrease quality of Video Ambient
 
-Are you want to disable Background Video?
+Are you want to disable Video Ambient?
 (You can turn it back on later)`;
 			if (confirm(LAG_WARNING_MESSAGE)) {
 				disableCallback();
@@ -82,7 +82,7 @@ export const render = async () => {
 	state.lastTime = now;
 	state.frameCount++;
 
-	if (settings.checkLag) handleLagMonitoring(frameTime, disableVideoBackground);
+	if (settings.checkLag) handleLagMonitoring(frameTime, disableVideoAmbient);
 	updateDebugInfo(video, frameTime);
 
 	// Processing logic

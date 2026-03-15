@@ -1,6 +1,6 @@
 import { Category } from "../../styleshift/types/styleshiftTypes";
-import { enableFlyout } from "../features/video/flyout";
-import { setupAutoShowChatReplay } from "../features/video/chat";
+import { enableFlyout, disableFlyout } from "../features/video/flyout";
+import { setupAutoShowChatReplay, disableAutoShowChatReplay } from "../features/video/chat";
 
 export const enhancementCategory: Category = {
 	category: { icon: "auto_fix_high", label: "Enhancement" },
@@ -60,6 +60,7 @@ export const enhancementCategory: Category = {
 			description: "Attaches a small, persistent version of the video player to the corner of your screen when you scroll down to read comments. Keeps the video visible at all times.",
 			value: false,
 			enableFunction: enableFlyout,
+			disableFunction: disableFlyout,
 			enableCss: `
 				#player-container {
 					z-index: 2000 !important;
@@ -175,6 +176,7 @@ export const enhancementCategory: Category = {
 			description: "Automatically enables and expands the 'Chat Replay' window for premiered videos and past livestreams.",
 			value: false,
 			enableFunction: setupAutoShowChatReplay,
+			disableFunction: disableAutoShowChatReplay,
 		},
 	],
 };
