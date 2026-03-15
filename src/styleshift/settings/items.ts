@@ -4,7 +4,7 @@ import { getStyleshiftCustomItems } from "../../main/itemsStyleshiftCustom";
 import { randomNumberInRange } from "../shared/normal";
 import { saveAndRefreshAll } from "../core/runtimeController";
 import { getRootValue, saveToStorage } from "../core/storageManager";
-import { refreshExtensionState } from "../run";
+import { refreshExtensionState } from "..";
 import { attachBehaviorToSetting } from "./functions";
 import { Category, type Setting } from "../types/styleshiftTypes";
 import { logger } from "../../shared/logger";

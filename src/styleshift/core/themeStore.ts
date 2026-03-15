@@ -39,7 +39,7 @@ export async function initWebsiteIntegration(): Promise<void> {
 
 		if (success) {
 			createNotification({
-				icon: "✅",
+				icon: "check_circle",
 				title: "Theme Installed",
 				content: `${detail.themeName || "Theme"} installed to ${detail.targetDomains.length} site(s).`,
 			});
@@ -62,7 +62,7 @@ export async function initWebsiteIntegration(): Promise<void> {
 
 		if (success) {
 			createNotification({
-				icon: "💾",
+				icon: "save",
 				title: "Theme Saved",
 				content: `"${detail.themeName}" saved to collection.`,
 			});

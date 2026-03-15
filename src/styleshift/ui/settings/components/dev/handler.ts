@@ -1,5 +1,5 @@
 import { saveItems, synchronizeAvailableFunctions } from "@/styleshift/core/runtimeController";
-import { refreshExtensionState } from "@/styleshift/run";
+import { refreshExtensionState } from "@/styleshift";
 import { logger } from "@/shared/logger";
 import { triggerSettingUpdate, migrateSettingRuntimeState, attachBehaviorToSetting } from "@/styleshift/settings/functions";
 import { refreshSettingUi, migrateSettingUiRegistry } from "@/styleshift/ui/settings/settings";

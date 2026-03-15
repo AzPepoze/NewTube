@@ -49,20 +49,21 @@ export interface RenderSettings {
 }
 
 export class VideoBGRenderer {
-	private canvas: HTMLCanvasElement | OffscreenCanvas | null = null;
-	private gl: WebGLRenderingContext | WebGL2RenderingContext | null = null;
-	private ctx2d: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null = null;
-
-	private preCanvas: OffscreenCanvas | null = null;
-	private preGl: WebGLRenderingContext | WebGL2RenderingContext | null = null;
-	private preCtx2d: OffscreenCanvasRenderingContext2D | null = null;
-
-	private program: WebGLProgram | null = null;
-	private preProgram: WebGLProgram | null = null;
-
-	private videoTexture: WebGLTexture | null = null;
 	private blurTexture: WebGLTexture | null = null;
-
+	private canvas: HTMLCanvasElement | OffscreenCanvas | null = null;
+	private ctx2d: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null = null;
+	private gl: WebGLRenderingContext | WebGL2RenderingContext | null = null;
+	private preCanvas: OffscreenCanvas | null = null;
+	private preCtx2d: OffscreenCanvasRenderingContext2D | null = null;
+	private preGl: WebGLRenderingContext | WebGL2RenderingContext | null = null;
+	private preProgram: WebGLProgram | null = null;
+	private program: WebGLProgram | null = null;
+	private settings: RenderSettings = {
+		blur: 30,
+		quality: 0.5,
+		smooth: 1,
+		engine: "GPU",
+	};
 	private uniformLocations = {
 		mainBlurAmountLocation: null as WebGLUniformLocation | null,
 		mainAlphaLocation: null as WebGLUniformLocation | null,
@@ -70,28 +71,8 @@ export class VideoBGRenderer {
 		preSmoothingAlphaLocation: null as WebGLUniformLocation | null,
 		preBlurAmountLocation: null as WebGLUniformLocation | null,
 	};
-
-	private settings: RenderSettings = {
-		blur: 30,
-		quality: 0.5,
-		smooth: 1,
-		engine: "GPU",
-	};
-
+	private videoTexture: WebGLTexture | null = null;
 	constructor() {}
-
-	private loadShader(gl: WebGLRenderingContext | WebGL2RenderingContext, type: number, source: string): WebGLShader | null {
-		const shader = gl.createShader(type);
-		if (!shader) return null;
-		gl.shaderSource(shader, source);
-		gl.compileShader(shader);
-		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-			logger.error("video-bg-renderer", "Shader compile error:", gl.getShaderInfoLog(shader));
-			gl.deleteShader(shader);
-			return null;
-		}
-		return shader;
-	}
 
 	private initProgram(gl: WebGLRenderingContext | WebGL2RenderingContext, vs: string, fs: string): WebGLProgram | null {
 		const vShader = this.loadShader(gl, gl.VERTEX_SHADER, vs);
@@ -107,6 +88,19 @@ export class VideoBGRenderer {
 			return null;
 		}
 		return prog;
+	}
+
+	private loadShader(gl: WebGLRenderingContext | WebGL2RenderingContext, type: number, source: string): WebGLShader | null {
+		const shader = gl.createShader(type);
+		if (!shader) return null;
+		gl.shaderSource(shader, source);
+		gl.compileShader(shader);
+		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+			logger.error("video-bg-renderer", "Shader compile error:", gl.getShaderInfoLog(shader));
+			gl.deleteShader(shader);
+			return null;
+		}
+		return shader;
 	}
 
 	public init(canvas: HTMLCanvasElement | OffscreenCanvas, settings: RenderSettings) {
@@ -204,10 +198,6 @@ export class VideoBGRenderer {
 		}
 	}
 
-	public updateSettings(settings: Partial<RenderSettings>) {
-		this.settings = { ...this.settings, ...settings };
-	}
-
 	public render(bitmap: ImageBitmap) {
 		if (!this.canvas || !this.preCanvas) return;
 
@@ -282,5 +272,9 @@ export class VideoBGRenderer {
 		}
 
 		bitmap.close();
+	}
+
+	public updateSettings(settings: Partial<RenderSettings>) {
+		this.settings = { ...this.settings, ...settings };
 	}
 }

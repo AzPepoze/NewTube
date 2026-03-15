@@ -20,7 +20,6 @@ const fs = require("fs");
 		minify: true,
 	});
 
-	// Copy Material Icons fonts to output directory (used by injectMaterialIconsStyles in styleSheet.ts)
 	const fontsDir = path.join(__dirname, "../node_modules/material-icons/iconfont");
 	const outFontsDir = path.join(__dirname, "../out/build/assets/fonts");
 
@@ -29,15 +28,14 @@ const fs = require("fs");
 		fs.mkdirSync(outFontsDir, { recursive: true });
 	}
 
-	// Copy Material Icons font files
-	const fontFiles = fs.readdirSync(fontsDir).filter(f => f.match(/\.(woff|woff2|ttf)$/));
-	fontFiles.forEach(file => {
-		const src = path.join(fontsDir, file);
-		const dst = path.join(outFontsDir, file);
+	try {
+		const src = path.join(fontsDir, "material-icons.woff2");
+		const dst = path.join(outFontsDir, "material-icons.woff2");
 		fs.copyFileSync(src, dst);
-	});
-
-	console.log(`✓ Copied ${fontFiles.length} Material Icons font files to assets/fonts`);
+		console.log(`✓ Copied material-icons.woff2 to assets/fonts`);
+	} catch (err: any) {
+		console.error(`✗ Failed to copy material-icons.woff2:`, err.message);
+	}
 })();
 
 export { };

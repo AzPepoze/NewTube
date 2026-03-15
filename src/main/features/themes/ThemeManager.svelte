@@ -136,7 +136,7 @@
 			themes = updatedThemes;
 
 			createNotification({
-				icon: "🗑️",
+				icon: "delete",
 				title: "Theme Deleted",
 				content: `"${displayName}" removed from collection.`,
 			});
@@ -241,7 +241,7 @@
 
 		{#if themeNames.length === 0}
 			<div class="empty-state">
-				<div class="empty-icon">🛍️</div>
+				<div class="empty-icon"><Icon name="storefront" size={48} /></div>
 				<p>Your theme collection is empty.</p>
 				<p class="sub">Save your current setup to see it here!</p>
 			</div>

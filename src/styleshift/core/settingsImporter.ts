@@ -68,7 +68,7 @@ export async function importPresetToSettings(presetData: any, persist = true, th
 		const isReverting =
 			themeName.toLowerCase().includes("setting") || themeName.toLowerCase().includes("previous");
 		loaderUi = await createNotification({
-			icon: "🎨",
+			icon: "palette",
 			title: isReverting ? `Restoring: ${themeName}` : `Applying Theme: ${themeName}`,
 			content: "Preparing settings...",
 			timeout: -1,
@@ -137,7 +137,7 @@ export async function importPresetToSettings(presetData: any, persist = true, th
 		await triggerSettingsUpdateBatch(changedKeys);
 
 		if (loaderUi) {
-			loaderUi.setIcon("✅");
+			loaderUi.setIcon("check_circle");
 			loaderUi.setContent("Theme applied successfully!");
 			await sleep(1500);
 			loaderUi.close();

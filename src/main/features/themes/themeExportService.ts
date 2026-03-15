@@ -10,7 +10,7 @@ export function exportThemeToClipboard(name: string, themeData: any) {
     copyToClipboard(jsonText);
 
     createNotification({
-        icon: "📋",
+        icon: "content_copy",
         title: "Theme Exported",
         content: `"${name}" copied to clipboard.`,
     });
@@ -21,7 +21,7 @@ export function exportThemeToClipboard(name: string, themeData: any) {
  */
 export async function exportThemeAsZip(name: string, themeData: any) {
     const notification = await createNotification({
-        icon: "📦",
+        icon: "inventory_2",
         title: "Preparing Export",
         content: "Initializing ZIP generation...",
         timeout: -1,
@@ -61,7 +61,7 @@ export async function exportThemeAsZip(name: string, themeData: any) {
         const zipBlob = await zip.generateAsync({ type: "blob" });
         downloadFile(zipBlob, `${name}.zip`);
 
-        notification.setIcon("✅");
+        notification.setIcon("check_circle");
         notification.setTitle("Theme Exported");
         notification.setContent(`"${name}.zip" has been downloaded.`);
         setTimeout(() => notification.close(), 3000);

@@ -253,7 +253,7 @@ async function build() {
 		const mainScriptName = `${config.name.toLowerCase()}.js`;
 		log.info(`Bundling main script: ${mainScriptName}`);
 		await esbuild.build({
-			entryPoints: [path.join(__dirname, "../src/styleshift/run.ts")],
+			entryPoints: [path.join(__dirname, "../src/styleshift/index.ts")],
 			bundle: true,
 			outfile: path.join(BUILD_PATH, mainScriptName),
 			platform: "browser",
@@ -286,22 +286,7 @@ async function build() {
 			fs.copySync(path.join(__dirname, "../src/assets"), path.join(BUILD_PATH, "assets"));
 		}
 
-		// Copy Material Icons fonts
-		const materialIconsPath = path.join(__dirname, "../node_modules/material-icons/iconfont");
-		if (fs.existsSync(materialIconsPath)) {
-			const fontsPath = path.join(BUILD_PATH, "assets/fonts");
-			fs.ensureDirSync(fontsPath);
-			const fontFiles = fs.readdirSync(materialIconsPath).filter(file =>
-				file.endsWith(".woff2") || file.endsWith(".woff") || file.endsWith(".ttf")
-			);
-			for (const file of fontFiles) {
-				fs.copySync(path.join(materialIconsPath, file), path.join(fontsPath, file));
-			}
-			log.success(`Copied ${fontFiles.length} Material Icons font files.`);
-		}
-		log.success("Assets copied.");
-
-		// 6. Distribution - DEPLOY TO DIST BEFORE PROCESSINGReplacements to ensure manifest.json is there
+		// 6. Distribution
 		log.info("Deploying to distribution folders...");
 		fs.copySync(BUILD_PATH, CHROMIUM_PATH);
 		fs.copySync(BUILD_PATH, FIREFOX_PATH);

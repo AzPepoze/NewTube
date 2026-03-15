@@ -10,6 +10,7 @@ import { updateAllUiComponents } from "@/styleshift/ui/extension";
 
 export async function setCurrentVideoAsBackground() {
 	const status = await createNotification({
+		icon: "videocam",
 		title: "Setting current video as background",
 		content: "Attempting to retrieve embed URL from current video...",
 		timeout: -1,

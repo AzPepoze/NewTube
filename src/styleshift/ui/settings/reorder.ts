@@ -3,7 +3,7 @@ import { logger } from "../../../shared/logger";
 import { saveToStorage } from "../../core/storageManager";
 import { getSettingCategory, getCustomItems } from "../../settings/items";
 import type { Category, Setting } from "../../types/styleshiftTypes";
-import { refreshExtensionState } from "@/styleshift/run";
+import { refreshExtensionState } from "@/styleshift";
 
 let dragingSetting: { size: number; Data: Setting | Category } | null = null;
 const dropTargets = new Map<HTMLElement, { data: Setting | Category; dataType: string }>();

@@ -7,7 +7,7 @@ import {
 	saveRootValue,
 } from "../core/storageManager";
 import { initializeRequiredStorageStructures as setNullSave } from "../core/storageMaintenance";
-import { styleshiftContainer } from "../run";
+import { styleshiftContainer } from "..";
 import { styleshiftCategoryList } from "../settings/defaultItems";
 import { showStylesheet, hideStylesheet } from "../settings/styleSheet";
 import { Category, Setting } from "../types/styleshiftTypes";
@@ -23,6 +23,8 @@ import { triggerSettingUpdate } from "../settings/functions";
 import { settingsUi } from "../ui/settings/settingComponents";
 import { sleep, deepClone, downloadFile, getCurrentDomain, createUniqueId } from "./normal";
 import { logger } from "../../shared/logger";
+import { mount, unmount } from "svelte";
+import Icon from "../ui/settings/components/main/Icon.svelte";
 
 export { downloadFile };
 
@@ -119,7 +121,7 @@ export function copyToClipboard(text: string) {
  * @example
  * await createNotification({ title: "Hello", content: "This is a notification" });
  */
-export async function createNotification({ icon = null, title = "StyleShift", content = "", timeout = 3000 }) {
+export async function createNotification({ icon = null, iconColor = "", title = "StyleShift", content = "", timeout = 3000 }) {
 	logger.info("extension", title, content);
 
 	const notificationFrame = await settingsUi.settingFrame(true, false, {
@@ -132,16 +134,38 @@ export async function createNotification({ icon = null, title = "StyleShift", co
 		globalNotificationContainer.append(notificationFrame);
 	}, 1);
 
-	let iconUi;
+	let iconUi: any = null;
+	const iconTarget = document.createElement("div");
+	iconTarget.classList.add("STYLESHIFT-Notification-Icon");
+	iconTarget.style.display = "none";
+	notificationFrame.append(iconTarget);
+
+	let currentIconColor = iconColor;
+
+	const updateIcon = (name: string | null, color: string = currentIconColor) => {
+		currentIconColor = color;
+		if (iconUi) {
+			unmount(iconUi);
+			iconUi = null;
+		}
+
+		if (name) {
+			iconTarget.style.display = "flex";
+			iconUi = mount(Icon, {
+				target: iconTarget,
+				props: {
+					name,
+					size: 24,
+					color,
+				},
+			});
+		} else {
+			iconTarget.style.display = "none";
+		}
+	};
 
 	if (icon) {
-		iconUi = await settingsUi.settingFrame(true, false, {
-			x: true,
-			y: true,
-		});
-		iconUi.classList.add("STYLESHIFT-Notification-Icon");
-		iconUi.textContent = icon;
-		notificationFrame.append(iconUi);
+		updateIcon(icon);
 	}
 
 	//---------------------------------
@@ -158,11 +182,9 @@ export async function createNotification({ icon = null, title = "StyleShift", co
 	titleUi.textContent = title;
 	notificationContentFrame.append(titleUi);
 
-	const contentUi = await settingsUi.settingFrame(true, false, {
-		x: false,
-		y: true,
-	});
+	const contentUi = await settingsUi.settingFrame(true, false);
 	contentUi.classList.add("STYLESHIFT-Notification-Content");
+	contentUi.style = "display: block;";
 	notificationContentFrame.append(contentUi);
 
 	const setContent = (newContent) => {
@@ -176,6 +198,9 @@ export async function createNotification({ icon = null, title = "StyleShift", co
 
 	async function close() {
 		await playUiAnimation(notificationFrame, "Notification-Hide");
+		if (iconUi) {
+			unmount(iconUi);
+		}
 		notificationFrame.remove();
 	}
 
@@ -206,9 +231,10 @@ export async function createNotification({ icon = null, title = "StyleShift", co
 
 	return {
 		setIcon: (newIcon) => {
-			if (iconUi) {
-				iconUi.textContent = newIcon;
-			}
+			updateIcon(newIcon, currentIconColor);
+		},
+		setIconColor: (newColor) => {
+			updateIcon(icon, newColor);
 		},
 		setContent,
 		setTitle: (newTitle) => {
@@ -218,57 +244,45 @@ export async function createNotification({ icon = null, title = "StyleShift", co
 	};
 }
 
-/**
- * Creates an error notification.
- * @param {string} content - The error content.
- * @returns {Promise<Object>}
- * @example
- * await createError("An error occurred");
- */
-export async function createError(content, timeout = 0) {
-	logger.error("extension", "StyleShift - " + content);
+export async function createError(content: any) {
 	return await createNotification({
-		icon: "❌",
-		title: "StyleShift - Error",
-		content: content,
-		timeout: timeout,
+		icon: "error",
+		iconColor: "#f44336",
+		title: "StyleShift Error",
+		content: typeof content === "object" ? content.message : String(content),
+		timeout: 10000,
 	});
 }
 
 /** Creates a warning notification.
  * @param {string} content - The warning content.
- * @param {Object} options - Additional options.
- * @param {number} [options.timeout=0] - The timeout in milliseconds.
- * @param {boolean} [options.show=true] - Whether to show the warning.
  * @returns {Promise<Object>}
  * @example
- * await createWarning("This is a warning", { timeout: 5000, show: true });
+ * await createWarning("This is a warning");
  */
-export async function createWarning(content, { timeout = 0, show = true } = {}) {
-	logger.warn("extension", "StyleShift - " + content);
-	if (!show) return;
+export async function createWarning(content: string) {
 	return await createNotification({
-		icon: "⚠️",
-		title: "StyleShift - Warning",
+		icon: "warning",
+		iconColor: "#ff9800",
+		title: "StyleShift Warning",
 		content: content,
-		timeout: timeout,
+		timeout: 5000,
 	});
 }
 
 /** Creates a success notification.
  * @param {string} content - The success content.
- * @param {number} [timeout=3000] - The timeout in milliseconds.
  * @returns {Promise<Object>}
  * @example
  * await createSuccess("Operation completed successfully");
  */
-export async function createSuccess(content, timeout = 3000) {
-	logger.info("extension", "Success", content);
+export async function createSuccess(content: string) {
 	return await createNotification({
-		icon: "✅",
-		title: "StyleShift - Success",
+		icon: "check_circle",
+		iconColor: "#4caf50",
+		title: "StyleShift",
 		content: content,
-		timeout: timeout,
+		timeout: 3000,
 	});
 }
 
@@ -318,7 +332,7 @@ export async function getFile(type) {
  */
 export async function importStyleshiftData(styleshiftData: object) {
 	const notification = await createNotification({
-		icon: "🔄️",
+		icon: "sync",
 		title: "StyleShift - Importing data",
 		content: "Please wait...",
 		timeout: -1,
@@ -332,7 +346,7 @@ export async function importStyleshiftData(styleshiftData: object) {
 		await setNullSave();
 		saveAndRefreshAll();
 
-		notification.setIcon("✅");
+		notification.setIcon("check_circle");
 		notification.setTitle("StyleShift - Imported data");
 		notification.setContent("Imported successfully!");
 
@@ -375,7 +389,7 @@ export function exportStyleshiftData() {
 			}
 		}
 	} else {
-		createWarning("No custom items found. Skipping...", { show: false });
+		createWarning("No custom items found. Skipping...");
 	}
 
 	return exportStyleshiftData;

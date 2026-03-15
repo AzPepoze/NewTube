@@ -28,7 +28,7 @@ import { syncAllThemes } from "./ui/theme";
 import { Category } from "./types/styleshiftTypes";
 import { extensionSettingsUi, extensionSettingsUiPromise } from "./ui/extensionSettings";
 import { toggleCustomize } from "./ui/highlight";
-import { appBootstrap, shouldEnableExtension } from "@/main/main";
+import { appBootstrap, shouldEnableExtension } from "@/main";
 import { STORE_TARGET_SITES } from "@/main/constants";
 
 //-------------------------------------------------------
@@ -118,7 +118,7 @@ async function bootstrapExtension(): Promise<void> {
 		"developerMode",
 		async (isDev) => {
 			await createNotification({
-				icon: isDev ? "🔨" : "✨",
+				icon: isDev ? "mode_edit" : "edit_off",
 				title: isDev ? "Developer Mode Enabled" : "Developer Mode Disabled",
 				timeout: 3000,
 			});
@@ -226,7 +226,7 @@ chrome.runtime.onMessage.addListener(async (message) => {
 		if (message === "toggle_settings") {
 			if (!isExtensionReady) {
 				const waitNotification = await createNotification({
-					icon: "⏳",
+					icon: "hourglass_empty",
 					title: "StyleShift is initializing...",
 					timeout: -1,
 				});

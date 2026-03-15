@@ -1,6 +1,6 @@
 import { createError } from "../shared/extension";
 import { sleep } from "../shared/normal";
-import { currentContextDomain } from "../run";
+import { currentContextDomain } from "..";
 import { logger } from "../../shared/logger";
 
 export let cachedStorageData: any = {};
@@ -16,7 +16,7 @@ export function suppressStoragePersistence(suppress: boolean) {
 	}
 }
 
-import { getOptionalExternalStorageKeys } from "../../main/main";
+import { getOptionalExternalStorageKeys } from "../../main";
 
 const INTERNAL_STORAGE_KEYS = [
 	"currentSettings",

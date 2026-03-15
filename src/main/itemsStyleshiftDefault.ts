@@ -175,7 +175,7 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 		settings: [
 			{
 				clickFunction:
-					'await copyToClipboard(await exportStyleshiftJsonText());\n\ncreateNotification({\nicon : "✅",\ntitle : "NewTube",\ncontent : "Copied to clipboard!"\n})',
+					'await copyToClipboard(await exportStyleshiftJsonText());\n\ncreateNotification({\nicon : "check_circle",\ntitle : "NewTube",\ncontent : "Copied to clipboard!"\n})',
 				color: "#1932ffff",
 				description: "Copies your current theme and settings as a text code to your clipboard.",
 				fontSize: 15,
@@ -186,11 +186,11 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 				type: "button",
 			},
 			{
-				clickFunction: `const Data = await enterTextPrompt({ title : 'Import_NewTube Data', placeholder : 'Paste NewTube data text here.'});
+				clickFunction: `const Data = await enterTextPrompt({ title : 'Styleshift Data', placeholder : 'Paste Styleshift data text here.'});
                     await importStyleshiftJsonText(Data);
                     `,
 				color: "#1932ffff",
-				description: "Paste a NewTube theme code to instantly apply it.",
+				description: "Paste a Styleshift theme code to instantly apply it.",
 				fontSize: 15,
 				icon: "",
 				id: "ImportDataButton",

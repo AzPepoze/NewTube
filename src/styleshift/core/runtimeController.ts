@@ -1,6 +1,6 @@
 import { createNotification } from "../shared/extension";
 import { sleep } from "../shared/normal";
-import { refreshExtensionState, IS_IN_EXTENSION_SETTINGS_PAGE } from "../run";
+import { refreshExtensionState, IS_IN_EXTENSION_SETTINGS_PAGE } from "..";
 import { getCustomItems } from "../settings/items";
 import { persistCachedDataToStorage, saveToStorage } from "./storageManager";
 import { isSafeCode } from "../utils/security";
@@ -188,7 +188,7 @@ export async function initializeDeveloperEnvironment(): Promise<void> {
 	hasAttemptedDevModuleLoad = true;
 
 	const loaderUi = await createNotification({
-		icon: "🔃",
+		icon: "sync",
 		title: "StyleShift - Loading Developer Modules",
 		content: "Preparing environment...",
 		timeout: -1,
@@ -220,7 +220,7 @@ export async function initializeDeveloperEnvironment(): Promise<void> {
 		codemirrorInstance = codemirrorModule.default.default || codemirrorModule.default;
 
 		logger.info("runtime", "Developer environment loaded successfully.");
-		loaderUi.setIcon("✅");
+		loaderUi.setIcon("check_circle");
 		loaderUi.setTitle("Developer Environment Ready");
 		loaderUi.setContent("");
 
@@ -232,7 +232,7 @@ export async function initializeDeveloperEnvironment(): Promise<void> {
 
 		logger.error("runtime", "Failed to load developer modules:", error);
 
-		loaderUi.setIcon("⚠️");
+		loaderUi.setIcon("warning");
 		if (isAbort) {
 			loaderUi.setTitle("Load Aborted");
 			loaderUi.setContent(

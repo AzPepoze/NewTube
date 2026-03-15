@@ -19,7 +19,7 @@
 	import { settingsUi } from "@ui/settings/settingComponents";
 	import { executeScriptString } from "@/styleshift/core/runtimeController";
 	import { removeSetting } from "@settings/items";
-	import { refreshExtensionState } from "@/styleshift/run";
+	import { refreshExtensionState } from "@/styleshift";
 	import { showConfigUi, removeConfigUi } from "@ui/config";
 	import { createUniqueId, logger } from "@/styleshift/shared/normal";
 	import Description from "./Description.svelte";

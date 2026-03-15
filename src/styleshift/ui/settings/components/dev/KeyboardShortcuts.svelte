@@ -2,7 +2,7 @@
 	import { onMount } from "svelte";
 	import { logger } from "@/shared/logger";
 	import Button from "../main/Button.svelte";
-	import { IS_FIREFOX } from "@/styleshift/run";
+	import { IS_FIREFOX } from "@/styleshift";
 	import { alertPrompt } from "@/styleshift/shared/extension";
 
 	interface ChromeCommand {
@@ -34,7 +34,7 @@
 	}
 </script>
 
-<div class="shortcuts-container STYLESHIFT-Setting-Frame">
+<div class="shortcuts-container">
 	<div class="shortcuts-title">⌨️ Keyboard Shortcuts</div>
 	{#if commands.length > 0}
 		<div class="shortcuts-list">
@@ -75,9 +75,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 16px;
-		padding: 16px;
-		background: var(--White-02);
-		border-radius: 8px;
 	}
 
 	.shortcuts-title {
@@ -102,7 +99,7 @@
 		padding: 12px;
 		background: var(--White-05);
 		border: 1px solid var(--White-06);
-		border-radius: 6px;
+		border-radius: 10px;
 		transition: all 0.2s ease;
 		overflow: hidden;
 		box-sizing: border-box;
@@ -130,10 +127,10 @@
 		font-size: 12px;
 		font-weight: 700;
 		background: var(--Theme-0-20);
-		border: 1px solid var(--Theme-0-40);
+		border: 1px solid var(--Theme-1);
 		color: var(--Theme-1);
 		padding: 4px 8px;
-		border-radius: 4px;
+		border-radius: 10px;
 		white-space: nowrap;
 		flex-shrink: 0;
 	}

@@ -12,7 +12,7 @@ import {
 } from "../features/mainCss";
 
 export const enhancedCssCategory: Category = {
-	category: { icon: "auto_awesome", label: "Enhanced CSS" },
+	category: { icon: "auto_mode", label: "Enhanced CSS" },
 	settings: [
 		{
 			type: "checkbox",

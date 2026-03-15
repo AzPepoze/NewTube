@@ -8,7 +8,7 @@ import { settingsUi } from "./settingComponents";
 import { getRootValue } from "@/styleshift/core/storageManager";
 import { isDevModulesLoaded } from "@/styleshift/core/runtimeController";
 import { getStyleshiftDevOnlyItems } from "../../../main/itemsStyleshiftDev";
-import { IS_IN_EXTENSION_SETTINGS_PAGE } from "@/styleshift/run";
+import { IS_IN_EXTENSION_SETTINGS_PAGE } from "@/styleshift";
 
 export function setupLeftTitleAnimation(title: HTMLElement) {
 	title.style.transform = "translateY(40px)";

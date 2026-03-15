@@ -210,7 +210,6 @@
 								const dom =
 									document.createElement("div");
 								dom.className = "cm-styleshift-tooltip";
-								dom.style.maxWidth = "60ch";
 								dom.style.maxHeight = "34vh";
 								dom.style.overflow = "auto";
 
@@ -607,6 +606,11 @@
 	:global(.cm-textfield.cm-invalid) {
 		border-color: rgba(255, 85, 85, 0.85);
 		box-shadow: 0 0 0 2px rgba(255, 85, 85, 0.2);
+	}
+
+	:global(.cm-tooltip.cm-tooltip-autocomplete > ul > li) {
+		padding: 4px !important;
+		border-radius: 3px;
 	}
 
 	:global(.cm-panel.cm-search input[type="text"]) {

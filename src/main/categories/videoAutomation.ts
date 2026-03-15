@@ -2,7 +2,7 @@ import { Category } from "../../styleshift/types/styleshiftTypes";
 import { setupAutoTheater, enableAutoRemoveAmbient } from "../features/video/general";
 import { enableAutoPip, enableAutoExitPip, disableAutoPip } from "../features/video/pip";
 import { setupUpdateTimestamp } from "../features/video/timestamp";
-import { IS_FIREFOX } from "../../styleshift/run";
+import { IS_FIREFOX } from "../../styleshift";
 
 export const videoAutomationCategory: Category = {
 	category: { icon: "auto_awesome", label: "Video Automation" },

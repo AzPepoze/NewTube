@@ -2,7 +2,7 @@
 	import type { Setting } from "@/styleshift/types/styleshiftTypes";
 	import { fly, fade } from "svelte/transition";
 	import CapsuleTabs from "../../../components/general/CapsuleTabs.svelte";
-	import { refreshExtensionState } from "@/styleshift/run";
+	import { refreshExtensionState } from "@/styleshift";
 	import ConfigMainSection from "./ConfigMainSection.svelte";
 	import ConfigSubSection from "./ConfigSubSection.svelte";
 
