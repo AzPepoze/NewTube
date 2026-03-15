@@ -4,6 +4,8 @@
 	import { onMount } from "svelte";
 	import { getAssetUrl } from "@ui/utils";
 	import { logger } from "@/shared/logger";
+	import { IS_FIREFOX } from "@/styleshift";
+	import { alertPrompt } from "@/styleshift/shared/extension";
 
 	let { onDone }: { onDone: () => void } = $props();
 
@@ -192,6 +194,31 @@
 											</div>
 										{/each}
 									</div>
+								</div>
+							{:else}
+								<div class="shortcuts-empty-container">
+									<p class="shortcuts-empty-text">
+										No shortcuts configured
+									</p>
+									<button
+										class="Start-Button highlight"
+										onclick={() => {
+											if (IS_FIREFOX) {
+												alertPrompt({
+													title: "Shortcuts Management",
+													message: `Cannot open shortcut settings in Firefox.\nPlease navigate to "about:addons" manually to manage shortcuts.`,
+												});
+											} else {
+												chrome.runtime.sendMessage({
+													Command: "editCommands",
+												});
+											}
+										}}
+									>
+										<span class="btn-text"
+											>Manage Shortcuts</span
+										>
+									</button>
 								</div>
 							{/if}
 						</div>
@@ -600,5 +627,19 @@
 		padding: 3px 6px;
 		border-radius: 3px;
 		white-space: nowrap;
+	}
+
+	.shortcuts-empty-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 20px;
+		padding: 20px;
+	}
+
+	.shortcuts-empty-text {
+		font-size: 16px;
+		color: var(--White-40);
+		font-style: italic;
 	}
 </style>

@@ -99,10 +99,6 @@
 			background: var(--White-15);
 			border-color: var(--Theme-0);
 			box-shadow: 0 0 0 3px var(--Theme-0-20);
-
-			.STYLESHIFT-Search-Icon {
-				color: var(--Theme-0);
-			}
 		}
 	}
 
@@ -148,18 +144,5 @@
 			background: var(--White-10);
 			color: var(--Font-Color);
 		}
-	}
-
-	.STYLESHIFT-Search-Shortcut {
-		font-size: 11px;
-		color: var(--Font-Color-Dim);
-		background: var(--White-10);
-		padding: 1px 6px;
-		border-radius: 4px;
-		margin-left: 8px;
-		opacity: 0.6;
-		border: 1px solid var(--Border-Color);
-		pointer-events: none;
-		user-select: none;
 	}
 </style>
