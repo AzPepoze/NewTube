@@ -11,16 +11,16 @@
 
 <p align="center">
   <a href="https://github.com/AzPepoze/NewTube/releases/latest">
-    <img src="https://img.shields.io/github/v/release/AzPepoze/NewTube?style=for-the-badge&label=%E2%97%88%20RELEASE%20%E2%97%88&labelColor=%23181818&color=%23007bff" alt="Latest Release">
+    <img src="https://img.shields.io/github/v/release/AzPepoze/NewTube?style=for-the-badge&label=%E2%97%88%20RELEASE%20%E2%97%88&labelColor=white&color=white" alt="Latest Release">
   </a>
   <a href="LICENSE">
-    <img src="https://img.shields.io/github/license/AzPepoze/NewTube?style=for-the-badge&label=%E2%97%88%20LICENSE%20%E2%97%88&labelColor=%23181818&color=%23007bff" alt="License">
+    <img src="https://img.shields.io/github/license/AzPepoze/NewTube?style=for-the-badge&label=%E2%97%88%20LICENSE%20%E2%97%88&labelColor=white&color=white" alt="License">
   </a>
   <a href="https://github.com/AzPepoze/NewTube/stargazers">
-    <img src="https://img.shields.io/github/stars/AzPepoze/NewTube?style=for-the-badge&label=%E2%97%88%20STARS%20%E2%97%88&labelColor=%23181818&color=%23007bff" alt="Stars">
+    <img src="https://img.shields.io/github/stars/AzPepoze/NewTube?style=for-the-badge&label=%E2%97%88%20STARS%20%E2%97%88&labelColor=white&color=white" alt="Stars">
   </a>
   <a href="https://chrome.google.com/webstore/detail/youtube-style-customizer/dnjjchajjdnfbjhjclmilicgheglcopj">
-   <img src="https://img.shields.io/chrome-web-store/users/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20USERS%20%E2%97%88&labelColor=%23181818&color=%23007bff" alt="Chrome Users">
+   <img src="https://img.shields.io/chrome-web-store/users/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20USERS%20%E2%97%88&labelColor=white&color=white" alt="Chrome Users">
   </a>
 </p>
 
@@ -29,10 +29,10 @@
 
 <p align="center">
   <a href="https://chrome.google.com/webstore/detail/youtube-style-customizer/dnjjchajjdnfbjhjclmilicgheglcopj">
-    <img src="https://img.shields.io/chrome-web-store/v/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20CHROME%20%E2%97%88&labelColor=%23181818&color=%23007bff&logo=google-chrome&logoColor=white" alt="Chrome Web Store">
+    <img src="https://img.shields.io/chrome-web-store/v/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20CHROME%20%E2%97%88&labelColor=white&color=white&logo=google-chrome" alt="Chrome Web Store">
   </a>
   <a href="https://addons.mozilla.org/firefox/addon/newtube-youtubestylecustomizer/">
-    <img src="https://img.shields.io/amo/v/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20FIREFOX%20%E2%97%88&labelColor=%23181818&color=%23007bff&logo=firefox-browser&logoColor=white" alt="Firefox Add-ons">
+    <img src="https://img.shields.io/amo/v/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20FIREFOX%20%E2%97%88&labelColor=white&color=white&logo=firefox-browser" alt="Firefox Add-ons">
   </a>
 </p>
 
@@ -62,17 +62,17 @@
 ## Chrome Web Store Statistics
 
 <p align="center">
-  <img src="https://img.shields.io/chrome-web-store/users/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20ACTIVE%20USERS%20%E2%97%88&labelColor=%23181818&color=%23007bff" alt="Chrome Users">
-  <img src="https://img.shields.io/chrome-web-store/rating/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20AVERAGE%20RATING%20%E2%97%88&labelColor=%23181818&color=%23007bff" alt="Chrome Rating">
-  <img src="https://img.shields.io/chrome-web-store/stars/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20TOTAL%20RATINGS%20%E2%97%88&labelColor=%23181818&color=%23007bff" alt="Chrome Stars">
+  <img src="https://img.shields.io/chrome-web-store/users/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20ACTIVE%20USERS%20%E2%97%88&labelColor=white&color=white" alt="Chrome Users">
+  <img src="https://img.shields.io/chrome-web-store/rating/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20AVERAGE%20RATING%20%E2%97%88&labelColor=white&color=white" alt="Chrome Rating">
+  <img src="https://img.shields.io/chrome-web-store/stars/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20TOTAL%20RATINGS%20%E2%97%88&labelColor=white&color=white" alt="Chrome Stars">
 </p>
 
 ## Firefox Add-on Statistics
 
 <p align="center">
-  <img src="https://img.shields.io/amo/users/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20DAILY%20USERS%20%E2%97%88&labelColor=%23181818&color=%23007bff" alt="Firefox Users">
-  <img src="https://img.shields.io/amo/dw/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20WEEKLY%20INSTALLS%20%E2%97%88&labelColor=%23181818&color=%23007bff" alt="Firefox Weekly Installs">
-  <img src="https://img.shields.io/amo/v/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20LATEST%20VERSION%20%E2%97%88&labelColor=%23181818&color=%23007bff" alt="Firefox Version Status">
+  <img src="https://img.shields.io/amo/users/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20DAILY%20USERS%20%E2%97%88&labelColor=white&color=white" alt="Firefox Users">
+  <img src="https://img.shields.io/amo/dw/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20WEEKLY%20INSTALLS%20%E2%97%88&labelColor=white&color=white" alt="Firefox Weekly Installs">
+  <img src="https://img.shields.io/amo/v/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20LATEST%20VERSION%20%E2%97%88&labelColor=white&color=white" alt="Firefox Version Status">
 </p>
 
 ## PREREQUISITES
