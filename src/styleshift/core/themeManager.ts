@@ -1,15 +1,3 @@
-/**
- * StyleShift Theme Manager
- * 
- * Centralized theme management with user confirmations on all operations.
- * Handles:
- * - Theme fetching from API
- * - Theme persistence and retrieval
- * - Cross-domain theme distribution
- * - Auto-update checks
- * - User confirmations for all modifications
- */
-
 import { getRootValue, saveRootValue } from "./storageManager";
 import { importPresetToSettings } from "./settingsImporter";
 import { showUserConfirmation } from "../ui/extension";
@@ -18,8 +6,8 @@ import { STORE_TARGET_SITES } from "../../main/constants";
 import { STYLESHIFT_STORE_ORIGINS, STYLESHIFT_STORE_API_URL } from "./themeConfig";
 
 export type Theme = {
-	ThemeId: string;
-	ThemeName: string;
+	themeId: string;
+	themeName: string;
 	currentSettings?: { [key: string]: string };
 	customStyleshiftItems?: any[];
 };
@@ -88,12 +76,23 @@ export async function applyThemeToDomainStorage(
 	const result = await chrome.storage.local.get(domain);
 	const domainStorage = (result[domain] || {}) as Record<string, any>;
 
-	// Update theme registry
-	domainStorage.themes = domainStorage.themes || {};
-	domainStorage.themes[themeId] = {
-		name: themeName,
-		settings: themeData,
+	// Update theme registry (Array based)
+	const themes = (domainStorage.themes || []) as Theme[];
+	const existingIndex = themes.findIndex(t => t.themeId === themeId);
+
+	const updatedTheme: Theme = {
+		themeId,
+		themeName,
+		currentSettings: themeData.currentSettings,
+		customStyleshiftItems: themeData.customStyleshiftItems,
 	};
+
+	if (existingIndex > -1) {
+		themes[existingIndex] = updatedTheme;
+	} else {
+		themes.push(updatedTheme);
+	}
+	domainStorage.themes = themes;
 
 	// Set as active theme
 	domainStorage.activeTheme = themeId;
@@ -120,9 +119,15 @@ export async function applyThemeToDomainStorage(
  * Used when removing a saved theme.
  */
 export async function deleteThemeFromStorage(themeId: string): Promise<void> {
-	const themes = (await getRootValue("themes")) || {};
-	delete themes[themeId];
-	await saveRootValue("themes", themes, true);
+	const themes = (await getRootValue("themes")) || [];
+	if (!Array.isArray(themes)) {
+		logger.warn("themeManager", "themes storage is not an array, resetting");
+		await saveRootValue("themes", [], true);
+		return;
+	}
+
+	const updatedThemes = themes.filter((t: Theme) => t.themeId !== themeId);
+	await saveRootValue("themes", updatedThemes, true);
 	logger.info("themeManager", `Theme removed from registry: ${themeId}`);
 }
 
@@ -138,11 +143,14 @@ export async function fetchThemeFromApi(themeId: string): Promise<Theme | null> 
 		const data = await res.json();
 		if (!data?.settings) return null;
 
-		return {
-			...data.settings,
-			ThemeId: data.id || themeId,
-			ThemeName: data.name,
+		const theme: Theme = {
+			themeId: data.id || themeId,
+			themeName: data.name,
+			currentSettings: data.settings,
+			customStyleshiftItems: data.customStyleshiftItems,
 		};
+
+		return theme;
 	} catch (error) {
 		logger.error("themeManager", `Failed to fetch theme ${themeId}`, error);
 		return null;
@@ -169,17 +177,34 @@ export async function saveTheme(name: string, data: Theme, targetDomain: string)
 	}
 
 	try {
-		const themes = (await getRootValue("themes")) || {};
-		themes[data.ThemeId] = {
-			name: name,
-			settings: data,
+		const themes = (await getRootValue("themes")) || [];
+		if (!Array.isArray(themes)) {
+			logger.warn("themeManager", "themes storage is not an array, fixing");
+		}
+
+		const themeArray = Array.isArray(themes) ? themes : [];
+		const themeId = data.themeId || `local-${Date.now()}`;
+		const existingIndex = themeArray.findIndex((t: Theme) => t.themeId === themeId);
+
+		const updatedTheme: Theme = {
+			themeId,
+			themeName: name,
+			currentSettings: data.currentSettings,
+			customStyleshiftItems: data.customStyleshiftItems,
 		};
-		await saveRootValue("themes", themes, true);
+
+		if (existingIndex > -1) {
+			themeArray[existingIndex] = updatedTheme;
+		} else {
+			themeArray.push(updatedTheme);
+		}
+
+		await saveRootValue("themes", themeArray, true);
 
 		// Set as active if no theme selected yet
-		const activeTheme = await getRootValue("activeTheme");
-		if (!activeTheme || activeTheme === "Previous Settings") {
-			await saveRootValue("activeTheme", data.ThemeId);
+		const activeThemeId = await getRootValue("activeTheme");
+		if (!activeThemeId || activeThemeId === "Previous Settings") {
+			await saveRootValue("activeTheme", themeId);
 		}
 
 		logger.info("themeManager", `Theme saved: ${name}`);
@@ -211,16 +236,15 @@ export async function applyTheme(id: string, name: string, targetDomain: string)
 	}
 
 	try {
-		const themes = (await getRootValue("themes")) || {};
-		const themeData = themes[id];
+		const themes = (await getRootValue("themes")) || [];
+		const themeData = Array.isArray(themes) ? themes.find((t: Theme) => t.themeId === id) : null;
 
 		if (!themeData) {
 			logger.warn("themeManager", `Theme not found: ${id}`);
 			return false;
 		}
 
-		const actualData = themeData.settings || themeData;
-		await importPresetToSettings(actualData, true, name);
+		await importPresetToSettings(themeData, true, name);
 
 		logger.info("themeManager", `Theme applied: ${name}`);
 		broadcastThemeUpdate();
@@ -256,13 +280,18 @@ export async function updateTheme(
 	}
 
 	try {
-		latestData.ThemeId = id;
+		latestData.themeId = id;
+		latestData.themeName = name;
+
 		await importPresetToSettings(latestData, true, name);
 
-		const themes = (await getRootValue("themes")) || {};
-		if (themes[id]) {
-			themes[id].settings = latestData;
-			await saveRootValue("themes", themes, true);
+		const themes = (await getRootValue("themes")) || [];
+		if (Array.isArray(themes)) {
+			const index = themes.findIndex((t: Theme) => t.themeId === id);
+			if (index > -1) {
+				themes[index] = latestData;
+				await saveRootValue("themes", themes, true);
+			}
 		}
 
 		logger.info("themeManager", `Theme updated: ${name}`);
@@ -362,7 +391,11 @@ export async function isThemeInstalled(id: string, targetDomain: string): Promis
 	try {
 		const result = await chrome.storage.local.get(targetDomain);
 		const domainStorage = (result[targetDomain] || {}) as Record<string, any>;
-		return !!domainStorage.themes?.[id];
+		const themes = domainStorage.themes || [];
+		if (Array.isArray(themes)) {
+			return themes.some((t: Theme) => t.themeId === id);
+		}
+		return false;
 	} catch (error) {
 		logger.warn("themeManager", `Failed to check theme installation: ${id}`, error);
 		return false;
@@ -374,23 +407,24 @@ export async function isThemeInstalled(id: string, targetDomain: string): Promis
  * Note: Active theme is global, not per-domain, but kept for API consistency
  */
 async function getActivethemeData(_targetDomain: string) {
-	const activeThemeName = await getRootValue("activeTheme");
-	if (!activeThemeName || activeThemeName === "Previous Settings") {
+	const activeThemeId = await getRootValue("activeTheme");
+	if (!activeThemeId || activeThemeId === "Previous Settings") {
 		return null;
 	}
 
-	const themes = (await getRootValue("themes")) || {};
-	const themeRecord = themes[activeThemeName];
+	const themes = (await getRootValue("themes")) || [];
+	if (!Array.isArray(themes)) return null;
 
-	if (!themeRecord) {
+	const themeData = themes.find((t: Theme) => t.themeId === activeThemeId);
+
+	if (!themeData) {
 		return null;
 	}
 
-	const themeData = themeRecord.settings || themeRecord;
 	return {
 		data: themeData,
-		id: themeData.ThemeId,
-		name: themeRecord.name || activeThemeName,
+		id: themeData.themeId,
+		name: themeData.themeName || activeThemeId,
 	};
 }
 

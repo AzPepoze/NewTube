@@ -1,3 +1,4 @@
+import { NEWTUBE_STORE_DISCOVER_URL } from "@/main/constants";
 import { createStyleshiftWindow } from "../../../styleshift/ui/extension";
 import { settingsUi } from "../../../styleshift/ui/settings/settingComponents";
 import ThemeManager from "./ThemeManager.svelte";
@@ -20,4 +21,11 @@ export async function showThemeManager() {
 	settingsUi.renderComponent(ThemeManager, {
 		closeWindow: themeWindow.closeWindowHandler
 	}, themeWindow.contentElement);
+}
+
+/**
+ * Opens the NewTube Theme Store in a new tab.
+ */
+export function openThemeStore() {
+	window.open(NEWTUBE_STORE_DISCOVER_URL, "_blank");
 }

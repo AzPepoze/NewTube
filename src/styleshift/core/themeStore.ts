@@ -2,6 +2,7 @@ import {
 	saveTheme,
 	installTheme,
 	isThemeInstalled,
+	fetchThemeFromApi,
 	checkAndUpdateTheme as themeManagerCheckAndUpdate,
 	validateOrigin,
 } from "./themeManager";
@@ -9,13 +10,7 @@ import { createNotification } from "../shared/extension";
 import { logger } from "../../shared/logger";
 import { sleep } from "../shared/normal";
 
-/**
- * Initialize website integration for StyleShift theme store
- * Listens for events from the store website and delegates to themeManager
- * This runs on all authorized store domain pages
- */
 export async function initWebsiteIntegration(): Promise<void> {
-	// Validate origin before processing any events
 	if (!validateOrigin(window.location.origin)) {
 		logger.warn("themeStore", `Rejecting theme events from unauthorized origin: ${window.location.origin}`);
 		return;
@@ -23,10 +18,6 @@ export async function initWebsiteIntegration(): Promise<void> {
 
 	logger.info("themeStore", `Website integration initialized for origin: ${window.location.origin}`);
 
-	/**
-	 * Handle install theme event from website
-	 * Expected detail: { themeId: string, targetDomains: string[] }
-	 */
 	window.addEventListener("install_styleshift_theme", async (e) => {
 		const detail = (e as CustomEvent).detail;
 		if (!detail?.themeId || !detail?.targetDomains) {
@@ -46,34 +37,32 @@ export async function initWebsiteIntegration(): Promise<void> {
 		}
 	});
 
-	/**
-	 * Handle save theme event from website
-	 * Expected detail: { themeName: string, themeData: object, targetDomain: string }
-	 */
 	window.addEventListener("save_styleshift_theme", async (e) => {
 		const detail = (e as CustomEvent).detail;
-		if (!detail?.themeName || !detail?.themeData || !detail?.targetDomain) {
+		if (!detail?.themeId || !detail?.targetDomain) {
 			logger.warn("themeStore", "save_styleshift_theme: Missing required parameters");
 			return;
 		}
 
-		logger.info("themeStore", `Save event received: ${detail.themeName} to domain: ${detail.targetDomain}`);
-		const success = await saveTheme(detail.themeName, detail.themeData, detail.targetDomain);
+		logger.info("themeStore", `Save event received for theme: ${detail.themeId} to domain: ${detail.targetDomain}`);
+
+		const themeData = await fetchThemeFromApi(detail.themeId);
+		if (!themeData) {
+			logger.error("themeStore", `Failed to fetch theme data for save: ${detail.themeId}`);
+			return;
+		}
+
+		const success = await saveTheme(detail.themeName || themeData.themeName, themeData, detail.targetDomain);
 
 		if (success) {
 			createNotification({
 				icon: "save",
 				title: "Theme Saved",
-				content: `"${detail.themeName}" saved to collection.`,
+				content: `"${detail.themeName || themeData.themeName}" saved to collection.`,
 			});
 		}
 	});
 
-	/**
-	 * Handle check theme installation event from website
-	 * Expected detail: { themeId: string, targetDomain: string }
-	 * Responds with: { themeId, isInstalled }
-	 */
 	window.addEventListener("is_styleshift_theme_installed", async (e) => {
 		const detail = (e as CustomEvent).detail;
 		if (!detail?.themeId || !detail?.targetDomain) {
@@ -91,9 +80,6 @@ export async function initWebsiteIntegration(): Promise<void> {
 		);
 	});
 
-	/**
-	 * Signal that the extension is loaded and ready to receive events
-	 */
 	for (let i = 0; i < 10; i++) {
 		window.dispatchEvent(new CustomEvent("styleshift_is_ready"));
 		await sleep(100);
@@ -102,10 +88,6 @@ export async function initWebsiteIntegration(): Promise<void> {
 	logger.info("themeStore", "Website integration ready");
 }
 
-/**
- * Delegate to themeManager's checkAndUpdateTheme function
- * Maintains backward compatibility with existing code
- */
 export async function checkAndUpdateTheme(manual: boolean = false, targetDomain?: string): Promise<void> {
 	await themeManagerCheckAndUpdate(manual, targetDomain);
 }

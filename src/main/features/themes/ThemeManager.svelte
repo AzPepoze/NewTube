@@ -1,7 +1,6 @@
 <script lang="ts">
 	import {
 		getRootValue,
-		saveRootValue,
 		persistCachedDataToStorage,
 	} from "@/styleshift/core/storageManager";
 	import {
@@ -12,6 +11,7 @@
 		saveTheme as saveThemeManager,
 		applyTheme as applyThemeManager,
 		deleteTheme as deleteThemeManager,
+		type Theme,
 	} from "@/styleshift/core/themeManager";
 	import {
 		chooseSelection,
@@ -23,7 +23,7 @@
 		exportThemeToClipboard,
 		exportThemeAsZip,
 	} from "./themeExportService";
-	import Button from "@ui/settings/components/main/Button.svelte";
+	import { openThemeStore } from "./themeManagerService";
 	import { onMount } from "svelte";
 	import ThemeCard from "./ThemeCard.svelte";
 
@@ -33,27 +33,25 @@
 		closeWindow?: () => void;
 	} = $props();
 
-	type ThemeLibrary = Record<string, any>;
-
-	let themes = $state<ThemeLibrary>({});
-	let themeNames = $derived(Object.keys(themes));
-	let activeThemeName = $state<string | null>(null);
-	let loadingThemeName = $state<string | null>(null);
+	let themes = $state<Theme[]>([]);
+	let activeThemeId = $state<string | null>(null);
+	let loadingThemeId = $state<string | null>(null);
 	let backupSettings = $state<any>(null);
 	let originalActiveTheme = $state<string | null>(null);
 	let wasThemeModified = $state(false);
 
 	async function refreshActiveTheme() {
-		activeThemeName = await getRootValue("activeTheme");
+		activeThemeId = await getRootValue("activeTheme");
 	}
 
 	async function loadThemes() {
 		const storedThemes = await getRootValue("themes");
-		if (storedThemes && typeof storedThemes === "object") {
+		if (Array.isArray(storedThemes)) {
 			themes = storedThemes;
+		} else {
+			themes = [];
 		}
 
-		// Backup current settings for "Cancel" functionality
 		const currentSettings = await getRootValue("currentSettings");
 		backupSettings = JSON.parse(JSON.stringify(currentSettings));
 		originalActiveTheme = await getRootValue("activeTheme");
@@ -71,57 +69,48 @@
 
 		const currentSettings = await exportCurrentSettingsObject();
 
-		// Use themeManager with EXTENSION as the target domain for extension-internal operations
+		const themeData: Partial<Theme> = {
+			currentSettings,
+		};
+
 		const success = await saveThemeManager(
 			name,
-			currentSettings,
+			themeData as Theme,
 			"EXTENSION",
 		);
 
 		if (success) {
-			// Update local state after successful save
-			const updatedThemes = {
-				...themes,
-				[name]: { name, settings: currentSettings },
-			};
-			await saveRootValue("activeTheme", name);
-			themes = updatedThemes;
-			activeThemeName = name;
+			await loadThemes();
 			wasThemeModified = true;
 		}
 	}
 
 	async function applyTheme(id: string) {
-		const themeRecord = themes[id];
-		if (!themeRecord) return;
+		const theme = themes.find((t) => t.themeId === id);
+		if (!theme) return;
 
-		const isNewFormat = !!themeRecord.settings;
-		const displayName = isNewFormat ? themeRecord.name || id : id;
-		const themeData = isNewFormat ? themeRecord.settings : themeRecord;
+		const displayName = theme.themeName || id;
 
-		loadingThemeName = id;
-		activeThemeName = id; // Instant feedback
+		loadingThemeId = id;
+		activeThemeId = id;
 
-		// Use themeManager with EXTENSION as the target domain
 		await applyThemeManager(id, displayName, "EXTENSION");
-
-		// Apply to settings for instant preview
 		await importPresetToSettings(
-			$state.snapshot(themeData),
+			$state.snapshot(theme),
 			false,
 			displayName,
 		);
-		wasThemeModified = true;
 
-		loadingThemeName = null;
+		wasThemeModified = true;
+		loadingThemeId = null;
 	}
 
 	async function deleteTheme(id: string) {
-		const themeRecord = themes[id];
-		const isNewFormat = !!themeRecord?.settings;
-		const displayName = isNewFormat ? themeRecord.name || id : id;
+		const theme = themes.find((t) => t.themeId === id);
+		if (!theme) return;
 
-		// themeManager handles the confirmation
+		const displayName = theme.themeName || id;
+
 		const success = await deleteThemeManager(
 			id,
 			displayName,
@@ -129,11 +118,7 @@
 		);
 
 		if (success) {
-			const updatedThemes = { ...themes };
-			delete updatedThemes[id];
-
-			await saveRootValue("themes", $state.snapshot(updatedThemes));
-			themes = updatedThemes;
+			themes = themes.filter((t) => t.themeId !== id);
 
 			createNotification({
 				icon: "delete",
@@ -142,6 +127,7 @@
 			});
 		}
 	}
+
 	async function handleOk() {
 		await persistCachedDataToStorage();
 		closeWindow?.();
@@ -157,13 +143,12 @@
 		}
 		closeWindow?.();
 	}
-	async function exportTheme(id: string) {
-		const themeRecord = themes[id];
-		if (!themeRecord) return;
 
-		const isNewFormat = !!themeRecord.settings;
-		const displayName = isNewFormat ? themeRecord.name || id : id;
-		const themeData = isNewFormat ? themeRecord.settings : themeRecord;
+	async function exportTheme(id: string) {
+		const theme = themes.find((t) => t.themeId === id);
+		if (!theme) return;
+
+		const displayName = theme.themeName || id;
 
 		const selection = await chooseSelection({
 			title: `Export "${displayName}"`,
@@ -175,21 +160,20 @@
 		});
 
 		if (selection === "Clipboard") {
-			exportThemeToClipboard(displayName, $state.snapshot(themeData));
+			exportThemeToClipboard(displayName, $state.snapshot(theme));
 		} else if (selection === "ZIP File") {
-			await exportThemeAsZip(displayName, $state.snapshot(themeData));
+			await exportThemeAsZip(displayName, $state.snapshot(theme));
 		}
 	}
 
-	function getThemePreview(themeData: any) {
+	function getThemePreview(theme: Theme) {
 		let bgColor =
-			themeData["MainThemeColor"] ||
-			themeData["MainThemeColorC"] ||
+			theme.currentSettings?.["MainThemeColor"] ||
+			theme.currentSettings?.["MainThemeColorC"] ||
 			"var(--Theme-0)";
-		const bgImg = themeData["BackgroundImageUrl"] || "";
-		const themeId = themeData["ThemeId"] || null;
+		const bgImg = theme.currentSettings?.["BackgroundImageUrl"] || "";
+		const themeId = theme.themeId || null;
 
-		// Ensure hex color doesn't have double alpha when appending
 		if (bgColor.startsWith("#") && bgColor.length > 7) {
 			bgColor = bgColor.slice(0, 7);
 		}
@@ -218,63 +202,62 @@
 	});
 </script>
 
-<div class="NEWTUBE-ThemeManager">
-	<div class="theme-grid" class:has-themes={themeNames.length > 0}>
-		{#each themeNames as key (key)}
-			{@const record = themes[key]}
-			{@const isNew = !!record.settings}
-			{@const displayName = isNew ? record.name || key : key}
-			{@const themeData = isNew ? record.settings : record}
-			{@const preview = getThemePreview(themeData)}
+<div class="NEWTUBE-ThemeManager STYLESHIFT-Main">
+	<div class="theme-grid" class:has-themes={themes.length > 0}>
+		{#each themes as theme (theme.themeId)}
+			{@const preview = getThemePreview(theme)}
 			<ThemeCard
-				id={key}
-				name={displayName}
+				id={theme.themeId}
+				name={theme.themeName}
 				{preview}
-				themeId={themeData.ThemeId || preview.themeId}
-				isActive={activeThemeName === key}
-				isLoading={loadingThemeName === key}
+				themeId={theme.themeId}
+				isActive={activeThemeId === theme.themeId}
+				isLoading={loadingThemeId === theme.themeId}
 				onApply={applyTheme}
 				onExport={exportTheme}
 				onDelete={deleteTheme}
 			/>
 		{/each}
 
-		{#if themeNames.length === 0}
+		{#if themes.length === 0}
 			<div class="empty-state">
-				<div class="empty-icon"><Icon name="storefront" size={48} /></div>
+				<div class="empty-icon">
+					<Icon name="storefront" size={48} />
+				</div>
 				<p>Your theme collection is empty.</p>
 				<p class="sub">Save your current setup to see it here!</p>
 			</div>
 		{/if}
 	</div>
 
-	<!-- Floating Action Button for Saving -->
-	<button
-		class="fab-save-btn"
-		onclick={saveCurrentAsTheme}
-		title="Save Current Settings"
-	>
-		<Icon name="save" size={20} />
-	</button>
-
-	<!-- Floating Footer for OK/Cancel -->
 	<div class="floating-manager-footer">
-		<Button
-			setting={{
-				type: "button",
-				name: "OK",
-				color: "var(--Theme-0)",
-				clickFunction: handleOk,
-			}}
-		/>
-		<Button
-			setting={{
-				type: "button",
-				name: "Cancel",
-				color: "var(--White-20, #646464)",
-				clickFunction: handleCancel,
-			}}
-		/>
+		<div class="left-actions">
+			<button
+				class="minimal-footer-btn store"
+				onclick={openThemeStore}
+				title="Explore Themes"
+			>
+				<Icon name="storefront" size={16} />
+				<span>Store</span>
+			</button>
+			<button
+				class="minimal-footer-btn save"
+				onclick={saveCurrentAsTheme}
+				title="Save Current Theme"
+			>
+				<Icon name="save" size={16} />
+				<span>Save</span>
+			</button>
+		</div>
+		<div class="footer-divider"></div>
+		<div class="right-actions">
+			<button class="minimal-footer-btn ok" onclick={handleOk}>
+				OK
+			</button>
+			<button class="minimal-footer-btn cancel" onclick={handleCancel}>
+				Cancel
+			</button>
+		</div>
 	</div>
 </div>
 
@@ -295,10 +278,9 @@
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 		gap: 20px;
-		padding-bottom: 80px; /* Space for the floating footer */
+		padding-bottom: 80px;
 		align-content: start;
 
-		/* If we have themes, don't shrink */
 		&.has-themes {
 			flex: 1;
 		}
@@ -330,59 +312,101 @@
 		}
 	}
 
-	.fab-save-btn {
-		position: absolute;
-		bottom: 25px;
-		right: 25px;
-		width: 50px;
-		height: 50px;
-		border-radius: 50%;
-		background: var(--Theme-0, #7f5db7);
-		color: white;
-		border: none;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-		cursor: pointer;
-		transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bounce effect */
-		z-index: 100;
-
-		&:hover {
-			transform: scale(1.15) translateY(-5px);
-			box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-			filter: brightness(1.2);
-		}
-
-		&:active {
-			transform: scale(0.95);
-		}
-	}
-
 	.floating-manager-footer {
 		position: absolute;
-		bottom: 20px;
+		bottom: 25px;
 		left: 50%;
 		transform: translateX(-50%);
 		display: flex;
-		gap: 15px;
-		background: rgba(0, 0, 0, 0.6);
-		backdrop-filter: blur(15px);
-		padding: 12px 20px;
-		border-radius: 30px;
-		border: 1px solid var(--White-10);
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-		z-index: 90;
-		width: 300px;
+		align-items: center;
+		background: var(--BG-Dark);
+		backdrop-filter: var(--Window-Blur);
+		padding: 4px;
+		border-radius: 40px;
+		border: 1px solid var(--Border-Color);
+		box-shadow: 0 15px 45px var(--Shadow-Color);
+		z-index: 1000;
+		width: fit-content;
+		gap: 2px;
 
-		:global(.STYLESHIFT-Button) {
-			flex: 1;
-			margin: 0 !important;
+		.left-actions,
+		.right-actions {
+			display: flex;
+			gap: 2px;
+		}
 
-			:global(button) {
-				border-radius: 20px !important;
-				padding: 8px 0 !important;
-				min-height: 36px !important;
+		.footer-divider {
+			width: 1px;
+			height: 20px;
+			background: var(--Border-Color);
+			margin: 0 6px;
+		}
+
+		.minimal-footer-btn {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			height: 32px;
+			padding: 0 14px;
+			margin: 3px;
+			border-radius: 30px;
+			border: none;
+			background: transparent;
+			color: var(--Font-Color-Dim);
+			font-family: inherit;
+			font-size: 16px;
+			font-weight: 500;
+			cursor: pointer;
+			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+			white-space: nowrap;
+
+			&:hover {
+				background: var(--White-08);
+				color: var(--Font-Color);
+				transform: translateY(-1px);
+			}
+
+			&:active {
+				transform: scale(0.96);
+			}
+
+			&.store {
+				color: #a7ffff;
+				&:hover {
+					background: rgba(109, 245, 255, 0.15);
+				}
+			}
+
+			&.save {
+				color: var(--Theme-0-Light);
+				&:hover {
+					background: var(--Theme-0-15);
+				}
+			}
+
+			&.ok {
+				background: var(--Theme-0);
+				color: white;
+				padding: 0 18px;
+				font-weight: 600;
+
+				&:hover {
+					filter: brightness(1.2);
+					box-shadow: 0 4px 15px var(--Theme-0-30);
+				}
+			}
+
+			&.cancel {
+				padding: 0 12px;
+				color: var(--Font-Color-Dim);
+				&:hover {
+					color: var(--Font-Color);
+				}
+			}
+
+			:global(.STYLESHIFT-Icon) {
+				margin: 0;
+				opacity: 0.9;
 			}
 		}
 	}

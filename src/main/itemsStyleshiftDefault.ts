@@ -1,7 +1,7 @@
 import { checkAndUpdateTheme } from "../styleshift/core/themeStore";
 import { openSettingPage } from "@/styleshift/shared/extension";
 import { Category, SeparateCategory } from "../styleshift/types/styleshiftTypes";
-import { showThemeManager } from "./features/themes/themeManagerService";
+import { showThemeManager, openThemeStore } from "./features/themes/themeManagerService";
 import { toggleCustomize } from "@/styleshift/ui/highlight";
 
 const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
@@ -56,6 +56,17 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 				icon: "collections"
 			},
 			{
+				clickFunction: openThemeStore,
+				color: "#ff6d6d",
+				description: "Discover and download thousands of themes from the official NewTube store.",
+				fontSize: 15,
+				id: "ExploreThemesButton",
+				name: "Explore Themes",
+				align: "left",
+				type: "button",
+				icon: "storefront"
+			},
+			{
 				clickFunction: toggleCustomize,
 				type: "button",
 				id: "StyleShiftToggleCustomize",
@@ -64,7 +75,7 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 				fontSize: 15,
 				color: "#3eadad",
 				align: "left",
-				icon: "select_all"
+				icon: "highlight_alt"
 			},
 			{
 				clickFunction: openSettingPage,

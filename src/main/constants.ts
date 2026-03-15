@@ -10,6 +10,7 @@ export const NEWTUBE_STORE_ORIGINS = [
  * Base URL for the NewTube Store API.
  */
 export const NEWTUBE_STORE_API_URL = "https://api.newtube.azpepoze.com";
+export const NEWTUBE_STORE_DISCOVER_URL = "https://newtube.azpepoze.com/discover";
 export const NEWTUBE_STORE_THEMES_URL = "https://newtube.azpepoze.com/themes";
 
 /**

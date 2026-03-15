@@ -11,7 +11,6 @@
 	const maximize = "assets/icons/maximize.svg";
 	const restore = "assets/icons/restore.svg";
 	const exportIcon = "assets/icons/export.svg";
-	const saveIcon = "assets/icons/save.svg";
 	const openInNew = "assets/icons/openInNew.svg";
 
 	import { getAssetUrl } from "@ui/utils";
@@ -29,7 +28,6 @@
 		maximize,
 		restore,
 		export: exportIcon,
-		save: saveIcon,
 		openInNew: openInNew,
 	};
 

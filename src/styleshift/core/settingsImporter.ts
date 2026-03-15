@@ -181,22 +181,3 @@ export async function exportCurrentSettingsAsString(): Promise<string> {
 	return JSON.stringify(settingsObj, null, 2);
 }
 
-/**
- * Migrates legacy data formats to the current storage schema.
- */
-export async function migrateLegacyStorageData(legacyData: any): Promise<any> {
-	const migratedData = { ...legacyData };
-
-	for (const id of Object.keys(migratedData)) {
-		if (migratedData[id] === "true") migratedData[id] = true;
-		if (migratedData[id] === "false") migratedData[id] = false;
-
-		// Handle legacy 'T' suffix for boolean toggles
-		if (id.endsWith("T") && typeof migratedData[id] === "boolean") {
-			migratedData[id.slice(0, -1)] = migratedData[id];
-			delete migratedData[id];
-		}
-	}
-
-	return migratedData;
-}
