@@ -1,8 +1,8 @@
-import { checkAndUpdateTheme } from "../styleshift/core/themeStore";
+import { checkAndUpdateTheme, openThemeStore } from "../styleshift/core/themeStore";
 import { openSettingPage } from "@/styleshift/shared/extension";
 import { Category, SeparateCategory } from "../styleshift/types/styleshiftTypes";
-import { showThemeManager, openThemeStore } from "./features/themes/themeManagerService";
 import { toggleCustomize } from "@/styleshift/ui/highlight";
+import { showThemeManager } from "@/styleshift/ui/themes/themeManagerService";
 
 const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 	{ isHeader: true, label: "Extension" },

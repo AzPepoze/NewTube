@@ -9,6 +9,7 @@ import {
 import { createNotification } from "../shared/extension";
 import { logger } from "../../shared/logger";
 import { sleep } from "../shared/normal";
+import { NEWTUBE_STORE_DISCOVER_URL } from "@/main/constants";
 
 export async function initWebsiteIntegration(): Promise<void> {
 	if (!validateOrigin(window.location.origin)) {
@@ -90,4 +91,8 @@ export async function initWebsiteIntegration(): Promise<void> {
 
 export async function checkAndUpdateTheme(manual: boolean = false, targetDomain?: string): Promise<void> {
 	await themeManagerCheckAndUpdate(manual, targetDomain);
+}
+
+export function openThemeStore() {
+	window.open(NEWTUBE_STORE_DISCOVER_URL, "_blank");
 }

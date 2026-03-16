@@ -12,6 +12,8 @@
 		applyTheme as applyThemeManager,
 		deleteTheme as deleteThemeManager,
 		type Theme,
+		exportThemeAsZip,
+		exportThemeToClipboard,
 	} from "@/styleshift/core/themeManager";
 	import {
 		chooseSelection,
@@ -19,13 +21,9 @@
 	} from "@/styleshift/shared/extension";
 	import Icon from "@ui/settings/components/main/Icon.svelte";
 	import { enterPrompt } from "@/styleshift/shared/extension";
-	import {
-		exportThemeToClipboard,
-		exportThemeAsZip,
-	} from "./themeExportService";
-	import { openThemeStore } from "./themeManagerService";
-	import { onMount } from "svelte";
 	import ThemeCard from "./ThemeCard.svelte";
+	import { openThemeStore } from "@/styleshift/core/themeStore";
+	import { onMount } from "svelte";
 
 	let {
 		closeWindow,
