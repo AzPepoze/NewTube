@@ -15,17 +15,6 @@ export type Theme = {
 	customStyleshiftItems?: any[];
 };
 
-/**
- * Broadcast theme update to all tabs via chrome.runtime.sendMessage
- */
-export function broadcastThemeUpdate(): void {
-	try {
-		chrome.runtime.sendMessage({ Command: "broadcastThemeUpdate" });
-		logger.info("themeManager", "Theme update broadcast sent");
-	} catch (error) {
-		logger.warn("themeManager", "Failed to broadcast theme update", error);
-	}
-}
 
 /**
  * Validate if origin is allowed to send theme events
@@ -211,7 +200,6 @@ export async function saveTheme(name: string, data: Theme, targetDomain: string)
 		}
 
 		logger.info("themeManager", `Theme saved: ${name}`);
-		broadcastThemeUpdate();
 		return true;
 	} catch (error) {
 		logger.error("themeManager", "Failed to save theme", error);
@@ -250,7 +238,6 @@ export async function applyTheme(id: string, name: string, targetDomain: string)
 		await importPresetToSettings(themeData, true, name);
 
 		logger.info("themeManager", `Theme applied: ${name}`);
-		broadcastThemeUpdate();
 		return true;
 	} catch (error) {
 		logger.error("themeManager", "Failed to apply theme", error);
@@ -298,7 +285,6 @@ export async function updateTheme(
 		}
 
 		logger.info("themeManager", `Theme updated: ${name}`);
-		broadcastThemeUpdate();
 		return true;
 	} catch (error) {
 		logger.error("themeManager", "Failed to update theme", error);
@@ -343,7 +329,6 @@ export async function installTheme(
 		);
 
 		logger.info("themeManager", `Theme installed to ${targetDomains.length} domain(s): ${name}`);
-		broadcastThemeUpdate();
 		return true;
 	} catch (error) {
 		logger.error("themeManager", "Failed to install theme", error);
@@ -374,7 +359,6 @@ export async function deleteTheme(id: string, name: string, targetDomain: string
 		await deleteThemeFromStorage(id);
 
 		logger.info("themeManager", `Theme deleted: ${name}`);
-		broadcastThemeUpdate();
 		return true;
 	} catch (error) {
 		logger.error("themeManager", "Failed to delete theme", error);

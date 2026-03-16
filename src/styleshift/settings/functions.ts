@@ -48,8 +48,9 @@ export async function reactivateAllSettings() {
 	const allSettings = await getAllStyleshiftSettings();
 	for (const setting of allSettings) {
 		if (setting.id === "Themes") continue;
-		await triggerSettingUpdate(setting.id, true);
+		triggerSettingUpdate(setting.id, true);
 	}
+	await initializeAllActiveSettings();
 	logger.info("settings", "All settings re-activated.");
 }
 

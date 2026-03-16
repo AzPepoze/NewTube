@@ -258,21 +258,6 @@ async function handleMessage(
 			return true;
 		}
 
-		case "broadcastThemeUpdate": {
-			logger.info("message", `Broadcasting theme update to ${STORE_TARGET_SITES} tabs`);
-			chrome.tabs.query({}, (tabs) => {
-				tabs.forEach(tab => {
-					if (tab.id && tab.url && STORE_TARGET_SITES.some(site => tab.url.includes(site))) {
-						try {
-							chrome.tabs.sendMessage(tab.id, { Command: "themeDataUpdated" });
-						} catch (e) {
-							logger.error("message", "Error broadcasting to tab", e);
-						}
-					}
-				});
-			});
-			return true;
-		}
 	}
 
 	logger.info("message", "---------------------------------");

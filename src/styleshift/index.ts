@@ -19,7 +19,7 @@ import {
 	populateMissingDefaultSettings,
 	initializeDefaultCustomItems,
 } from "./core/storageMaintenance";
-import { registerSettingListener, initializeAllActiveSettings, attachBehaviorToSetting } from "./settings/functions";
+import { registerSettingListener, initializeAllActiveSettings, attachBehaviorToSetting, reactivateAllSettings } from "./settings/functions";
 import { createStylesheetHolder, injectMaterialIconsStyles } from "./settings/styleSheet";
 import { getAllStyleshiftItems, getAllStyleshiftSettings, updateStyleshiftItems } from "./settings/items";
 import "./communication/extension";
@@ -156,6 +156,14 @@ async function bootstrapExtension(): Promise<void> {
 
 	isExtensionReady = true;
 	logger.info("lifecycle", "StyleShift bootstrap complete.");
+
+	window.addEventListener("focus", async () => {
+		logger.info("lifecycle", "Window focused, reloading settings...");
+		await initializeStorageConnection();
+		await updateStyleshiftItems();
+		await reactivateAllSettings();
+		updateAllUiComponents();
+	});
 
 	if (!IS_IN_EXTENSION_SETTINGS_PAGE) {
 		appBootstrap();
