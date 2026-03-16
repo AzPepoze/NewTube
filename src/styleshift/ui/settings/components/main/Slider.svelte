@@ -16,12 +16,20 @@
 
 	async function init() {
 		if (setting.id) {
-			value = await getFromStorage(setting.id);
+			const storedValue = await getFromStorage(setting.id);
+			if (storedValue !== undefined) value = storedValue;
 		} else {
 			value = setting.value;
 		}
 	}
 	init();
+
+	$effect(() => {
+		if (!setting.id && setting.value !== undefined) {
+			value = setting.value;
+		}
+	});
+
 
 	// Derived values that fallback to defaults if setting properties are missing
 	const name = $derived(setting.name);
@@ -43,7 +51,7 @@
 	const sequencedUpdate = sequencedTask(handleUpdate);
 
 	async function handleInput() {
-		if (await getRootValue("EnableRealtimeExtension")) {
+		if (await getRootValue("enableRealtimeExtension")) {
 			sequencedUpdate();
 		}
 	}

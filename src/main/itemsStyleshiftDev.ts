@@ -9,7 +9,6 @@ const devOnlyItems: Category[] = [
 		settings: [
 			{
 				type: "subText",
-				color: "#1a34ffff",
 				fontSize: 15,
 				align: "center",
 				text: "file (.NewTube.zip)",

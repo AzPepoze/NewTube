@@ -218,7 +218,6 @@
 			aria-label="Resize sidebar"
 			title="Drag to resize sidebar"
 			onmousedown={handleResizeStart}
-			style="cursor: col-resize; width: 4px; background: var(--Category-Left-BG); user-select: none;"
 		></div>
 	{/if}
 
@@ -273,20 +272,32 @@
 	.STYLESHIFT-Settings-Main {
 		display: flex;
 		flex-direction: row;
-		gap: 10px;
+		gap: 5px;
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
 	}
 
+	.STYLESHIFT-Resize-Handle {
+		width: 5px;
+		cursor: col-resize;
+		background: var(--Border-Color);
+		user-select: none;
+		border-radius: 10px;
+		transition: all 0.2s;
+
+		&:hover {
+			background: var(--White-90);
+		}
+	}
+
 	.STYLESHIFT-Sidebar {
-		min-width: 100px;
+		min-width: 150px;
 		width: 250px;
 		background: var(--Category-Left-BG);
 		display: flex;
 		flex-direction: column;
 		gap: 5px;
-		transition: width 0.2s ease-out;
 	}
 
 	.STYLESHIFT-Sidebar-Item-Wrapper {
@@ -356,7 +367,7 @@
 		gap: 10px;
 		height: 100%;
 		overflow: hidden;
-		min-width: 0;
+		min-width: 400px;
 	}
 
 	.STYLESHIFT-Settings-List {

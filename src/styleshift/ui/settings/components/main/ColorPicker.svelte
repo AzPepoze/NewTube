@@ -30,6 +30,15 @@
 	}
 	init();
 
+	$effect(() => {
+		if (!setting.id && setting.value !== undefined) {
+			const colorObj = hexToColorObj(setting.value || "#ffffff");
+			hex = colorObj.hex;
+			alpha = colorObj.alpha;
+		}
+	});
+
+
 	const name = $derived(setting.name);
 	const description = $derived(setting.description);
 
@@ -46,7 +55,7 @@
 	const sequencedUpdate = sequencedTask(handleUpdate);
 
 	async function handleInput() {
-		if (await getRootValue("EnableRealtimeExtension")) {
+		if (await getRootValue("enableRealtimeExtension")) {
 			sequencedUpdate();
 		}
 	}

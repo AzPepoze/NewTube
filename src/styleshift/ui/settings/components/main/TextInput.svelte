@@ -18,12 +18,20 @@
 
 	async function init() {
 		if (setting.id) {
-			value = await getFromStorage(setting.id);
+			const storedValue = await getFromStorage(setting.id);
+			if (storedValue !== undefined) value = storedValue;
 		} else {
 			value = setting.value;
 		}
 	}
 	init();
+
+	$effect(() => {
+		if (!setting.id && setting.value !== undefined) {
+			value = setting.value as string;
+		}
+	});
+
 
 	const name = $derived(setting.name);
 	const description = $derived(setting.description);
@@ -40,7 +48,7 @@
 	const sequencedUpdate = sequencedTask(handleUpdate);
 
 	async function handleInput() {
-		if (await getRootValue("EnableRealtimeExtension")) {
+		if (await getRootValue("enableRealtimeExtension")) {
 			sequencedUpdate();
 		}
 	}
