@@ -55,6 +55,27 @@ export const enhancementCategory: Category = {
 		},
 		{
 			type: "checkbox",
+			id: "EnhancementIndependentScrollFadeBorder",
+			name: "Independent Scroll Fade Border",
+			description: "Adds a fade effect to the top and bottom of the sidebar when Independent Scroll is enabled.",
+			value: true,
+			enableCss: `
+				:root {
+					--newtube-fade-border: linear-gradient(to bottom, transparent, black 20px, black 95%, transparent);
+				}
+
+				#secondary,
+				#primary {
+					mask-image: var(--newtube-fade-border) !important;
+					-webkit-mask-image: var(--newtube-fade-border) !important;
+				}
+			`,
+			require: {
+				"EnhancementIndependentScroll": true
+			}
+		},
+		{
+			type: "checkbox",
 			id: "EnhancementFlyoutPlayer",
 			name: "Flyout Player",
 			description: "Attaches a small, persistent version of the video player to the corner of your screen when you scroll down to read comments. Keeps the video visible at all times.",
@@ -82,7 +103,6 @@ export const enhancementCategory: Category = {
 					box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.1) !important;
 					overflow: hidden !important;
 					transition:
-							transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
 							opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
 							scale 0.4s cubic-bezier(0.16, 1, 0.3, 1)
 							!important;
@@ -91,16 +111,14 @@ export const enhancementCategory: Category = {
                     user-select: none !important;
 				}
 
-                .newtube-flyout-mode:active {
-                    scale: 0.98 !important;
-                }
-
                 @keyframes flyout-slide-in {
                     from {
                         opacity: 0;
+						margin-bottom: -20px;
                     }
                     to {
                         opacity: 1;
+						margin-bottom: 0;
                     }
                 }
 				

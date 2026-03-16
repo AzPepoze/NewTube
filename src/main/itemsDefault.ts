@@ -34,7 +34,7 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 	videoAmbientCategory,
 	removeBlackBarsCategory,
 
-	{ isHeader: true, label: "Your Experience" },
+	{ isHeader: true, label: "Overall Experience" },
 	enhancementCategory,
 
 	{ isHeader: true, label: "Visual Style" },
