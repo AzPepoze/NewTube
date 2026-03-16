@@ -1,5 +1,5 @@
 import { Category } from "../../styleshift/types/styleshiftTypes";
-import { ytVideoContainerWatchMode, ytPlayerWatchMode } from "../modules/youtube";
+import { ytVideoContainerWatchMode, ytPlayerWatchMode, ytdPlayerWatchMode } from "../modules/youtube";
 
 
 export const videoControlPanelCategory: Category = {
@@ -14,7 +14,8 @@ export const videoControlPanelCategory: Category = {
 				"Moves the entire video control bar (play, volume, settings) from an overlay on top of the video to a dedicated space directly underneath it.",
 			value: true,
 			enableCss: `
-				${ytVideoContainerWatchMode}
+				${ytVideoContainerWatchMode},
+				${ytdPlayerWatchMode}
 				{
 					padding-bottom: var(--nt-player-below-space, 70px);
 				}
