@@ -45,6 +45,7 @@ export const colorThemeCategory: Category = {
                     --yt-live-chat-vem-background-color: var(--nt-topbar-bg) !important;
                     --ytmusic-background: transparent !important;
                     --yt-spec-themed-green: var(--nt-theme-color) !important;
+                    --yt-spec-overlay-background-medium-light: var(--nt-theme-control-panel-button-group) !important;
                 }
             `,
 		},
@@ -169,6 +170,22 @@ export const colorThemeCategory: Category = {
                     background: var(--nt-sidebar-bg) !important;
                 }
             `,
+		},
+		{
+			type: "color",
+			id: "ThemeShadowColor",
+			name: "Theme Shadow",
+			description: "Customizes the shadow color used for thumbnails and panels. Works best when matched with your theme color.",
+			value: "#659aff80",
+			varCss: "--nt-theme-shadow",
+		},
+		{
+			type: "color",
+			id: "ThemeOverlayColor",
+			name: "Overlay Background",
+			description: "Sets the background color for overlay elements like button groups in the video player.",
+			value: "#5bbdff20",
+			varCss: "--nt-theme-control-panel-button-group",
 		},
 		{
 			type: "color",

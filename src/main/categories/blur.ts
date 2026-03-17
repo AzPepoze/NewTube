@@ -25,7 +25,7 @@ export const blurCategory: Category = {
 				all: {
 					name: "Everything",
 					enableCss: `
-                        #masthead > #background,
+                        #background.ytd-masthead,
                         ytd-multi-page-menu-renderer,
                         .ytp-popup,
                         .ytp-tooltip,
@@ -42,7 +42,7 @@ export const blurCategory: Category = {
 				main: {
 					name: "Main Interfaces",
 					enableCss: `
-                        #masthead > #background,
+                        #background.ytd-masthead,
                         #guide-content
                         {
                             backdrop-filter: blur(var(--nt-general-blur-amount)) !important;

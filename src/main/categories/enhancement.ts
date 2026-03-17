@@ -40,13 +40,13 @@ export const enhancementCategory: Category = {
                     height: calc(100vh - 56px) !important;
                     overflow: hidden !important;
                 }
-                #primary {
+                ytd-watch-flexy #primary {
                     height: 100% !important;
                     overflow-y: auto !important;
                     padding-right: 10px !important;
                     scrollbar-width: thin;
                 }
-                #secondary {
+                ytd-watch-flexy #secondary {
                     height: 100% !important;
                     overflow-y: auto !important;
                     scrollbar-width: thin;
@@ -64,8 +64,8 @@ export const enhancementCategory: Category = {
 					--newtube-fade-border: linear-gradient(to bottom, transparent, black 20px, black 95%, transparent);
 				}
 
-				#secondary,
-				#primary {
+				ytd-watch-flexy #secondary,
+				ytd-watch-flexy #primary {
 					mask-image: var(--newtube-fade-border) !important;
 					-webkit-mask-image: var(--newtube-fade-border) !important;
 				}

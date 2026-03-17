@@ -10,7 +10,7 @@ export const topbarSearchCategory: Category = {
 			description: "Makes the top header bar transparent by default and applies your custom background color only when you begin to scroll down.",
 			value: true,
 			enableFunction: function () {
-				const masthead = document.querySelector("#masthead") as HTMLElement;
+				const masthead = document.querySelector("#background.ytd-masthead") as HTMLElement;
 				if (!masthead) return;
 
 				const handleScroll = () => {
@@ -24,10 +24,10 @@ export const topbarSearchCategory: Category = {
 				window.addEventListener("scroll", handleScroll);
 			},
 			enableCss: `
-                #masthead {
+                #background.ytd-masthead {
                     transition: background-color 0.3s ease !important;
                 }
-                #masthead.scrolled {
+                #background.ytd-masthead.scrolled {
                     background-color: var(--nt-topbar-bg, #00000080) !important;
                 }
             `,
@@ -56,7 +56,7 @@ export const topbarSearchCategory: Category = {
 			description: "Applies your global outline or shadow settings to the bottom of the top navigation bar.",
 			value: true,
 			enableCss: `
-                #masthead > #background {
+                #background.ytd-masthead {
                     box-shadow: var(--nt-global-shadow) !important;
                     border-bottom: var(--nt-global-outline) !important;
                 }

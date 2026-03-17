@@ -300,7 +300,7 @@ ytd-live-chat-frame,
 	border-radius: var(--nt-border-radius) var(--nt-border-radius) 0px 0px !important;
 }
 
-#masthead
+#background.ytd-masthead
 {
 	border-radius: 0px 0px var(--nt-border-radius) var(--nt-border-radius) !important;
 }

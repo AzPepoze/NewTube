@@ -24,7 +24,7 @@ export const bordersShadowsCategory: Category = {
 					enableCss: `
                         :root {
                             --nt-global-outline: none;
-                            --nt-global-shadow: 0 0 var(--nt-border-width, 8px) var(--nt-border-color, #099DFF80);
+                            --nt-global-shadow: 0 0 var(--nt-border-width, 8px) var(--nt-theme-shadow, var(--nt-border-color, #099DFF80));
                         }
                     `,
 				},

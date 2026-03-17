@@ -62,6 +62,8 @@ export async function clearTheme() {
 		"--nt-timeline-bg",
 		"--nt-timeline-load",
 		"--nt-player-bg",
+		"--nt-theme-shadow",
+		"--nt-theme-control-panel-button-group",
 	];
 
 	props.forEach((prop) => body.style.removeProperty(prop));
@@ -140,8 +142,9 @@ export function enableThemeByVideo() {
 			setProp("--nt-playlist-hover-bg", themeRgba(0.3));
 			setProp("--nt-text-link", themeRgba(1));
 			setProp("--nt-text-channel", themeRgba(1));
-			setProp("--nt-topbar-bg", themeRgba(0.3));
 			setProp("--nt-search-bg-hover", themeRgba(0.3));
+			setProp("--nt-theme-shadow", themeRgba(0.5));
+			setProp("--nt-theme-control-panel-button-group", themeRgba(0.2));
 
 			// Derived Colors
 			const timeBgHsv = { ...hsv, v: hsv.v * 0.4 };
@@ -166,6 +169,7 @@ export function enableThemeByVideo() {
 			const isSolid = await getUserSetting("EnableSolidThemeByVideo");
 			const bgOpacity = isSolid ? 1 : (await getUserSetting("BackgroundOpacity")) / 100;
 			setProp("--nt-bg-main", `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${bgOpacity})`);
+			setProp("--nt-topbar-bg", `var(--nt-bg-main)`);
 
 			// Timeline
 			const timelineHsv = { ...hsv, v: hsv.v * 0.4 };
