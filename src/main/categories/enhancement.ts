@@ -29,14 +29,7 @@ export const enhancementCategory: Category = {
 			description: "Allows you to scroll through the sidebar and comments independently without moving the video player. Note: This feature is incompatible with Flyout Player.",
 			value: false,
 			enableCss: `
-                html, body {
-                    overflow: hidden !important;
-                }
-                ytd-app {
-                    height: 100vh !important;
-                    overflow: hidden !important;
-                }
-                #columns {
+                ytd-watch-flexy #columns {
                     height: calc(100vh - 56px) !important;
                     overflow: hidden !important;
                 }
