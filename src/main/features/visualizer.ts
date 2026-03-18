@@ -1,3 +1,4 @@
+import { logger } from "@/shared/logger";
 import { getFromStorage, getUserSetting } from "../../styleshift/core/storageManager";
 import { registerSettingListener } from "../../styleshift/settings/functions";
 import { getYtdApp, getVideoElement, onYoutubeNavigate } from "../modules/youtube";
@@ -13,7 +14,7 @@ let navigateCleanup: (() => void) | null = null;
 export function setupAudioVisualizer() {
 	const init = async () => {
 		if ((await getFromStorage("enableExtension")) === false) return;
-		if (audioCtx) return; // Already running
+		if (audioCtx) return;
 
 		const video = await getVideoElement();
 		if (!video) return;
@@ -30,11 +31,12 @@ export function setupAudioVisualizer() {
 			source = audioCtx.createMediaElementSource(video);
 			source.connect(analyser);
 			analyser.connect(audioCtx.destination);
+			source.connect(audioCtx.destination);
 
 			await createCanvas();
 			visualize();
 		} catch {
-			// logger.warn("visualizer", "Visualizer setup failed");
+			logger.error("visualizer", "Visualizer setup failed");
 		}
 	};
 
@@ -146,16 +148,14 @@ export function setupAudioVisualizer() {
 export function destroyAudioVisualizer() {
 	if (animationFrame) cancelAnimationFrame(animationFrame);
 	if (canvas) canvas.remove();
-	if (audioCtx) audioCtx.close();
+	if (analyser && audioCtx) {
+		analyser.disconnect(audioCtx.destination);
+	}
 	if (navigateCleanup) {
 		navigateCleanup();
 		navigateCleanup = null;
 	}
-	audioCtx = null;
 	analyser = null;
-	source = null;
-	canvas = null;
-	canvasCtx = null;
 	animationFrame = null;
 }
 
