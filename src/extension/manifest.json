@@ -26,12 +26,12 @@
 				"styleshift.js",
 				"style.css"
 			],
-			"matches": ["<all_urls>"]
+			"matches": ["*://www.youtube.com/*", "*://music.youtube.com/*"]
 		}
 	],
 	"content_scripts": [
 		{
-			"matches": ["<all_urls>"],
+			"matches": ["*://www.youtube.com/*", "*://music.youtube.com/*"],
 			"all_frames": true,
 			"js": ["styleshift.js"],
 			"css": ["style.css"],
@@ -84,7 +84,7 @@
 		}
 	},
 	"permissions": ["storage", "unlimitedStorage", "scripting"],
-	"host_permissions": ["*://*/*"],
+	"host_permissions": ["*://www.youtube.com/*", "*://music.youtube.com/*"],
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "StyleShift@AzPepoze"
