@@ -138,10 +138,5 @@
 			border-radius: 4px;
 			margin: 0 2px;
 		}
-
-		.check-mark {
-			margin-left: 6px;
-			font-weight: bold;
-		}
 	}
 </style>
