@@ -21,7 +21,8 @@ jobs:
 
              - name: Update Version in Manifest
                run: |
-                    VERSION=${GITHUB_REF_NAME#v}
+                    RAW_VERSION=${GITHUB_REF_NAME#v}
+                    VERSION=${RAW_VERSION%%-*}
                     echo "Updating manifest.json to version $VERSION"
                     jq ".version = \"$VERSION\"" src/extension/manifest.json > temp.json && mv temp.json src/extension/manifest.json
 
