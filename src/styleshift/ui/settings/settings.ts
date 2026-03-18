@@ -9,6 +9,7 @@ import { getRootValue } from "@/styleshift/core/storageManager";
 import { isDevModulesLoaded } from "@/styleshift/core/runtimeController";
 import { getStyleshiftDevOnlyItems } from "../../../main/itemsStyleshiftDev";
 import { IS_IN_EXTENSION_SETTINGS_PAGE } from "@/styleshift";
+import { waitOneFrame } from "@/styleshift/shared/advance";
 
 export function setupLeftTitleAnimation(title: HTMLElement) {
 	title.style.transform = "translateY(40px)";
@@ -193,16 +194,16 @@ export async function createMainSettingsUi({
 					settingsWindow.contentElement,
 				);
 
-				// Restore scroll positions after remounting
-				requestAnimationFrame(() => {
-					const newSidebar = settingsWindow.contentElement.querySelector(".STYLESHIFT-Sidebar") as HTMLElement;
-					const newContent = settingsWindow.contentElement.querySelector(".STYLESHIFT-Settings-List") as HTMLElement;
-					if (newSidebar) newSidebar.scrollTop = sidebarScrollTop;
-					if (newContent) newContent.scrollTop = contentScrollTop;
-					logger.info("ui", "Restored scroll positions", { sidebarScrollTop, contentScrollTop });
-				});
-
 				logger.info("ui", "UI remounted successfully");
+
+				await waitOneFrame();
+				await waitOneFrame();
+
+				const newSidebar = settingsWindow.contentElement.querySelector(".STYLESHIFT-Sidebar") as HTMLElement;
+				const newContent = settingsWindow.contentElement.querySelector(".STYLESHIFT-Settings-List") as HTMLElement;
+				if (newSidebar) newSidebar.scrollTop = sidebarScrollTop;
+				if (newContent) newContent.scrollTop = contentScrollTop;
+				logger.info("ui", "Restored scroll positions", { sidebarScrollTop, contentScrollTop });
 			}
 		},
 		toggle: async function () {

@@ -380,7 +380,10 @@
 					{/each}
 
 					{#if isLoadingStore}
-						<div class="store-loading" transition:fade={{ duration: 300 }}>
+						<div
+							class="store-loading"
+							transition:fade={{ duration: 300 }}
+						>
 							<div class="spinner"></div>
 							<p>Fetching themes from store...</p>
 						</div>
@@ -455,10 +458,6 @@
 			flex: 1;
 			min-width: 200px;
 		}
-	}
-
-	.store-search-container {
-		display: none;
 	}
 
 	.view-container {
