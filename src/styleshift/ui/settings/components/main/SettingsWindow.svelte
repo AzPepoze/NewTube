@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Category } from "@/styleshift/types/styleshiftTypes";
+	import type { Category, SeparateCategory } from "@/styleshift/types/styleshiftTypes";
 	import { getCategoryParts } from "@ui/utils";
 	import Search from "./Search.svelte";
 	import LeftTitle from "../advance/LeftTitle.svelte";
@@ -16,7 +16,7 @@
 		onClose: _onClose = () => {},
 		onAddCategory = (_name: string) => {},
 	}: {
-		categories: Category[];
+		categories: (Category | SeparateCategory)[];
 		showCategoryList?: boolean;
 		devOnlyItems?: Category[];
 		isDeveloperMode?: boolean;
@@ -32,11 +32,13 @@
 	let activeCategoryLabel = $state("");
 	let sidebarWidth = $state(200);
 
-	function isHeaderItem(item: any) {
+	function isHeaderItem(
+		item: Category | SeparateCategory,
+	): item is SeparateCategory {
 		return "isHeader" in item;
 	}
 
-	function mergeDevItems(allCategories: any[]) {
+	function mergeDevItems(allCategories: (Category | SeparateCategory)[]) {
 		if (!isDevModulesLoaded || !isDeveloperMode) return allCategories;
 
 		const devOnlyCategories = devOnlyItems.filter(
@@ -52,10 +54,14 @@
 			);
 
 			if (existingIdx > -1) {
-				allCategories[existingIdx].settings = [
-					...allCategories[existingIdx].settings,
-					...devCategory.settings,
-				];
+				const item = allCategories[existingIdx];
+				if (!isHeaderItem(item)) {
+					const category = item as Category;
+					category.settings = [
+						...category.settings,
+						...devCategory.settings,
+					];
+				}
 			} else {
 				allCategories.push(devCategory);
 			}
@@ -63,39 +69,41 @@
 		return allCategories;
 	}
 
-	function filterBySearch(allCategories: any[], searchTerm: string) {
-		const lowerQuery = searchTerm.toLowerCase();
+	function filterBySearch(
+		allCategories: (Category | SeparateCategory)[],
+		searchTerm: string,
+	) {
+		const query = searchTerm.toLowerCase();
 
 		return allCategories
 			.map((item) => {
 				if (isHeaderItem(item)) return item;
 
-				return {
-					...item,
-					settings: item.settings.filter((setting) => {
-						const nameMatch =
-							"name" in setting &&
-							setting.name
-								.toLowerCase()
-								.includes(lowerQuery);
-						const descMatch =
-							"description" in setting &&
-							setting.description
-								?.toLowerCase()
-								.includes(lowerQuery);
-						return nameMatch || descMatch;
-					}),
-				};
+				const category = item as Category;
+				const settings = category.settings.filter((s: any) => {
+					const name = s.name?.toLowerCase() || "";
+					const desc = s.description?.toLowerCase() || "";
+					return name.includes(query) || desc.includes(query);
+				});
+
+				return { ...category, settings };
 			})
-			.filter(
-				(item) => isHeaderItem(item) || item.settings.length > 0,
-			);
+			.filter((item) => isHeaderItem(item) || item.settings.length > 0);
+	}
+
+	function getVisibleSettings(settings: any[], isDev: boolean) {
+		return settings.filter((s) => s.type !== "conditionSetting" || isDev);
 	}
 
 	let filteredData = $derived.by(() => {
-		let result = categories.map((c) => {
-			return isHeaderItem(c) ? c : { ...(c as any) };
-		});
+		let result: (Category | SeparateCategory)[] = categories.map((c) =>
+			isHeaderItem(c)
+				? c
+				: {
+						...c,
+						settings: getVisibleSettings(c.settings, isDeveloperMode),
+					},
+		);
 
 		result = mergeDevItems(result);
 
@@ -103,7 +111,7 @@
 			result = filterBySearch(result, searchQuery);
 		}
 
-		return result;
+		return result as (Category | SeparateCategory)[];
 	});
 
 	function handleScroll() {
@@ -157,7 +165,7 @@
 			style:width={`${sidebarWidth}px`}
 		>
 			{#each filteredData as item, i (i)}
-				{#if "isHeader" in item}
+				{#if isHeaderItem(item)}
 					<div
 						class="STYLESHIFT-Sidebar-Header"
 						style="animation-delay: {skipAnimation
@@ -230,7 +238,7 @@
 			onscroll={handleScroll}
 		>
 			{#each filteredData as item, i (i)}
-				{#if "isHeader" in item}
+				{#if isHeaderItem(item)}
 					<div class="STYLESHIFT-Category-Separator"></div>
 				{:else}
 					{@const category = item}

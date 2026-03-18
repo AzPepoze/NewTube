@@ -215,12 +215,23 @@ export type Setting = (
 		editable?: boolean;
 	}
 	| {
-		type: "combineSettings";
+		type: "combineSetting";
 		id?: string;
 		name?: string;
 		description?: string;
-		syncId: string[];
+		settingIds: string[];
 		updateFunction?: string;
+		editable?: boolean;
+	} | {
+		type: "conditionSetting";
+		id?: string;
+		name?: string;
+		description?: string;
+		condition: { [key: string]: any };
+		enableCss?: string;
+		disableCss?: string;
+		enableFunction?: string | Function;
+		disableFunction?: string | Function;
 		editable?: boolean;
 	}
 	| {

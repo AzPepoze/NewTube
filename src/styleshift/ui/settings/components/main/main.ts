@@ -94,8 +94,16 @@ export async function custom(
 	return { frame };
 }
 
-export async function combineSettings(
-	thisSetting: Partial<Extract<Setting, { type: "combineSettings" }>>,
+export async function combineSetting(
+	thisSetting: Partial<Extract<Setting, { type: "combineSetting" }>>,
+	updateFunction?: (value: any) => void,
+) {
+	const frame = settingsUi.renderSetting(thisSetting as any, updateFunction);
+	return { frame };
+}
+
+export async function conditionSetting(
+	thisSetting: Partial<Extract<Setting, { type: "conditionSetting" }>>,
 	updateFunction?: (value: any) => void,
 ) {
 	const frame = settingsUi.renderSetting(thisSetting as any, updateFunction);

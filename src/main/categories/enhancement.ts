@@ -2,6 +2,11 @@ import { Category } from "../../styleshift/types/styleshiftTypes";
 import { enableFlyout, disableFlyout } from "../features/video/flyout";
 import { setupAutoShowChatReplay, disableAutoShowChatReplay } from "../features/video/chat";
 
+const primaryContainer = "ytd-watch-flexy #primary.ytd-watch-flexy";
+const primaryInnerContainer = "ytd-watch-flexy #primary-inner.ytd-watch-flexy";
+const secondaryContainer = "ytd-watch-flexy #secondary.ytd-watch-flexy";
+const secondaryInnerContainer = "ytd-watch-flexy #secondary-inner.ytd-watch-flexy";
+
 export const enhancementCategory: Category = {
 	category: { icon: "auto_fix_high", label: "Enhancement" },
 	settings: [
@@ -16,7 +21,7 @@ export const enhancementCategory: Category = {
                     display: flex !important;
                     flex-direction: row-reverse !important;
                 }
-                #secondary {
+                ${primaryContainer} {
                     margin-right: 0 !important;
                     margin-left: 24px !important;
                 }
@@ -33,16 +38,20 @@ export const enhancementCategory: Category = {
                     height: calc(100vh - 56px) !important;
                     overflow: hidden !important;
                 }
-                ytd-watch-flexy #primary {
+
+                ${primaryContainer} {
                     height: 100% !important;
                     overflow-y: auto !important;
                     padding-right: 10px !important;
                     scrollbar-width: thin;
+					transform: translateZ(0);
                 }
-                ytd-watch-flexy #secondary {
+
+                ${secondaryContainer} {
                     height: 100% !important;
                     overflow-y: auto !important;
                     scrollbar-width: thin;
+					transform: translateZ(0);
                 }
             `,
 		},
@@ -57,8 +66,8 @@ export const enhancementCategory: Category = {
 					--newtube-fade-border: linear-gradient(to bottom, transparent, black 20px, black 95%, transparent);
 				}
 
-				ytd-watch-flexy #secondary,
-				ytd-watch-flexy #primary {
+				${secondaryContainer},
+				${primaryContainer} {
 					mask-image: var(--newtube-fade-border) !important;
 					-webkit-mask-image: var(--newtube-fade-border) !important;
 				}
@@ -66,6 +75,51 @@ export const enhancementCategory: Category = {
 			require: {
 				"EnhancementIndependentScroll": true
 			}
+		},
+		{
+			type: "conditionSetting",
+			id: "EnhancementIndependentScrollLayout-Video-Side",
+			name: "Independent Scroll Layout - Video | Sidebar",
+			condition: {
+				"EnhancementSwapLayout": false,
+				"EnhancementIndependentScroll": true
+			},
+			enableCss: `
+				${primaryContainer} {
+					direction: rtl;
+					padding: 10px !important;
+					margin: 0px !important;
+				}
+				${primaryInnerContainer} {
+					direction: ltr;
+				}
+				${secondaryContainer} {
+					padding-left: 20px !important;
+					margin-left: -20px !important;
+				}
+			`,
+		},
+		{
+			type: "conditionSetting",
+			id: "EnhancementIndependentScrollLayout-Side-Video",
+			name: "Independent Scroll Layout - Sidebar | Video",
+			condition: {
+				"EnhancementSwapLayout": true,
+				"EnhancementIndependentScroll": true
+			},
+			enableCss: `
+				${secondaryContainer} {
+					direction: rtl;
+					padding: 10px !important;
+					margin: 0px !important;
+				}
+				${secondaryInnerContainer} {
+					direction: ltr;
+				}
+				${primaryContainer} {
+					margin: 0px !important;
+				}
+			`,
 		},
 		{
 			type: "checkbox",

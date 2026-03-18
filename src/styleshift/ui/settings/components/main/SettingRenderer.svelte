@@ -11,6 +11,7 @@
 	import PreviewImage from "./PreviewImage.svelte";
 	import Icon from "./Icon.svelte";
 	import WarningSection from "./WarningSection.svelte";
+	import ConditionStatus from "./ConditionStatus.svelte";
 	import {
 		getFromStorage,
 		getRootValue,
@@ -30,6 +31,7 @@
 	import {
 		registerSettingListener,
 		unregisterSettingListener,
+		evaluateCondition,
 	} from "@settings/functions";
 	import {
 		registerSettingUi,
@@ -59,6 +61,7 @@
 			{ name: string; value: any; type: string; options?: any }
 		>
 	>({});
+	let conditionsMet = $state(true);
 	let isLocked = $derived(setting.lock?.condition ?? false);
 	let listeners = new SvelteMap<string, (val: any) => void>();
 
@@ -68,7 +71,8 @@
 			setting.type === "color" ||
 			setting.type === "custom" ||
 			setting.type === "imageInput" ||
-			setting.type === "keyboardShortcuts",
+			setting.type === "keyboardShortcuts" ||
+			setting.type === "conditionSetting",
 	);
 
 	// Initialize value from storage
@@ -108,6 +112,47 @@
 				}
 				checkRequirements();
 			}
+
+			if (setting.type === "conditionSetting" && setting.condition) {
+				const allSettings = await (
+					await import("@settings/items")
+				).getSettingsList();
+				for (const id in setting.condition) {
+					if (!requiredSettings[id]) {
+						const reqSetting = allSettings[id];
+						if (reqSetting) {
+							const reqValue = await getFromStorage(id);
+							requiredSettings[id] = {
+								name: (reqSetting as any).name || id,
+								value: reqValue,
+								type: reqSetting.type,
+								options: (reqSetting as any).options,
+							};
+
+							const listener = (newVal: any) => {
+								if (requiredSettings[id]) {
+									requiredSettings[id].value = newVal;
+									checkConditions();
+								}
+							};
+							listeners.set(id, listener);
+							registerSettingListener(id, listener);
+						}
+					} else {
+						const existingListener = listeners.get(id);
+						if (existingListener) {
+							const newListener = (newVal: any) => {
+								existingListener(newVal);
+								checkConditions();
+							};
+							unregisterSettingListener(id, existingListener);
+							listeners.set(id, newListener);
+							registerSettingListener(id, newListener);
+						}
+					}
+				}
+				checkConditions();
+			}
 		} catch (error) {
 			createError(
 				`Failed to initialize setting "${setting.id || setting.type}".\n\nJSON: ${JSON.stringify(setting, null, 2)}`,
@@ -117,20 +162,14 @@
 	}
 
 	function checkRequirements() {
-		if (!setting.require) {
-			requirementsMet = true;
-			return;
-		}
-		requirementsMet = Object.keys(setting.require).every((id) => {
-			const req = requiredSettings[id];
-			const requiredValue = setting.require![id];
+		requirementsMet = evaluateCondition(setting.require, requiredSettings);
+	}
 
-			if (Array.isArray(requiredValue)) {
-				return req && requiredValue.includes(req.value);
-			}
-
-			return req && req.value === requiredValue;
-		});
+	function checkConditions() {
+		conditionsMet = evaluateCondition(
+			setting.type === "conditionSetting" ? setting.condition : undefined,
+			requiredSettings,
+		);
 	}
 
 	init();
@@ -223,12 +262,7 @@
 
 	$effect(() => {
 		if (isDeveloperMode && domNode && domNode.parentElement) {
-			addDropTarget(
-				domNode,
-				domNode.parentElement,
-				setting,
-				"setting",
-			);
+			addDropTarget(domNode, domNode.parentElement, setting, "setting");
 		}
 	});
 </script>
@@ -266,10 +300,7 @@
 		class:is-vertical={isVerticalSetting}
 	>
 		{#if isDeveloperMode}
-			<button
-				class="STYLESHIFT-Config-Button drag-handle"
-				use:dragAction
-			>
+			<button class="STYLESHIFT-Config-Button drag-handle" use:dragAction>
 				<Icon name="drag" size={16} />
 			</button>
 		{/if}
@@ -287,11 +318,7 @@
 		{:else if setting.type === "dropdown"}
 			<Dropdown {setting} />
 		{:else if setting.type === "text"}
-			<Text
-				html={setting.html}
-				fontSize={setting.fontSize}
-				{textAlign}
-			/>
+			<Text html={setting.html} fontSize={setting.fontSize} {textAlign} />
 		{:else if setting.type === "subText"}
 			<Text
 				text={setting.text}
@@ -306,11 +333,25 @@
 			<PreviewImage src={value} />
 		{:else if setting.type === "custom"}
 			<div use:customSettingAction></div>
-		{:else if setting.type === "combineSettings"}
+		{:else if setting.type === "combineSetting"}
 			<Description
 				name={setting.name}
 				description={setting.description}
 			/>
+		{:else if setting.type === "conditionSetting"}
+			<div
+				style="display: flex; flex-direction: column; width: 100%; gap: 5px;"
+			>
+				<Description
+					name={setting.name}
+					description={setting.description}
+				/>
+				<ConditionStatus
+					{conditionsMet}
+					condition={setting.condition}
+					{requiredSettings}
+				/>
+			</div>
 		{:else if setting.type === "keyboardShortcuts"}
 			<div use:keyboardShortcutsAction></div>
 		{/if}

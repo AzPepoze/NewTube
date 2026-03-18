@@ -233,7 +233,7 @@ const SETTING_TYPE_BEHAVIORS = {
 		return applyCustomUpdate;
 	},
 
-	["combineSettings"]: async function (setting: any) {
+	["combineSetting"]: async function (setting: any) {
 		const stylesheet = createStylesheet(setting.id);
 
 		async function applyCombinedUpdate() {
@@ -245,6 +245,50 @@ const SETTING_TYPE_BEHAVIORS = {
 
 		applyCombinedUpdate();
 		return applyCombinedUpdate;
+	},
+
+	["conditionSetting"]: async function (setting: any) {
+		const stylesheet = createStylesheet(setting.id);
+
+		async function checkConditionsMet(): Promise<boolean> {
+			return await evaluateConditionAsync(setting.condition);
+		}
+
+		let lastStatus: boolean | null = null;
+
+		async function applyConditionUpdate() {
+			const isMet = await checkConditionsMet();
+			logger.debug("settings", `Applying condition update for ${setting.id}: met=${isMet}`);
+
+			stylesheet.textContent = "";
+			if (isMet) {
+				stylesheet.textContent = setting.enableCss || "";
+			} else {
+				stylesheet.textContent = setting.disableCss || "";
+			}
+
+			if (lastStatus === isMet) return;
+			lastStatus = isMet;
+
+			if (isMet) {
+				if (setting.enableFunction) {
+					executeSettingScript(setting, "enableFunction");
+				}
+			} else {
+				if (setting.disableFunction) {
+					executeSettingScript(setting, "disableFunction");
+				}
+			}
+		}
+
+		if (setting.condition) {
+			for (const id in setting.condition) {
+				registerSettingListener(id, () => applyConditionUpdate());
+			}
+		}
+
+		applyConditionUpdate();
+		return applyConditionUpdate;
 	},
 };
 
@@ -413,4 +457,47 @@ export async function initializeAllActiveSettings() {
 		logger.debug("settings", "Initializing setting:", id);
 		runSettingInitialization(id);
 	}
+}
+
+/**
+ * Checks if a specific condition is met.
+ * @param {any} requiredValue 
+ * @param {any} currentValue 
+ * @returns {boolean}
+ */
+export function isConditionMet(requiredValue: any, currentValue: any): boolean {
+	if (Array.isArray(requiredValue)) {
+		return requiredValue.includes(currentValue);
+	}
+	return currentValue === requiredValue;
+}
+
+/**
+ * Evaluates whether a set of conditions (requirements) are met based on current values.
+ * @param {Record<string, any>} condition - The required values { id: value | value[] }.
+ * @param {Record<string, { value: any }>} valuesMap - Map of current values.
+ * @returns {boolean}
+ */
+export function evaluateCondition(
+	condition: Record<string, any> | undefined,
+	valuesMap: Record<string, { value: any } | undefined>,
+): boolean {
+	if (!condition) return true;
+	return Object.keys(condition).every((id) => {
+		return isConditionMet(condition[id], valuesMap[id]?.value);
+	});
+}
+
+/**
+ * Evaluates whether a set of conditions are met by fetching current values from storage.
+ * @param {Record<string, any>} condition 
+ * @returns {Promise<boolean>}
+ */
+export async function evaluateConditionAsync(condition: Record<string, any> | undefined): Promise<boolean> {
+	if (!condition) return true;
+	for (const id in condition) {
+		const currentValue = await getFromStorage(id);
+		if (!isConditionMet(condition[id], currentValue)) return false;
+	}
+	return true;
 }

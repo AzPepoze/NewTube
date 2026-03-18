@@ -103,14 +103,14 @@
 				delete props.Name;
 				delete props.Description;
 				break;
-			case "combineSettings":
+			case "combineSetting":
 				props["Sync IDs"] = [
 					"syncId",
 					(val: string) => {
 						try {
-							setting.syncId = JSON.parse(val);
+							setting.settingIds = JSON.parse(val);
 						} catch (_e) {
-							setting.syncId = val
+							setting.settingIds = val
 								.split(",")
 								.map((s) => s.trim());
 						}
@@ -159,7 +159,7 @@
 					ui: ["function"],
 				});
 				break;
-			case "combineSettings":
+			case "combineSetting":
 				Object.assign(props, { update: 3 });
 				break;
 		}
