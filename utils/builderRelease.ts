@@ -27,8 +27,11 @@ function zip(inputDir, output) {
 	archive.finalize();
 }
 
+const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, "../src/extension/manifest.json"), "utf8"));
+const version = manifest.version;
+
 fs.readdirSync(path.join(__dirname, "../out/dist")).forEach((file) => {
-	zip(path.join(__dirname, "../out/dist", file), path.join(__dirname, "../out/release", file + ".zip"));
+	zip(path.join(__dirname, "../out/dist", file), path.join(__dirname, "../out/release", `${file}_${version}.zip`));
 });
 
 export {};

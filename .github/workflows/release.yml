@@ -2,8 +2,8 @@ name: Auto Release
 
 on:
      push:
-          branches:
-             - main
+          tags:
+             - 'v*'
 
 jobs:
      release:
@@ -14,41 +14,28 @@ jobs:
           steps:
              - uses: actions/checkout@v4
 
-             - name: Setup Node.js
-               uses: actions/setup-node@v4
+             - name: Setup Bun
+               uses: oven-sh/setup-bun@v2
                with:
-                    node-version: '20'
+                    bun-version: latest
 
-             - uses: pnpm/action-setup@v3
-               with:
-                    version: 9
-
-             - name: Read Version from manifest.json
-               id: get_version
-               run: echo "VERSION=$(node -p "require('./src/extension/manifest.json').version")" >> $GITHUB_ENV
-
-             - name: Create/Update Tag
-               uses: rickstaa/action-create-tag@v1
-               with:
-                    tag: "v${{ env.VERSION }}"
-                    force_push_tag: true
-                    message: "Auto-generated tag for v${{ env.VERSION }}"
+             - name: Update Version in Manifest
+               run: |
+                    VERSION=${GITHUB_REF_NAME#v}
+                    echo "Updating manifest.json to version $VERSION"
+                    jq ".version = \"$VERSION\"" src/extension/manifest.json > temp.json && mv temp.json src/extension/manifest.json
 
              - name: Install Dependencies
-               run: pnpm install
+               run: bun install
 
              - name: Build and Pack Extension
-               env:
-                    IMGBB_API_KEY: ${{ secrets.IMGBB_API_KEY }}
-               run: pnpm run build:release
+               run: bun run release
 
              - name: Create GitHub Release
-               uses: softprops/action-gh-release@v1
+               uses: softprops/action-gh-release@v2
                with:
-                    tag_name: "v${{ env.VERSION }}"
-                    name: "NewTube Beta v${{ env.VERSION }}"
-                    body: "Automated release for version ${{ env.VERSION }}"
                     files: |
                          out/release/*.zip
                     draft: false
                     prerelease: false
+                    generate_release_notes: true

@@ -24,6 +24,21 @@
   </a>
 </p>
 
+## CONTENTS
+
+- [CONTENTS](#contents)
+- [Install the Extension](#install-the-extension)
+- [Chrome Web Store Statistics](#chrome-web-store-statistics)
+- [Download from release](#download-from-release)
+- [Firefox Add-on Statistics](#firefox-add-on-statistics)
+     - [Development Status](#development-status)
+     - [ Join my discord (fastest way to contact me) ](#-join-my-discord-fastest-way-to-contact-me-)
+     - [🐛 Report a Bug](#-report-a-bug)
+     - [💡 Suggest a Feature](#-suggest-a-feature)
+- [PREREQUISITES](#prerequisites)
+- [BUILD FROM SOURCE](#build-from-source)
+- [DEVELOPMENT](#development)
+- [CONTRIBUTING](#contributing)
 
 ## Install the Extension
 
@@ -36,29 +51,6 @@
   </a>
 </p>
 
-## CONTENTS
-
-- [CONTENTS](#contents)
-- [INSTALL THE EXTENSION](#install-the-extension)
-- [CHROME WEB STORE STATISTICS](#chrome-web-store-statistics)
-- [FIREFOX ADD-ON STATISTICS](#firefox-add-on-statistics)
-- [DEVELOPMENT STATUS](#development-status)
-- [SOCIALS](#socials)
-- [PREREQUISITES](#prerequisites)
-- [BUILD FROM SOURCE](#build-from-source)
-- [DEVELOPMENT](#development)
-- [CONTRIBUTING](#contributing)
-
-### [Development Status](https://github.com/users/AzPepoze/projects/1)
-
-
-### <img src="https://images-eds-ssl.xboxlive.com/image?url=4rt9.lXDC4H_93laV1_eHHFT949fUipzkiFOBH3fAiZZUCdYojwUyX2aTonS1aIwMrx6NUIsHfUHSLzjGJFxxsG72wAo9EWJR4yQWyJJaDb6rYcBtJvTvH3UoAS4JFNDaxGhmKNaMwgElLURlRFeVkLCjkfnXmWtINWZIrPGYq0-&format=source" alt="Discord logo" width="20" height="20" style="border-radius:20px;"> <b><a href="https://discord.gg/BgxvVqap4G" target="_blank">Join my discord</a> (fastest way to contact me) </b>
-
-### <a href=".github/ISSUE_TEMPLATE/bug_report.md" target="_blank">🐛 Report a Bug</a>
-
-### <a href=".github/ISSUE_TEMPLATE/feature_request.md" target="_blank">💡 Suggest a Feature</a>
-
-
 ## Chrome Web Store Statistics
 
 <p align="center">
@@ -67,6 +59,13 @@
   <img src="https://img.shields.io/chrome-web-store/stars/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20TOTAL%20RATINGS%20%E2%97%88&labelColor=white&color=white" alt="Chrome Stars">
 </p>
 
+## Download from release
+
+You can download the latest version of the extension from the [Releases](https://github.com/AzPepoze/NewTube/releases/latest) page.
+
+- **Chromium**: For browsers based on the Chromium engine, such as Google Chrome, Microsoft Edge, Opera, Brave, and Vivaldi.
+- **Firefox**: For Mozilla Firefox and browsers based on the Gecko engine.
+
 ## Firefox Add-on Statistics
 
 <p align="center">
@@ -74,6 +73,16 @@
   <img src="https://img.shields.io/amo/dw/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20WEEKLY%20INSTALLS%20%E2%97%88&labelColor=white&color=white" alt="Firefox Weekly Installs">
   <img src="https://img.shields.io/amo/v/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20LATEST%20VERSION%20%E2%97%88&labelColor=white&color=white" alt="Firefox Version Status">
 </p>
+
+### [Development Status](https://github.com/users/AzPepoze/projects/1)
+
+### <img src="https://images-eds-ssl.xboxlive.com/image?url=4rt9.lXDC4H_93laV1_eHHFT949fUipzkiFOBH3fAiZZUCdYojwUyX2aTonS1aIwMrx6NUIsHfUHSLzjGJFxxsG72wAo9EWJR4yQWyJJaDb6rYcBtJvTvH3UoAS4JFNDaxGhmKNaMwgElLURlRFeVkLCjkfnXmWtINWZIrPGYq0-&format=source" alt="Discord logo" width="20" height="20" style="border-radius:20px;"> <b><a href="https://discord.gg/BgxvVqap4G" target="_blank">Join my discord</a> (fastest way to contact me) </b>
+
+### <a href=".github/ISSUE_TEMPLATE/bug_report.md" target="_blank">🐛 Report a Bug</a>
+
+### <a href=".github/ISSUE_TEMPLATE/feature_request.md" target="_blank">💡 Suggest a Feature</a>
+
+---
 
 ## PREREQUISITES
 
@@ -84,24 +93,24 @@
 
 1. **Clone & Enter:**
 
-   ```bash
-   git clone https://github.com/AzPepoze/NewTube
-   cd NewTube
-   ```
+     ```bash
+     git clone https://github.com/AzPepoze/NewTube
+     cd NewTube
+     ```
 
 2. **Install Dependencies:**
 
-   ```bash
-   bun install
-   ```
+     ```bash
+     bun install
+     ```
 
 3. **Build:**
 
-   ```bash
-   bun run build
-   ```
+     ```bash
+     bun run build
+     ```
 
-   The output will be in the `out/dist` directory.
+     The output will be in the `out/dist` directory.
 
 ## DEVELOPMENT
 
