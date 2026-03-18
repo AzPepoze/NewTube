@@ -14,8 +14,10 @@
 		style = "",
 	} = $props();
 
-	const activeIndex = $derived(options.findIndex((opt) => opt.id === activeId));
-	// Using percentage of the container's internal width for the slide
+	const activeIndex = $derived(
+		options.findIndex((opt) => opt.id === activeId),
+	);
+
 	const slideTransform = $derived(`translateX(${activeIndex * 100}%)`);
 </script>
 
@@ -25,10 +27,7 @@
 	{style}
 >
 	{#if options.length > 0}
-		<div
-			class="capsule-slide"
-			style:transform={slideTransform}
-		></div>
+		<div class="capsule-slide" style:transform={slideTransform}></div>
 		{#each options as option (option.id)}
 			<button
 				class="capsule-button"

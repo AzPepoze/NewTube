@@ -22,8 +22,12 @@
 	import Icon from "@ui/settings/components/main/Icon.svelte";
 	import { enterPrompt } from "@/styleshift/shared/extension";
 	import ThemeCard from "./ThemeCard.svelte";
+	import Search from "@ui/settings/components/main/Search.svelte";
 	import { openThemeStore } from "@/styleshift/core/themeStore";
 	import { onMount } from "svelte";
+	import { fade, fly } from "svelte/transition";
+	import { NEWTUBE_STORE_API_URL } from "@/main/constants";
+	import CapsuleTabs from "@ui/components/general/CapsuleTabs.svelte";
 
 	let {
 		closeWindow,
@@ -37,6 +41,33 @@
 	let backupSettings = $state<any>(null);
 	let originalActiveTheme = $state<string | null>(null);
 	let wasThemeModified = $state(false);
+
+	let currentView = $state<"installed" | "store">("installed");
+	let storeThemes = $state<Theme[]>([]);
+	let isLoadingStore = $state(false);
+	let searchQuery = $state("");
+
+	let filteredLocalThemes = $derived.by(() => {
+		if (!searchQuery) return themes;
+		const query = searchQuery.toLowerCase();
+		return themes.filter((t) =>
+			t.themeName.toLowerCase().includes(query),
+		);
+	});
+
+	const tabOptions = [
+		{ id: "installed", label: "Installed", icon: "folder_open" },
+		{ id: "store", label: "Store", icon: "storefront" },
+	];
+
+	$effect(() => {
+		if (currentView === "store") {
+			const debounceTimer = setTimeout(() => {
+				fetchStoreThemes(searchQuery);
+			}, 300);
+			return () => clearTimeout(debounceTimer);
+		}
+	});
 
 	async function refreshActiveTheme() {
 		activeThemeId = await getRootValue("activeTheme");
@@ -55,6 +86,29 @@
 		originalActiveTheme = await getRootValue("activeTheme");
 
 		refreshActiveTheme();
+	}
+
+	async function fetchStoreThemes(query: string = "") {
+		isLoadingStore = true;
+		try {
+			const res = await fetch(
+				`${NEWTUBE_STORE_API_URL}/themes?q=${encodeURIComponent(query)}&sort=popular`,
+			);
+			if (res.ok) {
+				const data = await res.json();
+				storeThemes = data.map((t: any) => ({
+					themeId: t.themeId,
+					themeName: t.themeName,
+					currentSettings: t.settings?.currentSettings,
+					customStyleshiftItems:
+						t.settings?.customStyleshiftItems,
+				}));
+			}
+		} catch (e) {
+			console.error("Failed to fetch store themes", e);
+		} finally {
+			isLoadingStore = false;
+		}
 	}
 
 	async function saveCurrentAsTheme() {
@@ -84,10 +138,32 @@
 	}
 
 	async function applyTheme(id: string) {
-		const theme = themes.find((t) => t.themeId === id);
+		const theme = (
+			currentView === "installed" ? themes : storeThemes
+		).find((t) => t.themeId === id);
 		if (!theme) return;
 
 		const displayName = theme.themeName || id;
+
+		if (currentView === "store") {
+			loadingThemeId = id;
+			const success = await saveThemeManager(
+				displayName,
+				$state.snapshot(theme),
+				"EXTENSION",
+				theme.themeId,
+			);
+			if (success) {
+				await loadThemes();
+				currentView = "installed";
+				createNotification({
+					icon: "download_done",
+					title: "Theme Installed",
+					content: `"${displayName}" added to your collection.`,
+				});
+			}
+			loadingThemeId = null;
+		}
 
 		loadingThemeId = id;
 		activeThemeId = id;
@@ -95,11 +171,39 @@
 		await applyThemeManager(id, displayName, "EXTENSION");
 		await importPresetToSettings(
 			$state.snapshot(theme),
-			false,
+			true,
 			displayName,
 		);
 
 		wasThemeModified = true;
+		loadingThemeId = null;
+
+		if (currentView === "store") {
+			currentView = "installed";
+		}
+	}
+
+	async function saveStoreTheme(id: string) {
+		const theme = storeThemes.find((t) => t.themeId === id);
+		if (!theme) return;
+
+		const displayName = theme.themeName || id;
+
+		loadingThemeId = id;
+		const success = await saveThemeManager(
+			displayName,
+			$state.snapshot(theme),
+			"EXTENSION",
+			theme.themeId, // Pass UUID from store
+		);
+		if (success) {
+			await loadThemes();
+			createNotification({
+				icon: "save",
+				title: "Theme Saved",
+				content: `"${displayName}" added to your collection.`,
+			});
+		}
 		loadingThemeId = null;
 	}
 
@@ -201,31 +305,99 @@
 </script>
 
 <div class="NEWTUBE-ThemeManager STYLESHIFT-Main">
-	<div class="theme-grid" class:has-themes={themes.length > 0}>
-		{#each themes as theme (theme.themeId)}
-			{@const preview = getThemePreview(theme)}
-			<ThemeCard
-				id={theme.themeId}
-				name={theme.themeName}
-				{preview}
-				themeId={theme.themeId}
-				isActive={activeThemeId === theme.themeId}
-				isLoading={loadingThemeId === theme.themeId}
-				onApply={applyTheme}
-				onExport={exportTheme}
-				onDelete={deleteTheme}
+	<div class="manager-topbar">
+		<CapsuleTabs options={tabOptions} bind:activeId={currentView} />
+		<div class="search-flex-filler">
+			<Search
+				bind:value={searchQuery}
+				placeholder="Search {currentView === 'installed'
+					? 'installed themes'
+					: 'store themes'}..."
 			/>
-		{/each}
+		</div>
+	</div>
 
-		{#if themes.length === 0}
-			<div class="empty-state">
-				<div class="empty-icon">
-					<Icon name="storefront" size={48} />
-				</div>
-				<p>Your theme collection is empty.</p>
-				<p class="sub">Save your current setup to see it here!</p>
+	<div
+		class="theme-grid"
+		class:has-themes={(currentView === "installed"
+			? filteredLocalThemes
+			: storeThemes
+		).length > 0}
+	>
+		{#key currentView}
+			<div
+				class="view-container"
+				in:fly={{ y: 20, duration: 400, delay: 200 }}
+				out:fade={{ duration: 200 }}
+			>
+				{#if currentView === "installed"}
+					{#each filteredLocalThemes as theme, i (theme.themeId)}
+						{@const preview = getThemePreview(theme)}
+						<ThemeCard
+							id={theme.themeId}
+							name={theme.themeName}
+							{preview}
+							themeId={theme.themeId}
+							isActive={activeThemeId === theme.themeId}
+							isLoading={loadingThemeId === theme.themeId}
+							animationDelay={i * 50}
+							onApply={applyTheme}
+							onExport={exportTheme}
+							onDelete={deleteTheme}
+						/>
+					{/each}
+
+					{#if themes.length === 0}
+						<div class="empty-state">
+							<div class="empty-icon">
+								<Icon name="palette" size={48} />
+							</div>
+							<p>Your theme collection is empty.</p>
+							<p class="sub">
+								Save your current setup to see it here!
+							</p>
+						</div>
+					{/if}
+				{:else}
+					{#each storeThemes as theme, i (theme.themeId)}
+						{@const preview = getThemePreview(theme)}
+						{@const isInstalled = themes.some(
+							(t) => t.themeId === theme.themeId,
+						)}
+						<ThemeCard
+							id={theme.themeId}
+							name={theme.themeName}
+							{preview}
+							themeId={theme.themeId}
+							isActive={activeThemeId === theme.themeId}
+							isLoading={loadingThemeId === theme.themeId}
+							isStoreItem={true}
+							{isInstalled}
+							animationDelay={i * 50}
+							onApply={applyTheme}
+							onSave={saveStoreTheme}
+						/>
+					{/each}
+
+					{#if isLoadingStore}
+						<div class="store-loading" transition:fade={{ duration: 300 }}>
+							<div class="spinner"></div>
+							<p>Fetching themes from store...</p>
+						</div>
+					{:else if storeThemes.length === 0}
+						<div class="empty-state">
+							<div class="empty-icon">
+								<Icon name="cloud_off" size={48} />
+							</div>
+							<p>Could not load store themes.</p>
+							<p class="sub">
+								Check your connection and try again.
+							</p>
+						</div>
+					{/if}
+				{/if}
 			</div>
-		{/if}
+		{/key}
 	</div>
 
 	<div class="floating-manager-footer">
@@ -263,24 +435,87 @@
 	.NEWTUBE-ThemeManager {
 		display: flex;
 		flex-direction: column;
-		gap: 20px;
-		padding: 10px;
 		width: 100%;
 		height: 100%;
 		box-sizing: border-box;
-		min-height: 400px;
+		min-height: 480px;
 		position: relative;
+		overflow: hidden;
 	}
 
-	.theme-grid {
+	.manager-topbar {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		margin-bottom: 25px;
+		padding: 0 5px;
+		gap: 15px;
+
+		.search-flex-filler {
+			flex: 1;
+			min-width: 200px;
+		}
+	}
+
+	.store-search-container {
+		display: none;
+	}
+
+	.view-container {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 		gap: 20px;
-		padding-bottom: 80px;
-		align-content: start;
+		width: 100%;
+	}
+
+	.theme-grid {
+		padding-bottom: 90px;
+		overflow-y: auto;
+		padding-right: 5px;
+		display: block;
+
+		&::-webkit-scrollbar {
+			width: 6px;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background: var(--White-10);
+			border-radius: 10px;
+		}
 
 		&.has-themes {
 			flex: 1;
+		}
+	}
+
+	.store-loading {
+		grid-column: 1 / -1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 60px 0;
+		color: var(--Font-Color-Dim);
+		gap: 15px;
+
+		.spinner {
+			width: 40px;
+			height: 40px;
+			border: 3px solid var(--White-10);
+			border-top-color: var(--Theme-0);
+			border-radius: 50%;
+			animation: spin 1s linear infinite;
+		}
+
+		p {
+			font-size: 14px;
+			font-weight: 500;
+		}
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
 		}
 	}
 

@@ -86,7 +86,7 @@ export async function saveUserSetting(settingId: string, value: any, delayPersis
 		cachedStorageData["currentSettings"] = {};
 	}
 	cachedStorageData["currentSettings"][settingId] = value;
-	cachedStorageData["activeTheme"] = null;
+	cachedStorageData["activeTheme"] = "custom";
 	logger.info("STORAGE", "Updating user setting:", settingId, value);
 
 	if (!delayPersistence) {

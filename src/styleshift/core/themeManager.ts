@@ -153,30 +153,42 @@ export async function fetchThemeFromApi(themeId: string): Promise<Theme | null> 
  * Save a theme with user confirmation
  * Prompts: "Save as '{name}' to '{targetDomain}'?"
  */
-export async function saveTheme(name: string, data: Theme, targetDomain: string): Promise<boolean> {
+export async function saveTheme(
+	name: string,
+	data: Theme,
+	targetDomain: string,
+	id?: string,
+): Promise<boolean> {
 	if (!validateDomain(targetDomain)) {
-		return false;
-	}
-
-	const confirmed = await showUserConfirmation(
-		`Save as "${name}" to ${targetDomain}?`,
-		"Save Theme"
-	);
-
-	if (!confirmed) {
-		logger.info("themeManager", `Theme save cancelled: ${name}`);
 		return false;
 	}
 
 	try {
 		const themes = (await getRootValue("themes")) || [];
-		if (!Array.isArray(themes)) {
-			logger.warn("themeManager", "themes storage is not an array, fixing");
-		}
-
 		const themeArray = Array.isArray(themes) ? themes : [];
-		const themeId = data.themeId || `local-${Date.now()}`;
-		const existingIndex = themeArray.findIndex((t: Theme) => t.themeId === themeId);
+		const themeId = id || name; // Use provided ID or fallback to name
+		const existingIndex = themeArray.findIndex(
+			(t: Theme) => t.themeId === themeId,
+		);
+
+		if (existingIndex > -1) {
+			const confirmedReplace = await showUserConfirmation(
+				`Theme "${name}" already exists. Replace it?`,
+				"Replace Theme",
+			);
+			if (!confirmedReplace) {
+				return false;
+			}
+		} else {
+			const confirmed = await showUserConfirmation(
+				`Save as "${name}" to ${targetDomain}?`,
+				"Save Theme",
+			);
+			if (!confirmed) {
+				logger.info("themeManager", `Theme save cancelled: ${name}`);
+				return false;
+			}
+		}
 
 		const updatedTheme: Theme = {
 			themeId,
@@ -193,11 +205,7 @@ export async function saveTheme(name: string, data: Theme, targetDomain: string)
 
 		await saveRootValue("themes", themeArray, true);
 
-		// Set as active if no theme selected yet
-		const activeThemeId = await getRootValue("activeTheme");
-		if (!activeThemeId || activeThemeId === "Previous Settings") {
-			await saveRootValue("activeTheme", themeId);
-		}
+		await saveRootValue("activeTheme", themeId);
 
 		logger.info("themeManager", `Theme saved: ${name}`);
 		return true;

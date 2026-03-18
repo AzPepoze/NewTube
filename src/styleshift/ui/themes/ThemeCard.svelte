@@ -3,6 +3,7 @@
 	import IconButton from "@ui/settings/components/advance/IconButton.svelte";
 	import ThemePreviewUi from "./ThemePreviewUi.svelte";
 	import { NEWTUBE_STORE_THEMES_URL } from "@/main/constants";
+	import Icon from "@ui/settings/components/main/Icon.svelte";
 
 	let {
 		id,
@@ -11,7 +12,11 @@
 		themeId,
 		isActive,
 		isLoading = false,
+		isStoreItem = false,
+		isInstalled = false,
+		animationDelay = 0,
 		onApply,
+		onSave,
 		onExport,
 		onDelete,
 	}: {
@@ -21,9 +26,13 @@
 		themeId?: string;
 		isActive: boolean;
 		isLoading?: boolean;
+		isStoreItem?: boolean;
+		isInstalled?: boolean;
+		animationDelay?: number; // New animationDelay prop
 		onApply: (id: string) => void;
-		onExport: (id: string) => void;
-		onDelete: (id: string) => void;
+		onSave?: (id: string) => void;
+		onExport?: (id: string) => void;
+		onDelete?: (id: string) => void;
 	} = $props();
 </script>
 
@@ -31,6 +40,7 @@
 	class="theme-card"
 	class:active={isActive}
 	class:loading={isLoading}
+	style:animation-delay="{animationDelay}ms"
 	onclick={() => !isLoading && onApply(id)}
 	onkeydown={(e) => e.key === "Enter" && !isLoading && onApply(id)}
 	role="button"
@@ -55,43 +65,74 @@
 	>
 		<div class="overlay"></div>
 		<ThemePreviewUi />
-		<div class="accent-bar" style:background-color={preview.bgColor}></div>
+		<div
+			class="accent-bar"
+			style:background-color={preview.bgColor}
+		></div>
 	</div>
 	<div class="card-footer">
 		<span class="theme-name">{name}</span>
 		<div class="card-actions">
-			{#if themeId}
+			{#if !isStoreItem}
+				{#if themeId}
+					<IconButton
+						icon="openInNew"
+						onClick={(e) => {
+							e.stopPropagation();
+							window.open(
+								`${NEWTUBE_STORE_THEMES_URL}/${themeId}`,
+								"_blank",
+							);
+						}}
+						size={18}
+						className="link-btn"
+					/>
+				{/if}
 				<IconButton
-					icon="openInNew"
+					icon="export"
 					onClick={(e) => {
 						e.stopPropagation();
-						window.open(
-							`${NEWTUBE_STORE_THEMES_URL}/${themeId}`,
-							"_blank",
-						);
+						onExport?.(id);
 					}}
 					size={18}
-					className="link-btn"
+					className="export-btn"
+				/>
+				<IconButton
+					icon="delete"
+					onClick={(e) => {
+						e.stopPropagation();
+						onDelete?.(id);
+					}}
+					size={18}
+					className="delete-btn"
+				/>
+			{:else}
+				{#if isInstalled}
+					<div class="installed-indicator">
+						<Icon name="check_circle" size={16} />
+						<span>Installed</span>
+					</div>
+				{:else}
+					<IconButton
+						icon="save"
+						onClick={(e) => {
+							e.stopPropagation();
+							onSave?.(id);
+						}}
+						size={18}
+						className="save-btn"
+					/>
+				{/if}
+				<IconButton
+					icon="download"
+					onClick={(e) => {
+						e.stopPropagation();
+						onApply(id);
+					}}
+					size={18}
+					className="apply-btn"
 				/>
 			{/if}
-			<IconButton
-				icon="export"
-				onClick={(e) => {
-					e.stopPropagation();
-					onExport(id);
-				}}
-				size={18}
-				className="export-btn"
-			/>
-			<IconButton
-				icon="delete"
-				onClick={(e) => {
-					e.stopPropagation();
-					onDelete(id);
-				}}
-				size={18}
-				className="delete-btn"
-			/>
 		</div>
 	</div>
 </div>
@@ -106,6 +147,7 @@
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		display: flex;
 		flex-direction: column;
+		animation: card-entry 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 
 		&:hover {
 			border-color: var(--White-20);
@@ -167,6 +209,17 @@
 	@keyframes spin {
 		to {
 			transform: rotate(360deg);
+		}
+	}
+
+	@keyframes card-entry {
+		from {
+			opacity: 0;
+			transform: translateY(20px) scale(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
 		}
 	}
 
@@ -238,6 +291,16 @@
 			}
 		}
 
+		:global(.save-btn) {
+			background: var(--White-10) !important;
+			border-radius: 8px !important;
+
+			&:hover {
+				background: var(--Theme-0) !important;
+				opacity: 0.8;
+			}
+		}
+
 		:global(.export-btn) {
 			background: var(--White-10) !important;
 			border-radius: 8px !important;
@@ -255,6 +318,21 @@
 			&:hover {
 				background: var(--Red-40, rgba(255, 0, 0, 0.4)) !important;
 			}
+		}
+	}
+
+	.installed-indicator {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		color: #4caf50;
+		font-size: 13px;
+		font-weight: 600;
+		padding: 0 8px;
+		opacity: 0.9;
+
+		:global(.STYLESHIFT-Icon) {
+			margin: 0;
 		}
 	}
 </style>
