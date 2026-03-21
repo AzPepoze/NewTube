@@ -521,7 +521,7 @@ ytd-macro-markers-list-item-renderer
 }
 
 .ytp-menuitem:not([aria-disabled=true]):hover,
-ytd-mini-guide-entry-renderer:hover {
+#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer {
 	transition: all .2s cubic-bezier(0.1,0.7,1,1);
 }
 

@@ -6,6 +6,7 @@
 		onResizeEnd = () => {},
 		minWidth = 300,
 		minHeight = 200,
+		aspectRatio = 0,
 	}: {
 		target: HTMLElement;
 		onResize?: (size: { width: number; height: number; x: number; y: number }) => void;
@@ -13,6 +14,7 @@
 		onResizeEnd?: () => void;
 		minWidth?: number;
 		minHeight?: number;
+		aspectRatio?: number;
 	} = $props();
 
 	type Direction = "n" | "s" | "e" | "w" | "ne" | "nw" | "se" | "sw";
@@ -93,6 +95,31 @@
 				if (newTop < 0) {
 					newTop = 0;
 					newHeight = startHeight + startTop;
+				}
+			}
+
+			if (aspectRatio > 0) {
+				// Keep aspect ratio
+				if (dir === "e" || dir === "w") {
+					newHeight = newWidth / aspectRatio;
+				} else if (dir === "s" || dir === "n") {
+					newWidth = newHeight * aspectRatio;
+				} else {
+					// Corners
+					const currentRatio = newWidth / newHeight;
+					if (currentRatio > aspectRatio) {
+						newWidth = newHeight * aspectRatio;
+					} else {
+						newHeight = newWidth / aspectRatio;
+					}
+				}
+
+				// Adjust position if resizing from north or west
+				if (dir.includes("n")) {
+					newTop = startTop + (startHeight - newHeight);
+				}
+				if (dir.includes("w")) {
+					newLeft = startLeft + (startWidth - newWidth);
 				}
 			}
 
