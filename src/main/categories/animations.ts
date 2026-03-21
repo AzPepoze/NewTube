@@ -1,5 +1,6 @@
 import { Category } from "../../styleshift/types/styleshiftTypes";
 import { ytPlayerWatchMode } from "../modules/youtube";
+import { secondaryContainer } from "./enhancement";
 
 export const animationCategory: Category = {
 	category: { icon: "slideshow", label: "Animations" },
@@ -252,14 +253,30 @@ export const animationCategory: Category = {
 			description: "Adds a subtle slide animation to thumbnail buttons.",
 			value: true,
 			enableCss: `
-				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer {
+				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer,
+				yt-lockup-view-model.ytd-item-section-renderer {
 					transition: all 0.15s ease-out;
 				}
 
-				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer:hover {
+				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer:hover,
+				yt-lockup-view-model.ytd-item-section-renderer:hover {
 					margin-left: -10px;
 				}
 			`
+		},
+		{
+			type: "conditionSetting",
+			id: "ThumbnailSlideOnHoverAnimationPadding",
+			name: "Thumbnail Slide On Hover Animation",
+			condition: {
+				"EnhancementSwapLayout": false,
+			},
+			enableCss: `
+				${secondaryContainer} {
+					padding-left: 20px !important;
+					margin-left: -20px !important;
+				}
+			`,
 		},
 		{
 			type: "checkbox",

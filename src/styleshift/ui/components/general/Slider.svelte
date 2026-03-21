@@ -18,7 +18,7 @@
 
 		if (vertical) {
 			const pos = e.clientY - rect.top;
-			percent = 1 - (pos / rect.height);
+			percent = 1 - pos / rect.height;
 		} else {
 			const pos = e.clientX - rect.left;
 			percent = pos / rect.width;
@@ -32,8 +32,8 @@
 	function handlePointerDown(e: PointerEvent) {
 		isDragging = true;
 		updateValue(e);
-		window.addEventListener('pointermove', handlePointerMove);
-		window.addEventListener('pointerup', handlePointerUp);
+		window.addEventListener("pointermove", handlePointerMove);
+		window.addEventListener("pointerup", handlePointerUp);
 	}
 
 	function handlePointerMove(e: PointerEvent) {
@@ -46,17 +46,17 @@
 		if (isDragging) {
 			isDragging = false;
 			onChange(value);
-			window.removeEventListener('pointermove', handlePointerMove);
-			window.removeEventListener('pointerup', handlePointerUp);
+			window.removeEventListener("pointermove", handlePointerMove);
+			window.removeEventListener("pointerup", handlePointerUp);
 		}
 	}
 
 	let progress = $derived(((value - min) / (max - min)) * 100);
 </script>
 
-<div 
-	class="styleshift-slider" 
-	class:vertical 
+<div
+	class="styleshift-slider"
+	class:vertical
 	class:dragging={isDragging}
 	bind:this={sliderEl}
 	onpointerdown={handlePointerDown}
@@ -67,14 +67,14 @@
 	tabindex="0"
 >
 	<div class="slider-track">
-		<div 
-			class="slider-progress" 
-			style="{vertical ? `height: ${progress}%` : `width: ${progress}%`}"
+		<div
+			class="slider-progress"
+			style={vertical ? `height: ${progress}%` : `width: ${progress}%`}
 		></div>
 	</div>
-	<div 
-		class="slider-thumb" 
-		style="{vertical ? `bottom: ${progress}%` : `left: ${progress}%`}"
+	<div
+		class="slider-thumb"
+		style={vertical ? `bottom: ${progress}%` : `left: ${progress}%`}
 	></div>
 </div>
 
@@ -154,11 +154,13 @@
 			transform: translate(-50%, 50%);
 		}
 
-		.styleshift-slider:hover &, .styleshift-slider.dragging & {
+		.styleshift-slider:hover &,
+		.styleshift-slider.dragging & {
 			transform: translate(-50%, -50%) scale(1.2);
 		}
 
-		.styleshift-slider.vertical:hover &, .styleshift-slider.vertical.dragging & {
+		.styleshift-slider.vertical:hover &,
+		.styleshift-slider.vertical.dragging & {
 			transform: translate(-50%, 50%) scale(1.2);
 		}
 	}

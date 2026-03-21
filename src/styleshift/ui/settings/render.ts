@@ -28,6 +28,7 @@ export function renderSetting(
 ) {
 	mount(SettingRenderer, {
 		target,
+		intro: true,
 		props: { setting, onUpdate: onUpdate },
 	});
 	return (target.firstElementChild as HTMLElement) || target;
@@ -36,9 +37,18 @@ export function renderSetting(
 export function renderComponent(component: any, props: any = {}, target: HTMLElement = document.createElement("div")) {
 	mount(component, {
 		target,
+		intro: true,
 		props,
 	});
 	return (target.firstElementChild as HTMLElement) || target;
+}
+
+export function mountComponent(component: any, props: any = {}, target: HTMLElement = document.createElement("div")) {
+	return mount(component, {
+		target,
+		intro: true,
+		props,
+	});
 }
 
 export function confirm(props: any, target: HTMLElement = document.createElement("div")) {

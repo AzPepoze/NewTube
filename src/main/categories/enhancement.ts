@@ -2,10 +2,10 @@ import { Category } from "../../styleshift/types/styleshiftTypes";
 import { enableFlyout, disableFlyout } from "../features/flyout/flyout";
 import { setupAutoShowChatReplay, disableAutoShowChatReplay } from "../features/video/chat";
 
-const primaryContainer = "ytd-watch-flexy #primary.ytd-watch-flexy";
-const primaryInnerContainer = "ytd-watch-flexy #primary-inner.ytd-watch-flexy";
-const secondaryContainer = "ytd-watch-flexy #secondary.ytd-watch-flexy";
-const secondaryInnerContainer = "ytd-watch-flexy #secondary-inner.ytd-watch-flexy";
+export const primaryContainer = "ytd-watch-flexy #primary.ytd-watch-flexy";
+export const primaryInnerContainer = "ytd-watch-flexy #primary-inner.ytd-watch-flexy";
+export const secondaryContainer = "ytd-watch-flexy #secondary.ytd-watch-flexy";
+export const secondaryInnerContainer = "ytd-watch-flexy #secondary-inner.ytd-watch-flexy";
 
 export const enhancementCategory: Category = {
 	category: { icon: "auto_fix_high", label: "Enhancement" },
@@ -92,10 +92,6 @@ export const enhancementCategory: Category = {
 				}
 				${primaryInnerContainer} {
 					direction: ltr;
-				}
-				${secondaryContainer} {
-					padding-left: 20px !important;
-					margin-left: -20px !important;
 				}
 			`,
 		},

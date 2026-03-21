@@ -24,6 +24,40 @@
 	let containerEl = $state<HTMLElement | null>(null);
 	let resizeObserver: ResizeObserver | null = null;
 
+	let rafId: number;
+	let rvfcId: number;
+
+	const eventHandlers = {
+		play: () => {
+			logger.debug("flyout", "Video play event caught");
+			isPlaying = true;
+		},
+		pause: () => {
+			logger.debug("flyout", "Video pause event caught");
+			isPlaying = false;
+		},
+		timeupdate: () => {
+			if (videoEl) {
+				currentTime = videoEl.currentTime;
+				if (videoEl.paused) updateCanvas(true);
+			}
+		},
+		durationchange: () => {
+			if (videoEl) duration = videoEl.duration;
+		},
+		volumechange: () => {
+			if (videoEl) {
+				logger.debug(
+					"flyout",
+					"Video volume change event caught",
+					videoEl.volume,
+				);
+				volume = videoEl.volume;
+				isMuted = videoEl.muted;
+			}
+		},
+	};
+
 	function updateCanvas(force = false) {
 		if (
 			canvasEl &&
@@ -59,7 +93,16 @@
 				}
 			}
 		}
-		if (!force) requestAnimationFrame(() => updateCanvas(false));
+
+		if (!force) {
+			if (videoEl && "requestVideoFrameCallback" in videoEl) {
+				rvfcId = (videoEl as any).requestVideoFrameCallback(() =>
+					updateCanvas(false),
+				);
+			} else {
+				rafId = setTimeout(() => updateCanvas(false), 1000 / 30) as any;
+			}
+		}
 	}
 
 	function togglePlay() {
@@ -107,30 +150,9 @@
 			volume = videoEl.volume;
 			isMuted = videoEl.muted;
 
-			videoEl.addEventListener("play", () => {
-				logger.debug("flyout", "Video play event caught");
-				isPlaying = true;
-			});
-			videoEl.addEventListener("pause", () => {
-				logger.debug("flyout", "Video pause event caught");
-				isPlaying = false;
-			});
-			videoEl.addEventListener("timeupdate", () => {
-				currentTime = videoEl!.currentTime;
-				if (videoEl!.paused) updateCanvas(true);
-			});
-			videoEl.addEventListener(
-				"durationchange",
-				() => (duration = videoEl!.duration),
-			);
-			videoEl.addEventListener("volumechange", () => {
-				logger.debug(
-					"flyout",
-					"Video volume change event caught",
-					videoEl!.volume,
-				);
-				volume = videoEl!.volume;
-				isMuted = videoEl!.muted;
+			logger.debug("flyout", "Adding event listeners to video element");
+			Object.entries(eventHandlers).forEach(([event, handler]) => {
+				videoEl!.addEventListener(event, handler);
 			});
 
 			if (containerEl) {
@@ -156,15 +178,31 @@
 	});
 
 	onDestroy(() => {
+		logger.debug("flyout", "Destroying FlyoutCanvas, cleaning up");
 		clearTimeout(controlsTimeout);
 		if (resizeObserver) resizeObserver.disconnect();
+		if (videoEl) {
+			logger.debug(
+				"flyout",
+				"Removing event listeners from video element",
+			);
+			Object.entries(eventHandlers).forEach(([event, handler]) => {
+				videoEl!.removeEventListener(event, handler);
+			});
+			if ("cancelVideoFrameCallback" in videoEl) {
+				logger.debug("flyout", "Cancelling video frame callback");
+				(videoEl as any).cancelVideoFrameCallback(rvfcId);
+			}
+		}
+		logger.debug("flyout", "Clearing animation fallback timeout");
+		clearTimeout(rafId);
 	});
 
 	function handleContainerClick(e: MouseEvent) {
 		const target = e.target as HTMLElement;
 		if (
 			!target.closest("button") &&
-			!target.closest(".STYLESHIFT-Slider-Container")
+			!target.closest(".styleshift-slider")
 		) {
 			togglePlay();
 		}
@@ -213,10 +251,7 @@
 
 		<div class="bottom-controls">
 			<div class="timeline-container">
-				<button
-					class="icon-btn play-pause-btn"
-					onclick={togglePlay}
-				>
+				<button class="icon-btn play-pause-btn" onclick={togglePlay}>
 					<span class="material-icons"
 						>{isPlaying ? "pause" : "play_arrow"}</span
 					>

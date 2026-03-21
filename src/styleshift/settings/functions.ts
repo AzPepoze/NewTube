@@ -341,9 +341,6 @@ export function migrateSettingRuntimeState(oldId: string, newId: string) {
 
 const updateThrottleState: Record<string, "Idle" | "Waiting" | "Processing"> = {};
 
-/**
- * Triggers the update logic for a specific setting, with basic throttling.
- */
 export async function triggerSettingUpdate(settingId: string, silent: boolean = false) {
 	logger.debug("settings", "Triggering update for:", settingId, silent ? "(silent)" : "");
 	const state = updateThrottleState[settingId] || "Idle";
@@ -371,7 +368,6 @@ export async function triggerSettingUpdate(settingId: string, silent: boolean = 
 
 	const currentValue = await getFromStorage(settingId);
 
-	// Execute registered listeners
 	if (settingUpdateListeners[settingId] && !silent) {
 		logger.debug("settings", `Executing ${settingUpdateListeners[settingId].length} listeners for:`, settingId);
 		for (const listener of settingUpdateListeners[settingId]) {
@@ -379,7 +375,7 @@ export async function triggerSettingUpdate(settingId: string, silent: boolean = 
 		}
 	}
 
-	logger.info("settings", "Setting updated:", settingId, currentValue);
+	logger.debug("settings", "Setting updated:", settingId, currentValue);
 
 	await waitOneFrame();
 	updateThrottleState[settingId] = "Idle";

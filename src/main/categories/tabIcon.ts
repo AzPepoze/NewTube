@@ -18,7 +18,7 @@ export const tabIconCategory: Category = {
 			id: "TabIconImageUrl",
 			name: "Icon Image",
 			description: "Upload or paste a URL for the image you want to use as your browser tab icon. Works best with square PNG or ICO files.",
-			value: "https://i.ibb.co/tD2VTyg/1705431438657.png",
+			value: "https://newtube.azpepoze.com/favicon.ico",
 			maxFileSize: 1000000,
 			require: { EnableCustomTabIcon: true }
 		},
