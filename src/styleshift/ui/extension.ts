@@ -8,6 +8,7 @@ import { settingsUi } from "./settings/settingComponents";
 import { applyThemeToElement } from "./theme";
 import { logger } from "../../shared/logger";
 import { unmount } from "svelte";
+import { waitOneFrame } from "../shared/advance";
 
 /**
  * Creates and appends the main StyleShift window to the document.
@@ -120,21 +121,17 @@ export let globalNotificationContainer: HTMLElement;
 
 export const DEFAULT_ANIMATION_DURATION_MS = 250;
 
-/**
- * Plays a CSS animation on a target element and waits for it to complete.
- */
 export async function playUiAnimation(target: HTMLElement, animationName: string): Promise<void> {
 	if (animationName.includes("Show")) {
 		target.style.opacity = "0";
 		target.style.transform = "scale(0.95)";
-		await sleep(10); // Give browser time to register initial state
+		await waitOneFrame();
 	}
 
 	target.style.animation = `STYLESHIFT-${animationName} ${DEFAULT_ANIMATION_DURATION_MS / 1000}s forwards`;
 
 	await sleep(DEFAULT_ANIMATION_DURATION_MS);
 
-	// Cleanup to let transitions take over
 	if (animationName.includes("Show")) {
 		target.style.opacity = "1";
 		target.style.transform = "scale(1)";

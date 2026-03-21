@@ -14,15 +14,19 @@
 		disableBackdropFilter?: boolean;
 	} = $props();
 
+	const DEFAULT_WIDTH = 420;
+	const DEFAULT_HEIGHT = 236;
+	const MARGIN = 20;
+
 	let pos = $state<{
 		translate?: string;
 		width?: string;
 		height?: string;
 	}>(
 		untrack(() => initialPos) ?? {
-			width: "420px",
-			height: "236px",
-			translate: "0px 0px",
+			width: `${DEFAULT_WIDTH}px`,
+			height: `${DEFAULT_HEIGHT}px`,
+			translate: `${window.innerWidth - DEFAULT_WIDTH - MARGIN}px ${window.innerHeight - DEFAULT_HEIGHT - MARGIN}px`,
 		},
 	);
 

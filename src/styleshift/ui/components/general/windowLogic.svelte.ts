@@ -1,4 +1,5 @@
 import { windowManager } from "../../windowManager.svelte";
+import { constrainWindowPosition } from "./windowUtils";
 
 export class WindowLogic {
 	windowId: string;
@@ -109,29 +110,20 @@ export class WindowLogic {
 		const startTop = rect.top;
 
 		const onMouseMove = (e: MouseEvent) => {
-			const viewportWidth = window.innerWidth;
-			const viewportHeight = window.innerHeight;
+			const newLeft = startLeft + (e.clientX - startX);
+			const newTop = startTop + (e.clientY - startY);
 			const windowWidth = windowEl.offsetWidth;
 			const windowHeight = windowEl.offsetHeight;
 
-			let newLeft = startLeft + (e.clientX - startX);
-			let newTop = startTop + (e.clientY - startY);
-
-			const minVisibleWidth = windowWidth * minVisibleRatio;
-			const minVisibleHeight = Math.max(
-				40,
-				windowHeight * minVisibleRatio,
+			const constrainedPosition = constrainWindowPosition(
+				newLeft,
+				newTop,
+				windowWidth,
+				windowHeight,
+				minVisibleRatio,
 			);
 
-			if (newLeft < -windowWidth + minVisibleWidth)
-				newLeft = -windowWidth + minVisibleWidth;
-			if (newTop < 0) newTop = 0;
-			if (newLeft > viewportWidth - minVisibleWidth)
-				newLeft = viewportWidth - minVisibleWidth;
-			if (newTop > viewportHeight - minVisibleHeight)
-				newTop = viewportHeight - minVisibleHeight;
-
-			windowEl.style.translate = `${Math.round(newLeft)}px ${Math.round(newTop)}px`;
+			windowEl.style.translate = `${constrainedPosition.left}px ${constrainedPosition.top}px`;
 		};
 
 		const onMouseUp = () => {

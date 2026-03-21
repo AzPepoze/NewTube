@@ -135,8 +135,7 @@ export function applyDrag(dragObject: HTMLElement, target: HTMLElement): void {
 		const deltaX = event.clientX - startX;
 		const deltaY = event.clientY - startY;
 
-		target.style.left = `${initialTargetX + deltaX}px`;
-		target.style.top = `${initialTargetY + deltaY}px`;
+		target.style.translate = `${initialTargetX + deltaX}px ${initialTargetY + deltaY}px`;
 
 		const parent = target.parentElement;
 		if (parent) {
@@ -161,8 +160,7 @@ export function applyDrag(dragObject: HTMLElement, target: HTMLElement): void {
  * updateDragPosition(document.querySelector("#element"), event, 10, 10);
  */
 export function updateDragPosition(element: HTMLElement, event: MouseEvent, offsetX: number, offsetY: number): void {
-	element.style.left = `${event.clientX - offsetX}px`;
-	element.style.top = `${event.clientY - offsetY}px`;
+	element.style.translate = `${event.clientX - offsetX}px ${event.clientY - offsetY}px`;
 }
 
 /**

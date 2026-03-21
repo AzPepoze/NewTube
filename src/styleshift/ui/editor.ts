@@ -32,7 +32,7 @@ let resizeObserver: ResizeObserver | null = null;
 					calPosition = window.innerWidth - editorWidth - 20 - 20;
 				}
 
-				styleshiftWindow.windowElement.style.left = `${calPosition}px`;
+				styleshiftWindow.windowElement.style.translate = `${calPosition}px 10%`;
 
 				// Continue animation loop
 				animationFrameId = requestAnimationFrame(updatePosition);

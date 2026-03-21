@@ -235,17 +235,24 @@ export const thumbnailCategory: Category = {
 			description: "Adds a smooth fade and lift effect when thumbnails first appear on the page.",
 			value: true,
 			enableCss: `
-                #dismissible:has(.yt-core-image) {
-                    transition: all 0.5s ease;
-                    opacity: 0 !important;
-                }
-                #dismissible:not(.ytd-reel-item-renderer):has(.yt-core-image) {
-                    transform: translateY(50px);
-                }
-                #dismissible:has(.yt-core-image--loaded) {
-                    transform: translateY(0px) !important;
-                    opacity: 1 !important;
-                }
+				@keyframes thumbnailLoadAnimation {
+					from {
+						opacity: 0;
+						transform: translateY(20px);
+					}
+					to {
+						opacity: 1;
+						transform: translateY(0);
+					}
+				}
+
+				yt-lockup-view-model{
+					opacity: 0;
+				}
+
+                yt-lockup-view-model:has(.ytCoreImageLoaded) {
+                    animation: thumbnailLoadAnimation 0.5s forwards;
+				}
             `,
 		},
 	],

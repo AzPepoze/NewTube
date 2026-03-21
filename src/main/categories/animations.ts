@@ -253,14 +253,14 @@ export const animationCategory: Category = {
 			description: "Adds a subtle slide animation to thumbnail buttons.",
 			value: true,
 			enableCss: `
-				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer,
-				yt-lockup-view-model.ytd-item-section-renderer {
+				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer .yt-lockup-view-model,
+				yt-lockup-view-model.ytd-item-section-renderer .yt-lockup-view-model {
 					transition: all 0.15s ease-out;
 				}
 
-				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer:hover,
-				yt-lockup-view-model.ytd-item-section-renderer:hover {
-					margin-left: -10px;
+				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer:hover .yt-lockup-view-model,
+				yt-lockup-view-model.ytd-item-section-renderer:hover .yt-lockup-view-model {
+					transform: translateX(-10px) !important;
 				}
 			`
 		},

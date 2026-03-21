@@ -9,7 +9,7 @@ export const topLeftIconCategory: Category = {
 			id: "EnableCustomTopLeftIcon",
 			name: "Custom Logo",
 			description: "Replaces the default YouTube logo in the top-left corner with your own image or animated GIF.",
-			value: false,
+			value: true,
 			setupFunction: enableTopLeftIconChanger,
 			disableFunction: disableTopLeftIconChanger,
 			enableCss: `
@@ -33,6 +33,7 @@ export const topLeftIconCategory: Category = {
 					position: absolute;
 					left: -50%;
 					top: -50%;
+					pointer-events: none;
                 }
             `,
 		},
@@ -47,6 +48,7 @@ export const topLeftIconCategory: Category = {
                     fill: var(--nt-theme-color, #FF0000) !important;
                 }
             `,
+			require: { EnableCustomTopLeftIcon: false }
 		},
 		{
 			type: "imageInput",

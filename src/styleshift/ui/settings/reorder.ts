@@ -101,8 +101,7 @@ export async function addDrag(
 		targetFrame.style.pointerEvents = "none";
 		targetFrame.style.zIndex = "10000";
 		targetFrame.style.boxShadow = "0 10px 30px rgba(0,0,0,0.5)";
-		targetFrame.style.left = `${initialLeft}px`;
-		targetFrame.style.top = `${initialTop}px`;
+		targetFrame.style.translate = `${initialLeft}px ${initialTop}px`;
 		targetFrame.style.margin = "0";
 		targetFrame.style.transition = "none";
 
@@ -121,7 +120,7 @@ export async function addDrag(
 			if (!renderDrag) return;
 
 			const targetY = currentMouseEvent.clientY - scrollerRect.top + scroller.scrollTop - offsetY;
-			targetFrame!.style.top = `${targetY}px`;
+			targetFrame!.style.translate = `${initialLeft}px ${targetY}px`;
 
 			const x = currentMouseEvent.clientX;
 			const y = currentMouseEvent.clientY;

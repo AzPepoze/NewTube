@@ -3,6 +3,7 @@
 	import WindowResizer from "./WindowResizer.svelte";
 	import { applyThemeToElement } from "../../theme";
 	import { WindowLogic } from "./windowLogic.svelte";
+	import { constrainWindowPosition } from "./windowUtils";
 	import WindowTitlebar from "./WindowTitlebar.svelte";
 
 	let {
@@ -67,8 +68,13 @@
 				windowEl.style.width = width;
 				windowEl.style.height = height;
 
+				let initialLeft = 0;
+				let initialTop = 0;
+
 				if (translate) {
-					windowEl.style.translate = translate;
+					const [x, y] = translate.split(" ");
+					initialLeft = parseInt(x) || 0;
+					initialTop = parseInt(y) || 0;
 				} else if (center) {
 					const vw = Math.max(
 						document.documentElement.clientWidth || 0,
@@ -79,25 +85,70 @@
 						window.innerHeight || 0,
 					);
 
-					const x = Math.round(
+					initialLeft = Math.round(
 						vw / 2 - windowEl.offsetWidth / 2,
 					);
-					const y = Math.round(
+					initialTop = Math.round(
 						vh / 2 - windowEl.offsetHeight / 2,
 					);
-					windowEl.style.translate = `${x}px ${y}px`;
 				} else {
-					// Default position if nothing else specified
-					const initialX = window.innerWidth * 0.25;
-					const initialY = window.innerHeight * 0.1;
-					windowEl.style.translate = `${Math.round(initialX)}px ${Math.round(initialY)}px`;
+					initialLeft = window.innerWidth * 0.25;
+					initialTop = window.innerHeight * 0.1;
+				}
+
+				const constrained = constrainWindowPosition(
+					initialLeft,
+					initialTop,
+					windowEl.offsetWidth || parseInt(width),
+					windowEl.offsetHeight || parseInt(height),
+					minVisibleRatio,
+				);
+
+				const finalTranslate = `${constrained.left}px ${constrained.top}px`;
+				windowEl.style.translate = finalTranslate;
+
+				if (initialLeft !== constrained.left || initialTop !== constrained.top) {
+					onPositionChange({
+						translate: finalTranslate,
+						width: windowEl.style.width,
+						height: windowEl.style.height,
+					});
 				}
 			}
 			applyThemeToElement(windowEl);
+			window.addEventListener("resize", handleViewportResize);
 		}
 	});
 
+	function handleViewportResize() {
+		if (!windowEl || logic.isMaximized || logic.isDragging || logic.isResizing || fullscreen) return;
+
+		const currentTranslate = windowEl.style.translate || "0px 0px";
+		const [x, y] = currentTranslate.split(" ");
+		const currentLeft = parseInt(x) || 0;
+		const currentTop = parseInt(y) || 0;
+
+		const constrained = constrainWindowPosition(
+			currentLeft,
+			currentTop,
+			windowEl.offsetWidth,
+			windowEl.offsetHeight,
+			minVisibleRatio,
+		);
+
+		if (currentLeft !== constrained.left || currentTop !== constrained.top) {
+			const finalTranslate = `${constrained.left}px ${constrained.top}px`;
+			windowEl.style.translate = finalTranslate;
+			onPositionChange({
+				translate: finalTranslate,
+				width: windowEl.style.width,
+				height: windowEl.style.height,
+			});
+		}
+	}
+
 	onDestroy(() => {
+		window.removeEventListener("resize", handleViewportResize);
 		logic.destroy();
 	});
 
@@ -115,7 +166,7 @@
 		) {
 			try {
 				children(contentEl);
-			} catch (e) {}
+			} catch (_e) {}
 		}
 	});
 </script>
@@ -202,13 +253,6 @@
 		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
 		z-index: 10000;
 		overflow: visible;
-		transition:
-			transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
-			translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
-			opacity 0.3s,
-			width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
-			height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
-			border-radius 0.3s;
 		top: 0;
 		left: 0;
 		pointer-events: all;
