@@ -33,8 +33,9 @@
 		const startY = e.clientY;
 		const startWidth = target.offsetWidth;
 		const startHeight = target.offsetHeight;
-		const startLeft = target.offsetLeft;
-		const startTop = target.offsetTop;
+		const rect = target.getBoundingClientRect();
+		const startLeft = rect.left;
+		const startTop = rect.top;
 
 		const _viewportWidth = window.innerWidth;
 		const _viewportHeight = window.innerHeight;
@@ -123,10 +124,9 @@
 				}
 			}
 
-			target.style.width = `${newWidth}px`;
-			target.style.height = `${newHeight}px`;
-			target.style.left = `${newLeft}px`;
-			target.style.top = `${newTop}px`;
+			target.style.width = `${Math.round(newWidth)}px`;
+			target.style.height = `${Math.round(newHeight)}px`;
+			target.style.translate = `${Math.round(newLeft)}px ${Math.round(newTop)}px`;
 
 			onResize({ width: newWidth, height: newHeight, x: newLeft, y: newTop });
 		}

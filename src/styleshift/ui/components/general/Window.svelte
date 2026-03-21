@@ -52,6 +52,7 @@
 			left: string;
 			bottom: string;
 			right: string;
+			translate: string;
 			width: string;
 			height: string;
 		}) => void;
@@ -137,8 +138,9 @@
 		isDragging = true;
 		const startX = e.clientX;
 		const startY = e.clientY;
-		const startLeft = windowEl.offsetLeft;
-		const startTop = windowEl.offsetTop;
+		const rect = windowEl.getBoundingClientRect();
+		const startLeft = rect.left;
+		const startTop = rect.top;
 
 		function onMouseMove(e: MouseEvent) {
 			if (!windowEl) return;
@@ -165,8 +167,7 @@
 			if (newTop > viewportHeight - minVisibleHeight)
 				newTop = viewportHeight - minVisibleHeight;
 
-			windowEl.style.left = `${newLeft}px`;
-			windowEl.style.top = `${newTop}px`;
+			windowEl.style.translate = `${Math.round(newLeft)}px ${Math.round(newTop)}px`;
 		}
 
 		function onMouseUp() {
@@ -179,9 +180,10 @@
 					left: windowEl.style.left,
 					bottom: windowEl.style.bottom,
 					right: windowEl.style.right,
+					translate: windowEl.style.translate,
 					width: windowEl.style.width,
 					height: windowEl.style.height,
-				});
+				} as any);
 			}
 		}
 
@@ -210,30 +212,52 @@
 						window.innerHeight || 0,
 					);
 
-					windowEl.style.top = `calc(${vh / 2}px - (${height} / 2))`;
-					windowEl.style.left = `calc(${vw / 2}px - (${width} / 2))`;
+					const x = Math.round(vw / 2 - windowEl.offsetWidth / 2);
+					const y = Math.round(vh / 2 - windowEl.offsetHeight / 2);
+					windowEl.style.translate = `${x}px ${y}px`;
 				} else {
+					let initialX = 0;
+					let initialY = 0;
+
 					if (top) {
-						windowEl.style.top = top;
-						windowEl.style.bottom = "auto";
+						initialY = parseFloat(top);
+						if (top.includes("%"))
+							initialY = (window.innerHeight * initialY) / 100;
 					}
 					if (left) {
-						windowEl.style.left = left;
-						windowEl.style.right = "auto";
+						initialX = parseFloat(left);
+						if (left.includes("%"))
+							initialX = (window.innerWidth * initialX) / 100;
 					}
 					if (bottom) {
-						windowEl.style.bottom = bottom;
-						windowEl.style.top = "auto";
+						initialY =
+							window.innerHeight -
+							windowEl.offsetHeight -
+							parseFloat(bottom);
+						if (bottom.includes("%"))
+							initialY =
+								window.innerHeight -
+								windowEl.offsetHeight -
+								(window.innerHeight * parseFloat(bottom)) / 100;
 					}
 					if (right) {
-						windowEl.style.right = right;
-						windowEl.style.left = "auto";
+						initialX =
+							window.innerWidth -
+							windowEl.offsetWidth -
+							parseFloat(right);
+						if (right.includes("%"))
+							initialX =
+								window.innerWidth -
+								windowEl.offsetWidth -
+								(window.innerWidth * parseFloat(right)) / 100;
 					}
 
 					if (!top && !left && !bottom && !right) {
-						windowEl.style.top = "10%";
-						windowEl.style.left = "25%";
+						initialX = window.innerWidth * 0.25;
+						initialY = window.innerHeight * 0.1;
 					}
+
+					windowEl.style.translate = `${Math.round(initialX)}px ${Math.round(initialY)}px`;
 				}
 			}
 			applyThemeToElement(windowEl);
@@ -291,9 +315,10 @@
 						left: windowEl.style.left,
 						bottom: windowEl.style.bottom,
 						right: windowEl.style.right,
+						translate: windowEl.style.translate,
 						width: windowEl.style.width,
 						height: windowEl.style.height,
-					});
+					} as any);
 				}
 			}}
 		/>
@@ -384,12 +409,13 @@
 		overflow: visible;
 		transition:
 			transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+			translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
 			opacity 0.3s,
 			width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
 			height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
-			top 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
-			left 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
 			border-radius 0.3s;
+		top: 0;
+		left: 0;
 		pointer-events: all;
 		opacity: 0;
 		transform: scale(0.95);
