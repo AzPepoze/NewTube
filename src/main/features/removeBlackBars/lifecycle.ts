@@ -5,7 +5,7 @@ import { onYoutubeFullscreen, getVideoElement, videoElement } from "../../module
 import { state } from "./state";
 import { settings, loadInitialSettings } from "./settings";
 import { checkBlackBars } from "./logic";
-import { disableUltraWide, applyCrop } from "./ui";
+import { disableUltraWide, applyCrop, createDebugUI, removeDebugUI, createDebugCanvas, removeDebugCanvas } from "./ui";
 
 export async function updateRemoveBlackBarsSettings(value?: any, settingId?: string) {
 	if (typeof settingId === "string") {
@@ -15,9 +15,13 @@ export async function updateRemoveBlackBarsSettings(value?: any, settingId?: str
 				break;
 			case "RemoveBlackBarsDebugCanvas":
 				settings.debugCanvas = value;
+				if (value) createDebugCanvas();
+				else removeDebugCanvas();
 				break;
 			case "RemoveBlackBarsDebugInfo":
 				settings.debugInfo = value;
+				if (value) createDebugUI();
+				else removeDebugUI();
 				break;
 			case "RemoveBlackBarsLazyCheck":
 				settings.lazyCheck = value;
@@ -105,16 +109,8 @@ export function disableRemoveBlackBars() {
 		videoElement.style.position = "";
 	}
 
-	if (state.canvas) {
-		state.canvas.style.display = "none";
-		if (state.canvas.parentNode) state.canvas.remove();
-		state.canvas = null;
-	}
-
-	if (state.debugContainer) {
-		state.debugContainer.remove();
-		state.debugContainer = null;
-	}
+	removeDebugCanvas();
+	removeDebugUI();
 
 	state.lastHeight = 0;
 	state.droppedFrames = 0;

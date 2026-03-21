@@ -1,30 +1,51 @@
 import { isYoutubeFullscreen, getVideoElement } from "../../modules/youtube";
 import { state } from "./state";
+import { settings } from "./settings";
 
 const ultraWideRatio = (21 / 9).toFixed(2);
 
+export async function createDebugUI() {
+	if (!state.enabled || !settings.debugInfo) return;
+	if (state.debugContainer) return;
+
+	state.debugContainer = document.createElement("div");
+	state.debugContainer.id = "newtube-bars-debug";
+	Object.assign(state.debugContainer.style, {
+		position: "absolute",
+		top: "10px",
+		right: "10px",
+		padding: "12px",
+		background: "rgba(0, 0, 0, 0.6)",
+		color: "white",
+		fontFamily: "inherit",
+		fontSize: "13px",
+		zIndex: "2000000",
+		pointerEvents: "none",
+		borderRadius: "8px",
+		lineHeight: "1.4",
+		boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+		display: "none",
+	});
+
+	const video = await getVideoElement();
+	const container = video?.parentElement;
+	if (container) {
+		container.appendChild(state.debugContainer);
+	}
+}
+
 export async function updateDebugUI(finalDetectedHeight?: number, vHeight?: number) {
-	if (vHeight !== undefined) state.vHeight = vHeight;
+	if (!state.enabled || !settings.debugInfo) {
+		removeDebugUI();
+		return;
+	}
 
 	if (!state.debugContainer) {
-		state.debugContainer = document.createElement("div");
-		state.debugContainer.id = "newtube-bars-debug";
-		Object.assign(state.debugContainer.style, {
-			position: "absolute",
-			top: "10px",
-			right: "10px",
-			padding: "12px",
-			background: "rgba(0, 0, 0, 0.6)",
-			color: "white",
-			fontFamily: "inherit",
-			fontSize: "13px",
-			zIndex: "2000000",
-			pointerEvents: "none",
-			borderRadius: "8px",
-			lineHeight: "1.4",
-			boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-		});
+		await createDebugUI();
+		if (!state.debugContainer) return;
 	}
+
+	if (vHeight !== undefined) state.vHeight = vHeight;
 
 	const video = await getVideoElement();
 	const container = video?.parentElement;
@@ -57,6 +78,62 @@ export async function updateDebugUI(finalDetectedHeight?: number, vHeight?: numb
 		</div>
 	`;
 	state.debugContainer.style.display = "block";
+}
+
+export function removeDebugUI() {
+	if (state.debugContainer) {
+		state.debugContainer.remove();
+		state.debugContainer = null;
+	}
+}
+
+export async function createDebugCanvas() {
+	if (!state.enabled || !settings.debugCanvas) return;
+	const video = await getVideoElement();
+	if (!video || !video.parentElement) return;
+
+	if (!state.canvas) {
+		state.canvas = document.createElement("canvas");
+		state.canvas.width = 5;
+		state.ctx = state.canvas.getContext("2d", { alpha: false });
+		state.canvas.id = "NewtubeVDOCanvas";
+	}
+
+	const vHeight = video.videoHeight;
+	if (state.canvas.height !== vHeight) {
+		state.canvas.height = vHeight;
+	}
+
+	const videoRect = video.getBoundingClientRect();
+	if (!state.canvas.parentElement) {
+		const container = video.parentElement;
+		container.appendChild(state.canvas);
+		state.canvas.style.position = "absolute";
+		state.canvas.style.top = "0px";
+		state.canvas.style.left = "0px";
+		state.canvas.style.width = "50px";
+		state.canvas.style.zIndex = "1000";
+		state.canvas.style.imageRendering = "pixelated";
+		state.canvas.style.pointerEvents = "none";
+	}
+
+	if (state.canvas.style.height !== `${videoRect.height}px`) {
+		state.canvas.style.height = `${videoRect.height}px`;
+	}
+	state.canvas.style.display = "block";
+}
+
+export function hideDebugCanvas() {
+	if (state.canvas) {
+		state.canvas.style.display = "none";
+		if (state.canvas.parentNode) state.canvas.remove();
+	}
+}
+
+export function removeDebugCanvas() {
+	hideDebugCanvas();
+	state.canvas = null;
+	state.ctx = null;
 }
 
 export async function enableUltraWide(ratio: number) {

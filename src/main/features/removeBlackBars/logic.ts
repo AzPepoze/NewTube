@@ -1,7 +1,7 @@
 import { loadWorker } from "../../../styleshift/core/runtimeController";
 import { state } from "./state";
 import { settings } from "./settings";
-import { updateDebugUI, applyCrop, checkUltraWide, disableUltraWide } from "./ui";
+import { updateDebugUI, applyCrop, checkUltraWide, disableUltraWide, createDebugCanvas, hideDebugCanvas } from "./ui";
 import { calculateVdoHeight, detectBlackBars } from "./helpers";
 import { isYoutubeFullscreen, getVideoElement } from "../../modules/youtube";
 import { shouldFeatureShow } from "../helpers";
@@ -16,11 +16,7 @@ async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number
 	if (state.sessionId !== mySession) return;
 	state.processLatency = performance.now() - state.startTime;
 
-	if (settings.debugInfo) {
-		updateDebugUI(finalDetectedHeight, vHeight);
-	} else if (state.debugContainer) {
-		state.debugContainer.style.display = "none";
-	}
+	updateDebugUI(finalDetectedHeight, vHeight);
 
 	if (
 		Math.abs(finalDetectedHeight - state.lastHeight) > 5 ||
@@ -89,7 +85,7 @@ export async function checkBlackBars() {
 	// Busy Checking (Worker is running async)
 	if (state.isChecking) {
 		state.droppedFrames++;
-		if (settings.debugInfo) updateDebugUI();
+		updateDebugUI();
 		scheduleNext();
 		return;
 	}
@@ -97,39 +93,20 @@ export async function checkBlackBars() {
 	const vHeight = video.videoHeight;
 	state.vHeight = vHeight;
 
-	// Prepare for NEW scan
 	state.startTime = performance.now();
-	if (!state.canvas) {
-		state.canvas = document.createElement("canvas");
-		state.canvas.width = 5;
-		state.ctx = state.canvas.getContext("2d", { alpha: false });
-		state.canvas.id = "NewtubeVDOCanvas";
-	}
-	if (state.canvas.height !== vHeight) {
-		state.canvas.height = vHeight;
-	}
-
+	
 	if (settings.debugCanvas) {
-		const videoRect = video.getBoundingClientRect();
-		if (!state.canvas.parentElement) {
-			const container = video.parentElement;
-			if (container) {
-				container.appendChild(state.canvas);
-				state.canvas.style.position = "absolute";
-				state.canvas.style.top = "0px";
-				state.canvas.style.left = "0px";
-				state.canvas.style.width = "50px";
-				state.canvas.style.zIndex = "1000";
-				state.canvas.style.imageRendering = "pixelated";
-				state.canvas.style.pointerEvents = "none";
-			}
-		}
-		if (state.canvas.style.height !== `${videoRect.height}px`) {
-			state.canvas.style.height = `${videoRect.height}px`;
-		}
-		state.canvas.style.display = "block";
+		await createDebugCanvas();
 	} else {
-		state.canvas.style.display = "none";
+		hideDebugCanvas();
+		if (!state.canvas) {
+			state.canvas = document.createElement("canvas");
+			state.canvas.width = 5;
+			state.ctx = state.canvas.getContext("2d", { alpha: false });
+		}
+		if (state.canvas.height !== vHeight) {
+			state.canvas.height = vHeight;
+		}
 	}
 
 	if (state.ctx) state.ctx.drawImage(video, 0, 0, 5, vHeight);
