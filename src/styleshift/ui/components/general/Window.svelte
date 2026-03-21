@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount, onDestroy } from "svelte";
+	import { onMount, onDestroy, untrack } from "svelte";
 	import WindowResizer from "./WindowResizer.svelte";
 	import { applyThemeToElement } from "../../theme";
 	import { WindowLogic } from "./windowLogic.svelte";
-	import { constrainWindowPosition } from "./windowUtils";
+	import { constrainWindowPosition, parseDimension } from "./windowUtils";
 	import WindowTitlebar from "./WindowTitlebar.svelte";
 
 	let {
@@ -19,7 +19,7 @@
 		noPadding = false,
 		minVisibleRatio = 0.1,
 		disableBackdropFilter = false,
-		topbarChildren,
+		topbarChildren = null,
 		children,
 		el = $bindable(null),
 		onPositionChange = () => {},
@@ -52,69 +52,65 @@
 	let windowEl = $state<HTMLElement | null>(null);
 	let contentEl = $state<HTMLElement | null>(null);
 
+	const vw = typeof window !== "undefined" ? Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) : 0;
+	const vh = typeof window !== "undefined" ? Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) : 0;
+
+	let currentWidth = $state(untrack(() => width));
+	let currentHeight = $state(untrack(() => height));
+	let currentTranslate = $state("");
+
+	const getInitialPosition = () => {
+		const f = untrack(() => fullscreen);
+		const t = untrack(() => translate);
+		const w = untrack(() => width);
+		const h = untrack(() => height);
+		const c = untrack(() => center);
+		const m = untrack(() => minVisibleRatio);
+
+		if (f) return "0px 0px";
+		if (t) return t;
+
+		const elWidth = parseDimension(w, vw);
+		const elHeight = parseDimension(h, vh);
+
+		let left = 0;
+		let top = 0;
+
+		if (c) {
+			left = vw / 2 - elWidth / 2;
+			top = vh / 2 - elHeight / 2;
+		} else {
+			left = vw * 0.25;
+			top = vh * 0.1;
+		}
+
+		const constrained = constrainWindowPosition(
+			left,
+			top,
+			elWidth,
+			elHeight,
+			m,
+		);
+		return `${constrained.left}px ${constrained.top}px`;
+	};
+
+	if (typeof window !== "undefined") {
+		currentTranslate = getInitialPosition();
+	}
+
 	const logic = new WindowLogic({
 		windowId,
 		onClose: () => onClose(),
-		onPositionChange: (pos) => onPositionChange(pos),
+		onPositionChange: (pos) => {
+			currentTranslate = pos.translate;
+			currentWidth = pos.width;
+			currentHeight = pos.height;
+			onPositionChange(pos);
+		},
 	});
 
 	onMount(() => {
 		if (windowEl) {
-			if (fullscreen) {
-				windowEl.style.width = "100vw";
-				windowEl.style.height = "100vh";
-				windowEl.style.translate = "0px 0px";
-			} else {
-				windowEl.style.width = width;
-				windowEl.style.height = height;
-
-				let initialLeft = 0;
-				let initialTop = 0;
-
-				if (translate) {
-					const [x, y] = translate.split(" ");
-					initialLeft = parseInt(x) || 0;
-					initialTop = parseInt(y) || 0;
-				} else if (center) {
-					const vw = Math.max(
-						document.documentElement.clientWidth || 0,
-						window.innerWidth || 0,
-					);
-					const vh = Math.max(
-						document.documentElement.clientHeight || 0,
-						window.innerHeight || 0,
-					);
-
-					initialLeft = Math.round(
-						vw / 2 - windowEl.offsetWidth / 2,
-					);
-					initialTop = Math.round(
-						vh / 2 - windowEl.offsetHeight / 2,
-					);
-				} else {
-					initialLeft = window.innerWidth * 0.25;
-					initialTop = window.innerHeight * 0.1;
-				}
-
-				const constrained = constrainWindowPosition(
-					initialLeft,
-					initialTop,
-					windowEl.offsetWidth || parseInt(width),
-					windowEl.offsetHeight || parseInt(height),
-					minVisibleRatio,
-				);
-
-				const finalTranslate = `${constrained.left}px ${constrained.top}px`;
-				windowEl.style.translate = finalTranslate;
-
-				if (initialLeft !== constrained.left || initialTop !== constrained.top) {
-					onPositionChange({
-						translate: finalTranslate,
-						width: windowEl.style.width,
-						height: windowEl.style.height,
-					});
-				}
-			}
 			applyThemeToElement(windowEl);
 			window.addEventListener("resize", handleViewportResize);
 		}
@@ -123,7 +119,6 @@
 	function handleViewportResize() {
 		if (!windowEl || logic.isMaximized || logic.isDragging || logic.isResizing || fullscreen) return;
 
-		const currentTranslate = windowEl.style.translate || "0px 0px";
 		const [x, y] = currentTranslate.split(" ");
 		const currentLeft = parseInt(x) || 0;
 		const currentTop = parseInt(y) || 0;
@@ -138,11 +133,11 @@
 
 		if (currentLeft !== constrained.left || currentTop !== constrained.top) {
 			const finalTranslate = `${constrained.left}px ${constrained.top}px`;
-			windowEl.style.translate = finalTranslate;
+			currentTranslate = finalTranslate;
 			onPositionChange({
 				translate: finalTranslate,
-				width: windowEl.style.width,
-				height: windowEl.style.height,
+				width: currentWidth,
+				height: currentHeight,
 			});
 		}
 	}
@@ -185,6 +180,9 @@
 		!logic.isHovering &&
 		!logic.isDragging &&
 		!logic.isResizing}
+	style:width={fullscreen ? "100vw" : currentWidth}
+	style:height={fullscreen ? "100vh" : currentHeight}
+	style:translate={currentTranslate}
 	onmousemove={logic.handleActivity}
 	bind:this={windowEl}
 	bind:this={el}
@@ -258,6 +256,13 @@
 		pointer-events: all;
 		opacity: 0;
 		transform: scale(0.95);
+		transition:
+			transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+			translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+			opacity 0.3s,
+			width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+			height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+			border-radius 0.3s;
 
 		&.maximized {
 			border-radius: 0;

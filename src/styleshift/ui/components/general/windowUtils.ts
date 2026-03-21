@@ -32,3 +32,11 @@ export function constrainWindowPosition(
 		top: Math.round(newTop),
 	};
 }
+
+export function parseDimension(value: string | number, total: number): number {
+	if (typeof value === "number") return value;
+	if (typeof value === "string" && value.endsWith("%")) {
+		return (parseFloat(value) / 100) * total;
+	}
+	return parseInt(value as string) || 0;
+}
