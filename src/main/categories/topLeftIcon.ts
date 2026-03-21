@@ -1,5 +1,5 @@
 import { Category } from "../../styleshift/types/styleshiftTypes";
-import "../features/topLeftIcon"; // Import side-effects
+import { enableTopLeftIconChanger, disableTopLeftIconChanger } from "../features/topLeftIcon";
 
 export const topLeftIconCategory: Category = {
 	category: { icon: "featured_video", label: "Top-Left Icon" },
@@ -10,16 +10,29 @@ export const topLeftIconCategory: Category = {
 			name: "Custom Logo",
 			description: "Replaces the default YouTube logo in the top-left corner with your own image or animated GIF.",
 			value: false,
+			setupFunction: enableTopLeftIconChanger,
+			disableFunction: disableTopLeftIconChanger,
 			enableCss: `
-                ytd-topbar-logo-renderer #logo-icon {
-                    display: none !important;
+                ytd-topbar-logo-renderer .ytd-topbar-logo-renderer {
+                    opacity: 0;
                 }
                 ytd-topbar-logo-renderer {
-                    background-image: var(--nt-top-icon-url) !important;
-                    background-position: var(--nt-top-icon-x, 50%) var(--nt-top-icon-y, 50%) !important;
-                    background-size: var(--nt-top-icon-size, 100%) !important;
-                    background-repeat: var(--nt-top-icon-repeat, no-repeat) !important;
-                    transform: var(--nt-top-icon-flip, scaleX(1));
+                    display: flex !important;
+                    align-items: center;
+                    justify-content: flex-start;
+                    height: 56px !important;
+                    min-width: 40px;
+					position: relative;
+                }
+                #nt-custom-logo {
+                    height: 100% !important;
+                    width: auto !important;
+                    object-fit: contain;
+                    transform: var(--nt-top-icon-flip) scale(--nt-top-icon-size);
+                    transition: height 0.2s;
+					position: absolute;
+					left: -50%;
+					top: -50%;
                 }
             `,
 		},
@@ -49,11 +62,10 @@ export const topLeftIconCategory: Category = {
 			id: "TopLeftIconSize",
 			name: "Logo Size",
 			description: "Adjusts the scale of your custom logo to fit perfectly within the header bar.",
-			value: 100,
-			min: 10,
-			max: 300,
-			step: 5,
-			varCss: "--nt-top-icon-size",
+			value: 1,
+			min: 0.1,
+			max: 5,
+			step: 0.1,
 			require: { EnableCustomTopLeftIcon: true }
 		},
 		{
@@ -65,7 +77,6 @@ export const topLeftIconCategory: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
-			varCss: "--nt-top-icon-x",
 			require: { EnableCustomTopLeftIcon: true }
 		},
 		{
@@ -77,7 +88,6 @@ export const topLeftIconCategory: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
-			varCss: "--nt-top-icon-y",
 			require: { EnableCustomTopLeftIcon: true }
 		},
 		{

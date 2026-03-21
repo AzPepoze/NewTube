@@ -1,5 +1,5 @@
 import { Category } from "../../styleshift/types/styleshiftTypes";
-import { setupTabIconChanger, disableTabIconChanger } from "../features/tabIcon";
+import { enableTabIconChanger, disableTabIconChanger } from "../features/tabIcon";
 
 export const tabIconCategory: Category = {
 	category: { icon: "tab", label: "Tab Icon" },
@@ -10,7 +10,7 @@ export const tabIconCategory: Category = {
 			name: "Custom Favicon",
 			description: "Replaces the default YouTube logo in your browser tab with a custom image of your choice.",
 			value: true,
-			setupFunction: setupTabIconChanger,
+			setupFunction: enableTabIconChanger,
 			disableFunction: disableTabIconChanger,
 		},
 		{
