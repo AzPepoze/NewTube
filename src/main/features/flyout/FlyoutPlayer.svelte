@@ -15,25 +15,20 @@
 	} = $props();
 
 	let pos = $state<{
-		top?: string;
-		left?: string;
-		bottom?: string;
-		right?: string;
+		translate?: string;
 		width?: string;
 		height?: string;
 	}>(
 		untrack(() => initialPos) ?? {
 			width: "420px",
 			height: "236px",
-			bottom: "24px",
-			right: "24px",
+			translate: "0px 0px",
 		},
 	);
 
-	function handlePositionChange(newPos: typeof pos) {
+	function handlePositionChange(newPos: any) {
 		const filteredPos = {
-			top: newPos.top,
-			left: newPos.left,
+			translate: newPos.translate,
 			width: newPos.width,
 			height: newPos.height,
 		};
@@ -47,10 +42,7 @@
 	onPositionChange={handlePositionChange}
 	width={pos.width}
 	height={pos.height}
-	top={pos.top}
-	left={pos.left}
-	bottom={pos.bottom}
-	right={pos.right}
+	translate={pos.translate}
 	mini={true}
 	aspectRatio={16 / 9}
 	autoHideTopbar={true}
