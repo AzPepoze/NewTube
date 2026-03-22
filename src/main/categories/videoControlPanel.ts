@@ -147,7 +147,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "checkbox",
 			id: "EnableControlPanelRemoveGradient",
-			name: "Remove Shadow",
+			name: "Remove Default Gradient",
 			description: "Removes the default dark gradient at the bottom of the video player.",
 			value: false,
 			enableCss: `.ytp-gradient-bottom { background-image: none !important; }`,

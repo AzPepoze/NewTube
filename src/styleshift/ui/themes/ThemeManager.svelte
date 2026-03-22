@@ -166,21 +166,14 @@
 		}
 
 		loadingThemeId = id;
-		activeThemeId = id;
-
-		await applyThemeManager(id, displayName, "EXTENSION");
-		await importPresetToSettings(
-			$state.snapshot(theme),
-			true,
-			displayName,
-		);
-
-		wasThemeModified = true;
-		loadingThemeId = null;
-
-		if (currentView === "store") {
-			currentView = "installed";
+		const success = await applyThemeManager(id, displayName, "EXTENSION");
+		
+		if (success) {
+			activeThemeId = id;
+			wasThemeModified = true;
 		}
+		
+		loadingThemeId = null;
 	}
 
 	async function saveStoreTheme(id: string) {
