@@ -93,7 +93,17 @@ export function getPlayerContainer(): HTMLElement | null {
  * Retrieves the current YouTube video ID from the URL.
  */
 export function getYoutubeVideoId() {
-	return new URLSearchParams(window.location.search).get("v");
+	const url = new URL(window.location.href);
+	const videoId = url.searchParams.get("v");
+	if (videoId) return videoId;
+
+	// Check for shorts
+	if (url.pathname.startsWith("/shorts/")) {
+		const parts = url.pathname.split("/");
+		return parts[2] || null;
+	}
+
+	return null;
 }
 
 /**

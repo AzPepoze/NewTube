@@ -88,7 +88,6 @@
 		margin-top: 3px;
 		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 		border: 1px solid var(--Border-Color);
-		backdrop-filter: blur(8px);
 
 		&:hover {
 			background: var(--White-10);

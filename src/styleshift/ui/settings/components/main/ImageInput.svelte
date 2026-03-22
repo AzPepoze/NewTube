@@ -314,7 +314,6 @@
 		margin-top: 10px;
 		border: 1px solid var(--White-10);
 		box-shadow: 0 4px 15px var(--Black-30);
-		backdrop-filter: blur(8px);
 	}
 
 	.STYLESHIFT-Image-Input-Controls {

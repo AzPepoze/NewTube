@@ -707,6 +707,15 @@ div.unstarted-mode .ytp-cued-thumbnail-overlay .ytp-large-play-button:hover path
 .video.ytd-miniplayer{
 	background:black;
 }
+
+.ytp-chapter-title-content{
+	display: flex;
+	align-items: center;
+}
+
+.ytp-chapter-title.ytp-button:hover::after{
+	background: transparent !important;
+}
 `;
 
 export const uiCleanupCss = `

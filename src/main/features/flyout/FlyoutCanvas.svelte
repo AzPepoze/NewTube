@@ -354,7 +354,6 @@
 		padding: 15px 5px;
 		background: rgba(0, 0, 0, 0.4);
 		border-radius: 20px;
-		backdrop-filter: blur(8px);
 		height: 120px;
 	}
 
