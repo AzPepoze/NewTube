@@ -46,6 +46,7 @@ export const colorThemeCategory: Category = {
                     --ytmusic-background: transparent !important;
                     --yt-spec-themed-green: var(--nt-theme-color) !important;
                     --yt-spec-overlay-background-medium-light: var(--nt-theme-control-panel-button-group) !important;
+					--yt-spec-outline: var(--nt-theme-transparent) !important;
                 }
             `,
 		},

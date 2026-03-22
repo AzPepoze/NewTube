@@ -403,7 +403,8 @@ yt-icon.ytd-toggle-theme-compact-link-renderer {
 .ytp-chrome-controls .ytp-button[aria-pressed]:after,
 .ytp-sb-subscribe, a.ytp-sb-subscribe,
 yt-icon-button.yt-live-chat-item-list-renderer,
-#progress.yt-page-navigation-progress {
+#progress.yt-page-navigation-progress,
+.ytProgressBarPlayheadProgressBarPlayheadDot {
 	background: var(--nt-theme-color) !important;
 }
 
@@ -438,7 +439,8 @@ yt-list-item-view-model > div:hover,
 	background: var(--nt-theme-transparent) !important;
 }
 
-#progress.ytd-thumbnail-overlay-resume-playback-renderer{
+#progress.ytd-thumbnail-overlay-resume-playback-renderer,
+.ytProgressBarLineProgressBarPlayed {
 	background: linear-gradient(-70deg, var(--nt-theme-color), var(--nt-theme-transparent) ) !important;
 }
 
@@ -727,7 +729,8 @@ body {
 	color: var(--nt-text-secondary) !important;
 }
 
-.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--outline {
+.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--outline,
+.ytSearchboxComponentSuggestionsContainer {
 	background: var(--nt-topbar-bg);
 }
 

@@ -18,7 +18,7 @@
 		hasError = false;
 
 		const img = new Image();
-		
+
 		img.onload = () => {
 			if (!canvas) return;
 			const ctx = canvas.getContext("2d");
@@ -37,11 +37,14 @@
 
 			canvas.width = width;
 			canvas.height = height;
-			
+
 			ctx.drawImage(img, 0, 0, width, height);
 			isLoading = false;
-			
-			logger.debug("ui", `Rendered preview: ${img.width}x${img.height} -> ${width}x${height}`);
+
+			logger.debug(
+				"ui",
+				`Rendered preview: ${img.width}x${img.height} -> ${width}x${height}`,
+			);
 		};
 
 		img.onerror = () => {
@@ -93,7 +96,9 @@
 		<canvas
 			bind:this={canvas}
 			class="STYLESHIFT-Preview-Canvas"
-			style:display={isVisible && !isLoading && !hasError ? "block" : "none"}
+			style:display={isVisible && !isLoading && !hasError
+				? "block"
+				: "none"}
 		></canvas>
 	{:else}
 		<div class="STYLESHIFT-No-Image">No image selected</div>
@@ -103,9 +108,9 @@
 <style lang="scss">
 	.STYLESHIFT-Preview-Image-Container {
 		width: fit-content;
-		min-width: 100px;
+		min-width: 200px;
 		max-width: 100%;
-		min-height: 50px;
+		min-height: 100px;
 		max-height: 600px;
 		background: var(--Black-40);
 		border-radius: 12px;
