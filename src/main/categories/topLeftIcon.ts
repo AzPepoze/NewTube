@@ -64,7 +64,7 @@ export const topLeftIconCategory: Category = {
 			id: "TopLeftIconSize",
 			name: "Logo Size",
 			description: "Adjusts the scale of your custom logo to fit perfectly within the header bar.",
-			value: 1,
+			value: 0.7,
 			min: 0.1,
 			max: 5,
 			step: 0.1,

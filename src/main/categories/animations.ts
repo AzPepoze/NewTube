@@ -258,10 +258,12 @@ export const animationCategory: Category = {
 					transition: all 0.15s ease-out;
 				}
 
-				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer:hover .yt-lockup-view-model,
-				yt-lockup-view-model.ytd-item-section-renderer:hover .yt-lockup-view-model {
+				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer:hover .yt-lockup-view-model.yt-lockup-view-model--horizontal,
+				yt-lockup-view-model.ytd-item-section-renderer:hover .yt-lockup-view-model.yt-lockup-view-model--horizontal {
 					transform: translateX(-10px) !important;
 				}
+
+				yt-lockup-view-model.yt-lockup-view-model--horizontal:
 			`
 		},
 		{

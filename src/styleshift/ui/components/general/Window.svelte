@@ -325,7 +325,6 @@
 		display: flex;
 		flex-direction: column;
 		position: relative;
-		background: var(--Window-BG, #1e1e1e);
 		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
 	}
 

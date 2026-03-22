@@ -13,7 +13,7 @@ export const thumbnailCategory: Category = {
 			max: 30,
 			step: 1,
 			varCss: "--nt-timestamp-radius",
-			constantCss: `ytd-thumbnail-overlay-time-status-renderer { border-radius: var(--nt-timestamp-radius, 10px) !important; }`,
+			constantCss: `yt-thumbnail-bottom-overlay-view-model { border-radius: var(--nt-timestamp-radius, 10px) !important; }`,
 		},
 		{
 			type: "color",
@@ -22,7 +22,7 @@ export const thumbnailCategory: Category = {
 			description: "Sets the background color of the duration timestamp on video thumbnails.",
 			value: "#00000080",
 			varCss: "--nt-timestamp-bg",
-			constantCss: `ytd-thumbnail-overlay-time-status-renderer { background-color: var(--nt-timestamp-bg, #00000080) !important; }`,
+			constantCss: `yt-thumbnail-bottom-overlay-view-model { background-color: var(--nt-timestamp-bg, #00000080) !important; }`,
 		},
 		{
 			type: "numberSlide",
@@ -62,11 +62,12 @@ export const thumbnailCategory: Category = {
 			description: "Automatically fades out the duration timestamp when you hover over a thumbnail, keeping the image clear.",
 			value: true,
 			enableCss: `
-                ytd-thumbnail-overlay-time-status-renderer {
-                    transition: all .2s;
+                yt-thumbnail-bottom-overlay-view-model {
+                    transition: all .2s ease-out;
                 }
-                #thumbnail:hover > #overlays > ytd-thumbnail-overlay-time-status-renderer {
+                yt-thumbnail-view-model:hover yt-thumbnail-bottom-overlay-view-model {
                     opacity: 0 !important;
+					transform: translateY(5px) !important;
                 }
             `,
 		},
@@ -77,29 +78,21 @@ export const thumbnailCategory: Category = {
 			description: "Centers the duration timestamp and bottom panel on thumbnails instead of keeping them in the corner.",
 			value: true,
 			enableCss: `
-                ytd-thumbnail-overlay-time-status-renderer,
-                ytd-thumbnail-overlay-bottom-panel-renderer {
+				yt-thumbnail-bottom-overlay-view-model {
+					z-index: 1;
+					border-radius: var(--nt-timestamp-radius, 10px) !important;
+				}
+				
+                yt-thumbnail-bottom-overlay-view-model,
+                yt-thumbnail-bottom-overlay-view-model .ytThumbnailBottomOverlayViewModelBadgeContainer,
+                yt-thumbnail-bottom-overlay-view-model yt-thumbnail-badge-view-model,
+				yt-thumbnail-bottom-overlay-view-model badge-shape {
                     width: 100% !important;
                     margin: 0px !important;
                     padding: 0px !important;
                     bottom: 0px;
                     justify-content: center !important;
-                }
-                
-                #time-status #text {
-                    margin-left: auto;
-                    margin-right: auto;
-                }
-            
-                #time-status {
-                    width: 100% !important;
-                    position: absolute !important;
-                }
-            
-                .ytp-ce-video-duration {
-                    width: 97% !important;
-                    margin: -2px !important;
-                    text-align: center !important;
+					text-align: center !important;
                 }
             `,
 		},
@@ -159,64 +152,6 @@ export const thumbnailCategory: Category = {
 			require: { ThumbnailHoverOverlayEnabled: true }
 		},
 		{
-			type: "dropdown",
-			id: "ThumbnailHoverAnimationStyle",
-			name: "Hover Animation",
-			description: "Choose the visual motion effect when hovering over a video thumbnail.",
-			value: "Slide",
-			options: {
-				Slide: {
-					name: "Slide Up",
-					enableCss: `
-                        #dismissible.ytd-rich-grid-media:hover > ytd-thumbnail {
-                            margin-block-start: -15px !important;
-                            margin-block-end: 15px !important;
-                        }
-                        ytd-compact-video-renderer:hover {
-                            margin-inline-start: -15px !important;
-                        }
-                        ytd-compact-video-renderer:hover > div > div > div > a {
-                            margin-inline-end: 15px !important;
-                        }
-                    `,
-				},
-				Zoom: {
-					name: "Zoom In",
-					enableCss: `
-                        ytd-thumbnail:not(.ytd-playlist-panel-video-renderer):hover,
-                        ytd-playlist-thumbnail:hover {
-                            transform: scale(var(--nt-zoom-scale, 1.075)) !important;
-                            z-index: 400;
-                        }
-                    `,
-				},
-				"Slide&Zoom": {
-					name: "Slide & Zoom",
-					enableCss: `
-                        #dismissible.ytd-rich-grid-media:hover > ytd-thumbnail {
-                            margin-block-start: -15px !important;
-                            margin-block-end: 15px !important;
-                        }
-                        ytd-compact-video-renderer:hover {
-                            margin-inline-start: -15px !important;
-                        }
-                        ytd-compact-video-renderer:hover > div > div > div > a {
-                            margin-inline-end: 15px !important;
-                        }
-                        ytd-thumbnail:not(.ytd-playlist-panel-video-renderer):hover,
-                        ytd-playlist-thumbnail:hover {
-                            transform: scale(var(--nt-zoom-scale, 1.075)) !important;
-                            z-index: 400;
-                        }
-                    `,
-				},
-				None: {
-					name: "None",
-					enableCss: ``,
-				},
-			},
-		},
-		{
 			type: "numberSlide",
 			id: "ThumbnailHoverZoomScale",
 			name: "Zoom Intensity",
@@ -235,7 +170,7 @@ export const thumbnailCategory: Category = {
 			description: "Adds a smooth fade and lift effect when thumbnails first appear on the page.",
 			value: true,
 			enableCss: `
-				@keyframes thumbnailLoadAnimation {
+				@keyframes thumbnailXLoadAnimation {
 					from {
 						opacity: 0;
 						transform: translateY(20px);
@@ -246,12 +181,14 @@ export const thumbnailCategory: Category = {
 					}
 				}
 
-				yt-lockup-view-model{
+				yt-lockup-view-model,
+				ytd-video-renderer {
 					opacity: 0;
 				}
 
-                yt-lockup-view-model:has(.ytCoreImageLoaded) {
-                    animation: thumbnailLoadAnimation 0.5s forwards;
+                yt-lockup-view-model:has(.ytCoreImageLoaded),
+				ytd-video-renderer:has(.ytCoreImageLoaded) {
+                    animation: thumbnailXLoadAnimation 0.5s forwards;
 				}
             `,
 		},
