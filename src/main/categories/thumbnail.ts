@@ -22,7 +22,7 @@ export const thumbnailCategory: Category = {
 			description: "Sets the background color of the duration timestamp on video thumbnails.",
 			value: "#00000080",
 			varCss: "--nt-timestamp-bg",
-			constantCss: `yt-thumbnail-bottom-overlay-view-model { background-color: var(--nt-timestamp-bg, #00000080) !important; }`,
+			constantCss: `.yt-badge-shape--thumbnail-default { background-color: var(--nt-timestamp-bg, #00000080) !important; }`,
 		},
 		{
 			type: "numberSlide",
@@ -93,6 +93,7 @@ export const thumbnailCategory: Category = {
                     bottom: 0px;
                     justify-content: center !important;
 					text-align: center !important;
+					position: absolute;
                 }
             `,
 		},

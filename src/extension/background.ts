@@ -4,7 +4,6 @@
  */
 
 import { logger } from "@/shared/logger";
-import { STORE_TARGET_SITES } from "@main/constants";
 
 
 interface ContentScriptMessage {

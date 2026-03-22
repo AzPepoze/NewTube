@@ -157,12 +157,14 @@ async function bootstrapExtension(): Promise<void> {
 	isExtensionReady = true;
 	logger.info("lifecycle", "StyleShift bootstrap complete.");
 
-	window.addEventListener("focus", async () => {
-		logger.info("lifecycle", "Window focused, reloading settings...");
-		await initializeStorageConnection();
-		await updateStyleshiftItems();
-		await reactivateAllSettings();
-		updateAllUiComponents();
+	document.addEventListener("visibilitychange", async () => {
+		if (document.visibilityState === "visible") {
+			logger.info("lifecycle", "Visibility changed to visible, reloading settings...");
+			await initializeStorageConnection();
+			await updateStyleshiftItems();
+			await reactivateAllSettings();
+			updateAllUiComponents();
+		}
 	});
 
 	if (!IS_IN_EXTENSION_SETTINGS_PAGE) {

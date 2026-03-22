@@ -1,5 +1,5 @@
 import { Category } from "../../styleshift/types/styleshiftTypes";
-import { ytPlayerWatchMode } from "../modules/youtube";
+import { playerWatchModeSelector, ytPlayerWatchMode } from "../modules/youtube";
 import { secondaryContainer } from "./enhancement";
 
 export const animationCategory: Category = {
@@ -248,6 +248,29 @@ export const animationCategory: Category = {
 		},
 		{
 			type: "checkbox",
+			id: "AnimationThumbnailOverlay",
+			name: "Thumbnail Overlay Animation",
+			description: "Adds a subtle slide animation to thumbnail overlays.",
+			value: true,
+			enableCss: `
+				@keyframes thumbnailOverlayShow {
+					from {
+						opacity: 0;
+						transform: scale(1.05);
+					}
+					to {
+						opacity: 1;
+						transform: scale(1);
+					}
+				}
+
+				thumbnail-hover-overlay-view-model {
+					animation: thumbnailOverlayShow 0.3s forwards;
+				}
+			`
+		},
+		{
+			type: "checkbox",
 			id: "ThumbnailSlideOnHoverAnimation",
 			name: "Thumbnail Slide On Hover",
 			description: "Adds a subtle slide animation to thumbnail buttons.",
@@ -296,6 +319,25 @@ export const animationCategory: Category = {
 				${ytPlayerWatchMode} .ytp-autohide .ytp-chrome-bottom {
 					width: 0px !important;
 					left: unset !important;
+				}
+			`
+		},
+		{
+			type: "checkbox",
+			id: "AnimationHoverVideoPreview",
+			name: "Player Controls Hover Preview Animation",
+			description: "Adds scale and fade animations to the video preview that appears when hovering over the progress bar.",
+			value: true,
+			enableCss: `
+				${playerWatchModeSelector} .ytp-tooltip {
+					display: block !important;
+					transition: all 0.15s ease-out;
+					pointer-events: none;
+				}
+
+				${playerWatchModeSelector}:not(.ytp-progress-bar-hover) .ytp-tooltip {
+					transform: scale(1.1);
+					opacity: 0 !important;
 				}
 			`
 		}
