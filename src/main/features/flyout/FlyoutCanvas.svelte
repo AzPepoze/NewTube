@@ -5,6 +5,7 @@
 	import Slider from "@ui/components/general/Slider.svelte";
 
 	let canvasEl = $state<HTMLCanvasElement | null>(null);
+	let ctx = $state<CanvasRenderingContext2D | null>(null);
 	let videoEl = $state<HTMLVideoElement | null>(null);
 	let isPlaying = $state(false);
 	let currentTime = $state(0);
@@ -26,6 +27,7 @@
 
 	let rafId: number;
 	let rvfcId: number;
+	let lastShowControlsState = false;
 
 	const eventHandlers = {
 		play: () => {
@@ -56,41 +58,39 @@
 				isMuted = videoEl.muted;
 			}
 		},
-	};
+	} as const;
 
 	function updateCanvas(force = false) {
 		if (
+			ctx &&
 			canvasEl &&
 			videoEl &&
 			(force || (!videoEl.paused && !videoEl.ended))
 		) {
-			const ctx = canvasEl.getContext("2d");
-			if (ctx) {
-				const cw = canvasEl.width;
-				const ch = canvasEl.height;
-				const vw = videoEl.videoWidth;
-				const vh = videoEl.videoHeight;
+			const cw = canvasEl.width;
+			const ch = canvasEl.height;
+			const vw = videoEl.videoWidth;
+			const vh = videoEl.videoHeight;
 
-				if (vw > 0 && vh > 0) {
-					const videoRatio = vw / vh;
-					const canvasRatio = cw / ch;
+			if (vw > 0 && vh > 0) {
+				const videoRatio = vw / vh;
+				const canvasRatio = cw / ch;
 
-					let dx = 0,
-						dy = 0,
-						dw = cw,
-						dh = ch;
+				let dx = 0,
+					dy = 0,
+					dw = cw,
+					dh = ch;
 
-					if (videoRatio > canvasRatio) {
-						dh = cw / videoRatio;
-						dy = (ch - dh) / 2;
-					} else {
-						dw = ch * videoRatio;
-						dx = (cw - dw) / 2;
-					}
-
-					ctx.clearRect(0, 0, cw, ch);
-					ctx.drawImage(videoEl, dx, dy, dw, dh);
+				if (videoRatio > canvasRatio) {
+					dh = cw / videoRatio;
+					dy = (ch - dh) / 2;
+				} else {
+					dw = ch * videoRatio;
+					dx = (cw - dw) / 2;
 				}
+
+				ctx.clearRect(0, 0, cw, ch);
+				ctx.drawImage(videoEl, dx, dy, dw, dh);
 			}
 		}
 
@@ -100,7 +100,9 @@
 					updateCanvas(false),
 				);
 			} else {
-				rafId = setTimeout(() => updateCanvas(false), 1000 / 30) as any;
+				rafId = requestAnimationFrame(() =>
+					updateCanvas(false),
+				) as any;
 			}
 		}
 	}
@@ -129,11 +131,22 @@
 	}
 
 	function handleMouseMove() {
-		showControls = true;
+		if (!lastShowControlsState) {
+			showControls = true;
+			lastShowControlsState = true;
+		}
 		clearTimeout(controlsTimeout);
 		controlsTimeout = setTimeout(() => {
 			showControls = false;
+			lastShowControlsState = false;
 		}, 2000);
+	}
+
+	function handleMouseLeave() {
+		if (isPlaying) {
+			showControls = false;
+			lastShowControlsState = false;
+		}
 	}
 
 	onMount(async () => {
@@ -150,7 +163,10 @@
 			volume = videoEl.volume;
 			isMuted = videoEl.muted;
 
-			logger.debug("flyout", "Adding event listeners to video element");
+			logger.debug(
+				"flyout",
+				"Adding event listeners to video element",
+			);
 			Object.entries(eventHandlers).forEach(([event, handler]) => {
 				videoEl!.addEventListener(event, handler);
 			});
@@ -168,6 +184,13 @@
 				resizeObserver.observe(containerEl);
 			}
 
+			if (canvasEl) {
+				ctx = canvasEl.getContext("2d", { alpha: false });
+				if (ctx) {
+					ctx.imageSmoothingEnabled = true;
+				}
+			}
+
 			updateCanvas(false);
 		} else {
 			logger.error(
@@ -181,6 +204,7 @@
 		logger.debug("flyout", "Destroying FlyoutCanvas, cleaning up");
 		clearTimeout(controlsTimeout);
 		if (resizeObserver) resizeObserver.disconnect();
+		ctx = null;
 		if (videoEl) {
 			logger.debug(
 				"flyout",
@@ -194,8 +218,10 @@
 				(videoEl as any).cancelVideoFrameCallback(rvfcId);
 			}
 		}
-		logger.debug("flyout", "Clearing animation fallback timeout");
-		clearTimeout(rafId);
+		if (rafId) {
+			logger.debug("flyout", "Cancelling animation frame");
+			cancelAnimationFrame(rafId);
+		}
 	});
 
 	function handleContainerClick(e: MouseEvent) {
@@ -213,7 +239,7 @@
 	class="flyout-canvas-container"
 	bind:this={containerEl}
 	onmousemove={handleMouseMove}
-	onmouseleave={() => (showControls = false)}
+	onmouseleave={handleMouseLeave}
 	onclick={handleContainerClick}
 	role="presentation"
 >
@@ -251,7 +277,10 @@
 
 		<div class="bottom-controls">
 			<div class="timeline-container">
-				<button class="icon-btn play-pause-btn" onclick={togglePlay}>
+				<button
+					class="icon-btn play-pause-btn"
+					onclick={togglePlay}
+				>
 					<span class="material-icons"
 						>{isPlaying ? "pause" : "play_arrow"}</span
 					>

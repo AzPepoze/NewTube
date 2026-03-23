@@ -137,12 +137,13 @@ export function removeDebugCanvas() {
 }
 
 export async function enableUltraWide(ratio: number) {
-	if (state.isUltraWideMode) return;
 	const video = await getVideoElement();
 	if (!video || !video.parentElement) return;
 
-	state.isUltraWideMode = true;
 	const container = video.parentElement;
+	if (state.isUltraWideMode && container.style.aspectRatio) return;
+
+	state.isUltraWideMode = true;
 	const mainContainer = container.parentElement;
 	if (!mainContainer) return;
 
@@ -161,16 +162,20 @@ export async function enableUltraWide(ratio: number) {
 }
 
 export async function disableUltraWide() {
-	if (!state.isUltraWideMode) return;
-	state.isUltraWideMode = false;
 	const video = await getVideoElement();
-	if (!video || !video.parentElement) return;
+	const container = video?.parentElement;
 
-	const container = video.parentElement;
+	if (!state.isUltraWideMode && (!container || !container.style.aspectRatio)) {
+		return;
+	}
+
+	state.isUltraWideMode = false;
+	if (!video || !container) return;
+
 	container.style.width = "";
-	container.style.height = "";
 	container.style.aspectRatio = "";
 	video.style.width = "";
+	state.lastHeight = 0;
 }
 
 export async function checkUltraWide() {
@@ -201,13 +206,17 @@ export async function applyCrop(barHeight: number, totalHeight: number) {
 
 	if (barHeight <= 10) {
 		videoContainer.style.height = "100%";
-		disableUltraWide();
+		if (!settings.ultrawide) {
+			disableUltraWide();
+		}
 	} else {
 		const contentHeight = totalHeight - barHeight * 2;
 		const scale = contentHeight / totalHeight;
 		videoContainer.style.height = `${scale * 100}%`;
 	}
 
-	videoContainer.style.aspectRatio = "";
+	if (!state.isUltraWideMode) {
+		videoContainer.style.aspectRatio = "";
+	}
 	state.lastHeight = barHeight;
 }

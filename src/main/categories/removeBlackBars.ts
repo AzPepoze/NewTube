@@ -35,9 +35,8 @@ export const removeBlackBarsCategory: Category = {
 			type: "checkbox",
 			id: "RemoveBlackBarsDisableFullscreen",
 			name: "Disable in Fullscreen",
-			description:
-				"Automatically disables the black bar removal feature when the video player is in fullscreen mode. This can help prevent visual artifacts on some displays.",
-			value: false,
+			description: "Automatically disables the black bar removal feature when the video player is in fullscreen mode. This can help prevent visual artifacts on some displays.",
+			value: true,
 			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },
 		},
