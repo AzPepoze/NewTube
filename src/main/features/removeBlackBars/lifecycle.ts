@@ -1,11 +1,32 @@
 import { waitOneFrame } from "../../../styleshift/shared/advance";
 import { getFromStorage, getUserSetting } from "../../../styleshift/core/storageManager";
 import { registerSettingListener } from "../../../styleshift/settings/functions";
+import { loadWorker } from "../../../styleshift/core/runtimeController";
 import { onYoutubeFullscreen, getVideoElement, videoElement } from "../../modules/youtube";
 import { state } from "./state";
 import { settings, loadInitialSettings } from "./settings";
 import { checkBlackBars } from "./logic";
 import { disableUltraWide, checkUltraWide, applyCrop, createDebugUI, removeDebugUI, createDebugCanvas, removeDebugCanvas } from "./ui";
+
+async function initWorkerState() {
+	if (state.worker) {
+		state.worker.terminate();
+		state.worker = null;
+		state.workerLoadAttempted = false;
+	}
+
+	if (settings.worker && state.enabled) {
+		state.worker = await loadWorker("removeBlackBarsWorker.js");
+		if (state.worker) {
+			state.worker.onmessage = (_e) => {
+				state.isChecking = false;
+			};
+			state.worker.onerror = () => {
+				state.isChecking = false;
+			};
+		}
+	}
+}
 
 export async function updateRemoveBlackBarsSettings(value?: any, settingId?: string) {
 	if (typeof settingId === "string") {
@@ -36,6 +57,7 @@ export async function updateRemoveBlackBarsSettings(value?: any, settingId?: str
 				break;
 			case "RemoveBlackBarsWorker":
 				settings.worker = value;
+				initWorkerState();
 				break;
 			case "RemoveBlackBarsDisableFullscreen":
 				settings.disableFullscreen = value;
@@ -51,6 +73,8 @@ export async function enableRemoveBlackBars() {
 	if (state.enabled) return;
 	state.enabled = true;
 	const mySession = state.sessionId;
+
+	await initWorkerState();
 
 	const init = async () => {
 		state.lastHeight = 0;
@@ -90,6 +114,7 @@ export function disableRemoveBlackBars() {
 	if (state.worker) {
 		state.worker.terminate();
 		state.worker = null;
+		state.workerLoadAttempted = false;
 	}
 
 	if (state.fullscreenCleanup) {

@@ -1,16 +1,9 @@
-import { loadWorker } from "../../../styleshift/core/runtimeController";
 import { state } from "./state";
 import { settings } from "./settings";
 import { updateDebugUI, applyCrop, checkUltraWide, disableUltraWide, createDebugCanvas, hideDebugCanvas } from "./ui";
 import { calculateVdoHeight, detectBlackBars } from "./helpers";
 import { isYoutubeFullscreen, getVideoElement } from "../../modules/youtube";
 import { shouldFeatureShow } from "../helpers";
-
-async function initWorker() {
-	if (state.worker || state.workerLoadAttempted) return;
-	state.workerLoadAttempted = true;
-	state.worker = await loadWorker("removeBlackBarsWorker.js");
-}
 
 async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number, mySession: number) {
 	if (state.sessionId !== mySession) return;
@@ -82,19 +75,15 @@ export async function checkBlackBars() {
 		return;
 	}
 
-	// Busy Checking (Worker is running async)
-	if (state.isChecking) {
-		state.droppedFrames++;
-		updateDebugUI();
-		scheduleNext();
-		return;
-	}
-
 	const vHeight = video.videoHeight;
 	state.vHeight = vHeight;
 
-	state.startTime = performance.now();
-	
+	const now = performance.now();
+	if (state.lastIntervalTime !== 0) {
+		state.currentInterval = Math.round(now - state.lastIntervalTime);
+	}
+	state.lastIntervalTime = now;
+
 	if (settings.debugCanvas) {
 		await createDebugCanvas();
 	} else {
@@ -115,43 +104,34 @@ export async function checkBlackBars() {
 	const imgData = ctx.getImageData(0, 0, 5, vHeight).data;
 	const sampleColor = ctx.getImageData(1, 3, 1, 1).data;
 	const [sR, sG, sB] = [sampleColor[0], sampleColor[1], sampleColor[2]];
+	state.lastSampleColor = `rgb(${sR},${sG},${sB})`;
+
+	if (state.isChecking) {
+		state.droppedFrames++;
+		updateDebugUI();
+		scheduleNext();
+		return;
+	}
+
+	state.startTime = performance.now();
 	const threshold = 20;
 	const pixelBudget = settings.lazyCheck ? settings.lazyAmount : 0; // 0 means no limit/sleep
 
 	state.isChecking = true;
 
-	// WORKER BRANCH
-	if (settings.worker && !settings.debugCanvas) {
-		await initWorker();
-		if (state.worker) {
-			state.worker.onmessage = (e) => {
-				if (state.sessionId !== mySession) {
-					state.isChecking = false;
-					return;
-				}
-				const { type, data } = e.data;
-				if (type === "result") {
-					state.isChecking = false;
-					handleDetectedHeight(data.result, vHeight, mySession);
-				}
-			};
+	if (settings.worker && !settings.debugCanvas && state.worker) {
+		state.worker.postMessage({
+			type: "detect",
+			data: {
+				imgData, vHeight, threshold, sR, sG, sB,
+				pixelBudget,
+				currentLastHeight: state.lastHeight
+			},
+		}, [imgData.buffer]);
 
-			state.worker.postMessage({
-				type: "detect",
-				data: {
-					imgData, vHeight, threshold, sR, sG, sB,
-					pixelBudget,
-					currentLastHeight: state.lastHeight
-				},
-			}, [imgData.buffer]);
-
-			// Schedule next immediately to start counting drops while worker works
-			scheduleNext();
-			return;
-		}
+		scheduleNext();
+		return;
 	}
-
-	// MAIN THREAD BRANCH
 	const heightsFound = await detectBlackBars({
 		imgData, vHeight, threshold, sR, sG, sB,
 		pixelBudget
