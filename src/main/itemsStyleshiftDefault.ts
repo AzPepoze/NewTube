@@ -1,5 +1,8 @@
 import { checkAndUpdateTheme, openThemeStore } from "../styleshift/core/themeStore";
 import { openSettingPage } from "@/styleshift/shared/extension";
+import { exportThemeWithSelection } from "../styleshift/core/themeImportExport";
+import { exportCurrentSettingsObject } from "../styleshift/core/settingsImportExport";
+import { getCustomItems } from "../styleshift/settings/items";
 import { Category, SeparateCategory } from "../styleshift/types/styleshiftTypes";
 import { toggleCustomize } from "@/styleshift/ui/highlight";
 import { showThemeManager } from "@/styleshift/ui/themes/themeManagerService";
@@ -185,14 +188,20 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 		category: { icon: "swap_vert", label: "Import / Export Theme" },
 		settings: [
 			{
-				clickFunction:
-					'await copyToClipboard(await exportStyleshiftJsonText());\n\ncreateNotification({\nicon : "check_circle",\ntitle : "NewTube",\ncontent : "Copied to clipboard!"\n})',
+				clickFunction: async function () {
+					const currentSettings = await exportCurrentSettingsObject();
+					const customStyleShiftItems = getCustomItems();
+					await exportThemeWithSelection("current", "Current Settings", {
+						currentSettings,
+						customStyleShiftItems,
+					});
+				},
 				color: "#1932ffff",
 				description: "Copies your current theme and settings as a text code to your clipboard.",
 				fontSize: 15,
 				icon: "",
 				id: "ExportDataButton",
-				name: "Export Data (Clipboard)",
+				name: "Export Data",
 				align: "center",
 				type: "button",
 			},

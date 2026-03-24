@@ -210,7 +210,7 @@ export async function addDrag(
 								customItems.splice(sourceIdx, 1);
 								const targetIdx = customItems.indexOf(info.data as Category) + (lastHitIsAfter ? 1 : 0);
 								customItems.splice(targetIdx, 0, draggingData as Category);
-								await saveToStorage("customStyleshiftItems", customItems);
+								await saveToStorage("customStyleShiftItems", customItems);
 								logger.debug("drag", "Category moved", { sourceIdx, targetIdx, category: (draggingData as any).category });
 							}
 						} else {
@@ -266,7 +266,7 @@ export async function addDrag(
 										logger.info("drag", "Setting moved", { sourceIdx: idx, dropIndex, settingId: (itemToMove as any).id });
 									}
 								}
-								await saveToStorage("customStyleshiftItems", getCustomItems());
+								await saveToStorage("customStyleShiftItems", getCustomItems());
 							}
 						}
 					} else {

@@ -1,6 +1,6 @@
 import { Category } from "../styleshift/types/styleshiftTypes";
 
-const customStyleshiftItems: Category[] = [
+const customStyleShiftItems: Category[] = [
 	{
 		category: { icon: "science", label: "Test Custom Category" },
 		editable: true,
@@ -119,5 +119,5 @@ const customStyleshiftItems: Category[] = [
 ];
 
 export function getStyleshiftCustomItems() {
-	return customStyleshiftItems;
+	return customStyleShiftItems;
 }

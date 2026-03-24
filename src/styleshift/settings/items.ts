@@ -79,14 +79,14 @@ function autoAddHightlight(array: (Category | { isHeader: boolean; label: string
 }
 
 function saveCustomItemsAndRefreshExtensionState(customItems) {
-	saveToStorage("customStyleshiftItems", customItems);
+	saveToStorage("customStyleShiftItems", customItems);
 	refreshExtensionState();
 }
 
 export async function updateStyleshiftItems() {
 	styleshiftItems.Default = [...getStyleshiftDefaultItems(), ...getDefaultItems()];
 
-	const storedCustom = await getRootValue("customStyleshiftItems");
+	const storedCustom = await getRootValue("customStyleShiftItems");
 	if (storedCustom && Array.isArray(storedCustom) && storedCustom.length > 0) {
 		logger.debug("settings", "Loading custom items from storage");
 		styleshiftItems.Custom = storedCustom;

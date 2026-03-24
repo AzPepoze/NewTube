@@ -4,8 +4,11 @@ import { persistCachedDataToStorage, saveRootValue, suppressStoragePersistence, 
 import { updateStyleshiftItems } from "../settings/items";
 import { performStorageGarbageCollection } from "./storageMaintenance";
 import { triggerSettingsUpdateBatch } from "../settings/functions";
-import { createNotification } from "../shared/extension";
-import { sleep } from "../shared/normal";
+import { createNotification, createError, downloadFile } from "../shared/extension";
+import { sleep, deepClone } from "../shared/normal";
+import { initializeDeveloperEnvironment, jszipInstance } from "./runtimeController";
+import { styleshiftCategoryList } from "../settings/defaultItems";
+import { convertToExportSetting } from "./exportConverter";
 
 /**
  * Resolves a stored color ID into a CSS-ready RGBA string.
@@ -57,9 +60,6 @@ Do you want to install these items?`,
 /**
  * Imports preset data into the current user settings.
  */
-/**
- * Imports preset data into the current user settings.
- */
 export async function importPresetToSettings(presetData: any, persist = true, themeName: string | null = null): Promise<void> {
 	if (!persist) suppressStoragePersistence(true);
 	let loaderUi: any = null;
@@ -88,7 +88,7 @@ export async function importPresetToSettings(presetData: any, persist = true, th
 			return;
 		}
 
-		if (key === "customStyleshiftItems" && Array.isArray(value)) {
+		if (key === "customStyleShiftItems" && Array.isArray(value)) {
 			const approved = await validateCustomItemsForJs(value);
 			if (approved) {
 				await saveCustomStyleshiftItems(value, true);
@@ -179,5 +179,131 @@ export async function exportCurrentSettingsObject(includeMaintenance = true): Pr
 export async function exportCurrentSettingsAsString(): Promise<string> {
 	const settingsObj = await exportCurrentSettingsObject();
 	return JSON.stringify(settingsObj, null, 2);
+}
+
+
+/**
+ * Common utility for generating and downloading a ZIP file with a notification.
+ */
+export async function downloadZip(
+	zipName: string,
+	folderName: string,
+	files: Record<string, string | Blob>,
+) {
+	const notification = await createNotification({
+		icon: "inventory_2",
+		title: "Preparing Export",
+		content: "Initializing ZIP generation...",
+		timeout: -1,
+	});
+
+	try {
+		await initializeDeveloperEnvironment();
+
+		if (!jszipInstance) {
+			throw new Error("JSZip failed to load.");
+		}
+
+		const zip = new (jszipInstance as any)();
+
+		let folder = zip;
+		if (folderName && folderName.trim() !== "") {
+			folder = zip.folder(folderName.replace(/\/|\n/g, "_"));
+		}
+
+		for (const [path, content] of Object.entries(files)) {
+			// Handle nested folders if slashes are present in path
+			folder.file(path, content);
+		}
+
+		const zipBlob = await zip.generateAsync({ type: "blob" });
+		downloadFile(zipBlob, zipName);
+
+		notification.setIcon("check_circle");
+		notification.setTitle("Export Complete");
+		notification.setContent(`"${zipName}" has been downloaded.`);
+		setTimeout(() => notification.close(), 3000);
+	} catch (error) {
+		notification.close();
+		logger.error("export", "ZIP Export Failed", error);
+		createError(
+			`Failed to generate ZIP: ${error instanceof Error ? error.message : String(error)}`,
+		);
+	}
+}
+
+/**
+ * Recursively adds Styleshift items (categories and settings) to a ZIP file structure.
+ * Uses a manifest-based ordering system (order.json) for clean folder names.
+ */
+export async function addItemsToZip(
+	items: any[],
+	files: Record<string, string | Blob>,
+	baseFolder: string = "",
+) {
+	const prefix = baseFolder ? (baseFolder.endsWith("/") ? baseFolder : `${baseFolder}/`) : "";
+	const categoryOrder: string[] = [];
+
+	for (const thisCategory of items) {
+		const categoryName = (
+			thisCategory.category?.label ||
+			thisCategory.label ||
+			"Untitled Category"
+		).replace(/\/|\n/g, "_");
+		categoryOrder.push(categoryName);
+
+		const categoryPath = `${prefix}${categoryName}`;
+
+		// Category config
+		const categoryConfig: any = {};
+		for (const [key, value] of Object.entries(styleshiftCategoryList)) {
+			if (key !== "settings") {
+				categoryConfig[key] = thisCategory[key] ?? value;
+			}
+		}
+
+		files[`${categoryPath}/config.json`] = JSON.stringify(categoryConfig, null, 2);
+
+		if (thisCategory.settings) {
+			const settingOrder: string[] = [];
+			for (const originalSetting of thisCategory.settings) {
+				const settingName = (
+					originalSetting.name ||
+					originalSetting.id ||
+					"Untitled Setting"
+				).replace(/\/|\n/g, "_");
+				settingOrder.push(settingName);
+
+				const settingPath = `${categoryPath}/${settingName}`;
+				const thisSetting = deepClone(originalSetting);
+
+				// Extract JS/CSS files
+				await convertToExportSetting(thisSetting, async (fileName, fileData) => {
+					files[`${settingPath}/${fileName}`] = fileData;
+				});
+
+				// Setting config
+				files[`${settingPath}/config.json`] = JSON.stringify(thisSetting, null, 2);
+			}
+
+			// Setting manifest
+			files[`${categoryPath}/order.json`] = JSON.stringify(settingOrder, null, 2);
+		}
+	}
+
+	// Category manifest
+	files[`${prefix}order.json`] = JSON.stringify(categoryOrder, null, 2);
+}
+
+/**
+ * Packs multiple custom Styleshift items into a ZIP file using the high-fidelity structure.
+ */
+export async function exportStyleshiftZip(
+	styleshiftData: any[],
+	zipFileName: string,
+) {
+	const files: Record<string, string | Blob> = {};
+	await addItemsToZip(styleshiftData, files);
+	await downloadZip(zipFileName, "", files);
 }
 

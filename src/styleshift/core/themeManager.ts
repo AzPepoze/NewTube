@@ -1,18 +1,15 @@
 import { getRootValue, saveRootValue } from "./storageManager";
-import { importPresetToSettings } from "./settingsImporter";
+import { importPresetToSettings } from "./settingsImportExport";
 import { showUserConfirmation } from "../ui/extension";
 import { logger } from "../../shared/logger";
 import { STORE_TARGET_SITES } from "../../main/constants";
 import { STYLESHIFT_STORE_ORIGINS, STYLESHIFT_STORE_API_URL } from "./themeConfig";
-import { copyToClipboard, createNotification, createError } from "../shared/extension";
-import { downloadFile } from "../shared/normal";
-import { initializeDeveloperEnvironment, jszipInstance } from "./runtimeController";
 
 export type Theme = {
 	themeId: string;
 	themeName: string;
 	currentSettings?: { [key: string]: string };
-	customStyleshiftItems?: any[];
+	customStyleShiftItems?: any[];
 };
 
 
@@ -76,7 +73,7 @@ export async function applyThemeToDomainStorage(
 		themeId,
 		themeName,
 		currentSettings: themeData.currentSettings,
-		customStyleshiftItems: themeData.customStyleshiftItems,
+		customStyleShiftItems: themeData.customStyleShiftItems,
 	};
 
 	if (existingIndex > -1) {
@@ -98,8 +95,8 @@ export async function applyThemeToDomainStorage(
 	}
 
 	// Store custom items
-	if (themeData.customStyleshiftItems) {
-		domainStorage.customStyleshiftItems = themeData.customStyleshiftItems;
+	if (themeData.customStyleShiftItems) {
+		domainStorage.customStyleShiftItems = themeData.customStyleShiftItems;
 	}
 
 	await chrome.storage.local.set({ [domain]: domainStorage });
@@ -139,7 +136,7 @@ export async function fetchThemeFromApi(themeId: string): Promise<Theme | null> 
 			themeId: data.id || themeId,
 			themeName: data.name,
 			currentSettings: data.settings,
-			customStyleshiftItems: data.customStyleshiftItems,
+			customStyleShiftItems: data.customStyleShiftItems,
 		};
 
 		return theme;
@@ -194,7 +191,7 @@ export async function saveTheme(
 			themeId,
 			themeName: name,
 			currentSettings: data.currentSettings,
-			customStyleshiftItems: data.customStyleshiftItems,
+			customStyleShiftItems: data.customStyleShiftItems,
 		};
 
 		if (existingIndex > -1) {
@@ -455,64 +452,6 @@ export async function checkAndUpdateTheme(manual: boolean = false, targetDomain:
 }
 
 
-/**
- * Copies a single theme's data to the clipboard as a JSON string.
- */
-export function exportThemeToClipboard(name: string, themeData: any) {
-	const jsonText = JSON.stringify(themeData, null, 2);
-	copyToClipboard(jsonText);
-
-	createNotification({
-		icon: "content_copy",
-		title: "Theme Exported",
-		content: `"${name}" copied to clipboard.`,
-	});
-}
-
-/**
- * Downloads a single theme as a ZIP file.
- */
-export async function exportThemeAsZip(name: string, themeData: any) {
-	const notification = await createNotification({
-		icon: "inventory_2",
-		title: "Preparing Export",
-		content: "Initializing ZIP generation...",
-		timeout: -1,
-	});
-
-	try {
-		await initializeDeveloperEnvironment();
-
-		if (!jszipInstance) {
-			throw new Error("JSZip failed to load.");
-		}
-
-		const zip = new (jszipInstance as any)();
-		const rootFolder = zip.folder(name.replace(/\/|\n/g, "_"));
-
-		const configJson = JSON.stringify(themeData, null, 2);
-		rootFolder.file("ThemeConfig.json", configJson);
-
-		for (const [key, value] of Object.entries(themeData)) {
-			if (typeof value === "string" && (key.endsWith("Css") || key.endsWith("Function") || key.endsWith("Script"))) {
-				rootFolder.file(`${key}.js`, value);
-			}
-		}
-
-		const zipBlob = await zip.generateAsync({ type: "blob" });
-		downloadFile(zipBlob, `${name}.zip`);
-
-		notification.setIcon("check_circle");
-		notification.setTitle("Theme Exported");
-		notification.setContent(`"${name}.zip" has been downloaded.`);
-		setTimeout(() => notification.close(), 3000);
-
-	} catch (error) {
-		notification.close();
-		logger.error("export", "ZIP Export Failed", error);
-		createError(`Failed to export theme as ZIP: ${error instanceof Error ? error.message : String(error)}`);
-	}
-}
 
 
 

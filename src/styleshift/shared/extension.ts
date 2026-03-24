@@ -1,4 +1,3 @@
-import { convertToExportSetting } from "../core/exportConverter";
 import { saveAndRefreshAll, jszipInstance as jszip } from "../core/runtimeController";
 import {
 	ALLOWED_STORAGE_KEYS,
@@ -8,7 +7,6 @@ import {
 } from "../core/storageManager";
 import { initializeRequiredStorageStructures as setNullSave } from "../core/storageMaintenance";
 import { styleshiftContainer } from "..";
-import { styleshiftCategoryList } from "../settings/defaultItems";
 import { showStylesheet, hideStylesheet } from "../settings/styleSheet";
 import { Category, Setting } from "../types/styleshiftTypes";
 import {
@@ -83,8 +81,13 @@ export async function enterPrompt({ title = "Enter text", placeholder = "", valu
  * @param {{ message : string, title : string, buttons : { label : string, color? : string }[] }} Options
  * @returns {Promise<string | null>}
  */
-export async function chooseSelection({ message = "", title = "Select Option", buttons = [] }) {
-	return await showSelection(message, title, buttons);
+export async function chooseSelection({
+	message = "",
+	title = "Select Option",
+	buttons = [],
+	vertical = false,
+}) {
+	return await showSelection(message, title, buttons, { vertical });
 }
 
 /**
@@ -301,11 +304,11 @@ For advanced user !!!
 /**
  * Prompts the user to select a file.
  * @param {string} type - The file type.
- * @returns {Promise<file>}
+ * @returns {Promise<File>}
  * @example
  * const file = await getFile(".txt");
  */
-export async function getFile(type) {
+export async function getFile(type: string): Promise<File> {
 	return new Promise((resolve, reject) => {
 		const input = document.createElement("input");
 		input.type = "file";
@@ -382,7 +385,7 @@ export function exportStyleshiftData() {
 		}
 	}
 
-	const customItems = exportStyleshiftData["customStyleshiftItems"];
+	const customItems = exportStyleshiftData["customStyleShiftItems"];
 
 	if (customItems) {
 		for (const thisCategory of customItems) {
@@ -405,7 +408,7 @@ export function exportStyleshiftData() {
  * @param {string} text - The JSON string to import.
  * @returns {Promise<void>}
  * @example
- * const json = '{"customStyleshiftItems":[{"Category":"Test","settings":[{"type":"text","id":"testText","html":"<p>Test</p>"}]}]}';
+ * const json = '{"customStyleShiftItems":[{"Category":"Test","settings":[{"type":"text","id":"testText","html":"<p>Test</p>"}]}]}';
  * await importStyleshiftJsonText(json);
  */
 export async function importStyleshiftJsonText(text) {
@@ -429,7 +432,11 @@ export function exportStyleshiftJsonText() {
  * @example
  * const data = await importStyleshiftZip(file);
  */
-export async function importStyleshiftZip(zipFile) {
+/**
+ * Parses a Styleshift ZIP file into a data object.
+ * Supports both legacy (Index - Name) and high-fidelity (order.json) structures.
+ */
+export async function parseStyleshiftZip(zipFile: File | Blob): Promise<any> {
 	if (!jszip) {
 		throw new Error("JSZip not loaded!");
 	}
@@ -439,77 +446,138 @@ export async function importStyleshiftZip(zipFile) {
 		createFolders: true,
 	});
 
-	const customStyleshiftItems: Category[] = [];
+	let customStyleShiftItems: Category[] = [];
+	let currentSettings: any = null;
 
-	const categoryFolders = Object.keys(loadedZip.files).filter((path) => {
-		const pathArray = path.split("/");
-		if (pathArray.length === 2 && pathArray[1] == "") {
-			return true;
-		}
-	});
-
-	for (const categoryPath of categoryFolders) {
-		const categoryPathName = categoryPath.slice(0, -1);
-		const categoryArray = categoryPathName.split(" - ");
-		const categoryIndex = Number(categoryArray[0]);
-
-		const categoryConfig = loadedZip.file(`${categoryPathName}/Config.json`);
-
-		const configContent = await categoryConfig.async("string");
-		const categoryData = JSON.parse(configContent);
-
-		const settings: Setting[] = [];
-
-		for (const settingPath of Object.keys(loadedZip.files)) {
-			if (
-				settingPath.split("/").length === 3 &&
-				settingPath.startsWith(`${categoryPathName}/`) &&
-				settingPath.endsWith("/")
-			) {
-				const settingPathName = settingPath.slice(categoryPath.length, -1);
-
-				const settingArray = settingPathName.split(" - ");
-				const settingIndex = Number(settingArray[0]);
-
-				const settingData =
-					JSON.parse(await loadedZip.file(`${settingPath}Config.json`).async("string")) || {};
-
-				for (const settingPropertyPath of Object.keys(loadedZip.files)) {
-					if (
-						settingPropertyPath.split("/").length === 3 &&
-						settingPropertyPath.startsWith(settingPath) &&
-						!settingPropertyPath.endsWith("/") &&
-						!settingPropertyPath.endsWith("Config.json")
-					) {
-						const settingPropertyName = settingPropertyPath.slice(
-							settingPath.length,
-							settingPropertyPath.lastIndexOf("."),
-						);
-
-						logger.info("extension", settingPropertyPath);
-
-						settingData[settingPropertyName] = await loadedZip
-							.file(settingPropertyPath)
-							.async("string");
-					}
-				}
-
-				settings[settingIndex] = settingData;
-			}
-		}
-
-		// clear null settings
-		categoryData["settings"] = settings.filter((setting) => setting !== null);
-
-		customStyleshiftItems[categoryIndex] = categoryData;
+	// 1. Check for currentSettings.json
+	const settingsFile = loadedZip.file("currentSettings.json");
+	if (settingsFile) {
+		currentSettings = JSON.parse(await settingsFile.async("string"));
 	}
 
-	const styleshiftData = {
-		customStyleshiftItems,
+	// 2. Resolve items base path (root or customStyleShiftItems/ folder)
+	let itemsBasePath = "";
+	if (Object.keys(loadedZip.files).some(f => f.startsWith("customStyleShiftItems/"))) {
+		itemsBasePath = "customStyleShiftItems/";
+	}
+
+	// 3. Resolve Categories
+	const categoryFolders: string[] = [];
+	const categoriesOrderFile = loadedZip.file(`${itemsBasePath}order.json`);
+
+	if (categoriesOrderFile) {
+		const order = JSON.parse(await categoriesOrderFile.async("string")) as string[];
+		for (const name of order) {
+			const path = `${itemsBasePath}${name}/`;
+			if (loadedZip.files[path]) {
+				categoryFolders.push(path);
+			}
+		}
+	} else {
+		const folders = Object.keys(loadedZip.files).filter((path) => {
+			const pathArray = path.split("/");
+			const depth = itemsBasePath ? 2 : 1;
+			return path.startsWith(itemsBasePath) && pathArray.length === depth + 1 && pathArray[depth] === "";
+		});
+		categoryFolders.push(...folders.sort());
+	}
+
+	// 4. Process Categories
+	for (let i = 0; i < categoryFolders.length; i++) {
+		const categoryPath = categoryFolders[i];
+		const categoryPathName = categoryPath.slice(0, -1);
+		
+		const categoryFolderBaseName = categoryPathName.split("/").pop() || "";
+		let categoryIndex = i;
+		if (categoryFolderBaseName.includes(" - ")) {
+			const indexPart = parseInt(categoryFolderBaseName.split(" - ")[0]);
+			if (!isNaN(indexPart)) categoryIndex = indexPart;
+		}
+
+		const categoryConfig = loadedZip.file(`${categoryPathName}/config.json`) || 
+							   loadedZip.file(`${categoryPathName}/Config.json`);
+		
+		if (!categoryConfig) continue;
+
+		const categoryData = JSON.parse(await categoryConfig.async("string"));
+		const settings: Setting[] = [];
+
+		// 5. Resolve Settings
+		const settingFolders: string[] = [];
+		const settingsOrderFile = loadedZip.file(`${categoryPathName}/order.json`);
+
+		if (settingsOrderFile) {
+			const order = JSON.parse(await settingsOrderFile.async("string")) as string[];
+			for (const name of order) {
+				const path = `${categoryPathName}/${name}/`;
+				if (loadedZip.files[path]) {
+					settingFolders.push(path);
+				}
+			}
+		} else {
+			const folders = Object.keys(loadedZip.files).filter((path) => {
+				const pathArray = path.split("/");
+				const depth = categoryPathName.split("/").length;
+				return path.startsWith(`${categoryPathName}/`) && pathArray.length === depth + 2 && pathArray[depth + 1] === "";
+			});
+			settingFolders.push(...folders.sort());
+		}
+
+		// 6. Process Settings
+		for (let j = 0; j < settingFolders.length; j++) {
+			const settingPath = settingFolders[j];
+			const settingPathName = settingPath.slice(0, -1);
+
+			const settingFolderBaseName = settingPathName.split("/").pop() || "";
+			let settingIndex = j;
+			if (settingFolderBaseName.includes(" - ")) {
+				const indexPart = parseInt(settingFolderBaseName.split(" - ")[0]);
+				if (!isNaN(indexPart)) settingIndex = indexPart;
+			}
+
+			const settingConfig = loadedZip.file(`${settingPathName}/config.json`) || 
+								 loadedZip.file(`${settingPathName}/Config.json`);
+			if (!settingConfig) continue;
+
+			const settingData = JSON.parse(await settingConfig.async("string")) || {};
+
+			for (const filePath of Object.keys(loadedZip.files)) {
+				const isPropertyFile = filePath.startsWith(settingPath) && 
+									   !filePath.endsWith("/") && 
+									   !filePath.toLowerCase().endsWith("/config.json") &&
+									   !filePath.toLowerCase().endsWith("/order.json");
+				
+				if (isPropertyFile) {
+					const fileName = filePath.split("/").pop() || "";
+					const propertyName = fileName.slice(0, fileName.lastIndexOf("."));
+					settingData[propertyName] = await loadedZip.file(filePath).async("string");
+				}
+			}
+
+			settings[settingIndex] = settingData;
+		}
+
+		categoryData["settings"] = settings.filter((s) => s !== null);
+		customStyleShiftItems[categoryIndex] = categoryData;
+	}
+
+	const styleshiftData: any = {
+		customStyleShiftItems: customStyleShiftItems.filter(c => c !== null),
 	};
 
-	logger.info("extension", styleshiftData);
+	if (currentSettings) {
+		styleshiftData.currentSettings = currentSettings;
+	}
 
+	return styleshiftData;
+}
+
+/**
+ * Imports StyleShift data from a ZIP file and applies it immediately.
+ */
+export async function importStyleshiftZip(zipFile: File | Blob) {
+	const styleshiftData = await parseStyleshiftZip(zipFile);
+	logger.info("extension", "Importing Styleshift ZIP Data", styleshiftData);
 	await importStyleshiftData(styleshiftData);
 }
 
@@ -521,57 +589,6 @@ export async function importStyleshiftZip(zipFile) {
  * @example
  * await exportStyleshiftZip(data, "styleshift.zip");
  */
-export async function exportStyleshiftZip(styleshiftData, zipFileName) {
-	logger.info("extension", "Data", styleshiftData);
-
-	if (!jszip) {
-		throw new Error("JSZip not loaded!");
-	}
-	const zip = new (jszip as any)();
-
-	for (const [categoryIndex, thisCategory] of styleshiftData.entries()) {
-		const renamedCategory = (thisCategory.Category || "Untitled Category").replace(/\/|\n/g, "_");
-		const categoryFolder = zip.folder(`${categoryIndex} - ${renamedCategory}`);
-
-		const categoryConfig = {};
-
-		for (const [key, value] of Object.entries(styleshiftCategoryList)) {
-			if (key !== "settings") {
-				if (thisCategory[key]) {
-					categoryConfig[key] = thisCategory[key];
-				} else {
-					categoryConfig[key] = value;
-				}
-			}
-		}
-
-		categoryFolder.file("Config.json", JSON.stringify(categoryConfig, null, 2));
-
-		if (thisCategory.settings) {
-			for (const [settingIndex, originalSetting] of thisCategory.settings.entries()) {
-				logger.info("extension", originalSetting);
-
-				const renamedSettingName = (
-					originalSetting.name ||
-					originalSetting.id ||
-					"Untitled Setting"
-				).replace(/\/|\n/g, "_");
-
-				const thisSetting = deepClone(originalSetting);
-				const settingsFolder = categoryFolder.folder(`${settingIndex} - ${renamedSettingName}`);
-
-				await convertToExportSetting(thisSetting, async (fileName, fileData) => {
-					settingsFolder.file(fileName, fileData);
-				});
-
-				settingsFolder.file("Config.json", JSON.stringify(thisSetting, null, 2));
-			}
-		}
-	}
-
-	const zipBlob = await zip.generateAsync({ type: "blob" });
-	downloadFile(zipBlob, zipFileName);
-}
 
 /**
  * Appends a child element to a parent HTMLDivElement.

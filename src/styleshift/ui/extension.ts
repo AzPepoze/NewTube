@@ -205,7 +205,7 @@ export async function showSelection(
 	message: string,
 	title: string = "Select Option",
 	buttons: { label: string; color?: string }[] = [],
-	options: { align?: "left" | "center" | "right" } = {},
+	options: { align?: "left" | "center" | "right"; vertical?: boolean } = {},
 ): Promise<string | null> {
 	return new Promise((resolve) => {
 		const mountPoint = document.createElement("div");
@@ -216,6 +216,7 @@ export async function showSelection(
 				title,
 				message,
 				align: options.align || "center",
+				vertical: options.vertical || false,
 				buttons: buttons.map((btn) => ({
 					label: btn.label,
 					color: btn.color || "#7f5db7",

@@ -10,6 +10,7 @@
 		title = "Confirm Action",
 		message = "",
 		align = "center",
+		vertical = false,
 		onConfirm,
 		onCancel,
 		footer,
@@ -19,6 +20,7 @@
 		title?: string;
 		message?: string;
 		align?: "left" | "center" | "right";
+		vertical?: boolean;
 		onConfirm?: () => void;
 		onCancel?: () => void;
 		footer?: Snippet;
@@ -50,7 +52,7 @@
 		</div>
 	{/if}
 	<div
-		class="footer"
+		class="footer {vertical ? 'vertical' : ''}"
 		in:fly={{ y: 20, duration: 600, easing: quintOut, delay: 300 }}
 	>
 		{#if footer}
@@ -99,6 +101,11 @@
 		display: flex;
 		gap: 15px;
 		margin-top: 10px;
+
+		&.vertical {
+			flex-direction: column;
+			gap: 10px;
+		}
 
 		:global(.STYLESHIFT-Button) {
 			flex: 1;

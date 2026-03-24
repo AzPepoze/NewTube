@@ -23,6 +23,7 @@ import { uiCleanerCategory } from "./categories/uiCleaner";
 import { fontsCategory } from "./categories/fonts";
 import { enhancedCssCategory } from "./categories/enhancedCss";
 import { betaFeaturesCategory } from "./categories/betaFeatures";
+import { sidebarCategory } from "./categories/sidebar";
 
 const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 	{ isHeader: true, label: "Video Experience" },
@@ -51,6 +52,7 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 	subtitlesCategory,
 	thumbnailCategory,
 	topbarSearchCategory,
+	sidebarCategory,
 	topLeftIconCategory,
 	tabIconCategory,
 

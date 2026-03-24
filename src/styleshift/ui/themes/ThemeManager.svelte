@@ -6,19 +6,18 @@
 	import {
 		exportCurrentSettingsObject,
 		importPresetToSettings,
-	} from "@/styleshift/core/settingsImporter";
+	} from "@/styleshift/core/settingsImportExport";
+	import { 
+		exportThemeWithSelection, 
+		importThemeZipWithWorkflow 
+	} from "@/styleshift/core/themeImportExport";
 	import {
 		saveTheme as saveThemeManager,
 		applyTheme as applyThemeManager,
 		deleteTheme as deleteThemeManager,
 		type Theme,
-		exportThemeAsZip,
-		exportThemeToClipboard,
 	} from "@/styleshift/core/themeManager";
-	import {
-		chooseSelection,
-		createNotification,
-	} from "@/styleshift/shared/extension";
+	import { createNotification } from "@/styleshift/shared/extension";
 	import Icon from "@ui/settings/components/main/Icon.svelte";
 	import { enterPrompt } from "@/styleshift/shared/extension";
 	import ThemeCard from "./ThemeCard.svelte";
@@ -100,8 +99,8 @@
 					themeId: t.themeId,
 					themeName: t.themeName,
 					currentSettings: t.settings?.currentSettings,
-					customStyleshiftItems:
-						t.settings?.customStyleshiftItems,
+					customStyleShiftItems:
+						t.settings?.customStyleShiftItems,
 				}));
 			}
 		} catch (e) {
@@ -137,6 +136,11 @@
 		}
 	}
 
+	async function handleImportThemeZip() {
+		await importThemeZipWithWorkflow();
+		await loadThemes();
+	}
+
 	async function applyTheme(id: string) {
 		const theme = (
 			currentView === "installed" ? themes : storeThemes
@@ -167,12 +171,12 @@
 
 		loadingThemeId = id;
 		const success = await applyThemeManager(id, displayName, "EXTENSION");
-		
+
 		if (success) {
 			activeThemeId = id;
 			wasThemeModified = true;
 		}
-		
+
 		loadingThemeId = null;
 	}
 
@@ -243,22 +247,11 @@
 		const theme = themes.find((t) => t.themeId === id);
 		if (!theme) return;
 
-		const displayName = theme.themeName || id;
-
-		const selection = await chooseSelection({
-			title: `Export "${displayName}"`,
-			message: "How would you like to export this theme?\n(Click outside to cancel)",
-			buttons: [
-				{ label: "Clipboard", color: "var(--Theme-0)" },
-				{ label: "ZIP File", color: "var(--Theme-0)" },
-			],
-		});
-
-		if (selection === "Clipboard") {
-			exportThemeToClipboard(displayName, $state.snapshot(theme));
-		} else if (selection === "ZIP File") {
-			await exportThemeAsZip(displayName, $state.snapshot(theme));
-		}
+		await exportThemeWithSelection(
+			theme.themeId,
+			theme.themeName,
+			$state.snapshot(theme),
+		);
 	}
 
 	function getThemePreview(theme: Theme) {
@@ -413,6 +406,14 @@
 			>
 				<Icon name="save" size={16} />
 				<span>Save</span>
+			</button>
+			<button
+				class="minimal-footer-btn import"
+				onclick={handleImportThemeZip}
+				title="Import Theme ZIP"
+			>
+				<Icon name="publish" size={16} />
+				<span>Import</span>
 			</button>
 		</div>
 		<div class="footer-divider"></div>
@@ -606,6 +607,13 @@
 				color: var(--Theme-0-Light);
 				&:hover {
 					background: var(--Theme-0-15);
+				}
+			}
+
+			&.import {
+				color: #a7ffbe;
+				&:hover {
+					background: rgba(167, 255, 190, 0.15);
 				}
 			}
 

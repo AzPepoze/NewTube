@@ -21,7 +21,7 @@ export async function saveAndRefreshAll(): Promise<void> {
 export async function saveItems(): Promise<void> {
 	const customItems = getCustomItems();
 	if (customItems && customItems.length > 0) {
-		await saveToStorage("customStyleshiftItems", customItems, true);
+		await saveToStorage("customStyleShiftItems", customItems, true);
 	}
 	await persistCachedDataToStorage();
 }

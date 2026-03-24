@@ -1,6 +1,7 @@
 import { logger } from "../../shared/logger";
 import { getSettingsList } from "../settings/items";
 import { getStyleshiftCustomItems } from "../../main/itemsStyleshiftCustom";
+import { defaultSetting } from "../../main/defaultSetting";
 import {
 	persistCachedDataToStorage,
 	saveToStorage,
@@ -14,10 +15,10 @@ import {
  * Ensures custom items are initialized for new users.
  */
 export async function initializeDefaultCustomItems(): Promise<void> {
-	const currentCustom = await getRootValue("customStyleshiftItems");
+	const currentCustom = await getRootValue("customStyleShiftItems");
 	if (currentCustom == null || (Array.isArray(currentCustom) && currentCustom.length === 0)) {
 		logger.info("maintenance", "Initializing default custom items for new user");
-		await saveRootValue("customStyleshiftItems", getStyleshiftCustomItems(), true);
+		await saveRootValue("customStyleShiftItems", getStyleshiftCustomItems(), true);
 		await persistCachedDataToStorage();
 	}
 }
@@ -29,19 +30,28 @@ export async function populateMissingDefaultSettings(): Promise<void> {
 	const availableSettings = await getSettingsList(true);
 	let changed = false;
 
+	const defaultSettingsConfig = defaultSetting.currentSettings || {};
+
 	for (const [settingId, config] of Object.entries(availableSettings) as [string, any]) {
 		if ("value" in config) {
 			const isExternal = EXTERNAL_STORAGE_KEYS.includes(settingId);
 			const currentValue = isExternal ? cachedStorageData[settingId] : (cachedStorageData["currentSettings"] || {})[settingId];
 
 			if (currentValue == null) {
+				const isFoundInDefault = defaultSettingsConfig[settingId] !== undefined;
+				const defaultValue = isFoundInDefault ? defaultSettingsConfig[settingId] : config.value;
+
+				if (isFoundInDefault) {
+					logger.info("maintenance", `Setting found in defaultSetting.ts: ${settingId}`, defaultValue);
+				} else {
+					logger.info("maintenance", `Setting not found in defaultSetting.ts, using internal default for: ${settingId}`, defaultValue);
+				}
+
 				if (isExternal) {
-					cachedStorageData[settingId] = config.value;
-					logger.info("maintenance", "Populated default root key for:", settingId, config.value);
+					cachedStorageData[settingId] = defaultValue;
 				} else {
 					if (!cachedStorageData["currentSettings"]) cachedStorageData["currentSettings"] = {};
-					cachedStorageData["currentSettings"][settingId] = config.value;
-					logger.info("maintenance", "Populated default user setting for:", settingId, config.value);
+					cachedStorageData["currentSettings"][settingId] = defaultValue;
 				}
 				changed = true;
 			}
@@ -93,7 +103,7 @@ export async function initializeRequiredStorageStructures(): Promise<void> {
 	let structuralChangesMade = false;
 
 	if ((await getRootValue("currentSettings")) == null) {
-		await saveRootValue("currentSettings", {}, true);
+		await saveRootValue("currentSettings", { ...defaultSetting.currentSettings }, true);
 		structuralChangesMade = true;
 	}
 

@@ -1,7 +1,8 @@
-import * as styleshiftFunctions from "../styleshift/shared/extension";
+import { exportStyleshiftZip } from "../styleshift/core/settingsImportExport";
 import { sleep } from "../styleshift/shared/normal";
 import { Category } from "../styleshift/types/styleshiftTypes";
 import { logger } from "../shared/logger";
+import { createError, createNotification, exportStyleshiftJsonText, getFile, importStyleshiftZip } from "@/styleshift/shared/extension";
 
 const devOnlyItems: Category[] = [
 	{
@@ -21,7 +22,7 @@ const devOnlyItems: Category[] = [
 				color: "#1a34ffff",
 				fontSize: 15,
 				clickFunction: async function () {
-					const notification = await styleshiftFunctions["createNotification"]({
+					const notification = await createNotification({
 						icon: "🔄️",
 						title: "NewTube - Exporting file",
 						content: "Please wait...",
@@ -29,9 +30,10 @@ const devOnlyItems: Category[] = [
 					});
 
 					try {
-						await styleshiftFunctions["exportStyleshiftZip"](
-							JSON.parse(await styleshiftFunctions["exportStyleshiftJsonText"]())
-								.customStyleshiftItems,
+						await exportStyleshiftZip(
+							JSON.parse(
+								await exportStyleshiftJsonText(),
+							).customStyleShiftItems,
 							"Test.NewTube.zip",
 						);
 
@@ -44,9 +46,7 @@ const devOnlyItems: Category[] = [
 						notification.close();
 					} catch (error) {
 						notification.close();
-						styleshiftFunctions["createError"](error).then((notification) => {
-							notification.setTitle("NewTube - Error exporting file");
-						});
+						createError(`Error exporting file: ${error}`);
 					}
 				},
 				align: "center",
@@ -60,16 +60,16 @@ const devOnlyItems: Category[] = [
 				color: "#1a34ffff",
 				fontSize: 15,
 				clickFunction: async function () {
-					const notification = await styleshiftFunctions["createNotification"]({
+					const notification = await createNotification({
 						icon: "🔄️",
 						title: "NewTube - Choosing file",
 						content: "Please choose file...",
 						timeout: -1,
 					});
 					try {
-						const file = await styleshiftFunctions["getFile"](".NewTube.zip");
+						const file = await getFile(".NewTube.zip");
 						logger.info("extension", "file:", file);
-						await styleshiftFunctions["importStyleshiftZip"](file);
+						await importStyleshiftZip(file);
 
 						notification.setIcon("✅");
 						notification.setTitle("NewTube - Imported file");
@@ -80,9 +80,7 @@ const devOnlyItems: Category[] = [
 						notification.close();
 					} catch (error) {
 						notification.close();
-						styleshiftFunctions["createError"](error).then((notification) => {
-							notification.setTitle("NewTube - Error importing file");
-						});
+						createError(`Error importing file: ${error}`);
 					}
 				},
 				align: "center",

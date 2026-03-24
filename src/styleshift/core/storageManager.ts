@@ -21,7 +21,7 @@ import { getOptionalExternalStorageKeys } from "../../main";
 const INTERNAL_STORAGE_KEYS = [
 	"currentSettings",
 	"defaultStyleshiftItems",
-	"customStyleshiftItems",
+	"customStyleShiftItems",
 	"enableExtension",
 	"enableRealtimeExtension",
 	"developerMode",
@@ -30,7 +30,7 @@ const INTERNAL_STORAGE_KEYS = [
 const externalKeys = getOptionalExternalStorageKeys() || [];
 export const EXTERNAL_STORAGE_KEYS = [...INTERNAL_STORAGE_KEYS, ...externalKeys];
 
-export const ALLOWED_STORAGE_KEYS = ["currentSettings", "customStyleshiftItems"];
+export const ALLOWED_STORAGE_KEYS = ["currentSettings", "customStyleShiftItems"];
 
 /**
  * Loads all data from Chrome local storage for the current domain context.
@@ -110,7 +110,7 @@ export async function saveToStorage(key: string, value: any, delayPersistence = 
  * Specialized function to save custom items to the root of storage.
  */
 export async function saveCustomStyleshiftItems(items: any[], delayPersistence = false): Promise<boolean> {
-	return await saveRootValue("customStyleshiftItems", items, delayPersistence);
+	return await saveRootValue("customStyleShiftItems", items, delayPersistence);
 }
 
 

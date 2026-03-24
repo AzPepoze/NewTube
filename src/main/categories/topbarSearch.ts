@@ -24,13 +24,35 @@ export const topbarSearchCategory: Category = {
 				window.addEventListener("scroll", handleScroll);
 			},
 			enableCss: `
-                #background.ytd-masthead {
-                    transition: background-color 0.3s ease !important;
+                #masthead #background.ytd-masthead {
+                    transition: all 0.3s;
                 }
-                #background.ytd-masthead.scrolled {
+
+                #masthead #background.ytd-masthead:not(.scrolled) {
+					background-color: transparent !important;
+					backdrop-filter: blur(0px) !important;
+					box-shadow: none !important;
+					border: none !important;
+				}
+
+
+                #masthead #background.ytd-masthead.scrolled {
                     background-color: var(--nt-topbar-bg, #00000080) !important;
+					backdrop-filter: blur(var(--nt-topbar-blur-amount, 10px)) !important;
                 }
             `,
+		},
+		{
+			type: "numberSlide",
+			id: "TopbarBlurAmount",
+			name: "Topbar Blur",
+			description: "Adjusts the blur intensity of the adaptive topbar.",
+			value: 10,
+			min: 0,
+			max: 50,
+			step: 1,
+			varCss: "--nt-topbar-blur-amount",
+			require: { EnableTopbarTransparency: true },
 		},
 		{
 			type: "color",

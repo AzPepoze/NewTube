@@ -20,7 +20,8 @@ ytd-button-renderer.ytd-live-chat-frame,
 #player-container,
 .ytp-endscreen-content,
 ytd-thumbnail-overlay-time-status-renderer badge-shape,
-.ytSearchboxComponentInputBox
+.ytSearchboxComponentInputBox,
+.ytGridShelfViewModelGridShelfBottomButtonContainer
 {
 	background: transparent !important;
 }
@@ -66,7 +67,6 @@ ytd-alert-with-button-renderer,
 	background: transparent !important;
 }
 
-#guide-content,
 #mini-guide-background,
 yt-contextual-sheet-layout {
 	background: var(--nt-bg-main) !important;

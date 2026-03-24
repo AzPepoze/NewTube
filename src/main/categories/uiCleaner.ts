@@ -72,7 +72,9 @@ export const uiCleanerCategory: Category = {
 			description: "Removes the 'More from YouTube' section (Premium, Music, Kids) from the sidebar.",
 			value: false,
 			enableCss: `
-                ytd-guide-section-renderer:has(#guide-section-title:contains("More from YouTube")) {
+                ytd-guide-section-renderer:has([href="/premium"]),
+				ytd-guide-section-renderer:has([href="https://music.youtube.com/"])
+				{
                     display: none !important;
                 }
             `,
