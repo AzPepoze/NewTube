@@ -3,6 +3,7 @@ import esbuildSvelte from "esbuild-svelte";
 import chokidar from "chokidar";
 import fs from "fs-extra";
 import path from "path";
+import { createHash } from "crypto";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -22,6 +23,7 @@ const BUILD_PATH = path.join(__dirname, "../out/build");
 const TEMP_PATH = path.join(__dirname, "../temp");
 const CHROMIUM_PATH = path.join(__dirname, "../out/dist/chromium");
 const FIREFOX_PATH = path.join(__dirname, "../out/dist/firefox");
+const REPO_ROOT = path.resolve(__dirname, "..");
 
 /*
 -------------------------------------------------------
@@ -92,6 +94,29 @@ const commonAlias = {
 	"@settings": path.join(__dirname, "../src/styleshift/settings"),
 	"@functions": path.join(__dirname, "../src/styleshift/shared"),
 };
+
+function createSvelteCompilerOptions() {
+	const getStableSvelteHashInput = (filename: string, name: string, css: string): string => {
+		const normalizedFilename = filename.replace(/\\/g, "/").toLowerCase();
+		let normalizedPath = normalizedFilename;
+
+		if (path.isAbsolute(filename)) {
+			const relativePath = path.relative(REPO_ROOT, filename).replace(/\\/g, "/").toLowerCase();
+			if (!relativePath.startsWith("..")) normalizedPath = relativePath;
+		}
+
+		return `${normalizedPath}|${name}|${css}`;
+	};
+
+	return {
+		css: "injected" as const,
+		cssHash: ({ filename, name, css }: { filename: string; name: string; css: string }) => {
+			const seed = getStableSvelteHashInput(filename, name, css);
+			const stableHash = createHash("sha256").update(seed).digest("hex").slice(0, 8);
+			return `svelte-${stableHash}`;
+		},
+	};
+}
 
 /*
 -------------------------------------------------------
@@ -255,7 +280,7 @@ async function build() {
 				"@codemirror/autocomplete",
 			],
 			alias: commonAlias,
-			plugins: [esbuildSvelte({ compilerOptions: { css: "injected" } })],
+			plugins: [esbuildSvelte({ compilerOptions: createSvelteCompilerOptions() })],
 			define: { imgbb_api_key: JSON.stringify(process.env.IMGBB_API_KEY || "") },
 			loader: commonLoader,
 			assetNames: "assets/[name]",
