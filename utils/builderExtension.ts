@@ -1,12 +1,13 @@
-const esbuild = require("esbuild");
-const esbuildSvelte = require("esbuild-svelte");
-const chokidar = require("chokidar");
-const fs = require("fs-extra");
-const path = require("path");
-const dotenv = require("dotenv");
+import esbuild from "esbuild";
+import esbuildSvelte from "esbuild-svelte";
+import chokidar from "chokidar";
+import fs from "fs-extra";
+import path from "path";
+import dotenv from "dotenv";
+
 dotenv.config();
 
-const config = require("../extension.config.json");
+import config from "../extension.config.json";
 
 /*
 -------------------------------------------------------
@@ -49,19 +50,6 @@ const log = {
 	step: (msg: string) => console.log(`${colors.bright}${colors.magenta}➜${colors.reset} ${msg}`),
 };
 
-const brandingPlugin = {
-	name: "branding",
-	setup(buildInstance) {
-		buildInstance.onEnd(async (_result) => {
-			const outfile = buildInstance.initialOptions.outfile;
-			if (outfile && fs.existsSync(outfile)) {
-				let content = await fs.readFile(outfile, "utf8");
-				content = await replaceBranding(content);
-				await fs.writeFile(outfile, content, "utf8");
-			}
-		});
-	},
-};
 
 function getFileNameFromPath(filePath) {
 	const parts = filePath.split("/");
@@ -93,7 +81,7 @@ const commonLoader = {
 	".woff2": "file",
 	".eot": "file",
 	".png": "file",
-};
+} as const;
 
 const commonAlias = {
 	"@": path.join(__dirname, "../src"),
@@ -110,8 +98,6 @@ const commonAlias = {
 Build Helpers
 -------------------------------------------------------
 */
-// processFunctions is no longer needed with the IIFE approach, but we'll keep a simpler version
-// if we ever need it for ad-hoc processing. For now, we prefer IIFE bundling.
 async function generateBuildInFunctions(_buildPath) {
 	const functionsListPath = path.join(__dirname, "../src/styleshift/shared/extension.ts");
 	let functionsListData = "";
@@ -214,7 +200,6 @@ async function build() {
 			outfile: backgroundPath,
 			platform: "browser",
 			minify: isProduction,
-			plugins: [brandingPlugin],
 		});
 		log.success(`Background script built: ${getFileNameFromPath(backgroundPath)}`);
 
@@ -270,7 +255,7 @@ async function build() {
 				"@codemirror/autocomplete",
 			],
 			alias: commonAlias,
-			plugins: [esbuildSvelte({ compilerOptions: { css: "injected" } }), brandingPlugin],
+			plugins: [esbuildSvelte({ compilerOptions: { css: "injected" } })],
 			define: { imgbb_api_key: JSON.stringify(process.env.IMGBB_API_KEY || "") },
 			loader: commonLoader,
 			assetNames: "assets/[name]",
@@ -307,7 +292,6 @@ async function build() {
 					outfile: path.join(firefoxWorkersPath, entry.out),
 					platform: "browser",
 					minify: isProduction,
-					plugins: [brandingPlugin],
 				});
 			}
 		}
