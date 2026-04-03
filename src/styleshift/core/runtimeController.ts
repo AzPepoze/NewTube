@@ -26,7 +26,7 @@ export async function saveItems(): Promise<void> {
 	await persistCachedDataToStorage();
 }
 
-let activeStyleshiftFunctions: Record<string, string[]> = {};
+let activeStyleShiftFunctions: Record<string, string[]> = {};
 
 const FUNCTION_DISCOVERY_SCRIPT = `
 (function discoverFunctions(){
@@ -59,7 +59,7 @@ export async function synchronizeAvailableFunctions(): Promise<void> {
 		}
 
 		for (const [scope, methods] of Object.entries(window["StyleShift"])) {
-			activeStyleshiftFunctions[scope] = Object.keys(methods as object);
+			activeStyleShiftFunctions[scope] = Object.keys(methods as object);
 		}
 		return;
 	}
@@ -67,7 +67,7 @@ export async function synchronizeAvailableFunctions(): Promise<void> {
 	return new Promise((resolve) => {
 		const listener = ((event: CustomEvent) => {
 			logger.info("runtime", "Function registry received:", event.detail);
-			activeStyleshiftFunctions = event.detail;
+			activeStyleShiftFunctions = event.detail;
 			resolve();
 		}) as EventListener;
 
@@ -127,7 +127,7 @@ export async function executeScriptString({
 		if (isSafeCode(finalScript, sourceIdentifier)) {
 			logger.debug("runtime", "Script passed safety check, applying shorthand replacements");
 			// Replace shorthand function calls with full global paths
-			for (const [scope, methods] of Object.entries(activeStyleshiftFunctions)) {
+			for (const [scope, methods] of Object.entries(activeStyleShiftFunctions)) {
 				for (const methodName of methods) {
 					const pattern = new RegExp(`\\b${methodName}\\b`, "g");
 					if (pattern.test(finalScript)) {

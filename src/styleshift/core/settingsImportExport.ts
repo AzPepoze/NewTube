@@ -1,7 +1,7 @@
 import { logger } from "../../shared/logger";
 import { showUserConfirmation } from "../ui/extension";
-import { persistCachedDataToStorage, saveRootValue, suppressStoragePersistence, getRootValue, saveUserSetting, saveCustomStyleshiftItems } from "./storageManager";
-import { updateStyleshiftItems } from "../settings/items";
+import { persistCachedDataToStorage, saveRootValue, suppressStoragePersistence, getRootValue, saveUserSetting, saveCustomStyleShiftItems } from "./storageManager";
+import { updateStyleShiftItems } from "../settings/items";
 import { performStorageGarbageCollection } from "./storageMaintenance";
 import { triggerSettingsUpdateBatch } from "../settings/functions";
 import { createNotification, createError, downloadFile } from "../shared/extension";
@@ -30,7 +30,7 @@ export async function resolveRgbaFromStorage(colorBaseId: string): Promise<strin
 }
 
 /**
- * Validates an array of custom Styleshift items for potential JavaScript code.
+ * Validates an array of custom StyleShift items for potential JavaScript code.
  */
 export async function validateCustomItemsForJs(items: any[]): Promise<boolean> {
 	let hasJs = false;
@@ -91,7 +91,7 @@ export async function importPresetToSettings(presetData: any, persist = true, th
 		if (key === "customStyleShiftItems" && Array.isArray(value)) {
 			const approved = await validateCustomItemsForJs(value);
 			if (approved) {
-				await saveCustomStyleshiftItems(value, true);
+				await saveCustomStyleShiftItems(value, true);
 				changedKeys.push(key);
 				changesDetected = true;
 			}
@@ -166,7 +166,7 @@ export async function importPresetFromString(presetString: string): Promise<void
  * Exports the current user settings as a data object.
  */
 export async function exportCurrentSettingsObject(includeMaintenance = true): Promise<any> {
-	await updateStyleshiftItems();
+	await updateStyleShiftItems();
 	if (includeMaintenance) {
 		await performStorageGarbageCollection();
 	}
@@ -233,7 +233,7 @@ export async function downloadZip(
 }
 
 /**
- * Recursively adds Styleshift items (categories and settings) to a ZIP file structure.
+ * Recursively adds StyleShift items (categories and settings) to a ZIP file structure.
  * Uses a manifest-based ordering system (order.json) for clean folder names.
  */
 export async function addItemsToZip(
@@ -296,9 +296,9 @@ export async function addItemsToZip(
 }
 
 /**
- * Packs multiple custom Styleshift items into a ZIP file using the high-fidelity structure.
+ * Packs multiple custom StyleShift items into a ZIP file using the high-fidelity structure.
  */
-export async function exportStyleshiftZip(
+export async function exportStyleShiftZip(
 	styleshiftData: any[],
 	zipFileName: string,
 ) {

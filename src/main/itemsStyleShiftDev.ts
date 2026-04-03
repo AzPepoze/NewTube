@@ -1,8 +1,8 @@
-import { exportStyleshiftZip } from "../styleshift/core/settingsImportExport";
+import { exportStyleShiftZip } from "../styleshift/core/settingsImportExport";
 import { sleep } from "../styleshift/shared/normal";
 import { Category } from "../styleshift/types/styleshiftTypes";
 import { logger } from "../shared/logger";
-import { createError, createNotification, exportStyleshiftJsonText, getFile, importStyleshiftZip } from "@/styleshift/shared/extension";
+import { createError, createNotification, exportStyleShiftJsonText, getFile, importStyleShiftZip } from "@/styleshift/shared/extension";
 
 const devOnlyItems: Category[] = [
 	{
@@ -30,9 +30,9 @@ const devOnlyItems: Category[] = [
 					});
 
 					try {
-						await exportStyleshiftZip(
+						await exportStyleShiftZip(
 							JSON.parse(
-								await exportStyleshiftJsonText(),
+								await exportStyleShiftJsonText(),
 							).customStyleShiftItems,
 							"Test.NewTube.zip",
 						);
@@ -69,7 +69,7 @@ const devOnlyItems: Category[] = [
 					try {
 						const file = await getFile(".NewTube.zip");
 						logger.info("extension", "file:", file);
-						await importStyleshiftZip(file);
+						await importStyleShiftZip(file);
 
 						notification.setIcon("✅");
 						notification.setTitle("NewTube - Imported file");
@@ -90,6 +90,6 @@ const devOnlyItems: Category[] = [
 	},
 ];
 
-export function getStyleshiftDevOnlyItems() {
+export function getStyleShiftDevOnlyItems() {
 	return devOnlyItems;
 }

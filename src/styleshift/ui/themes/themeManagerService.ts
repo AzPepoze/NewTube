@@ -1,4 +1,4 @@
-import { createStyleshiftWindow } from "../extension";
+import { createStyleShiftWindow } from "../extension";
 import { settingsUi } from "../settings/settingComponents";
 import ThemeManager from "./ThemeManager.svelte";
 
@@ -6,7 +6,7 @@ import ThemeManager from "./ThemeManager.svelte";
  * Opens the modern Theme Collection window.
  */
 export async function showThemeManager() {
-	const themeWindow = await createStyleshiftWindow({
+	const themeWindow = await createStyleShiftWindow({
 		title: "Theme Manager",
 		width: "80%",
 		height: "85%",

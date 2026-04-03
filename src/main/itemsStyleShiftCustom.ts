@@ -118,6 +118,6 @@ const customStyleShiftItems: Category[] = [
 	},
 ];
 
-export function getStyleshiftCustomItems() {
+export function getStyleShiftCustomItems() {
 	return customStyleShiftItems;
 }

@@ -42,7 +42,7 @@ export const videoPlayerCategory: Category = {
 			enableCss: `
 				.newtube-vol-indicator {
 					position: absolute;
-					top: 10%;
+					top: -10%;
 					left: 50%;
 					transform: translateX(-50%);
 					background: rgba(0, 0, 0, 0.6);
@@ -60,7 +60,7 @@ export const videoPlayerCategory: Category = {
 				}
 				.newtube-vol-indicator.show {
 					opacity: 1;
-					top: 15%;
+					top: 10px;
 				}
 
 				/* Youtube Bezel (Play/Pause/Seek arrows) Customization */

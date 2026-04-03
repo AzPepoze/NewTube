@@ -7,7 +7,7 @@ import { Category, SeparateCategory } from "../styleshift/types/styleshiftTypes"
 import { toggleCustomize } from "@/styleshift/ui/highlight";
 import { showThemeManager } from "@/styleshift/ui/themes/themeManagerService";
 
-const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
+const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 	{ isHeader: true, label: "Extension" },
 	{
 		category: { icon: "volunteer_activism", label: "Buy me a chocolate mlik! (I don't drink a coffee)" },
@@ -206,11 +206,11 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 				type: "button",
 			},
 			{
-				clickFunction: `const Data = await enterTextPrompt({ title : 'Styleshift Data', placeholder : 'Paste Styleshift data text here.'});
-                    await importStyleshiftJsonText(Data);
+				clickFunction: `const Data = await enterTextPrompt({ title : 'StyleShift Data', placeholder : 'Paste StyleShift data text here.'});
+                    await importStyleShiftJsonText(Data);
                     `,
 				color: "#1932ffff",
-				description: "Paste a Styleshift theme code to instantly apply it.",
+				description: "Paste a StyleShift theme code to instantly apply it.",
 				fontSize: 15,
 				icon: "",
 				id: "ImportDataButton",
@@ -242,6 +242,6 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 	},
 ];
 
-export function getStyleshiftDefaultItems() {
-	return defaultStyleshiftItems;
+export function getStyleShiftDefaultItems() {
+	return defaultStyleShiftItems;
 }

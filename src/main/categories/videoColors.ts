@@ -32,14 +32,6 @@ export const videoColorsCategory: Category = {
 		},
 		{
 			type: "color",
-			id: "PlaylistHoverBackground",
-			name: "Playlist Hover",
-			description: "The background highlight color applied to items in a playlist when you hover over them.",
-			value: "#659aff33",
-			varCss: "--nt-playlist-hover-bg",
-		},
-		{
-			type: "color",
 			id: "EndScreenVideoHoverColor",
 			name: "Endscreen Hover",
 			description: "The highlight color that appears when hovering over suggested videos at the end of a playback.",

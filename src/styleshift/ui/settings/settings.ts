@@ -1,13 +1,13 @@
 import { createError } from "../../shared/extension";
 import { unmount } from "svelte";
 import { logger } from "../../../shared/logger";
-import { getSettingsList, updateStyleshiftItems, addCategory } from "../../settings/items";
+import { getSettingsList, updateStyleShiftItems, addCategory } from "../../settings/items";
 import { Category } from "../../types/styleshiftTypes";
-import { createStyleshiftWindow } from "../extension";
+import { createStyleShiftWindow } from "../extension";
 import { settingsUi } from "./settingComponents";
 import { getRootValue } from "@/styleshift/core/storageManager";
 import { isDevModulesLoaded } from "@/styleshift/core/runtimeController";
-import { getStyleshiftDevOnlyItems } from "../../../main/itemsStyleshiftDev";
+import { getStyleShiftDevOnlyItems } from "../../../main/itemsStyleShiftDev";
 import { IS_IN_EXTENSION_SETTINGS_PAGE } from "@/styleshift";
 import { waitOneFrame } from "@/styleshift/shared/advance";
 
@@ -86,7 +86,7 @@ export async function createMainSettingsUi({
 		renderContent: async function (_skipAnimation = false) {
 			if (svelteInstance) {
 				const categories = getCategory ? await getCategory() : [];
-				const devOnlyItems = isDevModulesLoaded ? getStyleshiftDevOnlyItems() : [];
+				const devOnlyItems = isDevModulesLoaded ? getStyleShiftDevOnlyItems() : [];
 				svelteInstance.categories = categories;
 				svelteInstance.devOnlyItems = devOnlyItems;
 				svelteInstance.isDeveloperMode = await getRootValue("developerMode");
@@ -101,7 +101,7 @@ export async function createMainSettingsUi({
 				return;
 			}
 
-			settingsWindow = await createStyleshiftWindow({
+			settingsWindow = await createStyleShiftWindow({
 				skipAnimation,
 				title: "StyleShift Settings",
 				fullscreen: IS_IN_EXTENSION_SETTINGS_PAGE,
@@ -116,7 +116,7 @@ export async function createMainSettingsUi({
 			settingsWindowElement.style.minWidth = "500px";
 
 			const categories = getCategory ? await getCategory() : [];
-			const devOnlyItems = isDevModulesLoaded ? getStyleshiftDevOnlyItems() : [];
+			const devOnlyItems = isDevModulesLoaded ? getStyleShiftDevOnlyItems() : [];
 			const isDeveloperMode = await getRootValue("developerMode");
 
 			svelteInstance = settingsUi.settingsWindow(
@@ -157,7 +157,7 @@ export async function createMainSettingsUi({
 		recreateUi: async function (skipAnimation = true) {
 			logger.info("ui", "recreateUi triggered - full remount", { settingsWindow, skipAnimation });
 			if (settingsWindow) {
-				await updateStyleshiftItems();
+				await updateStyleShiftItems();
 
 				// Save scroll positions before unmounting
 				const sidebar = settingsWindow.contentElement.querySelector(".STYLESHIFT-Sidebar") as HTMLElement;
@@ -177,7 +177,7 @@ export async function createMainSettingsUi({
 
 				// Remount with fresh data
 				const categories = getCategory ? await getCategory() : [];
-				const devOnlyItems = isDevModulesLoaded ? getStyleshiftDevOnlyItems() : [];
+				const devOnlyItems = isDevModulesLoaded ? getStyleShiftDevOnlyItems() : [];
 				const isDeveloperMode = await getRootValue("developerMode");
 
 				svelteInstance = settingsUi.settingsWindow(

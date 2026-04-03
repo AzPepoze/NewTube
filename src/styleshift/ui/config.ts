@@ -1,15 +1,15 @@
-import { createStyleshiftWindow } from "@ui/extension";
+import { createStyleShiftWindow } from "@ui/extension";
 import { settingsUi } from "@ui/settings/settingComponents";
 import { unmount } from "svelte";
 
-export let configWindow: Awaited<ReturnType<typeof createStyleshiftWindow>>;
+export let configWindow: Awaited<ReturnType<typeof createStyleShiftWindow>>;
 let svelteInstance;
 let currentContentFunction;
 
 export async function createConfigUi(skipAnimation = false) {
-	configWindow = await createStyleshiftWindow({ 
-		width: "60%", 
-		height: "85%", 
+	configWindow = await createStyleShiftWindow({
+		width: "60%",
+		height: "85%",
 		skipAnimation,
 		title: "Config Editor"
 	});

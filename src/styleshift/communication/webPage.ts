@@ -20,19 +20,19 @@ const buildInFunctions = {
 	-------------------------------------------------------
 	*/
 
-	loadStyleshiftValue: async function (id) {
+	loadStyleShiftValue: async function (id) {
 		return JSON.parse(await StyleShift["buildIn"]["_call_function"]("_load_styleshift_value", id));
 	},
 
-	saveStyleshiftValue: async function (id, value) {
+	saveStyleShiftValue: async function (id, value) {
 		return JSON.parse(
 			await StyleShift["buildIn"]["_call_function"]("_save_styleshift_value", id, JSON.stringify(value)),
 		);
 	},
 
-	createStyleshiftSettingUi: async function (type, thisSetting, ...args) {
+	createStyleShiftSettingUi: async function (type, thisSetting, ...args) {
 		const uiId = await StyleShift["buildIn"]["_call_function"](
-			"createStyleshiftSettingUi",
+			"createStyleShiftSettingUi",
 			type,
 			thisSetting,
 			...args,

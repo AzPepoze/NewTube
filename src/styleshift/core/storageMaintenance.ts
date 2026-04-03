@@ -1,6 +1,6 @@
 import { logger } from "../../shared/logger";
 import { getSettingsList } from "../settings/items";
-import { getStyleshiftCustomItems } from "../../main/itemsStyleshiftCustom";
+import { getStyleShiftCustomItems } from "../../main/itemsStyleShiftCustom";
 import { defaultSetting } from "../../main/defaultSetting";
 import {
 	persistCachedDataToStorage,
@@ -18,7 +18,7 @@ export async function initializeDefaultCustomItems(): Promise<void> {
 	const currentCustom = await getRootValue("customStyleShiftItems");
 	if (currentCustom == null || (Array.isArray(currentCustom) && currentCustom.length === 0)) {
 		logger.info("maintenance", "Initializing default custom items for new user");
-		await saveRootValue("customStyleShiftItems", getStyleshiftCustomItems(), true);
+		await saveRootValue("customStyleShiftItems", getStyleShiftCustomItems(), true);
 		await persistCachedDataToStorage();
 	}
 }

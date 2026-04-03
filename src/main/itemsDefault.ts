@@ -25,7 +25,7 @@ import { enhancedCssCategory } from "./categories/enhancedCss";
 import { betaFeaturesCategory } from "./categories/betaFeatures";
 import { sidebarCategory } from "./categories/sidebar";
 
-const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
+const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 	{ isHeader: true, label: "Video Experience" },
 	videoPlayerCategory,
 	videoControlPanelCategory,
@@ -63,5 +63,5 @@ const defaultStyleshiftItems: (Category | SeparateCategory)[] = [
 ];
 
 export function getDefaultItems() {
-	return defaultStyleshiftItems;
+	return defaultStyleShiftItems;
 }

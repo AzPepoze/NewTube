@@ -1,5 +1,5 @@
 import { createUniqueId, onceElementRemove, waitDocumentLoaded } from "../shared/normal";
-import { getStyleshiftItems } from "../settings/items";
+import { getStyleShiftItems } from "../settings/items";
 import { Category } from "../types/styleshiftTypes";
 import { createEditorUi, editorUi } from "./editor";
 import { showUserConfirmation } from "./extension";
@@ -93,7 +93,7 @@ let watchBody: MutationObserver;
 
 export async function startHighlighter() {
 	await waitDocumentLoaded();
-	const editableItems = await getStyleshiftItems();
+	const editableItems = await getStyleShiftItems();
 	logger.info("highlight", "editableItems", editableItems);
 	const exeptItems = [];
 

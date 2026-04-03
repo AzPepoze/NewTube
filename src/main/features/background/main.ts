@@ -3,7 +3,7 @@ import { imageBackgroundMode } from "./image";
 import { thumbnailBackgroundMode } from "./thumbnail";
 import { youtubeBackgroundMode } from "./youtube";
 import { BackgroundMode, IModeHandler } from "./types";
-import { enableBackgroundCss } from "./helpers";
+import { enableBackgroundCss, removeYoutubeIframe } from "./helpers";
 import { logger } from "@/shared/logger";
 import { getUserSetting } from "@/styleshift/core/storageManager";
 import { registerSettingListener } from "@/styleshift/settings/functions";
@@ -70,6 +70,15 @@ class BackgroundModeDispatcher {
 		registerSettingListener("BackgroundMode", async (value) => {
 			await this.switchMode(value as BackgroundMode);
 		}, true);
+
+		registerSettingListener("EnableBackground", async (value) => {
+			if (value) {
+				await this.enable();
+			} else {
+				removeYoutubeIframe();
+				await this.disable();
+			}
+		});
 	}
 }
 

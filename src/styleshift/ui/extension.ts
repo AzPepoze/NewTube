@@ -13,7 +13,7 @@ import { waitOneFrame } from "../shared/advance";
 /**
  * Creates and appends the main StyleShift window to the document.
  */
-export async function createStyleshiftWindow({
+export async function createStyleShiftWindow({
 	width = "50%",
 	height = "80%",
 	skipAnimation = false,

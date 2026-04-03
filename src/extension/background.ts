@@ -172,10 +172,10 @@ async function handleMessage(
                                 }
                             }\n`;
 						preCode += `async function saveSettingValue(value){
-                                   return await StyleShift["buildIn"]["_call_function"]("saveStyleshiftValue", "${settingId}", value)
+                                   return await StyleShift["buildIn"]["_call_function"]("saveStyleShiftValue", "${settingId}", value)
                               }\n`;
 						preCode += `async function loadSettingValue(){
-                                   return await StyleShift["buildIn"]["_call_function"]("loadStyleshiftValue", "${settingId}")
+                                   return await StyleShift["buildIn"]["_call_function"]("loadStyleShiftValue", "${settingId}")
                               }\n`;
 					}
 					for (const [key, value] of Object.entries(args)) {

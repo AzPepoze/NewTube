@@ -98,10 +98,11 @@ div.html5-video-player.ytp-fullscreen div.html5-video-container {
 	justify-content: center !important;
 }
 
-div.html5-video-container{
+.html5-video-container{
 	position: revert !important;
 	display: flex;
 	align-items: center;
+	overflow: visible !important;
 }
 
 div.html5-video-player:not(.ytp-fullscreen) div.html5-video-container{
@@ -110,8 +111,10 @@ div.html5-video-player:not(.ytp-fullscreen) div.html5-video-container{
 	height: fit-content;
 }
 
-.html5-video-container{
-	overflow:hidden;
+ytd-player,
+.html5-video-player,
+div.html5-video-player {
+	overflow: visible !important;
 }
 `;
 

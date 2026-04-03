@@ -336,9 +336,9 @@ export async function getFile(type: string): Promise<File> {
  * @param {Object} styleshiftData - The JSON data to import.
  * @returns {Promise<void>}
  * @example
- * await importStyleshiftData(data);
+ * await importStyleShiftData(data);
  */
-export async function importStyleshiftData(styleshiftData: object) {
+export async function importStyleShiftData(styleshiftData: object) {
 	const notification = await createNotification({
 		icon: "sync",
 		title: "StyleShift - Importing data",
@@ -374,18 +374,18 @@ export async function importStyleshiftData(styleshiftData: object) {
  * Exports custom items.
  * @returns {Object[]}
  * @example
- * const items = exportStyleshiftData();
+ * const items = exportStyleShiftData();
  */
-export function exportStyleshiftData() {
-	const exportStyleshiftData = {};
+export function exportStyleShiftData() {
+	const exportStyleShiftData = {};
 
 	for (const thisKey of ALLOWED_STORAGE_KEYS) {
 		if (savedData[thisKey]) {
-			exportStyleshiftData[thisKey] = deepClone(savedData[thisKey]);
+			exportStyleShiftData[thisKey] = deepClone(savedData[thisKey]);
 		}
 	}
 
-	const customItems = exportStyleshiftData["customStyleShiftItems"];
+	const customItems = exportStyleShiftData["customStyleShiftItems"];
 
 	if (customItems) {
 		for (const thisCategory of customItems) {
@@ -400,7 +400,7 @@ export function exportStyleshiftData() {
 		createWarning("No custom items found. Skipping...");
 	}
 
-	return exportStyleshiftData;
+	return exportStyleShiftData;
 }
 
 /**
@@ -409,20 +409,20 @@ export function exportStyleshiftData() {
  * @returns {Promise<void>}
  * @example
  * const json = '{"customStyleShiftItems":[{"Category":"Test","settings":[{"type":"text","id":"testText","html":"<p>Test</p>"}]}]}';
- * await importStyleshiftJsonText(json);
+ * await importStyleShiftJsonText(json);
  */
-export async function importStyleshiftJsonText(text) {
-	await importStyleshiftData(JSON.parse(text));
+export async function importStyleShiftJsonText(text) {
+	await importStyleShiftData(JSON.parse(text));
 }
 
 /**
  * Exports custom items as a JSON string.
  * @returns {string}
  * @example
- * const json = exportStyleshiftJsonText();
+ * const json = exportStyleShiftJsonText();
  */
-export function exportStyleshiftJsonText() {
-	return JSON.stringify(exportStyleshiftData(), null, 2);
+export function exportStyleShiftJsonText() {
+	return JSON.stringify(exportStyleShiftData(), null, 2);
 }
 
 /**
@@ -430,13 +430,13 @@ export function exportStyleshiftJsonText() {
  * @param {file} zipFile - The ZIP file.
  * @returns {Promise<Category[]>}
  * @example
- * const data = await importStyleshiftZip(file);
+ * const data = await importStyleShiftZip(file);
  */
 /**
- * Parses a Styleshift ZIP file into a data object.
+ * Parses a StyleShift ZIP file into a data object.
  * Supports both legacy (Index - Name) and high-fidelity (order.json) structures.
  */
-export async function parseStyleshiftZip(zipFile: File | Blob): Promise<any> {
+export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 	if (!jszip) {
 		throw new Error("JSZip not loaded!");
 	}
@@ -486,7 +486,7 @@ export async function parseStyleshiftZip(zipFile: File | Blob): Promise<any> {
 	for (let i = 0; i < categoryFolders.length; i++) {
 		const categoryPath = categoryFolders[i];
 		const categoryPathName = categoryPath.slice(0, -1);
-		
+
 		const categoryFolderBaseName = categoryPathName.split("/").pop() || "";
 		let categoryIndex = i;
 		if (categoryFolderBaseName.includes(" - ")) {
@@ -494,9 +494,9 @@ export async function parseStyleshiftZip(zipFile: File | Blob): Promise<any> {
 			if (!isNaN(indexPart)) categoryIndex = indexPart;
 		}
 
-		const categoryConfig = loadedZip.file(`${categoryPathName}/config.json`) || 
-							   loadedZip.file(`${categoryPathName}/Config.json`);
-		
+		const categoryConfig = loadedZip.file(`${categoryPathName}/config.json`) ||
+			loadedZip.file(`${categoryPathName}/Config.json`);
+
 		if (!categoryConfig) continue;
 
 		const categoryData = JSON.parse(await categoryConfig.async("string"));
@@ -535,18 +535,18 @@ export async function parseStyleshiftZip(zipFile: File | Blob): Promise<any> {
 				if (!isNaN(indexPart)) settingIndex = indexPart;
 			}
 
-			const settingConfig = loadedZip.file(`${settingPathName}/config.json`) || 
-								 loadedZip.file(`${settingPathName}/Config.json`);
+			const settingConfig = loadedZip.file(`${settingPathName}/config.json`) ||
+				loadedZip.file(`${settingPathName}/Config.json`);
 			if (!settingConfig) continue;
 
 			const settingData = JSON.parse(await settingConfig.async("string")) || {};
 
 			for (const filePath of Object.keys(loadedZip.files)) {
-				const isPropertyFile = filePath.startsWith(settingPath) && 
-									   !filePath.endsWith("/") && 
-									   !filePath.toLowerCase().endsWith("/config.json") &&
-									   !filePath.toLowerCase().endsWith("/order.json");
-				
+				const isPropertyFile = filePath.startsWith(settingPath) &&
+					!filePath.endsWith("/") &&
+					!filePath.toLowerCase().endsWith("/config.json") &&
+					!filePath.toLowerCase().endsWith("/order.json");
+
 				if (isPropertyFile) {
 					const fileName = filePath.split("/").pop() || "";
 					const propertyName = fileName.slice(0, fileName.lastIndexOf("."));
@@ -575,10 +575,10 @@ export async function parseStyleshiftZip(zipFile: File | Blob): Promise<any> {
 /**
  * Imports StyleShift data from a ZIP file and applies it immediately.
  */
-export async function importStyleshiftZip(zipFile: File | Blob) {
-	const styleshiftData = await parseStyleshiftZip(zipFile);
-	logger.info("extension", "Importing Styleshift ZIP Data", styleshiftData);
-	await importStyleshiftData(styleshiftData);
+export async function importStyleShiftZip(zipFile: File | Blob) {
+	const styleshiftData = await parseStyleShiftZip(zipFile);
+	logger.info("extension", "Importing StyleShift ZIP Data", styleshiftData);
+	await importStyleShiftData(styleshiftData);
 }
 
 /**
@@ -587,7 +587,7 @@ export async function importStyleshiftZip(zipFile: File | Blob) {
  * @param {string} zipFileName - The ZIP file name.
  * @returns {Promise<void>}
  * @example
- * await exportStyleshiftZip(data, "styleshift.zip");
+ * await exportStyleShiftZip(data, "styleshift.zip");
  */
 
 /**
@@ -689,7 +689,7 @@ export async function disableExtension() {
  * @param {string} id - The unique identifier for the data to be retrieved.
  * @returns {Promise<string>} The JSON string representation of the retrieved data.
  */
-export async function loadStyleshiftValue(id: string) {
+export async function loadStyleShiftValue(id: string) {
 	if (!ALLOWED_STORAGE_KEYS.includes(id)) {
 		throw new Error(`Access denied for key: ${id}`);
 	}
@@ -706,7 +706,7 @@ export async function loadStyleshiftValue(id: string) {
  * @param {string} value - The JSON string representing the data to be saved.
  * @returns {Promise<any>} The result of the save operation.
  */
-export async function saveStyleshiftValue(id: string, value: string) {
+export async function saveStyleShiftValue(id: string, value: string) {
 	if (!ALLOWED_STORAGE_KEYS.includes(id)) {
 		throw new Error(`Access denied for key: ${id}`);
 	}
@@ -725,7 +725,7 @@ export async function saveStyleshiftValue(id: string, value: string) {
  * @param {...unknown} args - Additional arguments to pass to the ui element function.
  * @returns {Promise<any>}
  */
-export async function createStyleshiftSettingUi(type: string, thisSetting: Setting, ...args: unknown[]) {
+export async function createStyleShiftSettingUi(type: string, thisSetting: Setting, ...args: unknown[]) {
 	const ui = await settingsUi[type](thisSetting, ...args);
 
 	let uiElement;

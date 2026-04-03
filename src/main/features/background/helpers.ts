@@ -69,6 +69,11 @@ export function removeElement(element: HTMLElement | null) {
 	}
 }
 
+export function removeYoutubeIframe(): void {
+	const iframeElement = document.getElementById(bgYoutubeId);
+	removeElement(iframeElement);
+}
+
 export function getElement(id: string): HTMLElement | null {
 	return document.getElementById(id);
 }

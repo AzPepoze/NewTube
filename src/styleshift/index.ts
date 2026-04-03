@@ -21,7 +21,7 @@ import {
 } from "./core/storageMaintenance";
 import { registerSettingListener, initializeAllActiveSettings, attachBehaviorToSetting, reactivateAllSettings } from "./settings/functions";
 import { createStylesheetHolder, injectMaterialIconsStyles } from "./settings/styleSheet";
-import { getAllStyleshiftItems, getAllStyleshiftSettings, updateStyleshiftItems } from "./settings/items";
+import { getAllStyleShiftItems, getAllStyleShiftSettings, updateStyleShiftItems } from "./settings/items";
 import "./communication/extension";
 import { updateAllUiComponents } from "./ui/extension";
 import { syncAllThemes } from "./ui/theme";
@@ -70,7 +70,7 @@ styleshiftContainer.style.display = "none";
 export function refreshExtensionState(): void {
 	logger.info("lifecycle", "Refreshing extension state...");
 	synchronizeAvailableFunctions();
-	updateStyleshiftItems();
+	updateStyleShiftItems();
 	updateAllUiComponents();
 }
 
@@ -107,7 +107,7 @@ async function bootstrapExtension(): Promise<void> {
 	await synchronizeAvailableFunctions();
 	await createStylesheetHolder();
 	await injectMaterialIconsStyles();
-	await updateStyleshiftItems();
+	await updateStyleShiftItems();
 	await populateMissingDefaultSettings();
 
 
@@ -128,7 +128,7 @@ async function bootstrapExtension(): Promise<void> {
 	);
 
 	// Initialize individual setting behaviors
-	const allSettings = await getAllStyleshiftSettings();
+	const allSettings = await getAllStyleShiftSettings();
 	for (const setting of allSettings) {
 		if (setting.id === "Themes") continue;
 		attachBehaviorToSetting(setting);
@@ -138,7 +138,7 @@ async function bootstrapExtension(): Promise<void> {
 	await performStorageGarbageCollection();
 
 	// Normalize CSS selectors for all items
-	const items = getAllStyleshiftItems();
+	const items = getAllStyleShiftItems();
 	for (const item of items) {
 		const category = item as Category;
 		if (category.selector) {
@@ -161,7 +161,7 @@ async function bootstrapExtension(): Promise<void> {
 		if (document.visibilityState === "visible") {
 			logger.info("lifecycle", "Visibility changed to visible, reloading settings...");
 			await initializeStorageConnection();
-			await updateStyleshiftItems();
+			await updateStyleShiftItems();
 			await reactivateAllSettings();
 			updateAllUiComponents();
 		}
@@ -219,10 +219,10 @@ chrome.runtime.onMessage.addListener(async (message) => {
 		if (message.Command === "themeDataUpdated") {
 			logger.info("lifecycle", "Theme update signal received, refreshing behaviors...");
 			await initializeStorageConnection();
-			await updateStyleshiftItems();
+			await updateStyleShiftItems();
 
 			// Re-apply behaviors for all settings
-			const allSettings = await getAllStyleshiftSettings();
+			const allSettings = await getAllStyleShiftSettings();
 			for (const setting of allSettings) {
 				if (setting.id === "Themes") continue;
 				await attachBehaviorToSetting(setting);

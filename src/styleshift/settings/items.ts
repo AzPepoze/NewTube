@@ -1,6 +1,6 @@
 import { getDefaultItems } from "../../main/itemsDefault";
-import { getStyleshiftDefaultItems } from "../../main/itemsStyleshiftDefault";
-import { getStyleshiftCustomItems } from "../../main/itemsStyleshiftCustom";
+import { getStyleShiftDefaultItems } from "../../main/itemsStyleShiftDefault";
+import { getStyleShiftCustomItems } from "../../main/itemsStyleShiftCustom";
 import { randomNumberInRange } from "../shared/normal";
 import { saveAndRefreshAll } from "../core/runtimeController";
 import { getRootValue, saveToStorage } from "../core/storageManager";
@@ -16,7 +16,7 @@ const styleshiftItems: { Default: (Category | { isHeader: boolean; label: string
 	Custom: [],
 };
 
-export function getStyleshiftItems() {
+export function getStyleShiftItems() {
 	return styleshiftItems;
 }
 
@@ -28,22 +28,22 @@ export function getCustomSettings() {
 	return styleshiftItems.Custom.map((item) => item.settings).flat();
 }
 
-export function getAllStyleshiftItems() {
+export function getAllStyleShiftItems() {
 	return [...styleshiftItems.Default, ...styleshiftItems.Custom];
 }
 
-export function getAllStyleshiftCategoriesOnly(): Category[] {
-	return getAllStyleshiftItems().filter((item) => (item as any).category != null) as Category[];
+export function getAllStyleShiftCategoriesOnly(): Category[] {
+	return getAllStyleShiftItems().filter((item) => (item as any).category != null) as Category[];
 }
 
-export function getAllStyleshiftSettings() {
-	return getAllStyleshiftCategoriesOnly()
+export function getAllStyleShiftSettings() {
+	return getAllStyleShiftCategoriesOnly()
 		.map((item) => item.settings)
 		.flat();
 }
 
 export function findExistSettings(setting: Setting) {
-	return getAllStyleshiftSettings().some(
+	return getAllStyleShiftSettings().some(
 		(thisSetting) =>
 			thisSetting.id === setting.id &&
 			//@ts-ignore
@@ -52,7 +52,7 @@ export function findExistSettings(setting: Setting) {
 }
 
 export function getSettingCategory(setting: Setting): Category | null {
-	for (const thisCategory of getAllStyleshiftCategoriesOnly()) {
+	for (const thisCategory of getAllStyleShiftCategoriesOnly()) {
 		for (const thisSetting of thisCategory.settings) {
 			if (thisSetting === setting) {
 				return thisCategory;
@@ -63,7 +63,7 @@ export function getSettingCategory(setting: Setting): Category | null {
 }
 
 export function findExistCategory(category: Category) {
-	return getAllStyleshiftCategoriesOnly().some((thisCategory) => thisCategory.category === category.category);
+	return getAllStyleShiftCategoriesOnly().some((thisCategory) => thisCategory.category === category.category);
 }
 
 function autoAddHightlight(array: (Category | { isHeader: boolean; label: string })[]) {
@@ -83,8 +83,8 @@ function saveCustomItemsAndRefreshExtensionState(customItems) {
 	refreshExtensionState();
 }
 
-export async function updateStyleshiftItems() {
-	styleshiftItems.Default = [...getStyleshiftDefaultItems(), ...getDefaultItems()];
+export async function updateStyleShiftItems() {
+	styleshiftItems.Default = [...getStyleShiftDefaultItems(), ...getDefaultItems()];
 
 	const storedCustom = await getRootValue("customStyleShiftItems");
 	if (storedCustom && Array.isArray(storedCustom) && storedCustom.length > 0) {
@@ -92,10 +92,10 @@ export async function updateStyleshiftItems() {
 		styleshiftItems.Custom = storedCustom;
 	} else {
 		logger.debug("settings", "No custom items in storage, using defaults");
-		styleshiftItems.Custom = getStyleshiftCustomItems();
+		styleshiftItems.Custom = getStyleShiftCustomItems();
 	}
 
-	autoAddHightlight(getAllStyleshiftItems());
+	autoAddHightlight(getAllStyleShiftItems());
 
 	// Default
 	for (const item of styleshiftItems.Default) {
@@ -130,7 +130,7 @@ export async function getSettingsList(rebuild = false): Promise<{ [id: string]: 
 
 	settingsList = {};
 
-	for (const categoryObj of getAllStyleshiftCategoriesOnly()) {
+	for (const categoryObj of getAllStyleShiftCategoriesOnly()) {
 		for (const setting of categoryObj.settings) {
 			if ("id" in setting && setting.id != null) {
 				settingsList[setting.id] = setting;

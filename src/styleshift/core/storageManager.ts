@@ -20,7 +20,7 @@ import { getOptionalExternalStorageKeys } from "../../main";
 
 const INTERNAL_STORAGE_KEYS = [
 	"currentSettings",
-	"defaultStyleshiftItems",
+	"defaultStyleShiftItems",
 	"customStyleShiftItems",
 	"enableExtension",
 	"enableRealtimeExtension",
@@ -109,7 +109,7 @@ export async function saveToStorage(key: string, value: any, delayPersistence = 
 /**
  * Specialized function to save custom items to the root of storage.
  */
-export async function saveCustomStyleshiftItems(items: any[], delayPersistence = false): Promise<boolean> {
+export async function saveCustomStyleShiftItems(items: any[], delayPersistence = false): Promise<boolean> {
 	return await saveRootValue("customStyleShiftItems", items, delayPersistence);
 }
 

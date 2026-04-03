@@ -4,7 +4,7 @@ import {
 	createNotification
 } from "../shared/extension";
 import { downloadZip, addItemsToZip } from "./settingsImportExport";
-import { parseStyleshiftZip } from "../shared/extension";
+import { parseStyleShiftZip } from "../shared/extension";
 import { saveTheme } from "./themeManager";
 import { logger } from "../../shared/logger";
 
@@ -18,9 +18,9 @@ export async function exportThemeWithSelection(themeId: string, themeName: strin
 		title: `Export "${displayName}"`,
 		message: "What would you like to export?",
 		buttons: [
-			{ label: "current settings only", color: "var(--Theme-0)" },
-			{ label: "custom items only", color: "var(--Theme-0)" },
-			{ label: "both", color: "var(--Theme-0)" },
+			{ label: "Current settings only", color: "var(--Theme-0)" },
+			{ label: "Custom items only", color: "var(--Theme-0)" },
+			{ label: "Both", color: "var(--Theme-0)" },
 		],
 		vertical: true,
 	});
@@ -43,11 +43,11 @@ export async function exportThemeWithSelection(themeId: string, themeName: strin
 		themeName,
 	};
 
-	if (exportType === "both" || exportType === "current settings only") {
+	if (exportType === "Both" || exportType === "Current settings only") {
 		exportData.currentSettings = themeData.currentSettings;
 	}
 
-	if (exportType === "both" || exportType === "custom items only") {
+	if (exportType === "Both" || exportType === "Custom items only") {
 		exportData.customStyleShiftItems = themeData.customStyleShiftItems;
 	}
 
@@ -124,19 +124,19 @@ export async function importThemeZipWithWorkflow() {
 		});
 
 		try {
-			const data = await parseStyleshiftZip(file);
-			
+			const data = await parseStyleShiftZip(file);
+
 			// Default theme name to filename without extension
 			const defaultName = file.name.replace(".zip", "");
 			const rawName = prompt("Enter a name for this theme:", defaultName);
-			
+
 			if (!rawName) {
 				notification.close();
 				return;
 			}
 
 			const themeName = rawName.trim();
-			
+
 			notification.setContent(`Saving "${themeName}" to Theme Manager...`);
 
 			// Save as theme (using "EXTENSION" as the domain for global themes)

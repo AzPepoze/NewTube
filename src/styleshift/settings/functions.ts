@@ -5,7 +5,7 @@ import { createStylesheet } from "./styleSheet";
 import { logger } from "../../shared/logger";
 import { waitOneFrame } from "../shared/advance";
 
-import { getAllStyleshiftSettings } from "./items";
+import { getAllStyleShiftSettings } from "./items";
 
 export const activeSettingsState: Record<string, any> = {};
 const settingUpdateHandlers: Record<string, Function> = {};
@@ -14,7 +14,7 @@ const settingUpdateListeners: Record<string, Function[]> = {};
 const settingInitializers: Record<string, Function[]> = {};
 
 export async function deactivateAllActiveSettings() {
-	const allSettings = await getAllStyleshiftSettings();
+	const allSettings = await getAllStyleShiftSettings();
 	for (const setting of allSettings) {
 		if (activeSettingsState[setting.id] !== undefined) {
 			switch (setting.type) {
@@ -45,7 +45,7 @@ export async function deactivateAllActiveSettings() {
 
 export async function reactivateAllSettings() {
 	logger.info("settings", "Re-activating all settings...");
-	const allSettings = await getAllStyleshiftSettings();
+	const allSettings = await getAllStyleShiftSettings();
 	for (const setting of allSettings) {
 		if (setting.id === "Themes") continue;
 		triggerSettingUpdate(setting.id, true);
