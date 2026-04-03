@@ -102,19 +102,13 @@ div.html5-video-player.ytp-fullscreen div.html5-video-container {
 	position: revert !important;
 	display: flex;
 	align-items: center;
-	overflow: visible !important;
+	overflow: hidden;
 }
 
 div.html5-video-player:not(.ytp-fullscreen) div.html5-video-container{
 	width: fit-content !important;
 	margin-top: unset !important;
 	height: fit-content;
-}
-
-ytd-player,
-.html5-video-player,
-div.html5-video-player {
-	overflow: visible !important;
 }
 `;
 
