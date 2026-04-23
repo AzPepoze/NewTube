@@ -1,7 +1,7 @@
 import { sleep } from '@/core/shared/utilities';
 import { createNotification } from '@core/shared/notifications';
 import { persistCachedDataToStorage, saveToStorage } from '@core/storage/manager';
-import { getCustomItems } from '@settings/registry/items';
+import { getAddOnItems } from '@settings/registry/items';
 import { logger } from '@shared/logger';
 
 import { IS_IN_EXTENSION_SETTINGS_PAGE, refreshExtensionState } from '../';
@@ -17,12 +17,12 @@ export async function saveAndRefreshAll(): Promise<void> {
 }
 
 /**
- * Saves custom items and cached data to storage without a full UI refresh.
+ * Saves add-on items and cached data to storage without a full UI refresh.
  */
 export async function saveItems(): Promise<void> {
-	const customItems = getCustomItems();
-	if (customItems && customItems.length > 0) {
-		await saveToStorage("customStyleShiftItems", customItems, true);
+	const addOnItems = getAddOnItems();
+	if (addOnItems && addOnItems.length > 0) {
+		await saveToStorage("addOnStyleShiftItems", addOnItems, true);
 	}
 	await persistCachedDataToStorage();
 }

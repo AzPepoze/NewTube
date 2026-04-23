@@ -35,7 +35,7 @@ const devOnlyItems: Category[] = [
 						await exportStyleShiftZip(
 							JSON.parse(
 								await exportStyleShiftJsonText(),
-							).customStyleShiftItems,
+							).addOnStyleShiftItems,
 							"Test.NewTube.zip",
 						);
 

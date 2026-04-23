@@ -205,13 +205,13 @@ export async function showUserConfirmation(
 export async function showSelection(
 	message: string,
 	title: string = "Select Option",
-	buttons: { label: string; color?: string }[] = [],
+	buttons: { label: string; color?: string; description?: string }[] = [],
 	options: { align?: "left" | "center" | "right"; vertical?: boolean } = {},
 ): Promise<string | null> {
 	return new Promise((resolve) => {
 		const mountPoint = document.createElement("div");
 		document.body.appendChild(mountPoint);
-
+ 
 		const component = settingsUi.confirm(
 			{
 				title,
@@ -221,6 +221,7 @@ export async function showSelection(
 				buttons: buttons.map((btn) => ({
 					label: btn.label,
 					color: btn.color || "#7f5db7",
+					description: btn.description,
 					onClick: () => handleResolve(btn.label),
 				})),
 				onClose: () => handleResolve(null),

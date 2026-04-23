@@ -1,8 +1,8 @@
 import { type Category } from "@settings/types/styleshiftTypes";
 
-const customStyleShiftItems: Category[] = [
+const addOnStyleShiftItems: Category[] = [
 	{
-		category: { icon: "science", label: "Test Custom Category" },
+		category: { icon: "science", label: "Test Add-on Category" },
 		editable: true,
 		settings: [
 			{
@@ -118,6 +118,6 @@ const customStyleShiftItems: Category[] = [
 	},
 ];
 
-export function getStyleShiftCustomItems() {
-	return customStyleShiftItems;
+export function getStyleShiftAddOnItems() {
+	return addOnStyleShiftItems;
 }

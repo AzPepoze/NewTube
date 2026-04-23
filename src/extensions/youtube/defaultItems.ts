@@ -2,7 +2,7 @@ import { openSettingPage } from "@core/shared/extensionHelpers";
 import { exportThemeWithSelection } from "@core/theme/exporter";
 import { exportCurrentSettingsObject } from "@core/theme/importer";
 import { checkAndUpdateTheme, openThemeStore } from "@core/theme/storeIntegration";
-import { getCustomItems } from "@settings/registry/items";
+import { getAddOnItems } from "@settings/registry/items";
 import { type Category, type SeparateCategory } from "@settings/types/styleshiftTypes";
 import { toggleCustomize } from "@ui/highlight/highlight";
 import { showThemeManager } from "@ui/themes/themeManagerService";
@@ -190,10 +190,10 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 			{
 				clickFunction: async function () {
 					const currentSettings = await exportCurrentSettingsObject();
-					const customStyleShiftItems = getCustomItems();
+					const addOnStyleShiftItems = getAddOnItems();
 					await exportThemeWithSelection("current", "Current Settings", {
 						currentSettings,
-						customStyleShiftItems,
+						addOnStyleShiftItems,
 					});
 				},
 				color: "#1932ffff",

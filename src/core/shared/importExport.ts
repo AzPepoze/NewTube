@@ -43,7 +43,7 @@ export async function importStyleShiftData(styleshiftData: object) {
 }
 
 /**
- * Exports custom items.
+ * Exports add-on items.
  */
 export function exportStyleShiftData() {
 	const exportData: any = {};
@@ -54,10 +54,10 @@ export function exportStyleShiftData() {
 		}
 	}
 
-	const customItems = exportData["customStyleShiftItems"];
-
-	if (customItems) {
-		for (const thisCategory of customItems) {
+	const addOnItems = exportData["addOnStyleShiftItems"];
+ 
+	if (addOnItems) {
+		for (const thisCategory of addOnItems) {
 			delete thisCategory.Highlight_color;
 			delete thisCategory.editable;
 
@@ -66,7 +66,7 @@ export function exportStyleShiftData() {
 			}
 		}
 	} else {
-		createWarning("No custom items found. Skipping...");
+		createWarning("No add-on items found. Skipping...");
 	}
 
 	return exportData;
@@ -80,7 +80,7 @@ export async function importStyleShiftJsonText(text: string) {
 }
 
 /**
- * Exports custom items as a JSON string.
+ * Exports add-on items as a JSON string.
  */
 export function exportStyleShiftJsonText() {
 	return JSON.stringify(exportStyleShiftData(), null, 2);
@@ -99,7 +99,7 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 		createFolders: true,
 	});
 
-	let customStyleShiftItems: Category[] = [];
+	let addOnStyleShiftItems: Category[] = [];
 	let currentSettings: any = null;
 
 	const settingsFile = loadedZip.file("currentSettings.json");
@@ -108,8 +108,8 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 	}
 
 	let itemsBasePath = "";
-	if (Object.keys(loadedZip.files).some(f => f.startsWith("customStyleShiftItems/"))) {
-		itemsBasePath = "customStyleShiftItems/";
+	if (Object.keys(loadedZip.files).some(f => f.startsWith("addOnStyleShiftItems/"))) {
+		itemsBasePath = "addOnStyleShiftItems/";
 	}
 
 	const categoryFolders: string[] = [];
@@ -205,11 +205,11 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 		}
 
 		categoryData["settings"] = settings.filter((s) => s !== null);
-		customStyleShiftItems[categoryIndex] = categoryData;
+		addOnStyleShiftItems[categoryIndex] = categoryData;
 	}
-
+ 
 	const styleshiftData: any = {
-		customStyleShiftItems: customStyleShiftItems.filter(c => c !== null),
+		addOnStyleShiftItems: addOnStyleShiftItems.filter(c => c !== null),
 	};
 
 	if (currentSettings) {

@@ -16,9 +16,21 @@ export async function exportThemeWithSelection(themeId: string, themeName: strin
 		title: `Export "${displayName}"`,
 		message: "What would you like to export?",
 		buttons: [
-			{ label: "Internal settings only", color: "var(--Theme-0)" },
-			{ label: "External settings only", color: "var(--Theme-0)" },
-			{ label: "Both", color: "var(--Theme-0)" },
+			{
+				label: "Build-in settings only",
+				color: "var(--Theme-0)",
+				description: "Exports only the settings that come by default with NewTube.",
+			},
+			{
+				label: "Add-ons settings only",
+				color: "var(--Theme-0)",
+				description: "Exports only the add-ons settings.",
+			},
+			{
+				label: "Both",
+				color: "var(--Theme-0)",
+				description: "Exports both default and add-ons settings.",
+			},
 		],
 		vertical: true,
 	});
@@ -41,12 +53,12 @@ export async function exportThemeWithSelection(themeId: string, themeName: strin
 		themeName,
 	};
 
-	if (exportType === "Both" || exportType === "Internal settings only") {
+	if (exportType === "Both" || exportType === "Build-in settings only") {
 		exportData.currentSettings = themeData.currentSettings;
 	}
 
-	if (exportType === "Both" || exportType === "External settings only") {
-		exportData.customStyleShiftItems = themeData.customStyleShiftItems;
+	if (exportType === "Both" || exportType === "Add-ons settings only") {
+		exportData.addOnStyleShiftItems = themeData.addOnStyleShiftItems;
 	}
 
 	if (method === "Clipboard") {
@@ -81,9 +93,9 @@ export async function exportThemeAsZip(name: string, data: any) {
 		files["currentSettings.json"] = JSON.stringify(data.currentSettings, null, 2);
 	}
 
-	// 2. customStyleShiftItems/ (Expanded)
-	if (data.customStyleShiftItems && Array.isArray(data.customStyleShiftItems)) {
-		await addItemsToZip(data.customStyleShiftItems, files, "customStyleShiftItems");
+	// 2. addOnStyleShiftItems/ (Expanded)
+	if (data.addOnStyleShiftItems && Array.isArray(data.addOnStyleShiftItems)) {
+		await addItemsToZip(data.addOnStyleShiftItems, files, "addOnStyleShiftItems");
 	}
 
 	// 3. Handle any legacy script/CSS properties if they still exist at top level

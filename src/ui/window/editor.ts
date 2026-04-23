@@ -16,41 +16,67 @@ let resizeObserver: ResizeObserver | null = null;
 			styleshiftWindow.windowElement.style.width = editorWidth + "px";
 			styleshiftWindow.windowElement.style.minWidth = "300px";
 
-			const targetElement = currentEditObj["target"];
-
 			function updatePosition() {
-				const targetElementCenterPosition = getElementCenterPosition(targetElement);
-				let calPosition;
+				const currentTargetElement = currentEditObj["target"];
+				if (!currentTargetElement) {
+					animationFrameId = requestAnimationFrame(updatePosition);
+					return;
+				}
 
+				const targetElementCenterPosition = getElementCenterPosition(currentTargetElement);
+				const windowElement = styleshiftWindow.windowElement;
+				const currentEditorWidth = windowElement.offsetWidth;
+				const currentEditorHeight = windowElement.offsetHeight;
+				const targetBoundingRect = currentTargetElement.getBoundingClientRect();
+				const viewportPadding = 20;
+
+				let calculatedPositionX: number;
+				let calculatedPositionY: number;
+
+				// Determine horizontal position: place to the right of target if it's in the left half of the screen
 				if (targetElementCenterPosition.x < window.innerWidth / 2) {
-					calPosition = targetElement.getBoundingClientRect().right + 10;
+					calculatedPositionX = targetBoundingRect.right + 10;
 				} else {
-					calPosition = targetElement.getBoundingClientRect().left - editorWidth - 20 - 10;
+					calculatedPositionX = targetBoundingRect.left - currentEditorWidth - 10;
 				}
 
-				if (calPosition + editorWidth > window.innerWidth) {
-					calPosition = window.innerWidth - editorWidth - 20 - 20;
+				// Center vertically relative to the target element
+				calculatedPositionY = targetElementCenterPosition.y - currentEditorHeight / 2;
+
+				// Clamp horizontal position within viewport boundaries
+				if (calculatedPositionX < viewportPadding) {
+					calculatedPositionX = viewportPadding;
+				} else if (calculatedPositionX + currentEditorWidth > window.innerWidth - viewportPadding) {
+					calculatedPositionX = window.innerWidth - currentEditorWidth - viewportPadding;
 				}
 
-				styleshiftWindow.windowElement.style.translate = `${calPosition}px 10%`;
+				// Clamp vertical position within viewport boundaries
+				if (calculatedPositionY < viewportPadding) {
+					calculatedPositionY = viewportPadding;
+				} else if (calculatedPositionY + currentEditorHeight > window.innerHeight - viewportPadding) {
+					calculatedPositionY = window.innerHeight - currentEditorHeight - viewportPadding;
+				}
 
-				// Continue animation loop
+				windowElement.style.translate = `${calculatedPositionX}px ${calculatedPositionY}px`;
+
+				// Continue animation loop to follow target if it moves
 				animationFrameId = requestAnimationFrame(updatePosition);
 			}
 
 			updatePosition();
 
 			resizeObserver = new ResizeObserver(() => {
-				if (animationFrameId) {
-					cancelAnimationFrame(animationFrameId);
-					animationFrameId = null;
-				}
-				if (resizeObserver) {
-					resizeObserver.disconnect();
-					resizeObserver = null;
+				const currentTargetElement = currentEditObj["target"];
+				if (currentTargetElement) {
+					// We could use this to trigger updates, but requestAnimationFrame already handles it.
+					// For now, we just ensure it doesn't crash.
 				}
 			});
-			resizeObserver.observe(targetElement);
+
+			const initialTarget = currentEditObj["target"];
+			if (initialTarget) {
+				resizeObserver.observe(initialTarget);
+			}
 
 			styleshiftWindow.dragHandle.addEventListener("mousedown", () => {
 				if (animationFrameId) {

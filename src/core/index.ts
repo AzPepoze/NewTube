@@ -15,7 +15,7 @@ import { synchronizeAvailableFunctions } from "./runtime/controller";
 import { getCurrentDomain, getCurrentUrlParameters, getDocumentBody, getDocumentHead, rearrangeSelector } from "./shared/domHelpers";
 import { disableExtension, enableExtension, toggleDeveloperMode } from "./shared/extensionHelpers";
 import { sleep } from "./shared/utilities";
-import { initializeDefaultCustomItems, performStorageGarbageCollection, populateMissingDefaultSettings } from "./storage/maintenance";
+import { initializeDefaultAddOnItems, performStorageGarbageCollection, populateMissingDefaultSettings } from "./storage/maintenance";
 import { getRootValue, initializeStorageConnection, persistCachedDataToStorage } from "./storage/manager";
 
 //-------------------------------------------------------
@@ -66,7 +66,7 @@ export function refreshExtensionState(): void {
  */
 async function bootstrapExtension(): Promise<void> {
 	await initializeStorageConnection();
-	await initializeDefaultCustomItems();
+	await initializeDefaultAddOnItems();
 
 	if (!shouldEnableExtension()) {
 		logger.info("lifecycle", "StyleShift extension logic skipped on this domain (Core active).");

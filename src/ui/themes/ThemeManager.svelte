@@ -49,9 +49,7 @@
 	let filteredLocalThemes = $derived.by(() => {
 		if (!searchQuery) return themes;
 		const query = searchQuery.toLowerCase();
-		return themes.filter((t) =>
-			t.themeName.toLowerCase().includes(query),
-		);
+		return themes.filter((t) => t.themeName.toLowerCase().includes(query));
 	});
 
 	const tabOptions = [
@@ -99,8 +97,7 @@
 					themeId: t.themeId,
 					themeName: t.themeName,
 					currentSettings: t.settings?.currentSettings,
-					customStyleShiftItems:
-						t.settings?.customStyleShiftItems,
+					addOnStyleShiftItems: t.settings?.addOnStyleShiftItems,
 				}));
 			}
 		} catch (e) {
@@ -142,9 +139,9 @@
 	}
 
 	async function applyTheme(id: string) {
-		const theme = (
-			currentView === "installed" ? themes : storeThemes
-		).find((t) => t.themeId === id);
+		const theme = (currentView === "installed" ? themes : storeThemes).find(
+			(t) => t.themeId === id,
+		);
 		if (!theme) return;
 
 		const displayName = theme.themeName || id;
@@ -210,11 +207,7 @@
 
 		const displayName = theme.themeName || id;
 
-		const success = await deleteThemeManager(
-			id,
-			displayName,
-			"EXTENSION",
-		);
+		const success = await deleteThemeManager(id, displayName, "EXTENSION");
 
 		if (success) {
 			themes = themes.filter((t) => t.themeId !== id);

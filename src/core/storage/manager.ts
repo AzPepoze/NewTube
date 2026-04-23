@@ -2,7 +2,6 @@ import { sleep } from '@/core/shared/utilities';
 import { createError } from '@core/shared/notifications';
 import { getOptionalExternalStorageKeys } from '@extensions/youtube/index';
 import { logger } from '@shared/logger';
-
 import { currentContextDomain } from '../';
 
 export let cachedStorageData: any = {};
@@ -21,7 +20,7 @@ export function suppressStoragePersistence(suppress: boolean) {
 const INTERNAL_STORAGE_KEYS = [
 	"currentSettings",
 	"defaultStyleShiftItems",
-	"customStyleShiftItems",
+	"addOnStyleShiftItems",
 	"enableExtension",
 	"enableRealtimeExtension",
 	"developerMode",
@@ -30,7 +29,7 @@ const INTERNAL_STORAGE_KEYS = [
 const externalKeys = getOptionalExternalStorageKeys() || [];
 export const EXTERNAL_STORAGE_KEYS = [...INTERNAL_STORAGE_KEYS, ...externalKeys];
 
-export const ALLOWED_STORAGE_KEYS = ["currentSettings", "customStyleShiftItems"];
+export const ALLOWED_STORAGE_KEYS = ["currentSettings", "addOnStyleShiftItems"];
 
 /**
  * Loads all data from Chrome local storage for the current domain context.
@@ -107,10 +106,10 @@ export async function saveToStorage(key: string, value: any, delayPersistence = 
 }
 
 /**
- * Specialized function to save custom items to the root of storage.
+ * Specialized function to save add-on items to the root of storage.
  */
-export async function saveCustomStyleShiftItems(items: any[], delayPersistence = false): Promise<boolean> {
-	return await saveRootValue("customStyleShiftItems", items, delayPersistence);
+export async function saveAddOnStyleShiftItems(items: any[], delayPersistence = false): Promise<boolean> {
+	return await saveRootValue("addOnStyleShiftItems", items, delayPersistence);
 }
 
 

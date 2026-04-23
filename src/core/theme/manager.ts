@@ -9,7 +9,7 @@ export type Theme = {
 	themeId: string;
 	themeName: string;
 	currentSettings?: { [key: string]: string };
-	customStyleShiftItems?: any[];
+	addOnStyleShiftItems?: any[];
 };
 
 
@@ -73,7 +73,7 @@ export async function applyThemeToDomainStorage(
 		themeId,
 		themeName,
 		currentSettings: themeData.currentSettings,
-		customStyleShiftItems: themeData.customStyleShiftItems,
+		addOnStyleShiftItems: themeData.addOnStyleShiftItems,
 	};
 
 	if (existingIndex > -1) {
@@ -94,9 +94,9 @@ export async function applyThemeToDomainStorage(
 		};
 	}
 
-	// Store custom items
-	if (themeData.customStyleShiftItems) {
-		domainStorage.customStyleShiftItems = themeData.customStyleShiftItems;
+	// Store add-on items
+	if (themeData.addOnStyleShiftItems) {
+		domainStorage.addOnStyleShiftItems = themeData.addOnStyleShiftItems;
 	}
 
 	await chrome.storage.local.set({ [domain]: domainStorage });
@@ -136,7 +136,7 @@ export async function fetchThemeFromApi(themeId: string): Promise<Theme | null> 
 			themeId: data.id || themeId,
 			themeName: data.name,
 			currentSettings: data.settings,
-			customStyleShiftItems: data.customStyleShiftItems,
+			addOnStyleShiftItems: data.addOnStyleShiftItems,
 		};
 
 		return theme;
@@ -191,7 +191,7 @@ export async function saveTheme(
 			themeId,
 			themeName: name,
 			currentSettings: data.currentSettings,
-			customStyleShiftItems: data.customStyleShiftItems,
+			addOnStyleShiftItems: data.addOnStyleShiftItems,
 		};
 
 		if (existingIndex > -1) {

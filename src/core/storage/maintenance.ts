@@ -2,19 +2,19 @@ import {
 	cachedStorageData, EXTERNAL_STORAGE_KEYS, getRootValue, persistCachedDataToStorage,
 	saveRootValue, saveToStorage
 } from '@core/storage/manager';
-import { getStyleShiftCustomItems } from '@extensions/youtube/customItems';
+import { getStyleShiftAddOnItems } from '@extensions/youtube/addOnItems';
 import { defaultSetting } from '@extensions/youtube/defaultSettings';
 import { getSettingsList } from '@settings/registry/items';
 import { logger } from '@shared/logger';
 
 /**
- * Ensures custom items are initialized for new users.
+ * Ensures add-on items are initialized for new users.
  */
-export async function initializeDefaultCustomItems(): Promise<void> {
-	const currentCustom = await getRootValue("customStyleShiftItems");
-	if (currentCustom == null || (Array.isArray(currentCustom) && currentCustom.length === 0)) {
-		logger.info("maintenance", "Initializing default custom items for new user");
-		await saveRootValue("customStyleShiftItems", getStyleShiftCustomItems(), true);
+export async function initializeDefaultAddOnItems(): Promise<void> {
+	const currentAddOn = await getRootValue("addOnStyleShiftItems");
+	if (currentAddOn == null || (Array.isArray(currentAddOn) && currentAddOn.length === 0)) {
+		logger.info("maintenance", "Initializing default add-on items for new user");
+		await saveRootValue("addOnStyleShiftItems", getStyleShiftAddOnItems(), true);
 		await persistCachedDataToStorage();
 	}
 }

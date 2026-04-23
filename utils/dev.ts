@@ -7,7 +7,7 @@ const target = args.includes("--firefox") ? "firefox" : "chromium";
 const commands = [
 	{
 		name: "js",
-		command: "bun utils/builderExtension.ts",
+		command: "bun utils/builder-extension.ts",
 		color: "cyan"
 	},
 	{

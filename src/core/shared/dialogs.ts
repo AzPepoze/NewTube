@@ -32,15 +32,28 @@ export async function enterPrompt({ title = "Enter text", placeholder = "", valu
 	return await showUserPrompt(title, placeholder, value);
 }
 
+export interface SelectionButton {
+	label: string;
+	color?: string;
+	description?: string;
+}
+
+export interface SelectionOptions {
+	message?: string;
+	title?: string;
+	buttons?: SelectionButton[];
+	vertical?: boolean;
+}
+
 /**
  * shows a stylish selection modal with multiple options.
  */
 export async function chooseSelection({
 	message = "",
 	title = "Select Option",
-	buttons = [],
+	buttons = [] as SelectionButton[],
 	vertical = false,
-}) {
+}: SelectionOptions) {
 	return await showSelection(message, title, buttons, { vertical });
 }
 

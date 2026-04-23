@@ -1,7 +1,7 @@
 import { refreshExtensionState } from "@core/index";
 import { insertAfter } from "@core/shared/eventHelpers";
 import { saveToStorage } from "@core/storage/manager";
-import { getCustomItems, getSettingCategory } from "@settings/registry/items";
+import { getAddOnItems, getSettingCategory } from "@settings/registry/items";
 import type { Category, Setting } from "@settings/types/styleshiftTypes";
 import { logger } from "@shared/logger";
 
@@ -203,14 +203,14 @@ export async function addDrag(
 						logger.debug("drag", "Drop target found", { isCategory, isGroup, targetDataType: info.dataType });
 
 						if (isCategory) {
-							// Move category in custom items list
-							const customItems = getCustomItems();
-							const sourceIdx = customItems.indexOf(draggingData as Category);
+							// Move add-on in add-on items list
+							const addOnItems = getAddOnItems();
+							const sourceIdx = addOnItems.indexOf(draggingData as Category);
 							if (sourceIdx > -1) {
-								customItems.splice(sourceIdx, 1);
-								const targetIdx = customItems.indexOf(info.data as Category) + (lastHitIsAfter ? 1 : 0);
-								customItems.splice(targetIdx, 0, draggingData as Category);
-								await saveToStorage("customStyleShiftItems", customItems);
+								addOnItems.splice(sourceIdx, 1);
+								const targetIdx = addOnItems.indexOf(info.data as Category) + (lastHitIsAfter ? 1 : 0);
+								addOnItems.splice(targetIdx, 0, draggingData as Category);
+								await saveToStorage("addOnStyleShiftItems", addOnItems);
 								logger.debug("drag", "Category moved", { sourceIdx, targetIdx, category: (draggingData as any).category });
 							}
 						} else {
@@ -266,7 +266,7 @@ export async function addDrag(
 										logger.info("drag", "Setting moved", { sourceIdx: idx, dropIndex, settingId: (itemToMove as any).id });
 									}
 								}
-								await saveToStorage("customStyleShiftItems", getCustomItems());
+								await saveToStorage("addOnStyleShiftItems", getAddOnItems());
 							}
 						}
 					} else {

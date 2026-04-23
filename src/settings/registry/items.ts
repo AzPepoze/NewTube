@@ -3,7 +3,7 @@ import { refreshExtensionState } from "@core/index";
 import { saveAndRefreshAll } from "@core/runtime/controller";
 import { getRootValue, saveToStorage } from "@core/storage/manager";
 import { getDefaultItems } from "@extensions/youtube/builtInItems";
-import { getStyleShiftCustomItems } from "@extensions/youtube/customItems";
+import { getStyleShiftAddOnItems } from "@extensions/youtube/addOnItems";
 import { getStyleShiftDefaultItems } from "@extensions/youtube/defaultItems";
 import { attachBehaviorToSetting } from "@settings/engine/functions";
 import { type Category, type Setting } from "@settings/types/styleshiftTypes";
@@ -11,25 +11,25 @@ import { logger } from "@shared/logger";
 
 const highlightColors = [`255, 109, 109`, `167, 242, 255`, `255, 167, 248`, `188, 167, 255`, `255, 241, 167`];
 
-const styleshiftItems: { Default: (Category | { isHeader: boolean; label: string })[]; Custom: Category[] } = {
+const styleshiftItems: { Default: (Category | { isHeader: boolean; label: string })[]; AddOn: Category[] } = {
 	Default: [],
-	Custom: [],
+	AddOn: [],
 };
 
 export function getStyleShiftItems() {
 	return styleshiftItems;
 }
 
-export function getCustomItems() {
-	return styleshiftItems.Custom;
+export function getAddOnItems() {
+	return styleshiftItems.AddOn;
 }
 
-export function getCustomSettings() {
-	return styleshiftItems.Custom.map((item) => item.settings).flat();
+export function getAddOnSettings() {
+	return styleshiftItems.AddOn.map((item) => item.settings).flat();
 }
 
 export function getAllStyleShiftItems() {
-	return [...styleshiftItems.Default, ...styleshiftItems.Custom];
+	return [...styleshiftItems.Default, ...styleshiftItems.AddOn];
 }
 
 export function getAllStyleShiftCategoriesOnly(): Category[] {
@@ -78,21 +78,21 @@ function autoAddHightlight(array: (Category | { isHeader: boolean; label: string
 	}
 }
 
-function saveCustomItemsAndRefreshExtensionState(customItems) {
-	saveToStorage("customStyleShiftItems", customItems);
+function saveAddOnItemsAndRefreshExtensionState(addOnItems) {
+	saveToStorage("addOnStyleShiftItems", addOnItems);
 	refreshExtensionState();
 }
 
 export async function updateStyleShiftItems() {
 	styleshiftItems.Default = [...getStyleShiftDefaultItems(), ...getDefaultItems()];
 
-	const storedCustom = await getRootValue("customStyleShiftItems");
-	if (storedCustom && Array.isArray(storedCustom) && storedCustom.length > 0) {
-		logger.debug("settings", "Loading custom items from storage");
-		styleshiftItems.Custom = storedCustom;
+	const storedAddOn = await getRootValue("addOnStyleShiftItems");
+	if (storedAddOn && Array.isArray(storedAddOn) && storedAddOn.length > 0) {
+		logger.debug("settings", "Loading add-on items from storage");
+		styleshiftItems.AddOn = storedAddOn;
 	} else {
-		logger.debug("settings", "No custom items in storage, using defaults");
-		styleshiftItems.Custom = getStyleShiftCustomItems();
+		logger.debug("settings", "No add-on items in storage, using defaults");
+		styleshiftItems.AddOn = getStyleShiftAddOnItems();
 	}
 
 	autoAddHightlight(getAllStyleShiftItems());
@@ -112,8 +112,8 @@ export async function updateStyleShiftItems() {
 		}
 	}
 
-	// Custom
-	for (const thisCategory of styleshiftItems.Custom) {
+	// AddOn
+	for (const thisCategory of styleshiftItems.AddOn) {
 		thisCategory.editable = true;
 		for (const thisSetting of thisCategory.settings) {
 			thisSetting.editable = true;
@@ -174,7 +174,7 @@ export async function addSetting(categorySettings: Setting[], thisSetting) {
 }
 
 export async function removeSetting(thisSetting) {
-	for (const thisCategory of getCustomItems()) {
+	for (const thisCategory of getAddOnItems()) {
 		const index = (thisCategory.settings || []).findIndex((checkSetting) => checkSetting === thisSetting);
 
 		if (index > -1) {
@@ -209,27 +209,27 @@ export async function addCategory(categoryName: string) {
 		thisCategory = newCategory;
 	}
 
-	const customItems = getCustomItems();
-	customItems.push(thisCategory);
-	logger.info("category", "Added Category", customItems);
+	const addOnItems = getAddOnItems();
+	addOnItems.push(thisCategory);
+	logger.info("category", "Added Category", addOnItems);
 
 	// Track the new category ID for UI highlighting
 	const categoryId = typeof thisCategory.category === "string" ? thisCategory.category : thisCategory.category.label;
 	await saveToStorage("lastAddedCategory", categoryId);
 
-	saveCustomItemsAndRefreshExtensionState(customItems);
+	saveAddOnItemsAndRefreshExtensionState(addOnItems);
 }
 
 export async function removeCategory(thisCategory) {
-	const customItems = getCustomItems();
-
-	const index = customItems.findIndex((checkCategory) => checkCategory === thisCategory);
+	const addOnItems = getAddOnItems();
+ 
+	const index = addOnItems.findIndex((checkCategory) => checkCategory === thisCategory);
 
 	if (index > -1) {
-		customItems.splice(index, 1);
+		addOnItems.splice(index, 1);
 	}
 
-	saveCustomItemsAndRefreshExtensionState(customItems);
+	saveAddOnItemsAndRefreshExtensionState(addOnItems);
 }
 
 //-------------------------------------------------

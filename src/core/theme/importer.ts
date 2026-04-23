@@ -4,7 +4,7 @@ import { downloadFile } from '@core/shared/extensionHelpers';
 import { createError, createNotification } from '@core/shared/notifications';
 import { performStorageGarbageCollection } from '@core/storage/maintenance';
 import {
-	getRootValue, persistCachedDataToStorage, saveCustomStyleShiftItems, saveRootValue,
+	getRootValue, persistCachedDataToStorage, saveAddOnStyleShiftItems, saveRootValue,
 	saveUserSetting, suppressStoragePersistence
 } from '@core/storage/manager';
 import { triggerSettingsUpdateBatch } from '@settings/engine/functions';
@@ -35,9 +35,9 @@ export async function resolveRgbaFromStorage(colorBaseId: string): Promise<strin
 }
 
 /**
- * Validates an array of custom StyleShift items for potential JavaScript code.
+ * Validates an array of add-on StyleShift items for potential JavaScript code.
  */
-export async function validateCustomItemsForJs(items: any[]): Promise<boolean> {
+export async function validateAddOnItemsForJs(items: any[]): Promise<boolean> {
 	let hasJs = false;
 	for (const item of items) {
 		const jsProperties = ["clickFunction", "setupFunction", "updateFunction", "enableFunction", "disableFunction", "constantCss", "uiFunction"];
@@ -53,7 +53,7 @@ export async function validateCustomItemsForJs(items: any[]): Promise<boolean> {
 	if (hasJs) {
 		return await showUserConfirmation(
 			`⚠️*WARNING*⚠️
-These custom items contain JS code.
+These add-on items contain JS code.
 You could be compromised if you continue.
 
 Do you want to install these items?`,
@@ -93,10 +93,10 @@ export async function importPresetToSettings(presetData: any, persist = true, th
 			return;
 		}
 
-		if (key === "customStyleShiftItems" && Array.isArray(value)) {
-			const approved = await validateCustomItemsForJs(value);
+		if (key === "addOnStyleShiftItems" && Array.isArray(value)) {
+			const approved = await validateAddOnItemsForJs(value);
 			if (approved) {
-				await saveCustomStyleShiftItems(value, true);
+				await saveAddOnStyleShiftItems(value, true);
 				changedKeys.push(key);
 				changesDetected = true;
 			}
@@ -301,7 +301,7 @@ export async function addItemsToZip(
 }
 
 /**
- * Packs multiple custom StyleShift items into a ZIP file using the high-fidelity structure.
+ * Packs multiple add-on StyleShift items into a ZIP file using the high-fidelity structure.
  */
 export async function exportStyleShiftZip(
 	styleshiftData: any[],

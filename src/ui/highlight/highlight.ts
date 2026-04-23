@@ -107,7 +107,7 @@ export async function startHighlighter() {
 					mutation.addedNodes.forEach((node) => {
 						if (node.nodeType === Node.ELEMENT_NODE) {
 							const element = node as HTMLElement;
-							for (const item of [...editableItems.Default, ...editableItems.Custom]) {
+							for (const item of [...editableItems.Default, ...editableItems.AddOn]) {
 								const selectorValue = item as Category;
 								if (
 									selectorValue.category &&
@@ -143,7 +143,7 @@ export async function startHighlighter() {
 		});
 	}
 
-	for (const item of [...editableItems.Default, ...editableItems.Custom]) {
+	for (const item of [...editableItems.Default, ...editableItems.AddOn]) {
 		const selectorValue = item as Category;
 		if (!selectorValue.category || selectorValue.selector == "") continue;
 

@@ -24,7 +24,7 @@
 		onConfirm?: () => void;
 		onCancel?: () => void;
 		footer?: Snippet;
-		buttons?: { label: string; color: string; onClick: () => void }[];
+		buttons?: { label: string; color: string; description?: string; onClick: () => void }[];
 		onClose?: () => void;
 	} = $props();
 
@@ -64,8 +64,10 @@
 						type: "button",
 						name: btn.label,
 						color: btn.color,
+						description: btn.description,
 						clickFunction: () => handleAction(btn.onClick),
 					}}
+					showHelpIcon={!!btn.description}
 				/>
 			{/each}
 		{:else}
