@@ -47,6 +47,7 @@
 
 - ### [Report Issues or Suggest Features](CONTRIBUTING.md)
 - ### [Join my discord](https://discord.gg/BgxvVqap4G) (fastest way to contact me) </b>
+- ### [Development Status](https://github.com/users/AzPepoze/projects/1)
 
 ---
 
@@ -58,7 +59,6 @@
 - [Statistics](#statistics)
      - [Chrome Web Store Statistics](#chrome-web-store-statistics)
      - [Firefox Add-on Statistics](#firefox-add-on-statistics)
-- [Current Development Status](#current-development-status)
 - [Prerequisites](#prerequisites)
 - [Build from Source](#build-from-source)
 - [Development](#development)
@@ -84,8 +84,6 @@
      - **Firefox**: For Mozilla Firefox and browsers based on the Gecko engine.
 
 ---
-
-# [Current Development Status](https://github.com/users/AzPepoze/projects/1)
 
 # Development
 
