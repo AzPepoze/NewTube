@@ -21,7 +21,9 @@
   </a>
 </p>
 
-## Chrome Web Store Statistics
+---
+
+### Chrome Web Store Statistics
 
 <p align="center">
   <img src="https://img.shields.io/chrome-web-store/users/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20ACTIVE%20USERS%20%E2%97%88&labelColor=white&color=white" alt="Chrome Users">
@@ -29,7 +31,9 @@
   <img src="https://img.shields.io/chrome-web-store/stars/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20TOTAL%20RATINGS%20%E2%97%88&labelColor=white&color=white" alt="Chrome Stars">
 </p>
 
-## Firefox Add-on Statistics
+---
+
+### Firefox Add-on Statistics
 
 <p align="center">
   <img src="https://img.shields.io/amo/users/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20DAILY%20USERS%20%E2%97%88&labelColor=white&color=white" alt="Firefox Users">
@@ -37,33 +41,35 @@
   <img src="https://img.shields.io/amo/v/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20LATEST%20VERSION%20%E2%97%88&labelColor=white&color=white" alt="Firefox Version Status">
 </p>
 
-## Table of Contents
+---
 
-- [Report Issues, Suggest Features](#report-issues-or-suggest-features)
-- [Join Discord](#-join-discord-fastest-way-to-contact-me-)
+# [Report Issues or Suggest Features](CONTRIBUTING.md)
+
+---
+
+# [Join my discord](https://discord.gg/BgxvVqap4G) (fastest way to contact me) </b>
+
+---
+
+# Table of Contents
+
 - [Install the Extension](#install-the-extension)
      - [Browser store](#browser-store)
-     - [Release](#release)
+     - [Releases](#releases)
 - [Statistics](#statistics)
      - [Chrome Web Store Statistics](#chrome-web-store-statistics)
      - [Firefox Add-on Statistics](#firefox-add-on-statistics)
-- [Development Status](#development-status)
+- [Current Development Status](#current-development-status)
 - [Prerequisites](#prerequisites)
 - [Build from Source](#build-from-source)
 - [Development](#development)
 - [Stars](#stars)
 
-# Report Issues or Suggest Features
-
-Please checkout the [CONTRIBUTING.md](CONTRIBUTING.md).
-
-# Join my discord
-
-[NewTube Discord](https://discord.gg/BgxvVqap4G) (fastest way to contact me) </b>
+---
 
 # Install the Extension
 
-## Browser store
+- #### Browser store
 
 <p align="center">
   <a href="https://chrome.google.com/webstore/detail/youtube-style-customizer/dnjjchajjdnfbjhjclmilicgheglcopj">
@@ -74,16 +80,15 @@ Please checkout the [CONTRIBUTING.md](CONTRIBUTING.md).
   </a>
 </p>
 
-## Release
-
-You can download the latest version of the extension from the [Releases](https://github.com/AzPepoze/NewTube/releases/latest) page.
-
-- **Chromium**: For browsers based on the Chromium engine, such as Google Chrome, Microsoft Edge, Opera, Brave, and Vivaldi.
-- **Firefox**: For Mozilla Firefox and browsers based on the Gecko engine.
-
-### [Development Status](https://github.com/users/AzPepoze/projects/1)
+- #### [Releases](https://github.com/AzPepoze/NewTube/releases/latest)
+     - **Chromium**: For browsers based on the Chromium engine, such as Google Chrome, Microsoft Edge, Opera, Brave, and Vivaldi.
+     - **Firefox**: For Mozilla Firefox and browsers based on the Gecko engine.
 
 ---
+
+# [Current Development Status](https://github.com/users/AzPepoze/projects/1)
+
+# Development
 
 ## Prerequisites
 
@@ -113,8 +118,6 @@ You can download the latest version of the extension from the [Releases](https:/
 
      The output will be in the `out/dist` directory.
 
-## Development
-
 Run the extension in development mode with hot-reloading:
 
 ```bash
@@ -125,7 +128,9 @@ bun run dev:chromium
 bun run dev:firefox
 ```
 
-## Stars
+---
+
+### Stars
 
 <div align="center">
   <a href="https://www.star-history.com/#AzPepoze/NewTube&type=date&legend=top-left">
