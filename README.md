@@ -43,11 +43,10 @@
 
 ---
 
-# [Report Issues or Suggest Features](CONTRIBUTING.md)
+# Quick Links
 
----
-
-# [Join my discord](https://discord.gg/BgxvVqap4G) (fastest way to contact me) </b>
+- ### [Report Issues or Suggest Features](CONTRIBUTING.md)
+- ### [Join my discord](https://discord.gg/BgxvVqap4G) (fastest way to contact me) </b>
 
 ---
 
