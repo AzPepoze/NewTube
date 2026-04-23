@@ -13,9 +13,8 @@ import { createSvelteCompilerOptions } from "./shared/svelte";
 
 dotenv.config();
 
-const args = process.argv.slice(2);
-const isProduction = args.includes("--production");
-const isOnce = args.includes("--once");
+const isProduction = () => process.argv.includes("--production") || process.argv.includes("--release");
+const isOnce = () => process.argv.includes("--once") || process.argv.includes("--release");
 
 let isBuilding = false;
 
@@ -78,7 +77,7 @@ export async function buildExtension() {
 			bundle: true,
 			outfile: path.join(BUILD, "background.js"),
 			platform: "browser",
-			minify: isProduction,
+			minify: isProduction(),
 			alias: esbuildAliases,
 		});
 
@@ -94,7 +93,7 @@ export async function buildExtension() {
 			bundle: true,
 			outfile: sharedBundledJs,
 			platform: "browser",
-			minify: isProduction,
+			minify: isProduction(),
 			alias: esbuildAliases,
 			keepNames: true,
 			format: "iife",
@@ -113,7 +112,7 @@ export async function buildExtension() {
 			bundle: true,
 			outfile: path.join(BUILD, mainScriptName),
 			platform: "browser",
-			minify: isProduction,
+			minify: isProduction(),
 			publicPath: "/",
 			external: esbuildExternals,
 			alias: esbuildAliases,
@@ -151,7 +150,7 @@ export async function buildExtension() {
 					bundle: true,
 					outfile: path.join(firefoxWorkersPath, entry.out),
 					platform: "browser",
-					minify: isProduction,
+					minify: isProduction(),
 					alias: esbuildAliases,
 				});
 			}
@@ -187,7 +186,7 @@ export async function watchExtension() {
 }
 
 if (require.main === module) {
-	if (isOnce) {
+	if (isOnce()) {
 		buildExtension().catch(() => process.exit(1));
 	} else {
 		build().then(watchExtension).catch(() => process.exit(1));
