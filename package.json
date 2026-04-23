@@ -35,6 +35,8 @@
 		"chokidar": "^5.0.0",
 		"concurrently": "^9.2.1",
 		"dotenv": "^17.4.0",
+		"esbuild": "^0.28.0",
+		"esbuild-svelte": "^0.9.4",
 		"eslint": "^10.1.0",
 		"eslint-plugin-svelte": "^3.17.0",
 		"fs-extra": "^11.3.4",
