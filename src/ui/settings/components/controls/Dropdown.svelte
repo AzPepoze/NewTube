@@ -1,0 +1,385 @@
+<script lang="ts">
+	import { logger } from "@/shared/logger";
+	import type { Setting } from "@settings/types/styleshiftTypes";
+	import { quintOut } from "svelte/easing";
+	import { scale } from "svelte/transition";
+	import Description from "../primitives/Description.svelte";
+
+	import { getFromStorage } from "@core/storage/manager";
+	import { triggerSettingUpdate } from "@settings/engine/functions";
+	import { setAndSave } from "@ui/settings/settingsApi";
+
+	let {
+		setting,
+		isOpen = $bindable(false),
+		triggerEl = $bindable<HTMLElement | null>(null),
+		justMenu = false,
+		onClose = () => {},
+	}: {
+		setting: Extract<Setting, { type: "dropdown" }>;
+		isOpen?: boolean;
+		triggerEl?: HTMLElement | null;
+		justMenu?: boolean;
+		onClose?: () => void;
+	} = $props();
+
+	let value = $state("");
+
+	async function init() {
+		if (setting.id) {
+			const storedValue = await getFromStorage(setting.id);
+			if (storedValue !== undefined) value = storedValue;
+		} else {
+			value = setting.value;
+		}
+	}
+	init();
+
+	$effect(() => {
+		if (!setting.id && setting.value !== undefined) {
+			value = setting.value as string;
+		}
+	});
+
+	const name = $derived(setting.name);
+	const description = $derived(setting.description);
+
+	const optionsList = $derived.by(() => {
+		if (setting.options) return Object.keys(setting.options);
+		return [];
+	});
+
+	let menuEl = $state<HTMLElement | null>(null);
+
+	function toggleDropdown(e: MouseEvent) {
+		logger.info("ui", "Toggling dropdown");
+		e.stopPropagation();
+		isOpen = !isOpen;
+		if (!isOpen) onClose();
+	}
+
+	async function handleSelect(e: MouseEvent, option: string) {
+		logger.debug(
+			"ui",
+			`[Dropdown] Option selected: "${option}" for setting:`,
+			setting.id || "no-id",
+		);
+		e.stopPropagation();
+		value = option;
+
+		if (setting.id) {
+			await setAndSave(setting, value);
+			triggerSettingUpdate(setting.id);
+		} else if (typeof setting.updateFunction === "function") {
+			logger.debug(
+				"ui",
+				`[Dropdown] Executing updateFunction for non-id setting`,
+			);
+			(setting.updateFunction as Function)(value);
+		}
+
+		isOpen = false;
+		if (onClose) onClose();
+	}
+
+	// Close on click outside
+	$effect(() => {
+		if (isOpen) {
+			const handleClickOutside = (event: MouseEvent) => {
+				if (
+					menuEl &&
+					!menuEl.contains(event.target as Node) &&
+					triggerEl &&
+					!triggerEl.contains(event.target as Node)
+				) {
+					logger.info("ui", "Closing dropdown");
+					isOpen = false;
+					onClose();
+				}
+			};
+			window.addEventListener("click", handleClickOutside);
+			return () =>
+				window.removeEventListener("click", handleClickOutside);
+		}
+	});
+
+	// Handle menu positioning and clipping
+	let isMenuAbove = $state(false);
+	let menuTop = $state(0);
+	let menuLeft = $state(0);
+	let menuWidth = $state(0);
+	let isReady = $state(false);
+	let scrollParent = $state<HTMLElement | null>(null);
+
+	function updatePosition() {
+		if (!triggerEl || !menuEl) return;
+
+		if (!scrollParent) {
+			scrollParent = triggerEl.closest(
+				".STYLESHIFT-Scrollable",
+			) as HTMLElement;
+		}
+
+		const triggerRect = triggerEl.getBoundingClientRect();
+
+		if (scrollParent) {
+			const parentRect = scrollParent.getBoundingClientRect();
+			if (
+				triggerRect.bottom < parentRect.top ||
+				triggerRect.top > parentRect.bottom ||
+				triggerRect.right < parentRect.left ||
+				triggerRect.left > parentRect.right
+			) {
+				isOpen = false;
+				return;
+			}
+		}
+
+		menuWidth = triggerEl.offsetWidth;
+
+		// Since we're teleporting to document.body, coordinates are relative to the viewport
+		// plus current scroll position
+		const scrollX = window.scrollX;
+		const scrollY = window.scrollY;
+
+		menuLeft = triggerRect.left + scrollX;
+
+		const spaceBelow = window.innerHeight - triggerRect.bottom;
+		const menuHeight = menuEl.offsetHeight;
+
+		if (spaceBelow < menuHeight && triggerRect.top > menuHeight) {
+			isMenuAbove = true;
+			menuTop = triggerRect.top + scrollY - menuHeight - 8;
+		} else {
+			isMenuAbove = false;
+			menuTop = triggerRect.bottom + scrollY + 8;
+		}
+		isReady = true;
+	}
+
+	function portal(node: HTMLElement) {
+		document.body.appendChild(node);
+		return {
+			destroy() {
+				if (node.parentNode) {
+					node.parentNode.removeChild(node);
+				}
+			},
+		};
+	}
+
+	function menuAction(node: HTMLElement) {
+		menuEl = node;
+		requestAnimationFrame(() => {
+			updatePosition();
+		});
+
+		window.addEventListener("scroll", updatePosition, true);
+		window.addEventListener("resize", updatePosition);
+
+		return {
+			destroy() {
+				window.removeEventListener("scroll", updatePosition, true);
+				window.removeEventListener("resize", updatePosition);
+			},
+		};
+	}
+
+	$effect(() => {
+		if (!isOpen) {
+			isReady = false;
+			scrollParent = null;
+		}
+	});
+</script>
+
+{#if !justMenu}
+	<Description {name} {description} />
+	<div class="STYLESHIFT-Dropdown-Wrapper">
+		<button
+			bind:this={triggerEl}
+			class="STYLESHIFT-Dropdown-Trigger"
+			class:open={isOpen}
+			onclick={toggleDropdown}
+		>
+			<div class="STYLESHIFT-Dropdown-Display">
+				{#each optionsList as option (option)}
+					<span class="tester-item" aria-hidden="true">
+						{setting.options[option]?.name || option}
+					</span>
+				{/each}
+				<span class="current-value">
+					{setting.options[value]?.name || value}
+				</span>
+			</div>
+			<span class="arrow">▼</span>
+		</button>
+
+		{#if isOpen}
+			{@render menu()}
+		{/if}
+	</div>
+{:else if isOpen}
+	{@render menu()}
+{/if}
+
+{#snippet menu()}
+	<div
+		use:portal
+		use:menuAction
+		class="STYLESHIFT-Dropdown-Menu STYLESHIFT-Main"
+		style:top="{menuTop}px"
+		style:left="{menuLeft}px"
+		style:width="{menuWidth}px"
+		style:visibility={isReady ? "visible" : "hidden"}
+		style:pointer-events={isReady ? "all" : "none"}
+		class:above={isMenuAbove}
+		transition:scale={{
+			duration: 300,
+			start: 0.9,
+			opacity: 0,
+			easing: quintOut,
+		}}
+	>
+		{#each optionsList as option, i (i)}
+			<button
+				class="STYLESHIFT-Dropdown-Item"
+				class:selected={option === value}
+				onclick={(e) => handleSelect(e, option)}
+				style="animation-delay: {i * 50}ms"
+			>
+				{setting.options[option]?.name || option}
+			</button>
+		{/each}
+	</div>
+{/snippet}
+
+<style lang="scss">
+	.STYLESHIFT-Dropdown-Wrapper {
+		position: relative;
+		min-width: 120px;
+	}
+
+	.STYLESHIFT-Dropdown-Trigger {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
+		background: var(--Black-30);
+		border: 1px gray solid;
+		color: var(--White-100);
+		border-radius: 20px;
+		padding: 8px 15px;
+		width: 100%;
+		font-family: inherit;
+		font-size: 14px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		outline: none;
+
+		&:hover {
+			border-color: var(--Theme-0, #7f5db7);
+			transform: translateY(-1px);
+			box-shadow: 0 4px 12px var(--Black-20);
+			filter: brightness(1.5);
+		}
+
+		&.open {
+			border-color: var(--Theme-0, #7f5db7);
+			filter: brightness(1.5);
+
+			.arrow {
+				transform: rotate(180deg);
+			}
+		}
+
+		.arrow {
+			font-size: 10px;
+			transition: transform 0.3s ease;
+			opacity: 0.7;
+		}
+	}
+
+	.STYLESHIFT-Dropdown-Display {
+		display: grid;
+		grid-template-areas: "stack";
+		flex: 1;
+		min-width: 0;
+		justify-items: center;
+		align-items: center;
+	}
+
+	.tester-item {
+		grid-area: stack;
+		visibility: hidden;
+		white-space: nowrap;
+		height: 0;
+		overflow: hidden;
+	}
+
+	.current-value {
+		grid-area: stack;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-align: center;
+		width: 100%;
+	}
+
+	.STYLESHIFT-Dropdown-Menu {
+		position: absolute;
+		z-index: 10000;
+		background: var(--BG-Dark);
+		border: 1px solid var(--White-10);
+		border-radius: 15px;
+		padding: 6px;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		box-shadow: 0 10px 30px var(--Black-50);
+		overflow: hidden;
+		transform-origin: top center;
+		box-sizing: border-box;
+		margin-left: -1px;
+
+		&.above {
+			transform-origin: bottom center;
+		}
+	}
+
+	.STYLESHIFT-Dropdown-Item {
+		background: transparent;
+		border: none;
+		color: var(--White-80);
+		padding: 10px 14px;
+		text-align: left;
+		cursor: pointer;
+		font-size: 13px;
+		font-weight: 500;
+		border-radius: 10px;
+		transition: all 0.2s ease;
+		opacity: 0;
+		transform: translateX(-10px);
+		animation: itemSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)
+			forwards;
+
+		&:hover {
+			background: var(--White-10);
+			color: white;
+			transform: translateX(5px);
+		}
+
+		&.selected {
+			background: var(--Theme-0, #7f5db7);
+			color: white;
+		}
+	}
+
+	@keyframes itemSlideIn {
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+</style>

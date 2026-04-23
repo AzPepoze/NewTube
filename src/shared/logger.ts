@@ -1,4 +1,4 @@
-import { stringToColor } from "../styleshift/utils/logFormat";
+import { categoryToLogStyle } from "@core/utils/logFormat";
 
 const logColors = {
 	main: "color: #bada55",
@@ -50,7 +50,7 @@ export const logger = {
 			const prefix = `%c StyleShift %c [${level.toUpperCase()}] %c [${category.toUpperCase()}]`;
 			const styleMain = logColors.main;
 			const styleLevel = logColors[level.toLowerCase()] || logColors.info;
-			const styleCategory = stringToColor(category);
+			const styleCategory = categoryToLogStyle(category);
 
 			switch (level.toLowerCase()) {
 				case "error":

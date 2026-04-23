@@ -1,38 +1,16 @@
-import { convertToExportSetting } from "../src/styleshift/core/exportConverter";
-import { uiPreset } from "../src/styleshift/settings/defaultItems";
-import * as fs from "fs";
+import { convertToExportSetting } from "../src/core/theme/exportConverter";
+import { uiPreset } from "../src/settings/registry/defaultItems";
+import * as fs from "fs-extra";
 import * as path from "path";
+import { SRC, BUILD, TEMPLATE, extensionConfig, ensureDir } from "./shared/paths";
+import { log } from "./shared/logger";
 
-/*
--------------------------------------------------------
-Configuration & Paths
--------------------------------------------------------
-*/
-const SRC_DIR = path.join(__dirname, "../src");
-const OUT_DIR = path.join(__dirname, "../out/build");
-const TEMPLATE_DIR = path.join(__dirname, "../out/template");
-
-const SETTINGS_OUT_DIR = path.join(TEMPLATE_DIR, "settings");
-const PROD_TYPES_DIR = path.join(OUT_DIR, "types");
-
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, "../extension.config.json"), "utf8"));
-
-const TYPE_FILE_NAME = `${config.name}.d.ts`;
-const METADATA_FILE_NAME = `${config.name}-Metadata.json`;
-
-/*
--------------------------------------------------------
-Helper Functions
--------------------------------------------------------
-*/
-function ensureDir(dir: string) {
-	if (!fs.existsSync(dir)) {
-		fs.mkdirSync(dir, { recursive: true });
-	}
-}
+const SETTINGS_OUT_DIR = path.join(TEMPLATE, "settings");
+const PROD_TYPES_DIR = path.join(BUILD, "types");
+const TYPE_FILE_NAME = `${extensionConfig.name}.d.ts`;
+const METADATA_FILE_NAME = `${extensionConfig.name}-Metadata.json`;
 
 async function createSettingFolder(categoryFolderPath: string, thisSetting: any) {
-	// Standardize folder name: lowercase and replace spaces
 	const settingFolderName = thisSetting.type.toLowerCase().replace(/\s+/g, "-");
 	const settingsFolderPath = path.join(categoryFolderPath, settingFolderName);
 
@@ -45,64 +23,60 @@ async function createSettingFolder(categoryFolderPath: string, thisSetting: any)
 	fs.writeFileSync(path.join(settingsFolderPath, "config.json"), JSON.stringify(thisSetting, null, 2));
 }
 
+function normalizeParams(rawParams: string): string {
+	return rawParams.replace(/\s+/g, " ").trim();
+}
+
 function extractMetadata(content: string) {
 	const metadata: any[] = [];
-	// Regex to capture JSDoc + Exported function
-	const regex = /\/\*\*([\s\S]*?)\*\/[\s\r\n]*export\s+(async\s+)?function\s+(\w+)\s*\((.*?)\)/g;
+	const regex = /\/\*\*([\s\S]*?)\*\/[\s\r\n]*export\s+(async\s+)?function\s+(\w+)\s*\(([\s\S]*?)\)/g;
 	let match;
 	while ((match = regex.exec(content)) !== null) {
-		const [_full, jsdoc, isAsync, name, params] = match;
+		const [_full, jsdoc, isAsync, name, rawParams] = match;
+		const params = normalizeParams(rawParams);
 		metadata.push({
 			label: name,
 			type: "function",
 			detail: `(${params}) => ${isAsync ? "Promise<any>" : "any"}`,
-			info: jsdoc
-				.replace(/\*\/$/, "")
-				.replace(/^\/\*\*/, "")
-				.replace(/^\s*\* ?/gm, "")
-				.trim(),
+			info: jsdoc.replace(/\*\/$/, "").replace(/^\/\*\*/, "").replace(/^\s*\* ?/gm, "").trim(),
 		});
 	}
 
-	// Catch functions without JSDoc
-	const simpleRegex = /(?<!\/\*\*[\s\S]*?)\bexport\s+(async\s+)?function\s+(\w+)\s*\((.*?)\)/g;
+	const simpleRegex = /(?!\/\*\*[\s\S]*?)\bexport\s+(async\s+)?function\s+(\w+)\s*\(([\s\S]*?)\)/g;
 	while ((match = simpleRegex.exec(content)) !== null) {
-		const [_, isAsync, name, params] = match;
+		const [_, isAsync, name, rawParams] = match;
+		const params = normalizeParams(rawParams);
 		if (!metadata.find((m) => m.label === name)) {
-			metadata.push({
-				label: name,
-				type: "function",
-				detail: `(${params}) => ${isAsync ? "Promise<any>" : "any"}`,
-			});
+			metadata.push({ label: name, type: "function", detail: `(${params}) => ${isAsync ? "Promise<any>" : "any"}` });
 		}
 	}
 	return metadata;
 }
 
-/*
--------------------------------------------------------
-Main Runner
--------------------------------------------------------
-*/
-(async () => {
-	console.log(`🚀 Starting ${config.name} Builder...`);
 
-	// 1. Build Templates
-	console.log("📦 Generating UI Templates...");
+export async function buildTemplates() {
+	log.info("Generating UI Templates...");
 	ensureDir(SETTINGS_OUT_DIR);
 	for (const thisPreset of uiPreset) {
 		await createSettingFolder(SETTINGS_OUT_DIR, thisPreset);
 	}
 
-	// 2. Build Type Definitions & Metadata
-	console.log("📝 Generating Type Definitions...");
-	const styleshiftDir = path.join(SRC_DIR, "styleshift");
-	const sharedFunctionsDir = path.join(styleshiftDir, "shared");
+	log.info("Generating Type Definitions...");
+	const sharedFunctionsDir = path.join(SRC, "core/shared");
+	const sharedUtilitiesDir = path.join(SRC, "shared");
+	const coreUtilsDir = path.join(SRC, "core/utils");
+	const commDir = path.join(SRC, "core/communication");
 
 	const sourceFiles = [
-		path.join(sharedFunctionsDir, "normal.ts"),
-		path.join(sharedFunctionsDir, "extension.ts"),
-		path.join(styleshiftDir, "communication/webPage.ts"),
+		path.join(sharedFunctionsDir, "domHelpers.ts"),
+		path.join(sharedFunctionsDir, "extensionHelpers.ts"),
+		path.join(sharedFunctionsDir, "notifications.ts"),
+		path.join(sharedFunctionsDir, "dialogs.ts"),
+		path.join(sharedFunctionsDir, "importExport.ts"),
+		path.join(sharedFunctionsDir, "webPageLogger.ts"),
+		path.join(sharedUtilitiesDir, "utilities.ts"),
+		path.join(coreUtilsDir, "colorConversion.ts"),
+		path.join(commDir, "webPage.ts"),
 	];
 
 	let allMetadata: any[] = [];
@@ -113,59 +87,32 @@ Main Runner
 		}
 	}
 
-	// Add manual internal entries
 	allMetadata.push(
-		{
-			label: "setValue",
-			type: "function",
-			detail: "(id: string, value: any) => void",
-			info: `Sets a value in the ${config.name} storage.`,
-		},
-		{
-			label: "getValue",
-			type: "function",
-			detail: "(id: string) => any",
-			info: `Gets a value from the ${config.name} storage.`,
-		},
+		{ label: "setValue", type: "function", detail: "(id: string, value: any) => void", info: `Sets a value in the ${extensionConfig.name} storage.` },
+		{ label: "getValue", type: "function", detail: "(id: string) => any", info: `Gets a value from the ${extensionConfig.name} storage.` },
 	);
 
-	// Generate Signature string for .d.ts
 	const combinedSignatures = allMetadata
 		.map((m) => `    /** ${m.info || m.label} */\n    function ${m.label}${m.detail.replace(" => ", ": ")};`)
 		.join("\n");
 
-	const dTsContent = `/**\n * ${config.name} Global API\n * These functions are available in the advanced script editor.\n */\ndeclare global {\n${combinedSignatures}\n}\nexport {};`;
-
-	// 3. Write Output Files
+	const dTsContent = `/**\n * ${extensionConfig.name} Global API\n */\ndeclare global {\n${combinedSignatures}\n}\nexport {};`;
 	const metadataJson = JSON.stringify(allMetadata, null, 2);
 
-	// Write to /out/template (Dev)
-	ensureDir(TEMPLATE_DIR);
-	fs.writeFileSync(path.join(TEMPLATE_DIR, TYPE_FILE_NAME), dTsContent);
+	ensureDir(TEMPLATE);
+	fs.writeFileSync(path.join(TEMPLATE, TYPE_FILE_NAME), dTsContent);
 
-	// Generate a tsconfig.json for the template directory
 	const templateTsconfig = {
-		compilerOptions: {
-			target: "es2022",
-			module: "esnext",
-			moduleResolution: "node",
-			strict: true,
-			skipLibCheck: true,
-			lib: ["es2022", "dom"],
-			ignoreDeprecations: "6.0",
-		},
+		compilerOptions: { target: "es2022", module: "esnext", moduleResolution: "node", strict: true, skipLibCheck: true, lib: ["es2022", "dom"], ignoreDeprecations: "6.0" },
 		include: ["**/*.js", "**/*.ts", TYPE_FILE_NAME],
 	};
-	fs.writeFileSync(path.join(TEMPLATE_DIR, "tsconfig.json"), JSON.stringify(templateTsconfig, null, 2));
+	fs.writeFileSync(path.join(TEMPLATE, "tsconfig.json"), JSON.stringify(templateTsconfig, null, 2));
 
-	// Write to /out/build/types (Production)
 	ensureDir(PROD_TYPES_DIR);
 	fs.writeFileSync(path.join(PROD_TYPES_DIR, METADATA_FILE_NAME), metadataJson);
 	fs.writeFileSync(path.join(PROD_TYPES_DIR, TYPE_FILE_NAME), dTsContent);
+}
 
-	console.log(`✅ Build complete!`);
-	console.log(`- Templates: ${SETTINGS_OUT_DIR}`);
-	console.log(`- Types:     ${path.join(TEMPLATE_DIR, TYPE_FILE_NAME)}`);
-})();
-
-export { };
+if (require.main === module) {
+	buildTemplates().catch(err => log.error("Templates build failed", err));
+}

@@ -7,22 +7,22 @@ const target = args.includes("--firefox") ? "firefox" : "chromium";
 const commands = [
 	{
 		name: "js",
-		command: "bun run dev:js",
+		command: "bun utils/builderExtension.ts",
 		color: "cyan"
 	},
 	{
 		name: "css",
-		command: "bun run dev:css",
+		command: "sass --watch src/styles/setting.scss out/build/style.css --style=compressed --no-source-map --load-path=node_modules",
 		color: "magenta"
 	},
 	{
 		name: "browser",
-		command: `bun run test:${target}`,
+		command: `web-ext run ${target === 'firefox' ? '--pref gfx.webrender.all=true' : '--target=chromium'} --source-dir=./out/dist/${target}`,
 		color: "green"
 	}
 ];
 
-console.log(`Starting NewTube development environment for ${target}...`);
+console.log(`\nStarting NewTube development environment for ${target}...`);
 
 const names = commands.map(commandItem => commandItem.name).join(",");
 const colors = commands.map(commandItem => commandItem.color).join(",");

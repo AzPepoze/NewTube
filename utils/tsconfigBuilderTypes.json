@@ -11,14 +11,14 @@
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["../src/*"],
-			"@main/*": ["../src/main/*"],
-			"@styleshift/*": ["../src/styleshift/*"],
-			"@core/*": ["../src/styleshift/core/*"],
-			"@ui/*": ["../src/styleshift/ui/*"],
-			"@settings/*": ["../src/styleshift/settings/*"],
-			"@functions/*": ["../src/styleshift/buildInFunctions/*"]
+			"@core/*": ["../src/core/*"],
+			"@ui/*": ["../src/ui/*"],
+			"@settings/*": ["../src/settings/*"],
+			"@extensions/*": ["../src/extensions/*"],
+			"@shared/*": ["../src/shared/*"],
+			"@functions/*": ["../src/core/shared/extensionHelpers.ts"]
 		}
 	},
-	"include": ["../src/styleshift/buildInFunctions/extension.ts", "../src/ambient.d.ts"],
+	"include": ["../src/core/shared/extensionHelpers.ts", "../src/ambient.d.ts"],
 	"exclude": ["../node_modules"]
 }

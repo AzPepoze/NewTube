@@ -1,41 +1,43 @@
+import * as esbuild from "esbuild";
+import * as path from "path";
+import * as fs from "fs-extra";
+import { ENTRYPOINTS, BUILD, ROOT, ensureDir } from "./shared/paths";
+import { log } from "./shared/logger";
 
-const esbuild = require("esbuild");
-const path = require("path");
-const fs = require("fs");
+export async function buildModules() {
+	log.info("Building external modules...");
+	
+	const modules = [
+		{ name: "jszip", entry: "modules/jszip.js" },
+		{ name: "codemirror", entry: "modules/codemirror.js" }
+	];
 
-(async () => {
-	await esbuild.build({
-		entryPoints: [path.join(__dirname, "../src/extension/modules/jszip.js")],
-		bundle: true,
-		format: "esm",
-		outfile: path.join(__dirname, "../out/build/modules/jszip.js"),
-		minify: true,
-	});
-
-	await esbuild.build({
-		entryPoints: [path.join(__dirname, "../src/extension/modules/codemirror.js")],
-		bundle: true,
-		format: "esm",
-		outfile: path.join(__dirname, "../out/build/modules/codemirror.js"),
-		minify: true,
-	});
-
-	const fontsDir = path.join(__dirname, "../node_modules/material-icons/iconfont");
-	const outFontsDir = path.join(__dirname, "../out/build/assets/fonts");
-
-	// Ensure fonts directory exists
-	if (!fs.existsSync(outFontsDir)) {
-		fs.mkdirSync(outFontsDir, { recursive: true });
+	for (const mod of modules) {
+		await esbuild.build({
+			entryPoints: [path.join(ENTRYPOINTS, mod.entry)],
+			bundle: true,
+			format: "esm",
+			outfile: path.join(BUILD, "modules", `${mod.name}.js`),
+			minify: true,
+		});
 	}
+
+	log.info("Copying fonts...");
+	const fontsDir = path.join(ROOT, "node_modules/material-icons/iconfont");
+	const outFontsDir = path.join(BUILD, "assets/fonts");
+
+	ensureDir(outFontsDir);
 
 	try {
 		const src = path.join(fontsDir, "material-icons.woff2");
 		const dst = path.join(outFontsDir, "material-icons.woff2");
 		fs.copyFileSync(src, dst);
-		console.log(`✓ Copied material-icons.woff2 to assets/fonts`);
+		log.success("Copied material-icons.woff2 to assets/fonts");
 	} catch (err: any) {
-		console.error(`✗ Failed to copy material-icons.woff2:`, err.message);
+		log.error(`Failed to copy material-icons.woff2:`, err.message);
 	}
-})();
+}
 
-export { };
+if (require.main === module) {
+	buildModules().catch(err => log.error("Modules build failed", err));
+}

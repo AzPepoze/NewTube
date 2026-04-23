@@ -1,13 +1,10 @@
-const fs = require("fs");
-const path = require("path");
-const jsZip = require("jszip");
+import * as fs from "fs-extra";
+import * as path from "path";
+import jsZip from "jszip";
+import { RELEASE, OUT, ENTRYPOINTS, extensionConfig, ensureDir } from "./shared/paths";
+import { log } from "./shared/logger";
 
-const RELEASE_DIR = path.join(__dirname, "../out/release");
-if (!fs.existsSync(RELEASE_DIR)) {
-	fs.mkdirSync(RELEASE_DIR, { recursive: true });
-}
-
-async function addDirToZip(zip, dirPath, basePath = "") {
+async function addDirToZip(zip: jsZip, dirPath: string, basePath = "") {
 	const files = fs.readdirSync(dirPath);
 	for (const file of files) {
 		const filePath = path.join(dirPath, file);
@@ -21,29 +18,38 @@ async function addDirToZip(zip, dirPath, basePath = "") {
 	}
 }
 
-async function zip(inputDir, output) {
+async function createZip(inputDir: string, output: string) {
 	const zip = new jsZip();
 	await addDirToZip(zip, inputDir);
 	const content = await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
 	fs.writeFileSync(output, content);
-	console.log(`Created zip file: ${output} (${content.length} total bytes)`);
+	log.success(`Created zip file: ${path.basename(output)} (${content.length} total bytes)`);
 }
 
-const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, "../src/extension/manifest.json"), "utf8"));
-const version = manifest.version;
+export async function buildRelease() {
+	log.step("Building release packages...");
+	ensureDir(RELEASE);
 
-async function main() {
-	const distDir = path.join(__dirname, "../out/dist");
+	const manifestPath = path.join(ENTRYPOINTS, "manifest.json");
+	const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+	const version = manifest.version;
+
+	const distDir = path.join(OUT, "dist");
+	if (!fs.existsSync(distDir)) {
+		log.error("Dist directory does not exist. Build first.");
+		return;
+	}
+
 	const dirs = fs.readdirSync(distDir);
 	for (const file of dirs) {
 		const filePath = path.join(distDir, file);
-		const stat = fs.statSync(filePath);
-		if (stat.isDirectory()) {
-			await zip(filePath, path.join(RELEASE_DIR, `newtube_${file}_${version}.zip`));
+		if (fs.statSync(filePath).isDirectory()) {
+			const zipName = `${extensionConfig.name.toLowerCase()}_${file}_${version}.zip`;
+			await createZip(filePath, path.join(RELEASE, zipName));
 		}
 	}
 }
 
-main().catch(console.error);
-
-export { };
+if (require.main === module) {
+	buildRelease().catch(err => log.error("Release build failed", err));
+}

@@ -1,24 +1,25 @@
 {
 	"compilerOptions": {
 		"target": "es2022",
-		"module": "commonjs",
+		"module": "esnext",
 		"strict": true,
+		"resolveJsonModule": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"outDir": "./dist",
 		"types": ["chrome", "node"],
 		"lib": ["es2022", "dom"],
+		"verbatimModuleSyntax": true,
 		"strictNullChecks": false,
 		"noImplicitAny": false,
 		"paths": {
 			"@/*": ["./src/*"],
-			"@main/*": ["./src/main/*"],
-			"@styleshift/*": ["./src/styleshift/*"],
-			"@core/*": ["./src/styleshift/core/*"],
-			"@ui/*": ["./src/styleshift/ui/*"],
-			"@settings/*": ["./src/styleshift/settings/*"],
-			"@functions/*": ["./src/styleshift/shared/*"]
+			"@core/*": ["./src/core/*"],
+			"@settings/*": ["./src/settings/*"],
+			"@ui/*": ["./src/ui/*"],
+			"@extensions/*": ["./src/extensions/*"],
+			"@shared/*": ["./src/shared/*"]
 		}
 	},
 	"include": [
@@ -26,8 +27,7 @@
 		"src/**/*.svelte",
 		"src/**/*.svelte.ts",
 		"utils/**/*.ts",
-		"eslint.config.mts",
-		"utils/**/*.ts"
+		"eslint.config.mts"
 	],
 	"exclude": ["node_modules"]
 }

@@ -4,3 +4,6 @@ out
 devs
 
 test.json
+
+*.md
+!README.md
