@@ -19,36 +19,6 @@
   <a href="https://github.com/AzPepoze/NewTube/stargazers">
     <img src="https://img.shields.io/github/stars/AzPepoze/NewTube?style=for-the-badge&label=%E2%97%88%20STARS%20%E2%97%88&labelColor=white&color=white" alt="Stars">
   </a>
-  <a href="https://chrome.google.com/webstore/detail/youtube-style-customizer/dnjjchajjdnfbjhjclmilicgheglcopj">
-   <img src="https://img.shields.io/chrome-web-store/users/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20USERS%20%E2%97%88&labelColor=white&color=white" alt="Chrome Users">
-  </a>
-</p>
-
-## CONTENTS
-
-- [CONTENTS](#contents)
-- [Install the Extension](#install-the-extension)
-- [Chrome Web Store Statistics](#chrome-web-store-statistics)
-- [Download from release](#download-from-release)
-- [Firefox Add-on Statistics](#firefox-add-on-statistics)
-     - [Development Status](#development-status)
-     - [ Join my discord (fastest way to contact me) ](#-join-my-discord-fastest-way-to-contact-me-)
-     - [🐛 Report a Bug](#-report-a-bug)
-     - [💡 Suggest a Feature](#-suggest-a-feature)
-- [PREREQUISITES](#prerequisites)
-- [BUILD FROM SOURCE](#build-from-source)
-- [DEVELOPMENT](#development)
-- [CONTRIBUTING](#contributing)
-
-## Install the Extension
-
-<p align="center">
-  <a href="https://chrome.google.com/webstore/detail/youtube-style-customizer/dnjjchajjdnfbjhjclmilicgheglcopj">
-    <img src="https://img.shields.io/chrome-web-store/v/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20CHROME%20%E2%97%88&labelColor=white&color=white&logo=google-chrome" alt="Chrome Web Store">
-  </a>
-  <a href="https://addons.mozilla.org/firefox/addon/newtube-youtubestylecustomizer/">
-    <img src="https://img.shields.io/amo/v/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20FIREFOX%20%E2%97%88&labelColor=white&color=white&logo=firefox-browser" alt="Firefox Add-ons">
-  </a>
 </p>
 
 ## Chrome Web Store Statistics
@@ -59,13 +29,6 @@
   <img src="https://img.shields.io/chrome-web-store/stars/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20TOTAL%20RATINGS%20%E2%97%88&labelColor=white&color=white" alt="Chrome Stars">
 </p>
 
-## Download from release
-
-You can download the latest version of the extension from the [Releases](https://github.com/AzPepoze/NewTube/releases/latest) page.
-
-- **Chromium**: For browsers based on the Chromium engine, such as Google Chrome, Microsoft Edge, Opera, Brave, and Vivaldi.
-- **Firefox**: For Mozilla Firefox and browsers based on the Gecko engine.
-
 ## Firefox Add-on Statistics
 
 <p align="center">
@@ -74,22 +37,60 @@ You can download the latest version of the extension from the [Releases](https:/
   <img src="https://img.shields.io/amo/v/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20LATEST%20VERSION%20%E2%97%88&labelColor=white&color=white" alt="Firefox Version Status">
 </p>
 
+## Table of Contents
+
+- [Report Issues, Suggest Features](#report-issues-or-suggest-features)
+- [Join Discord](#-join-discord-fastest-way-to-contact-me-)
+- [Install the Extension](#install-the-extension)
+     - [Browser store](#browser-store)
+     - [Release](#release)
+- [Statistics](#statistics)
+     - [Chrome Web Store Statistics](#chrome-web-store-statistics)
+     - [Firefox Add-on Statistics](#firefox-add-on-statistics)
+- [Development Status](#development-status)
+- [Prerequisites](#prerequisites)
+- [Build from Source](#build-from-source)
+- [Development](#development)
+- [Stars](#stars)
+
+# Report Issues or Suggest Features
+
+Please checkout the [CONTRIBUTING.md](CONTRIBUTING.md).
+
+# Join my discord
+
+[NewTube Discord](https://discord.gg/BgxvVqap4G) (fastest way to contact me) </b>
+
+# Install the Extension
+
+## Browser store
+
+<p align="center">
+  <a href="https://chrome.google.com/webstore/detail/youtube-style-customizer/dnjjchajjdnfbjhjclmilicgheglcopj">
+    <img src="https://img.shields.io/chrome-web-store/v/dnjjchajjdnfbjhjclmilicgheglcopj?style=for-the-badge&label=%E2%97%88%20CHROME%20%E2%97%88&labelColor=white&color=white&logo=google-chrome" alt="Chrome Web Store">
+  </a>
+  <a href="https://addons.mozilla.org/firefox/addon/newtube-youtubestylecustomizer/">
+    <img src="https://img.shields.io/amo/v/newtube-youtubestylecustomizer?style=for-the-badge&label=%E2%97%88%20FIREFOX%20%E2%97%88&labelColor=white&color=white&logo=firefox-browser" alt="Firefox Add-ons">
+  </a>
+</p>
+
+## Release
+
+You can download the latest version of the extension from the [Releases](https://github.com/AzPepoze/NewTube/releases/latest) page.
+
+- **Chromium**: For browsers based on the Chromium engine, such as Google Chrome, Microsoft Edge, Opera, Brave, and Vivaldi.
+- **Firefox**: For Mozilla Firefox and browsers based on the Gecko engine.
+
 ### [Development Status](https://github.com/users/AzPepoze/projects/1)
-
-### <img src="https://images-eds-ssl.xboxlive.com/image?url=4rt9.lXDC4H_93laV1_eHHFT949fUipzkiFOBH3fAiZZUCdYojwUyX2aTonS1aIwMrx6NUIsHfUHSLzjGJFxxsG72wAo9EWJR4yQWyJJaDb6rYcBtJvTvH3UoAS4JFNDaxGhmKNaMwgElLURlRFeVkLCjkfnXmWtINWZIrPGYq0-&format=source" alt="Discord logo" width="20" height="20" style="border-radius:20px;"> <b><a href="https://discord.gg/BgxvVqap4G" target="_blank">Join my discord</a> (fastest way to contact me) </b>
-
-### <a href=".github/ISSUE_TEMPLATE/bug_report.md" target="_blank">🐛 Report a Bug</a>
-
-### <a href=".github/ISSUE_TEMPLATE/feature_request.md" target="_blank">💡 Suggest a Feature</a>
 
 ---
 
-## PREREQUISITES
+## Prerequisites
 
 - [bun](https://bun.sh/)
 - [Firefox](https://www.firefox.com) (for web-ext testing)
 
-## BUILD FROM SOURCE
+## Build from Source
 
 1. **Clone & Enter:**
 
@@ -112,7 +113,7 @@ You can download the latest version of the extension from the [Releases](https:/
 
      The output will be in the `out/dist` directory.
 
-## DEVELOPMENT
+## Development
 
 Run the extension in development mode with hot-reloading:
 
@@ -124,12 +125,7 @@ bun run dev:chromium
 bun run dev:firefox
 ```
 
-## CONTRIBUTING
-
-Feel free to contribute to this project by opening issues or submitting pull requests.
-
-> [!IMPORTANT]
-> Please make sure select the target branch `dev` before submitting pull requests.
+## Stars
 
 <div align="center">
   <a href="https://www.star-history.com/#AzPepoze/NewTube&type=date&legend=top-left">
