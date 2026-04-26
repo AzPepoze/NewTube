@@ -119,7 +119,6 @@ export const defaultSetting = {
 		"RemoveBlackBarsWorker": true,
 		"RemoveVideoPlayerBackground": true,
 		"ScrollbarTrackColor": "#00000000",
-		"ScrollbarWidthLegacy": 10,
 		"ScrollbarWidthStandard": "thin",
 		"SearchSuggestionHoverColor": "#ffffffff",
 		"SecondaryTextColor": "#c4c4c4ff",

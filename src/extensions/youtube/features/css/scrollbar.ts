@@ -18,9 +18,6 @@ export const scrollbarCss = `
 @supports selector(::-webkit-scrollbar) {
 	*::-webkit-scrollbar
 	{
-		width: var(--nt-scrollbar-width) !important;
-		height: var(--nt-scrollbar-width) !important;
-
 		background-color: transparent !important;
 		color: var(--nt-theme-color) !important;
 	}
