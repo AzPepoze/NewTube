@@ -2,7 +2,7 @@ import { hsvToRgb, rgbToHsv } from "@/core/shared/colorConversion";
 import { getDocumentBody } from "@core/shared/domHelpers";
 import { getUserSetting } from "@core/storage/manager";
 import { registerSettingListener, unregisterSettingListener } from "@settings/engine/functions";
-import ColorThief from "colorthief/dist/color-thief.mjs";
+import { getColor, getPalette } from "colorthief";
 import { getYoutubeVideoId, onYoutubeFullscreen, onYoutubeNavigate } from "../modules/youtube";
 import { shouldFeatureShow } from "./helpers";
 
@@ -28,15 +28,17 @@ function getSortedPalette(palette: [number, number, number][]) {
 }
 
 async function getSampleColor(img: HTMLImageElement): Promise<[number, number, number]> {
-	const colorThief = new (ColorThief as any)();
-	const dominant = colorThief.getColor(img) as [number, number, number];
+	const dominant = (await getColor(img)).array();
 	const hsv = rgbToHsv({ r: dominant[0], g: dominant[1], b: dominant[2] });
 
 	// Legacy: s > 0.2 (20) and v > 100 (39.2 on 100 scale)
 	if (hsv.s > 20 && hsv.v > 39.2) {
 		return dominant;
 	} else {
-		const palette = (colorThief.getPalette(img, 10) as [number, number, number][]) || [];
+		const palette = (await getPalette(img, {
+			colorCount: 10,
+		})).map((c) => c.array());
+
 		const sorted = getSortedPalette(palette);
 		return sorted[0] || dominant;
 	}

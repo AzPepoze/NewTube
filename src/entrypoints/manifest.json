@@ -84,7 +84,7 @@
 		}
 	},
 	"permissions": ["storage", "unlimitedStorage", "scripting"],
-	"host_permissions": ["*://www.youtube.com/*", "*://music.youtube.com/*"],
+	"host_permissions": ["*://www.youtube.com/*", "*://music.youtube.com/*", "*://i.ytimg.com/*"],
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "StyleShift@AzPepoze"
