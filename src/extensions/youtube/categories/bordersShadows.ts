@@ -9,9 +9,10 @@ export const bordersShadowsCategory: Category = {
 			name: "Style Mode",
 			description: "Select the primary visual enhancement for YouTube elements. 'Outline' adds a solid border, 'Shadow' creates a glowing depth effect, and 'None' keeps it flat.",
 			value: "Sha",
-			options: {
-				Out: {
-					name: "Outline",
+			options: [
+				{
+					label: "Outline",
+					value: "Out",
 					enableCss: `
                         :root {
                             --nt-global-outline: var(--nt-border-width, 1px) solid var(--nt-border-color, #099DFF80);
@@ -19,8 +20,9 @@ export const bordersShadowsCategory: Category = {
                         }
                     `,
 				},
-				Sha: {
-					name: "Shadow",
+				{
+					label: "Shadow",
+					value: "Sha",
 					enableCss: `
                         :root {
                             --nt-global-outline: none;
@@ -28,8 +30,9 @@ export const bordersShadowsCategory: Category = {
                         }
                     `,
 				},
-				None: {
-					name: "None",
+				{
+					label: "None",
+					value: "None",
 					enableCss: `
                         :root {
                             --nt-global-outline: none;
@@ -37,7 +40,7 @@ export const bordersShadowsCategory: Category = {
                         }
                     `,
 				},
-			},
+			],
 		},
 		{
 			type: "color",

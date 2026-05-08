@@ -1,5 +1,8 @@
 <script lang="ts">
 	import Icon from "@ui/settings/components/primitives/Icon.svelte";
+	import { getAddOnItems } from "@settings/registry/items";
+	import { settingsUi } from "../../settingsApi";
+	import { removeConfigUi, showConfigUi } from "@ui/window/config";
 
 	let {
 		text,
@@ -9,7 +12,28 @@
 		className = "",
 		leftSeparator = false,
 		editable = false,
+		isDeveloperMode = false,
 	} = $props();
+
+	async function handleEditCategory() {
+		const addOnItems = getAddOnItems();
+		const category = addOnItems.find(c => {
+			const label = typeof c.category === 'string' ? c.category : c.category.label;
+			return label === text;
+		});
+
+		if (category) {
+			showConfigUi(async (parent: HTMLElement) => {
+				settingsUi.configEditorRenderer(
+					{
+						setting: category as any,
+						onClose: () => removeConfigUi(),
+					},
+					parent,
+				);
+			});
+		}
+	}
 </script>
 
 {#if subtitle}
@@ -36,6 +60,12 @@
 			</span>
 		{/if}
 		{text}
+
+		{#if isDeveloperMode && editable}
+			<button class="STYLESHIFT-Category-Edit-Btn" onclick={handleEditCategory} title="Edit Category">
+				<Icon name="edit" size={16} color="black" />
+			</button>
+		{/if}
 	</div>
 {/if}
 
@@ -59,6 +89,33 @@
 		user-select: text;
 		transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 		box-shadow: 0 4px 15px var(--Black-10);
+
+		&:hover {
+			.STYLESHIFT-Category-Edit-Btn {
+				opacity: 1;
+			}
+		}
+	}
+
+	.STYLESHIFT-Category-Edit-Btn {
+		position: absolute;
+		right: 15px;
+		background: rgba(255, 255, 255, 0.3);
+		border: none;
+		border-radius: 50%;
+		width: 30px;
+		height: 30px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		opacity: 0;
+		transition: all 0.2s;
+
+		&:hover {
+			background: rgba(255, 255, 255, 0.5);
+			transform: scale(1.1);
+		}
 	}
 
 	.STYLESHIFT-Category-Title-Icon {

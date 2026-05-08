@@ -6,6 +6,7 @@ import { getAddOnItems } from "@settings/registry/items";
 import { type Category, type SeparateCategory } from "@settings/types/styleshiftTypes";
 import { toggleCustomize } from "@ui/highlight/highlight";
 import { showThemeManager } from "@ui/themes/themeManagerService";
+import { startQuickCustomize } from "@ui/highlight/quickCustomizeService";
 
 const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 	{ isHeader: true, label: "Extension" },
@@ -44,7 +45,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 		],
 	},
 	{
-		category: { icon: "settings_input_component", label: "Quick Pallette" },
+		category: { icon: "settings_input_component", label: "Quick Palette" },
 		rainbow: true,
 		settings: [
 			{
@@ -68,6 +69,17 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				align: "left",
 				type: "button",
 				icon: "storefront"
+			},
+			{
+				clickFunction: startQuickCustomize,
+				type: "button",
+				id: "StyleShiftQuickCustomize",
+				name: "Quick Customize",
+				description: "Pick any element and create a custom style instantly.",
+				fontSize: 15,
+				color: "#e45eff",
+				align: "left",
+				icon: "auto_fix_high"
 			},
 			{
 				clickFunction: toggleCustomize,

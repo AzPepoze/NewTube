@@ -4,8 +4,9 @@
 	import { executeScriptString } from "@core/runtime/controller";
 	import { createError } from "@core/shared/notifications";
 	import { logger } from "@core/shared/webPageLogger";
-	import { getFromStorage, getRootValue } from "@core/storage/manager";
+	import { getFromStorage, getRootValue, saveToStorage } from "@core/storage/manager";
 	import {
+		deactivateSetting,
 		evaluateCondition,
 		registerSettingListener,
 		unregisterSettingListener,
@@ -22,12 +23,14 @@
 		unregisterSettingUi,
 	} from "../../settingsManager";
 	import { getTextAlign } from "../../utils";
+	import { startQuickCustomize } from "@ui/highlight/quickCustomizeService";
 	import Button from "../controls/Button.svelte";
 	import Checkbox from "../controls/Checkbox.svelte";
 	import ColorPicker from "../controls/ColorPicker.svelte";
 	import Dropdown from "../controls/Dropdown.svelte";
 	import ImageInput from "../controls/ImageInput.svelte";
 	import PreviewImage from "../controls/PreviewImage.svelte";
+	import Selector from "../controls/SelectorInput.svelte";
 	import Slider from "../controls/Slider.svelte";
 	import Text from "../controls/Text.svelte";
 	import TextInput from "../controls/TextInput.svelte";
@@ -277,6 +280,18 @@
 			);
 		}
 	});
+	async function handleQuickEdit() {
+		startQuickCustomize(setting);
+	}
+
+	async function handleDelete() {
+		if (setting.id) {
+			await saveToStorage(setting.id, false);
+			await deactivateSetting(setting.id);
+			refreshExtensionState();
+			removeSetting(setting);
+		}
+	}
 </script>
 
 <SettingFrame
@@ -373,25 +388,36 @@
 			</div>
 		{:else if setting.type === "keyboardShortcuts"}
 			<div use:keyboardShortcutsAction></div>
+		{:else if setting.type === "selectorInput"}
+			<Selector {setting} />
 		{/if}
 
-		{#if isDeveloperMode}
+		{#if isDeveloperMode || setting.quickCustomize}
 			<div class="STYLESHIFT-Config-Actions-Overlay">
-				<button
-					class="STYLESHIFT-Config-Button edit"
-					onclick={handleEdit}
-				>
-					<Icon name="edit" size={16} />
-				</button>
-				<button
-					class="STYLESHIFT-Config-Button delete"
-					onclick={() => {
-						removeSetting(setting);
-						refreshExtensionState();
-					}}
-				>
-					<Icon name="delete" size={16} />
-				</button>
+				{#if setting.quickCustomize}
+					<button
+						class="STYLESHIFT-Config-Button quick-edit"
+						title="Edit in Quick Customize"
+						onclick={handleQuickEdit}
+					>
+						<Icon name="brush" size={16} color="var(--White-100)" />
+					</button>
+				{/if}
+				
+				{#if isDeveloperMode}
+					<button
+						class="STYLESHIFT-Config-Button edit"
+						onclick={handleEdit}
+					>
+						<Icon name="edit" size={16} />
+					</button>
+					<button
+						class="STYLESHIFT-Config-Button delete"
+						onclick={handleDelete}
+					>
+						<Icon name="delete" size={16} />
+					</button>
+				{/if}
 			</div>
 		{/if}
 	</div>

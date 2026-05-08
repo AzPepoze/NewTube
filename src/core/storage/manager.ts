@@ -2,7 +2,7 @@ import { sleep } from '@/core/shared/utilities';
 import { createError } from '@core/shared/notifications';
 import { getOptionalExternalStorageKeys } from '@extensions/youtube/index';
 import { logger } from '@shared/logger';
-import { currentContextDomain } from '../';
+import { currentContextDomain } from '../shared/context';
 
 export let cachedStorageData: any = {};
 let isStorageInitialized = false;

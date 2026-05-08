@@ -20,17 +20,11 @@ export const backgroundCategory: Category = {
 			name: "Background Mode",
 			description: "Select the type of background to display: Image (static or custom), Thumbnail (current video's thumbnail), or YouTube (embed a YouTube video).",
 			value: "Image",
-			options: {
-				Image: {
-					name: "Image",
-				},
-				Thumbnail: {
-					name: "Video Thumbnail",
-				},
-				YouTube: {
-					name: "YouTube Video",
-				},
-			},
+			options: [
+				{ label: "Image", value: "Image" },
+				{ label: "Video Thumbnail", value: "Thumbnail" },
+				{ label: "YouTube Video", value: "YouTube" },
+			],
 			require: { EnableBackground: true },
 		},
 

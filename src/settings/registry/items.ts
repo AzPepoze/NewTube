@@ -2,7 +2,7 @@ import { randomNumberInRange } from "@/core/shared/utilities";
 import { refreshExtensionState } from "@core/index";
 import { saveAndRefreshAll } from "@core/runtime/controller";
 import { getRootValue, saveToStorage } from "@core/storage/manager";
-import { getDefaultItems } from "@extensions/youtube/builtInItems";
+import { getDefaultItems } from "@extensions/youtube/buildInItems";
 import { getStyleShiftAddOnItems } from "@extensions/youtube/addOnItems";
 import { getStyleShiftDefaultItems } from "@extensions/youtube/defaultItems";
 import { attachBehaviorToSetting } from "@settings/engine/functions";
@@ -22,6 +22,10 @@ export function getStyleShiftItems() {
 
 export function getAddOnItems() {
 	return styleshiftItems.AddOn;
+}
+
+export function getBuiltInItems() {
+	return styleshiftItems.Default;
 }
 
 export function getAddOnSettings() {

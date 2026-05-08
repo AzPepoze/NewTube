@@ -35,7 +35,7 @@ async function deployFirefox() {
 		console.log("Executing web-ext sign...");
 		execSync(cmd, { stdio: "inherit" });
 		console.log("Successfully signed and uploaded to Firefox Add-ons!");
-	} catch (error) {
+	} catch (_error) {
 		console.error("Firefox deployment failed.");
 		process.exit(1);
 	}

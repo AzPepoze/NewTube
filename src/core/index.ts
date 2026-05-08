@@ -1,6 +1,5 @@
 import { createError, createNotification } from "@core/shared/notifications";
 import { appBootstrap, shouldEnableExtension } from "@extensions/youtube";
-import { STORE_TARGET_SITES } from "@extensions/youtube/constants";
 import { attachBehaviorToSetting, initializeAllActiveSettings, reactivateAllSettings, registerSettingListener } from "@settings/engine/functions";
 import { getAllStyleShiftItems, getAllStyleShiftSettings, updateStyleShiftItems } from "@settings/registry/items";
 import { createStylesheetHolder, injectMaterialIconsStyles } from "@settings/stylesheet/styleSheet";
@@ -12,11 +11,13 @@ import { extensionSettingsUi, extensionSettingsUiPromise } from "@ui/window/exte
 import { updateAllUiComponents } from "@ui/window/windowFactory";
 import "./communication/extension";
 import { synchronizeAvailableFunctions } from "./runtime/controller";
-import { getCurrentDomain, getCurrentUrlParameters, getDocumentBody, getDocumentHead, rearrangeSelector } from "./shared/domHelpers";
+import { getDocumentBody, getDocumentHead, rearrangeSelector } from "./shared/domHelpers";
 import { disableExtension, enableExtension, toggleDeveloperMode } from "./shared/extensionHelpers";
 import { sleep } from "./shared/utilities";
 import { initializeDefaultAddOnItems, performStorageGarbageCollection, populateMissingDefaultSettings } from "./storage/maintenance";
 import { getRootValue, initializeStorageConnection, persistCachedDataToStorage } from "./storage/manager";
+import { EXTENSION_BASE_URL, IS_FIREFOX, IS_IN_EXTENSION_SETTINGS_PAGE, currentContextDomain } from "./shared/context";
+export { EXTENSION_BASE_URL, IS_FIREFOX, IS_IN_EXTENSION_SETTINGS_PAGE, currentContextDomain };
 
 //-------------------------------------------------------
 // Configuration & State
@@ -24,20 +25,6 @@ import { getRootValue, initializeStorageConnection, persistCachedDataToStorage }
 
 export const EXTENSION_VERSION = chrome.runtime.getManifest().version;
 export let isExtensionReady = false;
-
-export const IS_FIREFOX = navigator.userAgent.toLowerCase().includes("firefox");
-export const EXTENSION_BASE_URL = chrome.runtime.getURL("").slice(0, -1);
-export const IS_IN_EXTENSION_SETTINGS_PAGE = window.location.origin === EXTENSION_BASE_URL;
-
-
-// Identify the current domain context for storage
-export let currentContextDomain: string;
-if (IS_IN_EXTENSION_SETTINGS_PAGE) {
-	const params = getCurrentUrlParameters();
-	currentContextDomain = params.domain || STORE_TARGET_SITES[0];
-} else {
-	currentContextDomain = getCurrentDomain();
-}
 
 
 // Global container for StyleShift elements that shouldn't be directly in the body
@@ -83,7 +70,7 @@ async function bootstrapExtension(): Promise<void> {
 		(await getDocumentBody()).append(styleshiftContainer);
 	}, 1);
 
-	// Inject built-in functions into the page context (Main World)
+	// Inject buildIn functions into the page context (Main World)
 	if (!IS_IN_EXTENSION_SETTINGS_PAGE) {
 		const script = document.createElement("script");
 		script.src = chrome.runtime.getURL("build-in.js");

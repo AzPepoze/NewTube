@@ -36,9 +36,10 @@
 	function getComponentConfig(title: string, property: string, update: any) {
 		const propertyValue = setting[property];
 		const isBooleanValue =
-			typeof propertyValue === "boolean" && property === "value";
+			typeof propertyValue === "boolean" && (property === "value" || property === "rainbow");
 		const isColorValue =
 			property === "color" ||
+			property === "Highlight_color" ||
 			(property === "value" && setting.type === "color");
 		const isNumberValue =
 			property === "fontSize" ||
@@ -54,6 +55,20 @@
 				val,
 				typeof update === "function" ? update : undefined,
 			);
+
+		if (property.toLowerCase() === "selector") {
+			const updateFunc = createUpdateFunc(property);
+			return {
+				type: "selectorInput",
+				config: {
+					type: "selectorInput",
+					name: title,
+					value: propertyValue,
+					updateFunction: updateFunc,
+				},
+				updateFunction: updateFunc,
+			};
+		}
 
 		if (Array.isArray(update)) {
 			const updateFunc = (val) => handlePropertyUpdate(property, val);
@@ -72,7 +87,7 @@
 			};
 		}
 
-		if (property === "Rainbow" || isBooleanValue) {
+		if (property.toLowerCase() === "rainbow" || isBooleanValue) {
 			const updateFunc = createUpdateFunc(property);
 			return {
 				type: "checkbox",

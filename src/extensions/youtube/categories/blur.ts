@@ -21,9 +21,10 @@ export const blurCategory: Category = {
 			name: "Apply Blur To",
 			description: "Choose which parts of the YouTube interface should have the blur effect applied to them.",
 			value: "none",
-			options: {
-				all: {
-					name: "Everything",
+			options: [
+				{
+					label: "Everything",
+					value: "all",
 					enableCss: `
                         #background.ytd-masthead,
                         ytd-multi-page-menu-renderer,
@@ -39,8 +40,9 @@ export const blurCategory: Category = {
                         }
                     `,
 				},
-				main: {
-					name: "Main Interfaces",
+				{
+					label: "Main Interfaces",
+					value: "main",
 					enableCss: `
                         #background.ytd-masthead,
                         #guide-content
@@ -49,11 +51,12 @@ export const blurCategory: Category = {
                         }
                     `,
 				},
-				none: {
-					name: "None",
+				{
+					label: "None",
+					value: "none",
 					enableCss: "",
 				},
-			},
+			],
 		},
 	],
 };

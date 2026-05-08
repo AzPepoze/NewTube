@@ -105,12 +105,14 @@ export const SETTING_TYPE_BEHAVIORS = {
 
 			// Disable the previous option
 			const previousValue = activeSettingsState[setting.id];
-			if (previousValue && setting.options[previousValue]?.disableFunction) {
-				executeSettingScript(setting.options[previousValue], "disableFunction");
+			const options = Array.isArray(setting.options) ? setting.options : [];
+			const previousOption = options.find((opt: any) => opt.value === previousValue);
+			if (previousOption?.disableFunction) {
+				executeSettingScript(previousOption, "disableFunction");
 			}
 
 			activeSettingsState[setting.id] = value;
-			const selectedOption = setting.options[value];
+			const selectedOption = options.find((opt: any) => opt.value === value);
 
 			// Enable the new option
 			if (selectedOption?.enableFunction) {

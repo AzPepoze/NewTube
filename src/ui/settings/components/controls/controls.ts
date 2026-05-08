@@ -109,3 +109,11 @@ export async function conditionSetting(
 	const frame = settingsUi.renderSetting(thisSetting as any, updateFunction);
 	return { frame };
 }
+
+export async function selectorInput(
+	thisSetting: Partial<Extract<Setting, { type: "selectorInput" }>>,
+	updateFunction?: (value: any) => void,
+) {
+	const frame = settingsUi.renderSetting(thisSetting as any, updateFunction);
+	return { frame };
+}

@@ -1,10 +1,20 @@
 <script lang="ts">
+	import { refreshExtensionState } from "@core/index";
+	import { saveToStorage } from "@core/storage/manager";
+	import {
+		getAddOnItems,
+		updateStyleShiftItems,
+	} from "@settings/registry/items";
 	import type {
 		Category,
 		SeparateCategory,
 	} from "@settings/types/styleshiftTypes";
 	import LeftTitle from "@ui/settings/components/primitives/LeftTitle.svelte";
-	import Title from "@ui/settings/components/primitives/Title.svelte";
+	import {
+		addDrag,
+		addDropTarget,
+		clearDropTargets,
+	} from "@ui/settings/reorder";
 	import { getCategoryParts } from "@ui/window/utils";
 	import Search from "../primitives/Search.svelte";
 	import SettingsListRenderer from "../renderers/SettingsListRenderer.svelte";
@@ -43,8 +53,47 @@
 		return "isHeader" in item;
 	}
 
-	function mergeDevItems(allCategories: (Category | SeparateCategory)[]) {
-		if (!isDevModulesLoaded || !isDeveloperMode) return allCategories;
+	async function moveCategory(category: Category, direction: "up" | "down") {
+		const addOnItems = getAddOnItems();
+		const index = addOnItems.indexOf(category);
+		if (index === -1) return;
+
+		const newIndex = direction === "up" ? index - 1 : index + 1;
+		if (newIndex < 0 || newIndex >= addOnItems.length) return;
+
+		const [movedItem] = addOnItems.splice(index, 1);
+		addOnItems.splice(newIndex, 0, movedItem);
+
+		await saveToStorage("addOnStyleShiftItems", addOnItems);
+		await updateStyleShiftItems();
+		refreshExtensionState();
+	}
+
+	function setupDragAndDrop(
+		node: HTMLElement,
+		item: Category | SeparateCategory,
+	) {
+		if (isHeaderItem(item) || !isDeveloperMode || !(item as Category).editable) return;
+
+		const dragHandle = node.querySelector(".drag-handle") as HTMLElement;
+		if (dragHandle) {
+			addDrag(dragHandle, node, leftSidebar, item);
+			addDropTarget(node, leftSidebar!, item, "category");
+		}
+	}
+
+	$effect(() => {
+		if (leftSidebar) {
+			clearDropTargets();
+		}
+	});
+
+	function mergeDevItems(
+		categories: (Category | SeparateCategory)[],
+		allCategoriesForSearch: (Category | SeparateCategory)[],
+		shouldPushNew: boolean = true,
+	) {
+		if (!isDevModulesLoaded || !isDeveloperMode) return categories;
 
 		const devOnlyCategories = devOnlyItems.filter(
 			(item) => !isHeaderItem(item),
@@ -52,14 +101,16 @@
 
 		for (const devCategory of devOnlyCategories) {
 			const devCategoryJson = JSON.stringify(devCategory.category);
-			const existingIdx = allCategories.findIndex(
+			
+			// Check if it exists in the current list being modified
+			const existingIdx = categories.findIndex(
 				(item) =>
 					!isHeaderItem(item) &&
 					JSON.stringify(item.category) === devCategoryJson,
 			);
 
 			if (existingIdx > -1) {
-				const item = allCategories[existingIdx];
+				const item = categories[existingIdx];
 				if (!isHeaderItem(item)) {
 					const category = item as Category;
 					category.settings = [
@@ -67,11 +118,20 @@
 						...devCategory.settings,
 					];
 				}
-			} else {
-				allCategories.push(devCategory);
+			} else if (shouldPushNew) {
+				// If it's not in the current list, check if it exists in the OTHER list
+				const existsElsewhere = allCategoriesForSearch.some(
+					(item) =>
+						!isHeaderItem(item) &&
+						JSON.stringify(item.category) === devCategoryJson,
+				);
+
+				if (!existsElsewhere) {
+					categories.push(devCategory);
+				}
 			}
 		}
-		return allCategories;
+		return categories;
 	}
 
 	function filterBySearch(
@@ -116,7 +176,7 @@
 						},
 		);
 
-		result = mergeDevItems(result);
+		result = mergeDevItems(result, externalSettings);
 
 		if (searchQuery) {
 			result = filterBySearch(result, searchQuery);
@@ -131,6 +191,8 @@
 			settings: getVisibleSettings(c.settings, isDeveloperMode),
 		}));
 
+		result = mergeDevItems(result, internalSettings, false) as Category[];
+
 		if (searchQuery) {
 			result = filterBySearch(result, searchQuery) as Category[];
 		}
@@ -138,14 +200,30 @@
 		return result;
 	});
 
-	let sidebarData = $derived.by(() => {
-		const result = [...internalData];
-		if (externalCategoriesData.length > 0) {
-			result.push({ isHeader: true, label: "EXTERNAL" });
-			result.push(...externalCategoriesData);
+	const sidebarData = $derived.by(() => {
+		const result: (Category | SeparateCategory)[] = [];
+
+		if (buildInItemsData.length > 0) {
+			result.push({ isHeader: true, label: "BUILD-IN" });
+			result.push(...buildInItemsData);
+		}
+
+		if (addOnItemsData.length > 0) {
+			result.push({ isHeader: true, label: "ADD-ON" });
+			result.push(...addOnItemsData);
 		}
 		return result;
 	});
+
+	const buildInItemsData = $derived(internalData.filter(
+		(item) => isHeaderItem(item) || !item.editable,
+	));
+	const addOnItemsData = $derived([
+		...internalData.filter(
+			(item) => !isHeaderItem(item) && item.editable,
+		),
+		...externalCategoriesData,
+	]);
 
 	function handleScroll() {
 		if (!scrollContainer) return;
@@ -212,6 +290,7 @@
 					{@const parts = getCategoryParts(category.category)}
 					<button
 						class="STYLESHIFT-Sidebar-Item-Wrapper"
+						use:setupDragAndDrop={category}
 						style="animation-delay: {skipAnimation
 							? '0ms'
 							: i * 50 + 'ms'};"
@@ -231,6 +310,10 @@
 						<LeftTitle
 							category={category.category}
 							selected={activeCategoryLabel === parts.text}
+							{isDeveloperMode}
+							editable={category.editable}
+							onMove={(dir) =>
+								moveCategory(category, dir)}
 						/>
 					</button>
 				{/if}
@@ -270,23 +353,23 @@
 			class="STYLESHIFT-Scrollable STYLESHIFT-Settings-List"
 			onscroll={handleScroll}
 		>
-			<SettingsListRenderer items={internalData} {searchQuery} />
+			{#if buildInItemsData.length > 0}
+				<div class="STYLESHIFT-Section-Header">BUILD-IN</div>
+				<SettingsListRenderer
+					items={buildInItemsData}
+					{searchQuery}
+					{isDeveloperMode}
+				/>
+			{/if}
 
-			{#if externalCategoriesData.length > 0}
+			{#if addOnItemsData.length > 0}
 				<div class="STYLESHIFT-Category-Separator"></div>
-				<div
-					class="STYLESHIFT-Category-Frame STYLESHIFT-Settings-Group"
-				>
-					<Title
-						text="EXTERNAL"
-						icon="extension"
-						rainbow={true}
-					/>
-					<SettingsListRenderer
-						items={externalCategoriesData}
-						{searchQuery}
-					/>
-				</div>
+				<div class="STYLESHIFT-Section-Header">ADD-ON</div>
+				<SettingsListRenderer
+					items={addOnItemsData}
+					{searchQuery}
+					{isDeveloperMode}
+				/>
 			{/if}
 		</div>
 	</div>
@@ -390,9 +473,35 @@
 	}
 
 	.STYLESHIFT-Category-Separator {
-		height: 1px;
-		background: var(--White-10);
-		margin: 20px 0 10px;
+		height: 2px;
+		background: linear-gradient(
+			90deg,
+			transparent,
+			var(--White-10),
+			transparent
+		);
+		margin: 30px 0 20px;
+	}
+
+	.STYLESHIFT-Section-Header {
+		font-size: 11px;
+		font-weight: 800;
+		color: var(--White-40);
+		letter-spacing: 2px;
+		margin-top: 10px;
+		margin-bottom: 15px;
+		padding-left: 10px;
+		text-transform: uppercase;
+		display: flex;
+		align-items: center;
+		gap: 15px;
+
+		&::after {
+			content: "";
+			flex: 1;
+			height: 1px;
+			background: linear-gradient(90deg, var(--White-05), transparent);
+		}
 	}
 
 	.STYLESHIFT-Content {

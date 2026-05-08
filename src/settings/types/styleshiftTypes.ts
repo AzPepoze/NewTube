@@ -14,7 +14,8 @@ export type CategoryNameWithIcon = { icon: string; label: string };
 export type SeparateCategory = { isHeader: boolean; label: string };
 
 export type Option = {
-	name?: string;
+	label: string;
+	value: string;
 	enableCss?: string;
 
 	enableFunction?: string | Function;
@@ -32,6 +33,7 @@ export type BaseSetting = {
 		message?: string;
 	};
 	require?: Record<string, any>;
+	quickCustomize?: any;
 };
 
 export type Setting = (
@@ -138,7 +140,7 @@ export type Setting = (
 
 		updateFunction?: string | Function;
 
-		options: { [key: string]: Option };
+		options: Option[];
 
 		//--------------
 
@@ -246,6 +248,15 @@ export type Setting = (
 		id?: string;
 		text: string;
 		leftSeparator?: boolean;
+		editable?: boolean;
+	}
+	| {
+		type: "selectorInput";
+		id: string;
+		name: string;
+		description?: string;
+		value: string;
+		updateFunction?: string | ((value: string) => void);
 		editable?: boolean;
 	}
 ) &

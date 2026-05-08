@@ -62,11 +62,11 @@ const addOnStyleShiftItems: Category[] = [
 				name: "Dropdown Test",
 				description: "Testing dropdown options",
 				value: "Option 1",
-				options: {
-					"Option 1": { enableFunction: 'console.log("Opt 1")' },
-					"Option 2": { enableFunction: 'console.log("Opt 2")' },
-					"Option 3": { enableFunction: 'console.log("Opt 3")' },
-				},
+				options: [
+					{ label: "Option 1", value: "Option 1", enableFunction: 'console.log("Opt 1")' },
+					{ label: "Option 2", value: "Option 2", enableFunction: 'console.log("Opt 2")' },
+					{ label: "Option 3", value: "Option 3", enableFunction: 'console.log("Opt 3")' },
+				],
 				editable: true,
 			},
 			{

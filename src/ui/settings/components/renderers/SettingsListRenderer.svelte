@@ -10,9 +10,11 @@
 	let {
 		items = [],
 		searchQuery = "",
+		isDeveloperMode = false,
 	}: {
 		items: (Category | SeparateCategory)[];
 		searchQuery?: string;
+		isDeveloperMode?: boolean;
 	} = $props();
 
 	function isHeaderItem(
@@ -36,6 +38,8 @@
 				text={parts.text}
 				icon={parts.icon}
 				rainbow={category.rainbow}
+				{isDeveloperMode}
+				editable={category.editable}
 			/>
 			{#each category.settings as setting, j (j)}
 				<SettingRenderer {setting} highlight={searchQuery} />

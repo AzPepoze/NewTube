@@ -104,7 +104,11 @@ export const uiPreset: Setting[] = [
 		name: "Just dropdown",
 		description: "",
 		value: "Item_1",
-		options: { Item_1: {}, Item_2: {}, Item_3: {} },
+		options: [
+			{ label: "Item 1", value: "Item_1" },
+			{ label: "Item 2", value: "Item_2" },
+			{ label: "Item 3", value: "Item_3" },
+		],
 	},
 	{
 		type: "color",

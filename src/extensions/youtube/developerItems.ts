@@ -20,7 +20,7 @@ const devOnlyItems: Category[] = [
 				type: "button",
 				id: "ExportZipFileButton",
 				name: "Export file",
-				description: "Packages your entire NewTube configuration, including all custom categories and settings, into a compressed .zip file for easy backup or sharing.",
+				description: "Packages your entire NewTube configuration, including all Add-On categories and settings, into a compressed .zip file for easy backup or sharing.",
 				color: "#1a34ffff",
 				fontSize: 15,
 				clickFunction: async function () {
@@ -87,6 +87,20 @@ const devOnlyItems: Category[] = [
 				},
 				align: "center",
 				icon: "",
+			},
+			{
+				type: "button",
+				id: "SelectorPickerButton",
+				name: "Selector Picker",
+				description: "Allows you to pick an element from the page and get its CSS selector for development purposes.",
+				color: "#7f5db7",
+				fontSize: 15,
+				clickFunction: async function () {
+					const { openSelectorPicker } = await import("@ui/highlight/selectorPicker");
+					openSelectorPicker();
+				},
+				align: "center",
+				icon: "target",
 			},
 		],
 	},

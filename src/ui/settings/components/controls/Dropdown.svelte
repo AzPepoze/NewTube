@@ -44,10 +44,10 @@
 	const name = $derived(setting.name);
 	const description = $derived(setting.description);
 
-	const optionsList = $derived.by(() => {
-		if (setting.options) return Object.keys(setting.options);
-		return [];
-	});
+	const optionsList = $derived(setting.options || []);
+	const currentLabel = $derived(
+		optionsList.find((opt: any) => opt.value === value)?.label || value,
+	);
 
 	let menuEl = $state<HTMLElement | null>(null);
 
@@ -58,14 +58,14 @@
 		if (!isOpen) onClose();
 	}
 
-	async function handleSelect(e: MouseEvent, option: string) {
+	async function handleSelect(e: MouseEvent, optionValue: string) {
 		logger.debug(
 			"ui",
-			`[Dropdown] Option selected: "${option}" for setting:`,
+			`[Dropdown] Option selected: "${optionValue}" for setting:`,
 			setting.id || "no-id",
 		);
 		e.stopPropagation();
-		value = option;
+		value = optionValue;
 
 		if (setting.id) {
 			await setAndSave(setting, value);
@@ -203,13 +203,13 @@
 			onclick={toggleDropdown}
 		>
 			<div class="STYLESHIFT-Dropdown-Display">
-				{#each optionsList as option (option)}
+				{#each optionsList as option (option.value)}
 					<span class="tester-item" aria-hidden="true">
-						{setting.options[option]?.name || option}
+						{option.label}
 					</span>
 				{/each}
 				<span class="current-value">
-					{setting.options[value]?.name || value}
+					{currentLabel}
 				</span>
 			</div>
 			<span class="arrow">▼</span>
@@ -241,14 +241,14 @@
 			easing: quintOut,
 		}}
 	>
-		{#each optionsList as option, i (i)}
+		{#each optionsList as option, i (option.value)}
 			<button
 				class="STYLESHIFT-Dropdown-Item"
-				class:selected={option === value}
-				onclick={(e) => handleSelect(e, option)}
+				class:selected={option.value === value}
+				onclick={(e) => handleSelect(e, option.value)}
 				style="animation-delay: {i * 50}ms"
 			>
-				{setting.options[option]?.name || option}
+				{option.label}
 			</button>
 		{/each}
 	</div>

@@ -19,33 +19,48 @@ export const settingUpdateHandlers: Record<string, Function> = {};
 const updateThrottleState: Record<string, "Idle" | "Waiting" | "Processing"> = {};
 
 /**
+ * Deactivates a specific setting by executing its disable logic and removing its stylesheet.
+ */
+export async function deactivateSetting(settingId: string) {
+	const allSettings = await getAllStyleShiftSettings();
+	const setting = allSettings.find(s => s.id === settingId);
+	if (!setting) return;
+
+	if (activeSettingsState[settingId] !== undefined) {
+		switch (setting.type) {
+			case "checkbox":
+				if (activeSettingsState[settingId] && (setting as any).disableFunction) {
+					logger.debug("settings", `Executing disableFunction for ${settingId} (checkbox)`);
+					executeSettingScript(setting, "disableFunction");
+				}
+				break;
+			case "dropdown":
+				const previousValue = activeSettingsState[settingId];
+				const options = Array.isArray((setting as any).options) ? (setting as any).options : [];
+				const previousOption = options.find((opt: any) => opt.value === previousValue);
+				if (previousOption?.disableFunction) {
+					logger.debug("settings", `Executing disableFunction for ${settingId} (dropdown option: ${previousValue})`);
+					executeSettingScript(previousOption, "disableFunction");
+				}
+				break;
+		}
+		const stylesheet = document.getElementById(`styleshift-stylesheet-${settingId}`);
+		if (stylesheet) {
+			stylesheet.remove();
+		}
+		delete activeSettingsState[settingId];
+		logger.debug("settings", `Deactivated setting: ${settingId}`);
+	}
+}
+
+/**
  * Deactivates all currently active settings.
  */
 export async function deactivateAllActiveSettings() {
 	const allSettings = await getAllStyleShiftSettings();
 	for (const setting of allSettings) {
-		if (activeSettingsState[setting.id] !== undefined) {
-			switch (setting.type) {
-				case "checkbox":
-					if (activeSettingsState[setting.id] && setting.disableFunction) {
-						logger.debug("settings", `Executing disableFunction for ${setting.id} (checkbox)`);
-						executeSettingScript(setting, "disableFunction");
-					}
-					break;
-				case "dropdown":
-					const previousValue = activeSettingsState[setting.id];
-					if (previousValue && setting.options[previousValue]?.disableFunction) {
-						logger.debug("settings", `Executing disableFunction for ${setting.id} (dropdown option: ${previousValue})`);
-						executeSettingScript(setting.options[previousValue], "disableFunction");
-					}
-					break;
-			}
-			const stylesheet = document.getElementById(`styleshift-stylesheet-${setting.id}`);
-			if (stylesheet) {
-				stylesheet.remove();
-			}
-			delete activeSettingsState[setting.id];
-			logger.debug("settings", `Deactivated setting: ${setting.id}`);
+		if (setting.id) {
+			await deactivateSetting(setting.id);
 		}
 	}
 	logger.debug("settings", "All active settings deactivated.");

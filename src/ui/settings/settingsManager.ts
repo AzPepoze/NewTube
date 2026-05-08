@@ -4,7 +4,7 @@ import { waitOneFrame } from "@core/shared/eventHelpers";
 import { createError } from "@core/shared/notifications";
 import { getRootValue } from "@core/storage/manager";
 import { getStyleShiftDevOnlyItems } from "@extensions/youtube/developerItems";
-import { addCategory, getSettingsList, updateStyleShiftItems } from "@settings/registry/items";
+import { addCategory, getAddOnItems, getSettingsList, updateStyleShiftItems } from "@settings/registry/items";
 import { type Category } from "@settings/types/styleshiftTypes";
 import { logger } from "@shared/logger";
 import { createStyleShiftWindow } from "@ui/window/windowFactory";
@@ -102,7 +102,7 @@ export async function createMainSettingsUi({
 		renderContent: async function (_skipAnimation = false) {
 			if (svelteInstance) {
 				const internalSettings = getCategory ? await getCategory() : [];
-				const externalSettings = getExternalCategories();
+				const externalSettings = [...getAddOnItems(), ...getExternalCategories()];
 				const devOnlyItems = isDevModulesLoaded ? getStyleShiftDevOnlyItems() : [];
 				svelteInstance.internalSettings = internalSettings;
 				svelteInstance.externalSettings = externalSettings;
@@ -134,7 +134,7 @@ export async function createMainSettingsUi({
 			settingsWindowElement.style.minWidth = "500px";
 
 			const internalSettings = getCategory ? await getCategory() : [];
-			const externalSettings = getExternalCategories();
+			const externalSettings = [...getAddOnItems(), ...getExternalCategories()];
 			const devOnlyItems = isDevModulesLoaded ? getStyleShiftDevOnlyItems() : [];
 			const isDeveloperMode = await getRootValue("developerMode");
 
@@ -197,7 +197,7 @@ export async function createMainSettingsUi({
 
 				// Remount with fresh data
 				const internalSettings = getCategory ? await getCategory() : [];
-				const externalSettings = getExternalCategories();
+				const externalSettings = [...getAddOnItems(), ...getExternalCategories()];
 				const devOnlyItems = isDevModulesLoaded ? getStyleShiftDevOnlyItems() : [];
 				const isDeveloperMode = await getRootValue("developerMode");
 

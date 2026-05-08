@@ -93,6 +93,12 @@
 		e.stopPropagation();
 		isHelpVisible = !isHelpVisible;
 	}
+
+	function handleHelpKeyDown(e: KeyboardEvent) {
+		if (e.key === 'Enter') {
+			toggleHelp(e as any);
+		}
+	}
 </script>
  
 <div
@@ -125,12 +131,12 @@
 		{align}
 		style="display: flex; color: inherit; font-size: {fontSize}px;"
 	/>
-
+ 
 	{#if showHelpIcon && description}
 		<div 
 			class="help-trigger" 
 			onclick={toggleHelp}
-			onkeydown={(e) => e.key === 'Enter' && toggleHelp(e as any)}
+			onkeydown={handleHelpKeyDown}
 			role="button"
 			tabindex="0"
 		>

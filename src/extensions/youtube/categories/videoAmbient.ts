@@ -25,14 +25,16 @@ export const videoAmbientCategory: Category = {
 				"Select 'GPU' for high-performance hardware acceleration via WebGL, or 'CPU' if you encounter visual glitches or stability issues.",
 			value: "GPU",
 			updateFunction: updateVideoAmbientSettings,
-			options: {
-				GPU: {
-					name: "GPU (Faster)",
+			options: [
+				{
+					label: "GPU (Faster)",
+					value: "GPU",
 				},
-				CPU: {
-					name: "CPU (Compatible)",
+				{
+					label: "CPU (Compatible)",
+					value: "CPU",
 				},
-			},
+			],
 			require: { VideoAmbient: true },
 		},
 		{

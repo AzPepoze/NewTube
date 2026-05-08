@@ -50,7 +50,7 @@
 			id: "addSettingDropdown",
 			name: "Add Setting",
 			value: "",
-			options: Object.fromEntries(options.map((opt) => [opt, {}])),
+			options: options.map((opt) => ({ label: opt, value: opt })),
 			updateFunction: handleSelect,
 		}}
 	/>

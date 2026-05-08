@@ -149,7 +149,7 @@ export async function addDrag(
 						if (dist < closestDist) {
 							closestDist = dist;
 							hitInfo = { targetEl, ...info };
-							isAfter = info.dataType === "category" ? true : y > centerY;
+							isAfter = y > centerY;
 						}
 					}
 				}

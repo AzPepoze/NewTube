@@ -10,7 +10,12 @@
 
 	let activeTab = $state("general");
 
-	const displayName = $derived((setting as any).name || "New Setting");
+	const displayName = $derived(
+		(setting as any).name ||
+			(setting as any).category?.label ||
+			(setting as any).category ||
+			"New Item",
+	);
 
 	const tabs = [
 		{ id: "general", label: "General", icon: "settings" },
@@ -18,13 +23,20 @@
 	];
 
 	const mainProps = $derived.by(() => {
-		const props: any = {
-			Id: "id",
-			Name: "name",
-			Description: "description",
-		};
-
-		const type = setting.type;
+		const type = setting.type || "category";
+		const props: any =
+			type === "category"
+				? {
+						Category: "category",
+						Rainbow: "rainbow",
+						Selector: "selector",
+						"Highlight Color": "Highlight_color",
+					}
+				: {
+						Id: "id",
+						Name: "name",
+						Description: "description",
+					};
 
 		switch (type) {
 			case "text":
@@ -71,7 +83,7 @@
 						"options",
 						(val: string) => {
 							try {
-								setting.options = JSON.parse(val);
+								(setting as any).options = JSON.parse(val);
 							} catch (_e) {
 								console.error(
 									"Invalid JSON for options",
@@ -108,9 +120,9 @@
 					"syncId",
 					(val: string) => {
 						try {
-							setting.settingIds = JSON.parse(val);
+							(setting as any).settingIds = JSON.parse(val);
 						} catch (_e) {
-							setting.settingIds = val
+							(setting as any).settingIds = val
 								.split(",")
 								.map((s) => s.trim());
 						}
@@ -126,7 +138,7 @@
 			updateConfig: refreshExtensionState,
 		};
 
-		const type = setting.type;
+		const type = setting.type || "category";
 
 		switch (type) {
 			case "checkbox":
@@ -171,10 +183,13 @@
 	<header class="STYLESHIFT-Config-Header">
 		<div class="STYLESHIFT-Config-Setting-Info">
 			<div class="STYLESHIFT-Config-Type-Badge">
-				{setting.type.replace("_", " ")}
+				{(setting.type || "category").replace("_", " ")}
 			</div>
 			<h2 class="STYLESHIFT-Config-Title">
-				{displayName} <span class="setting-id">- {setting.id}</span>
+				{displayName}
+				{#if setting.id}
+					<span class="setting-id">- {setting.id}</span>
+				{/if}
 			</h2>
 		</div>
 

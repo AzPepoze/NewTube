@@ -8,9 +8,11 @@
 	let {
 		setting,
 		value = $bindable(false),
+		hideLabel = false,
 	}: {
 		setting: Extract<Setting, { type: "checkbox" }>;
 		value?: boolean;
+		hideLabel?: boolean;
 	} = $props();
 
 	async function init() {
@@ -41,7 +43,9 @@
 	}
 </script>
 
-<Description {name} {description} />
+{#if !hideLabel}
+	<Description {name} {description} />
+{/if}
 <input
 	type="checkbox"
 	class="STYLESHIFT-Checkbox"

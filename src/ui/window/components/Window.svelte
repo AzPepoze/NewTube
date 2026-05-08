@@ -121,11 +121,22 @@
 		},
 	});
 
+	let isPicking = $state(false);
+
 	onMount(() => {
 		if (windowEl) {
 			applyThemeToElement(windowEl);
 			window.addEventListener("resize", handleViewportResize);
 		}
+
+		const handlePickerState = (e: any) => {
+			isPicking = e.detail.picking;
+		};
+		window.addEventListener("STYLESHIFT-Picker-State", handlePickerState);
+		
+		return () => {
+			window.removeEventListener("STYLESHIFT-Picker-State", handlePickerState);
+		};
 	});
 
 	function handleViewportResize() {
@@ -195,6 +206,7 @@
 	class:dragging={logic.isDragging}
 	class:resizing={logic.isResizing}
 	class:minimized={logic.isMinimized}
+	class:picking-mode={isPicking}
 	class:mini
 	class:auto-hide-topbar={autoHideTopbar}
 	class:disable-backdrop-filter={disableBackdropFilter}
@@ -308,6 +320,12 @@
 			transform: translateY(100px) scale(0.8) !important;
 			opacity: 0 !important;
 			pointer-events: none !important;
+		}
+
+		&.picking-mode {
+			opacity: 0 !important;
+			pointer-events: none !important;
+			transform: scale(0.98) !important;
 		}
 
 		&.hide-topbar {

@@ -10,8 +10,11 @@
 		separator = false,
 		isNew = false,
 		selected = false,
+		isDeveloperMode = false,
+		editable = false,
+		onMove = null as ((direction: 'up' | 'down') => void) | null,
 	} = $props();
-	let titleEl: HTMLDivElement;
+	let titleEl: HTMLDivElement = $state(null!);
 
 	// Support both emoji format (old) and object format (new)
 	let parts = $derived(getCategoryParts(category as any));
@@ -30,9 +33,26 @@
 	class:is-new={isNew}
 	class:has-separator={separator}
 	class:selected
+	class:is-editable={editable}
 	data-is-header={isHeader}
 	data-is-new={isNew}
 >
+	{#if isDeveloperMode && !isHeader && editable}
+		<div class="STYLESHIFT-Sidebar-Controls">
+			<button class="STYLESHIFT-Sidebar-Control-Btn drag-handle" title="Drag to reorder">
+				<Icon name="drag" size={14} />
+			</button>
+			<div class="STYLESHIFT-Sidebar-Arrows">
+				<button class="STYLESHIFT-Sidebar-Control-Btn arrow" onclick={(e) => { e.stopPropagation(); onMove?.('up'); }} title="Move Up">
+					<Icon name="arrowUp" size={12} />
+				</button>
+				<button class="STYLESHIFT-Sidebar-Control-Btn arrow" onclick={(e) => { e.stopPropagation(); onMove?.('down'); }} title="Move Down">
+					<Icon name="arrowDown" size={12} />
+				</button>
+			</div>
+		</div>
+	{/if}
+
 	{#if isHeader}
 		<div class="STYLESHIFT-Left-Header-Text">
 			{parts.text}
@@ -62,6 +82,10 @@
 		margin-block: -10px;
 		margin-left: 10px;
 		color: var(--White-80);
+
+		&.is-editable {
+			padding-right: 45px; // Reserve space for hover controls
+		}
 
 		&.has-separator {
 			margin-top: 15px;
@@ -129,6 +153,58 @@
 		&.is-new {
 			animation: STYLESHIFT-new-category-pop 1s
 				cubic-bezier(0.175, 0.885, 0.32, 1.275);
+		}
+
+		&:hover {
+			.STYLESHIFT-Sidebar-Controls {
+				opacity: 1;
+			}
+		}
+	}
+
+	.STYLESHIFT-Sidebar-Controls {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		opacity: 0;
+		transition: opacity 0.2s;
+		position: absolute;
+		right: 10px;
+		background: var(--White-10);
+		padding: 2px 4px;
+		border-radius: 8px;
+		backdrop-filter: blur(5px);
+		z-index: 10;
+	}
+
+	.STYLESHIFT-Sidebar-Arrows {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.STYLESHIFT-Sidebar-Control-Btn {
+		background: transparent;
+		border: none;
+		color: var(--White-60);
+		cursor: pointer;
+		padding: 2px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 4px;
+
+		&:hover {
+			background: var(--White-20);
+			color: var(--White-100);
+		}
+
+		&.drag-handle {
+			cursor: grab;
+		}
+
+		&.arrow {
+			padding: 0;
 		}
 	}
 
