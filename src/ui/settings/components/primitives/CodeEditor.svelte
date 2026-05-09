@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { logger } from "@/shared/logger";
 	import { onDestroy, onMount } from "svelte";
-	import { CodeEditorController } from "./CodeEditorController.svelte";
 	import TextEditor from "./TextEditor.svelte";
+	import { CodeEditorController } from "./CodeEditorController.svelte";
 
 	let {
 		value = $bindable(""),
@@ -12,42 +11,39 @@
 		onInput,
 	} = $props();
 
+	const controller = new CodeEditorController({
+		get language() {
+			return language;
+		},
+		onInput: (v) => {
+			value = v;
+			onInput?.(v);
+		},
+		onBlur: (v) => {
+			onBlur?.(v);
+		},
+	});
+
 	let container: HTMLDivElement;
 	let editorWrapper = $state<HTMLDivElement>();
-	let fallbackMode = $state(false);
-	let controller: CodeEditorController | null = null;
 
-	onMount(async () => {
-		if (!editorWrapper) return;
-
-		try {
-			controller = new CodeEditorController({
-				value,
-				language,
-				onInput,
-				onBlur,
-			});
-			await controller.initialize(editorWrapper);
-		} catch (err) {
-			logger.error("ui", "Failed to initialize CodeEditor", err);
-			fallbackMode = true;
+	onMount(() => {
+		if (editorWrapper) {
+			controller.editorWrapper = editorWrapper;
+			controller.init(value);
 		}
 	});
 
 	onDestroy(() => {
-		if (controller) {
-			controller.destroy();
-		}
+		controller.destroy();
 	});
 
 	export function setValue(newVal: string) {
-		if (controller) {
-			controller.setValue(newVal);
-		}
+		controller.setValue(newVal);
 	}
 
 	export function getValue() {
-		return controller ? controller.getValue() : value;
+		return controller.getValue();
 	}
 </script>
 
@@ -56,7 +52,7 @@
 	class="STYLESHIFT-Code-Editor-Container"
 	style:height="{height}px"
 >
-	{#if !fallbackMode}
+	{#if !controller.fallbackMode}
 		<div bind:this={editorWrapper} class="editor-wrapper"></div>
 	{:else}
 		<TextEditor bind:value {onInput} {onBlur} className="fallback-mode" />
@@ -124,8 +120,8 @@
 		line-height: 1;
 		padding: 5px 10px;
 		border-radius: 999px;
-		border: 1px solid rgba(98, 114, 164, 0.7);
-		background: rgba(189, 147, 249, 0.16);
+		border: 1px solid rgba(189, 147, 249, 0.5);
+		background: rgba(189, 147, 249, 0.15);
 		color: #bd93f9;
 		white-space: nowrap;
 	}
@@ -157,20 +153,31 @@
 
 	:global(.cm-metadata-tag-row) {
 		display: grid;
-		grid-template-columns: auto 1fr;
+		grid-template-columns: 85px 1fr;
 		gap: 10px;
 		align-items: start;
 	}
 
+	:global(.cm-metadata-example-row) {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
 	:global(.cm-metadata-tag) {
 		font-family: monospace;
-		font-size: 14px;
-		padding: 3px 8px;
-		border-radius: 999px;
+		font-size: 13px;
+		padding: 3px 0;
+		text-align: center;
+		border-radius: 6px;
 		background: rgba(80, 250, 123, 0.12);
 		border: 1px solid rgba(80, 250, 123, 0.5);
 		color: #50fa7b;
 		white-space: nowrap;
+		line-height: 1.5;
+		width: 100%;
+		display: inline-block;
+		box-sizing: border-box;
 	}
 
 	:global(.cm-metadata-tag-body) {
@@ -178,6 +185,18 @@
 		font-size: 14px;
 		line-height: 1.5;
 		color: #d7d9e4;
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	:global(.cm-metadata-example) {
+		font-family: "Fira Code", monospace;
+		background: rgba(0, 0, 0, 0.2);
+		padding: 8px;
+		border-radius: 6px;
+		border: 1px solid rgba(189, 147, 249, 0.15);
+		margin-top: 4px;
+		display: block;
 	}
 
 	:global(.cm-tooltip) {
