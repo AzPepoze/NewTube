@@ -1,15 +1,15 @@
 import * as esbuild from "esbuild";
-import * as path from "path";
 import * as fs from "fs-extra";
-import { ENTRYPOINTS, BUILD, ROOT, ensureDir } from "./shared/paths";
+import * as path from "path";
 import { log } from "./shared/logger";
+import { BUILD, ENTRYPOINTS, ROOT, ensureDir } from "./shared/paths";
 
 export async function buildModules() {
 	log.info("Building external modules...");
-	
+
 	const modules = [
 		{ name: "jszip", entry: "modules/jszip.js" },
-		{ name: "codemirror", entry: "modules/codemirror.js" }
+		{ name: "codemirror", entry: "modules/codemirror.js" },
 	];
 
 	for (const mod of modules) {
@@ -39,5 +39,5 @@ export async function buildModules() {
 }
 
 if (require.main === module) {
-	buildModules().catch(err => log.error("Modules build failed", err));
+	buildModules().catch((err) => log.error("Modules build failed", err));
 }

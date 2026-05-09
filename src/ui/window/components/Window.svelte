@@ -133,9 +133,12 @@
 			isPicking = e.detail.picking;
 		};
 		window.addEventListener("STYLESHIFT-Picker-State", handlePickerState);
-		
+
 		return () => {
-			window.removeEventListener("STYLESHIFT-Picker-State", handlePickerState);
+			window.removeEventListener(
+				"STYLESHIFT-Picker-State",
+				handlePickerState,
+			);
 		};
 	});
 

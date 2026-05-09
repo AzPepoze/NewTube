@@ -523,13 +523,4 @@
 		padding-inline: 20px;
 		padding-bottom: 50px;
 	}
-
-	.STYLESHIFT-Settings-Group {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-		padding: 10px;
-		background: var(--White-05);
-		border-radius: 20px;
-	}
 </style>

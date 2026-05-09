@@ -24,7 +24,7 @@ export function setupAudioVisualizer() {
 		}
 
 		try {
-			audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+			audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
 			analyser = audioCtx.createAnalyser();
 			analyser.fftSize = 512;
 

@@ -1,29 +1,7 @@
 <script lang="ts">
-	import { createUniqueId } from "@/core/shared/utilities";
-	import { refreshExtensionState } from "@core/index";
-	import { executeScriptString } from "@core/runtime/controller";
-	import { createError } from "@core/shared/notifications";
-	import { logger } from "@core/shared/webPageLogger";
-	import { getFromStorage, getRootValue, saveToStorage } from "@core/storage/manager";
-	import {
-		deactivateSetting,
-		evaluateCondition,
-		registerSettingListener,
-		unregisterSettingListener,
-	} from "@settings/engine/functions";
-	import { removeSetting } from "@settings/registry/items";
-	import type { Setting } from "@settings/types/styleshiftTypes";
-	import { highlight as highlightAction } from "@ui/settings/searchHighlight";
-	import { settingsUi } from "@ui/settings/settingsApi";
-	import { removeConfigUi, showConfigUi } from "@ui/window/config";
-	import { SvelteMap } from "svelte/reactivity";
-	import { addDrag, addDropTarget } from "../../reorder";
-	import {
-		registerSettingUi,
-		unregisterSettingUi,
-	} from "../../settingsManager";
+	import { onDestroy } from "svelte";
+	import { registerSettingUi, unregisterSettingUi } from "../../settingsManager";
 	import { getTextAlign } from "../../utils";
-	import { startQuickCustomize } from "@ui/highlight/quickCustomizeService";
 	import Button from "../controls/Button.svelte";
 	import Checkbox from "../controls/Checkbox.svelte";
 	import ColorPicker from "../controls/ColorPicker.svelte";
@@ -34,12 +12,15 @@
 	import Slider from "../controls/Slider.svelte";
 	import Text from "../controls/Text.svelte";
 	import TextInput from "../controls/TextInput.svelte";
-	import KeyboardShortcutsComponent from "../developer/KeyboardShortcuts.svelte";
 	import Description from "../primitives/Description.svelte";
 	import Icon from "../primitives/Icon.svelte";
 	import ConditionStatus from "./ConditionStatus.svelte";
 	import SettingFrame from "./SettingFrame.svelte";
 	import WarningSection from "./WarningSection.svelte";
+	import { highlight as highlightAction } from "@ui/settings/searchHighlight";
+	import { addDropTarget, addDrag } from "../../reorder";
+	import type { Setting } from "@settings/types/styleshiftTypes";
+	import { SettingRendererController } from "./SettingRendererController.svelte";
 
 	let {
 		setting,
@@ -47,24 +28,10 @@
 	}: {
 		setting: Setting;
 		highlight?: string;
-		onUpdate?: (value: any) => void;
 	} = $props();
 
-	let value = $state<any>(null);
-	let isDeveloperMode = $state(false);
+	const controller = $derived(new SettingRendererController(setting));
 	let domNode = $state<HTMLElement | null>(null);
-
-	// Requirements state
-	let requirementsMet = $state(true);
-	let requiredSettings = $state<
-		Record<
-			string,
-			{ name: string; value: any; type: string; options?: any }
-		>
-	>({});
-	let conditionsMet = $state(true);
-	let isLocked = $derived(setting.lock?.condition ?? false);
-	let listeners = new SvelteMap<string, (val: any) => void>();
 
 	const textAlign = $derived(getTextAlign((setting as any).align));
 	const isVerticalSetting = $derived(
@@ -76,237 +43,39 @@
 			setting.type === "conditionSetting",
 	);
 
-	// Initialize value from storage
-	async function init() {
-		try {
-			isDeveloperMode =
-				(await getRootValue("developerMode")) &&
-				(setting.editable ?? false);
-			if ("id" in setting && setting.id) {
-				value = await getFromStorage(setting.id);
-			} else if ("value" in setting) {
-				value = setting.value;
-			}
-
-			if (setting.require && Object.keys(setting.require).length > 0) {
-				const allSettings = await (
-					await import("@settings/registry/items")
-				).getSettingsList();
-				for (const reqId in setting.require) {
-					const reqSetting = allSettings[reqId];
-					if (reqSetting) {
-						const reqValue = await getFromStorage(reqId);
-						requiredSettings[reqId] = {
-							name: (reqSetting as any).name || reqId,
-							value: reqValue,
-							type: reqSetting.type,
-							options: (reqSetting as any).options,
-						};
-
-						const listener = (newVal: any) => {
-							requiredSettings[reqId].value = newVal;
-							checkRequirements();
-						};
-						listeners.set(reqId, listener);
-						registerSettingListener(reqId, listener);
-					}
-				}
-				checkRequirements();
-			}
-
-			if (setting.type === "conditionSetting" && setting.condition) {
-				const allSettings = await (
-					await import("@settings/registry/items")
-				).getSettingsList();
-				for (const id in setting.condition) {
-					if (!requiredSettings[id]) {
-						const reqSetting = allSettings[id];
-						if (reqSetting) {
-							const reqValue = await getFromStorage(id);
-							requiredSettings[id] = {
-								name: (reqSetting as any).name || id,
-								value: reqValue,
-								type: reqSetting.type,
-								options: (reqSetting as any).options,
-							};
-
-							const listener = (newVal: any) => {
-								if (requiredSettings[id]) {
-									requiredSettings[id].value =
-										newVal;
-									checkConditions();
-								}
-							};
-							listeners.set(id, listener);
-							registerSettingListener(id, listener);
-						}
-					} else {
-						const existingListener = listeners.get(id);
-						if (existingListener) {
-							const newListener = (newVal: any) => {
-								existingListener(newVal);
-								checkConditions();
-							};
-							unregisterSettingListener(
-								id,
-								existingListener,
-							);
-							listeners.set(id, newListener);
-							registerSettingListener(id, newListener);
-						}
-					}
-				}
-				checkConditions();
-			}
-		} catch (error) {
-			createError(
-				`Failed to initialize setting "${setting.id || setting.type}".\n\nJSON: ${JSON.stringify(setting, null, 2)}`,
-			);
-			logger.error("settings", `Init error for ${setting.id}:`, error);
-		}
-	}
-
-	function checkRequirements() {
-		requirementsMet = evaluateCondition(
-			setting.require,
-			requiredSettings,
-		);
-	}
-
-	function checkConditions() {
-		conditionsMet = evaluateCondition(
-			setting.type === "conditionSetting"
-				? setting.condition
-				: undefined,
-			requiredSettings,
-		);
-	}
-
-	init();
-
-	$effect(() => {
-		return () => {
-			listeners.forEach((listener, id) => {
-				unregisterSettingListener(id, listener);
-			});
-			if (setting.id) {
-				unregisterSettingUi(setting.id);
-			}
-		};
-	});
-
-	async function handleEdit() {
-		showConfigUi(async (parent: HTMLElement) => {
-			settingsUi.configEditorRenderer(
-				{
-					setting: setting,
-					onClose: () => removeConfigUi(),
-				},
-				parent,
-			);
-		});
-	}
-
-	function customSettingAction(node: HTMLElement) {
-		try {
-			node.id = setting.id || createUniqueId(10);
-			if (setting.type === "custom") {
-				if (typeof setting.uiFunction === "function") {
-					setting.uiFunction(node);
-				} else if (typeof setting.uiFunction === "string") {
-					executeScriptString({
-						scriptContent: setting.uiFunction,
-						sourceIdentifier: `${setting.id} : uiFunction`,
-						executionArguments: JSON.stringify({
-							settingId: node.id,
-						}),
-					});
-				}
-			}
-		} catch (error) {
-			createError(
-				`Failed to render custom setting "${setting.id}".\n\nJSON: ${JSON.stringify(setting, null, 2)}`,
-			);
-			logger.error(
-				"settings",
-				`Custom action error for ${setting.id}:`,
-				error,
-			);
-		}
-	}
-
 	function dragAction(node: HTMLElement) {
-		if (isDeveloperMode) {
-			try {
-				addDrag(node, null, null, setting);
-			} catch (error) {
-				logger.error(
-					"settings",
-					`Drag action error for ${setting.id}:`,
-					error,
-				);
-			}
-		}
-	}
-
-	function keyboardShortcutsAction(node: HTMLElement) {
-		try {
-			if (setting.type === "keyboardShortcuts") {
-				settingsUi.renderComponent(
-					KeyboardShortcutsComponent,
-					{},
-					node,
-				);
-			}
-		} catch (error) {
-			createError(
-				`Failed to render keyboard shortcuts for "${setting.id}".\n\nJSON: ${JSON.stringify(setting, null, 2)}`,
-			);
-			logger.error(
-				"settings",
-				`Keyboard action error for ${setting.id}:`,
-				error,
-			);
+		if (controller.isDeveloperMode) {
+			addDrag(node, null, null, setting);
 		}
 	}
 
 	$effect(() => {
-		if (isDeveloperMode && domNode && domNode.parentElement) {
-			addDropTarget(
-				domNode,
-				domNode.parentElement,
-				setting,
-				"setting",
-			);
+		if (controller.isDeveloperMode && domNode && domNode.parentElement) {
+			addDropTarget(domNode, domNode.parentElement, setting, "setting");
 		}
 	});
-	async function handleQuickEdit() {
-		startQuickCustomize(setting);
-	}
 
-	async function handleDelete() {
-		if (setting.id) {
-			await saveToStorage(setting.id, false);
-			await deactivateSetting(setting.id);
-			refreshExtensionState();
-			removeSetting(setting);
-		}
-	}
+	const isLocked = $derived(setting.lock?.condition ?? false);
+
+	onDestroy(() => {
+		controller.destroy();
+		if (setting.id) unregisterSettingUi(setting.id);
+	});
 </script>
 
 <SettingFrame
 	id={setting.id}
 	type={setting.type}
-	className="{isDeveloperMode ? 'developer-mode' : ''} {isLocked
+	className="{controller.isDeveloperMode ? 'developer-mode' : ''} {isLocked
 		? 'STYLESHIFT-Setting-Hard-Locked'
-		: ''} {!requirementsMet
+		: ''} {!controller.requirementsMet
 		? 'STYLESHIFT-Setting-Requirement-Warning'
 		: ''}"
-	style="{isDeveloperMode &&
+	style="{controller.isDeveloperMode &&
 	setting.type !== 'subText' &&
 	setting.type !== 'text'
 		? 'gap: 10px;'
-		: ''} {isLocked || !requirementsMet
+		: ''} {isLocked || !controller.requirementsMet
 		? 'flex-direction: column; align-items: stretch;'
 		: ''}"
 	useAction={(node) => {
@@ -326,7 +95,7 @@
 		class="STYLESHIFT-Setting-Row-Content"
 		class:is-vertical={isVerticalSetting}
 	>
-		{#if isDeveloperMode}
+		{#if controller.isDeveloperMode}
 			<button
 				class="STYLESHIFT-Config-Button drag-handle"
 				use:dragAction
@@ -364,9 +133,9 @@
 		{:else if setting.type === "imageInput"}
 			<ImageInput {setting} />
 		{:else if setting.type === "previewImage"}
-			<PreviewImage src={value} />
+			<PreviewImage src={controller.value} />
 		{:else if setting.type === "custom"}
-			<div use:customSettingAction></div>
+			<div use:controller.customSettingAction></div>
 		{:else if setting.type === "combineSetting"}
 			<Description
 				name={setting.name}
@@ -381,39 +150,39 @@
 					description={setting.description}
 				/>
 				<ConditionStatus
-					{conditionsMet}
+					conditionsMet={controller.conditionsMet}
 					condition={setting.condition}
-					{requiredSettings}
+					requiredSettings={controller.requiredSettings}
 				/>
 			</div>
 		{:else if setting.type === "keyboardShortcuts"}
-			<div use:keyboardShortcutsAction></div>
+			<div use:controller.keyboardShortcutsAction></div>
 		{:else if setting.type === "selectorInput"}
 			<Selector {setting} />
 		{/if}
 
-		{#if isDeveloperMode || setting.quickCustomize}
+		{#if controller.isDeveloperMode || setting.quickCustomize}
 			<div class="STYLESHIFT-Config-Actions-Overlay">
 				{#if setting.quickCustomize}
 					<button
 						class="STYLESHIFT-Config-Button quick-edit"
 						title="Edit in Quick Customize"
-						onclick={handleQuickEdit}
+						onclick={() => controller.handleQuickEdit()}
 					>
 						<Icon name="brush" size={16} color="var(--White-100)" />
 					</button>
 				{/if}
 				
-				{#if isDeveloperMode}
+				{#if controller.isDeveloperMode}
 					<button
 						class="STYLESHIFT-Config-Button edit"
-						onclick={handleEdit}
+						onclick={() => controller.handleEdit()}
 					>
 						<Icon name="edit" size={16} />
 					</button>
 					<button
 						class="STYLESHIFT-Config-Button delete"
-						onclick={handleDelete}
+						onclick={() => controller.handleDelete()}
 					>
 						<Icon name="delete" size={16} />
 					</button>
@@ -425,9 +194,9 @@
 	<WarningSection
 		{isLocked}
 		lockMessage={setting.lock?.message}
-		{requirementsMet}
+		requirementsMet={controller.requirementsMet}
 		require={setting.require}
-		{requiredSettings}
+		requiredSettings={controller.requiredSettings}
 	/>
 </SettingFrame>
 

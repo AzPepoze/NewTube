@@ -3,9 +3,11 @@ import Confirm from "@ui/window/components/Confirm.svelte";
 import Prompt from "@ui/window/components/Prompt.svelte";
 import Taskbar from "@ui/window/components/Taskbar.svelte";
 import Window from "@ui/window/components/Window.svelte";
-import { mount } from "svelte";
+import { mount, unmount } from "svelte";
 import SettingRenderer from "./components/renderers/SettingRenderer.svelte";
 import { registerExternalCategory } from "./settingsManager";
+
+export { unmount };
 
 export function renderWindow(props: any, target: HTMLElement = document.createElement("div")) {
 	return mount(Window, {

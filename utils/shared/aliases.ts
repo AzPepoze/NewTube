@@ -26,6 +26,5 @@ export const esbuildExternals = [
 	"@codemirror/state",
 	"@codemirror/lang-javascript",
 	"@codemirror/lang-css",
-	"@codemirror/theme-one-dark",
 	"@codemirror/autocomplete",
 ];

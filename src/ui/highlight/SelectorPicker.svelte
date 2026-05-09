@@ -204,82 +204,6 @@
 {/if}
 
 <style lang="scss">
-	.selector-picker-container {
-		display: flex;
-		flex-direction: column;
-		gap: 15px;
-		padding: 20px;
-		color: #e0e0e0;
-		transition: opacity 0.2s, transform 0.2s;
-
-		&.hidden {
-			opacity: 0;
-			pointer-events: none;
-			transform: scale(0.95);
-		}
-	}
-
-	.description {
-		font-size: 13px;
-		color: rgba(255, 255, 255, 0.6);
-		line-height: 1.4;
-	}
-
-	.input-group {
-		display: flex;
-		gap: 8px;
-	}
-
-	.selector-input {
-		flex: 1;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.15);
-		color: white;
-		padding: 8px 12px;
-		border-radius: 6px;
-		font-size: 14px;
-		font-family: monospace;
-		transition: border-color 0.2s;
-
-		&:focus {
-			outline: none;
-			border-color: #7f5db7;
-			background: rgba(255, 255, 255, 0.1);
-		}
-	}
-
-	.pick-btn {
-		background: #7f5db7;
-		color: white;
-		border: none;
-		padding: 0 15px;
-		border-radius: 6px;
-		cursor: pointer;
-		font-size: 14px;
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		transition: all 0.2s;
-		font-weight: 500;
-
-		.icon {
-			font-size: 18px;
-		}
-
-		&.active {
-			background: #f44336;
-		}
-
-		&:hover {
-			filter: brightness(1.1);
-			transform: translateY(-1px);
-		}
-
-		&:active {
-			transform: translateY(0);
-		}
-	}
-
 	.suggestions-list {
 		background: #252525;
 		border: 1px solid rgba(255, 255, 255, 0.1);
@@ -352,38 +276,6 @@
 		&:hover {
 			background: #7f5db7;
 			color: white;
-		}
-	}
-
-	.actions {
-		display: flex;
-		gap: 10px;
-		margin-top: 5px;
-	}
-
-	.action-btn {
-		flex: 1;
-		background: rgba(255, 255, 255, 0.05);
-		color: white;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		padding: 10px;
-		border-radius: 6px;
-		cursor: pointer;
-		font-size: 14px;
-		font-weight: 500;
-		transition: all 0.2s;
-
-		&:hover {
-			background: rgba(255, 255, 255, 0.1);
-		}
-
-		&.primary {
-			background: #7f5db7;
-			border-color: transparent;
-
-			&:hover {
-				filter: brightness(1.1);
-			}
 		}
 	}
 

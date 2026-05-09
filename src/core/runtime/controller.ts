@@ -1,11 +1,14 @@
-import { sleep } from '@/core/shared/utilities';
-import { createNotification } from '@core/shared/notifications';
-import { persistCachedDataToStorage, saveToStorage } from '@core/storage/manager';
-import { getAddOnItems } from '@settings/registry/items';
-import { logger } from '@shared/logger';
+import { sleep } from "@/core/shared/utilities";
+import { createNotification } from "@core/shared/notifications";
+import {
+	persistCachedDataToStorage,
+	saveToStorage,
+} from "@core/storage/manager";
+import { getAddOnItems } from "@settings/registry/items";
+import { logger } from "@shared/logger";
 
-import { IS_IN_EXTENSION_SETTINGS_PAGE, refreshExtensionState } from '../';
-import { isSafeCode } from '../utils/security';
+import { IS_IN_EXTENSION_SETTINGS_PAGE, refreshExtensionState } from "../";
+import { isSafeCode } from "../utils/security";
 
 /**
  * Saves all cached data and triggers a global UI/state refresh.
@@ -60,19 +63,27 @@ export async function synchronizeAvailableFunctions(): Promise<void> {
 		}
 
 		for (const [scope, methods] of Object.entries(window["StyleShift"])) {
-			activeStyleShiftFunctions[scope] = Object.keys(methods as object);
+			activeStyleShiftFunctions[scope] = Object.keys(
+				methods as object,
+			);
 		}
 		return;
 	}
 
 	return new Promise((resolve) => {
 		const listener = ((event: CustomEvent) => {
-			logger.info("runtime", "Function registry received:", event.detail);
+			logger.info(
+				"runtime",
+				"Function registry received:",
+				event.detail,
+			);
 			activeStyleShiftFunctions = event.detail;
 			resolve();
 		}) as EventListener;
 
-		window.addEventListener("StyleShift:FunctionsDiscovered", listener, { once: true });
+		window.addEventListener("StyleShift:FunctionsDiscovered", listener, {
+			once: true,
+		});
 
 		executeScriptString({
 			scriptContent: FUNCTION_DISCOVERY_SCRIPT,
@@ -84,8 +95,15 @@ export async function synchronizeAvailableFunctions(): Promise<void> {
 /**
  * Retrieves a specific function from the StyleShift global object in the page context.
  */
-export async function fetchGlobalFunction(scope: "buildIn" | "custom", functionName: string): Promise<any> {
-	if (!window["StyleShift"] || !window["StyleShift"][scope] || !window["StyleShift"][scope][functionName]) {
+export async function fetchGlobalFunction(
+	scope: "buildIn" | "custom",
+	functionName: string,
+): Promise<any> {
+	if (
+		!window["StyleShift"] ||
+		!window["StyleShift"][scope] ||
+		!window["StyleShift"][scope][functionName]
+	) {
 		await sleep(10);
 		return await fetchGlobalFunction(scope, functionName);
 	}
@@ -108,10 +126,18 @@ export async function executeScriptString({
 	sourceIdentifier = "StyleShift",
 	executionArguments = "",
 }: ExecutionOptions): Promise<void> {
-	logger.debug("runtime", "Trying to run script from source:", sourceIdentifier);
+	logger.debug(
+		"runtime",
+		"Trying to run script from source:",
+		sourceIdentifier,
+	);
 
 	if (!scriptContent) {
-		logger.debug("runtime", "Script content is empty for source:", sourceIdentifier);
+		logger.debug(
+			"runtime",
+			"Script content is empty for source:",
+			sourceIdentifier,
+		);
 		return;
 	}
 
@@ -126,9 +152,14 @@ export async function executeScriptString({
 
 	if (shouldSanitize) {
 		if (isSafeCode(finalScript, sourceIdentifier)) {
-			logger.debug("runtime", "Script passed safety check, applying shorthand replacements");
+			logger.debug(
+				"runtime",
+				"Script passed safety check, applying shorthand replacements",
+			);
 			// Replace shorthand function calls with full global paths
-			for (const [scope, methods] of Object.entries(activeStyleShiftFunctions)) {
+			for (const [scope, methods] of Object.entries(
+				activeStyleShiftFunctions,
+			)) {
 				for (const methodName of methods) {
 					const pattern = new RegExp(`\\b${methodName}\\b`, "g");
 					if (pattern.test(finalScript)) {
@@ -144,7 +175,11 @@ export async function executeScriptString({
 				}
 			}
 		} else {
-			logger.warn("runtime", "Script blocked by security policy:", sourceIdentifier);
+			logger.warn(
+				"runtime",
+				"Script blocked by security policy:",
+				sourceIdentifier,
+			);
 			return;
 		}
 	}
@@ -152,21 +187,30 @@ export async function executeScriptString({
 	logger.debug("runtime", "Final script for execution:", finalScript);
 
 	if (!IS_IN_EXTENSION_SETTINGS_PAGE) {
-		logger.debug("runtime", "Sending runScript message to background for script execution");
+		logger.debug(
+			"runtime",
+			"Sending runScript message to background for script execution",
+		);
 		chrome.runtime.sendMessage({
 			Command: "runScript",
 			Script: finalScript,
 			args: executionArguments,
 		});
 	} else {
-		logger.debug("runtime", "In extension settings page, runScript message not sent");
+		logger.debug(
+			"runtime",
+			"In extension settings page, runScript message not sent",
+		);
 	}
 }
 
 /**
  * Executes a script associated with a specific setting.
  */
-export function executeSettingScript(settingObject: any, functionProperty: string = "script"): void {
+export function executeSettingScript(
+	settingObject: any,
+	functionProperty: string = "script",
+): void {
 	executeScriptString({
 		scriptContent: settingObject[functionProperty],
 		sourceIdentifier: `${settingObject.id} : ${functionProperty}`,
@@ -178,6 +222,7 @@ export let isDevModulesLoaded = false;
 export let hasAttemptedDevModuleLoad = false;
 export let jszipInstance: any;
 export let codemirrorInstance: any;
+
 export const globalMetadataCache: any[] = [];
 
 /**
@@ -190,7 +235,7 @@ export async function initializeDeveloperEnvironment(): Promise<void> {
 
 	const loaderUi = await createNotification({
 		icon: "sync",
-		title: "StyleShift - Loading Developer Modules",
+		title: "NewTube - Loading Developer Modules",
 		content: "Preparing environment...",
 		timeout: -1,
 	});
@@ -198,7 +243,9 @@ export async function initializeDeveloperEnvironment(): Promise<void> {
 	try {
 		logger.info("runtime", "Loading developer environment...");
 		loaderUi.setContent("Fetching Metadata...");
-		const metadataUrl = chrome.runtime.getURL("types/StyleShift-Metadata.json");
+		const metadataUrl = chrome.runtime.getURL(
+			"types/NewTube-Metadata.json",
+		);
 		logger.debug("runtime", "Fetching metadata from:", metadataUrl);
 
 		const metadataResponse = await fetch(metadataUrl);
@@ -218,7 +265,8 @@ export async function initializeDeveloperEnvironment(): Promise<void> {
 		logger.debug("runtime", "Importing CodeMirror from:", codemirrorUrl);
 
 		const codemirrorModule = await import(codemirrorUrl);
-		codemirrorInstance = codemirrorModule.default.default || codemirrorModule.default;
+		codemirrorInstance =
+			codemirrorModule.default.default || codemirrorModule.default;
 
 		logger.info("runtime", "Developer environment loaded successfully.");
 		loaderUi.setIcon("check_circle");
@@ -229,7 +277,8 @@ export async function initializeDeveloperEnvironment(): Promise<void> {
 		isDevModulesLoaded = true;
 	} catch (error) {
 		const errorName = (error as any)?.name;
-		const isAbort = errorName === "AbortError" || errorName === "NS_ERROR_ABORT";
+		const isAbort =
+			errorName === "AbortError" || errorName === "NS_ERROR_ABORT";
 
 		logger.error("runtime", "Failed to load developer modules:", error);
 
@@ -241,7 +290,8 @@ export async function initializeDeveloperEnvironment(): Promise<void> {
 			);
 		} else {
 			loaderUi.setTitle("Developer Module Error");
-			const message = error instanceof Error ? error.message : String(error);
+			const message =
+				error instanceof Error ? error.message : String(error);
 			loaderUi.setContent(`${message}\n(Check console for details)`);
 		}
 
@@ -254,13 +304,24 @@ let workerPolicy: any = null;
 
 function getWorkerPolicy() {
 	if (workerPolicy) return workerPolicy;
-	if (typeof window !== "undefined" && (window as any).trustedTypes && (window as any).trustedTypes.createPolicy) {
+	if (
+		typeof window !== "undefined" &&
+		(window as any).trustedTypes &&
+		(window as any).trustedTypes.createPolicy
+	) {
 		try {
-			workerPolicy = (window as any).trustedTypes.createPolicy("styleshift-worker-policy", {
-				createScriptURL: (url: string) => url,
-			});
+			workerPolicy = (window as any).trustedTypes.createPolicy(
+				"styleshift-worker-policy",
+				{
+					createScriptURL: (url: string) => url,
+				},
+			);
 		} catch (e) {
-			logger.warn("runtime", "Failed to create Trusted Types policy:", e);
+			logger.warn(
+				"runtime",
+				"Failed to create Trusted Types policy:",
+				e,
+			);
 		}
 	}
 	return workerPolicy;
@@ -275,21 +336,37 @@ export async function loadWorker(fileName: string): Promise<Worker | null> {
 
 	try {
 		const worker = new Worker(trustedUrl);
-		logger.info("runtime", `Native Worker created successfully for ${fileName}`);
+		logger.info(
+			"runtime",
+			`Native Worker created successfully for ${fileName}`,
+		);
 		return worker;
 	} catch (error) {
-		logger.warn("runtime", `Native Worker failed for ${fileName} with direct URL, trying Blob fallback:`, error);
+		logger.warn(
+			"runtime",
+			`Native Worker failed for ${fileName} with direct URL, trying Blob fallback:`,
+			error,
+		);
 
 		try {
 			const response = await fetch(scriptUrl);
 			const blob = await response.blob();
 			const blobUrl = URL.createObjectURL(blob);
-			const trustedBlobUrl = policy ? policy.createScriptURL(blobUrl) : blobUrl;
+			const trustedBlobUrl = policy
+				? policy.createScriptURL(blobUrl)
+				: blobUrl;
 			const worker = new Worker(trustedBlobUrl);
-			logger.info("runtime", `Worker created successfully via Blob for ${fileName}`);
+			logger.info(
+				"runtime",
+				`Worker created successfully via Blob for ${fileName}`,
+			);
 			return worker;
 		} catch (blobError) {
-			logger.error("runtime", `All worker creation methods failed for ${fileName}:`, blobError);
+			logger.error(
+				"runtime",
+				`All worker creation methods failed for ${fileName}:`,
+				blobError,
+			);
 			return null;
 		}
 	}

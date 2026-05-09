@@ -5,8 +5,8 @@
 	import TextInput from "../settings/components/controls/TextInput.svelte";
 	import CodeEditor from "../settings/components/primitives/CodeEditor.svelte";
 	import { logger } from "@shared/logger";
-	import { initializeDeveloperEnvironment, isDevModulesLoaded } from "@core/runtime/controller";
 	import QuickControlRow from "./QuickControlRow.svelte";
+	import { QuickCustomizeController } from "./QuickCustomizeController.svelte";
 
 	let {
 		selector = "",
@@ -20,116 +20,39 @@
 		initialData?: { name: string, mode: string, basicStyles: any, enabledStyles: any, rawCss?: string } | null;
 	} = $props();
 
-	let activeTab = $state("basic");
-	let basicStyles = $state<Record<string, any>>({
-		"background-color": "#ffffff",
-		"color": "#ffffff",
-		"font-size": "",
-		"opacity": 1,
-		"border-radius": "",
-		"display": "",
+	const controller = new QuickCustomizeController({ 
+		get selector() { return selector }, 
+		get initialData() { return initialData }, 
+		get onSave() { return onSave } 
 	});
-	let enabledStyles = $state<Record<string, boolean>>({
-		"background-color": false,
-		"color": false,
-		"font-size": false,
-		"opacity": false,
-		"border-radius": false,
-		"display": false,
-	});
-
-	let settingName = $state("");
-	const defaultName = $derived(`Custom: ${selector.slice(0, 20)}${selector.length > 20 ? "..." : ""}`);
-
-	let rawCss = $state("");
-	let previewStyleElement: HTMLStyleElement | null = null;
-	let isEditorLoading = $state(false);
-
-	const tabs = [
-		{ id: "basic", label: "Basic", icon: "settings_input_component" },
-		{ id: "advanced", label: "Advanced", icon: "code" }
-	];
-
-	const controls = [
-		{ property: "background-color", label: "Background Color", type: "color" },
-		{ property: "color", label: "Text Color", type: "color" },
-		{ property: "font-size", label: "Font Size", type: "textInput", placeholder: "e.g. 16px" },
-		{ property: "opacity", label: "Opacity", type: "numberSlide", min: 0, max: 1, step: 0.01 },
-		{ property: "border-radius", label: "Border Radius", type: "textInput", placeholder: "e.g. 12px" },
-		{ property: "display", label: "Display", type: "dropdown", options: [
-			{ label: "Default", value: "" },
-			{ label: "Block", value: "block" },
-			{ label: "Inline Block", value: "inline-block" },
-			{ label: "Flex", value: "flex" },
-			{ label: "Hidden", value: "none" }
-		]}
-	];
 
 	$effect(() => {
-		if (activeTab === "advanced" && !isDevModulesLoaded) {
-			isEditorLoading = true;
-			initializeDeveloperEnvironment().finally(() => (isEditorLoading = false));
-		}
+		controller.selector = selector;
 	});
 
-	function generateBasicCss(joiner: string = "\n") {
-		const body = controls
-			.filter(ctrl => enabledStyles[ctrl.property])
-			.map(ctrl => {
-				const val = basicStyles[ctrl.property];
-				return (val !== "" && val !== undefined) ? `${ctrl.property}: ${val} !important;` : null;
-			})
-			.filter(Boolean)
-			.join(joiner);
-		
-		return `${selector} { ${body} }`;
-	}
+	$effect(() => {
+		controller.applyPreview();
+	});
 
-	function applyPreview() {
-		if (!previewStyleElement) {
-			previewStyleElement = document.createElement("style");
-			previewStyleElement.id = "styleshift-quick-customize-preview";
-			document.head.appendChild(previewStyleElement);
-		}
-		previewStyleElement.textContent = activeTab === "basic" ? generateBasicCss(" ") : rawCss;
-	}
-
-	$effect(() => { applyPreview(); });
+	const controls = [
+		{ id: "background-color", label: "Background", type: "color", icon: "format_color_fill" },
+		{ id: "color", label: "Text Color", type: "color", icon: "title" },
+		{ id: "font-size", label: "Font Size", type: "numberSlide", icon: "text_fields", min: 8, max: 72, unit: "px" },
+		{ id: "opacity", label: "Opacity", type: "numberSlide", icon: "opacity", min: 0, max: 1, step: 0.05 },
+		{ id: "border-radius", label: "Rounding", type: "numberSlide", icon: "rounded_corner", min: 0, max: 50, unit: "px" },
+		{ id: "display", label: "Visibility", type: "dropdown", icon: "visibility", options: [
+			{ label: "Show", value: "block" },
+			{ label: "Hide", value: "none" }
+		]},
+	];
 
 	onMount(() => { 
-		if (initialData) {
-			settingName = initialData.name;
-			activeTab = initialData.mode;
-			if (initialData.basicStyles) {
-				Object.assign(basicStyles, initialData.basicStyles);
-			}
-			if (initialData.enabledStyles) {
-				Object.assign(enabledStyles, initialData.enabledStyles);
-			}
-			if (initialData.rawCss) {
-				rawCss = initialData.rawCss;
-			} else {
-				rawCss = `${selector} {\n\t\n}`;
-			}
-		} else {
-			rawCss = `${selector} {\n\t\n}`;
-		}
 		logger.debug("QuickCustomize", "Mounted for selector", selector); 
 	});
-	onDestroy(() => { previewStyleElement?.remove(); });
-
-	function handleSave() {
-		onSave({
-			selector,
-			css: activeTab === "basic" ? generateBasicCss() : rawCss,
-			mode: activeTab,
-			name: settingName || defaultName,
-			metadata: {
-				basicStyles: $state.snapshot(basicStyles),
-				enabledStyles: $state.snapshot(enabledStyles)
-			}
-		});
-	}
+	onDestroy(() => { controller.destroy(); });
+	$effect(() => {
+		controller.handleTabChange(controller.activeTab);
+	});
 </script>
 
 <div class="STYLESHIFT-Quick-Customize-Container">
@@ -138,11 +61,11 @@
 			setting={{
 				type: "textInput",
 				name: "Setting Name",
-				value: settingName,
+				value: controller.settingName,
 				id: "",
-				updateFunction: (val) => (settingName = val)
+				updateFunction: (val) => (controller.settingName = val)
 			}}
-			placeholder={defaultName}
+			placeholder={controller.defaultName}
 		/>
 	</div>
 
@@ -150,42 +73,55 @@
 		<div class="icon-box">
 			<Icon name="code" size={14} color="var(--White-100)" />
 		</div>
-		<code>{selector}</code>
+		<div class="info-text">
+			<span class="label">Targeting:</span>
+			<span class="selector-name">{selector}</span>
+		</div>
 	</div>
 
 	<div class="tabs-wrapper">
-		<CapsuleTabs options={tabs} bind:activeId={activeTab} />
+		<CapsuleTabs 
+			options={[
+				{ id: "basic", label: "Basic" },
+				{ id: "advanced", label: "Advanced" }
+			]}
+			bind:activeId={controller.activeTab}
+		/>
 	</div>
 
-	<main class="modal-content STYLESHIFT-Scrollable">
-		{#if activeTab === "basic"}
+	<div class="modal-content">
+		{#if controller.activeTab === "basic"}
 			<div class="basic-controls-list">
-				{#each controls as ctrl (ctrl.property)}
+				{#each controls as control (control.id)}
 					<QuickControlRow 
-						{ctrl} 
-						bind:enabled={enabledStyles[ctrl.property]} 
-						bind:value={basicStyles[ctrl.property]} 
+						ctrl={control}
+						bind:value={controller.basicStyles[control.id]}
+						bind:enabled={controller.enabledStyles[control.id]}
 					/>
 				{/each}
 			</div>
 		{:else}
 			<div class="advanced-editor">
-				{#if isEditorLoading}
+				{#if controller.isEditorLoading}
 					<div class="editor-loading">
-						<Icon name="sync" size={24} color="var(--Theme-0)" />
-						<span>Loading Editor...</span>
+						<Icon name="sync" size={24} color="var(--White-60)" />
+						<span>Loading Code Editor...</span>
 					</div>
-				{:else}
-					<CodeEditor bind:value={rawCss} language="css" height={300} onBlur={() => {}} onInput={() => {}} />
 				{/if}
+				<CodeEditor 
+					value={controller.rawCss}
+					language="css"
+					onInput={(val) => (controller.rawCss = val)}
+					onBlur={() => {}}
+				/>
 			</div>
 		{/if}
-	</main>
+	</div>
 
-	<footer class="modal-footer">
+	<div class="modal-footer">
 		<button class="btn-secondary" onclick={onClose}>Cancel</button>
-		<button class="btn-primary" onclick={handleSave}>Save Customization</button>
-	</footer>
+		<button class="btn-primary" onclick={() => controller.handleSave()}>Save Setting</button>
+	</div>
 </div>
 
 <style lang="scss">
@@ -204,30 +140,42 @@
 		margin: 10px 20px 5px;
 		padding: 14px 18px;
 		border-radius: 15px;
-		background: var(--White-02);
+		background: var(--White-03);
 		display: flex;
 		align-items: center;
 		gap: 12px;
 		border: 1px solid var(--White-05);
-		
+
 		.icon-box {
-			width: 28px;
-			height: 28px;
-			border-radius: 8px;
-			background: var(--Theme-0);
+			width: 32px;
+			height: 32px;
+			border-radius: 10px;
+			background: var(--White-05);
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			box-shadow: 0 4px 10px rgba(127, 93, 183, 0.3);
+			flex-shrink: 0;
 		}
 
-		code {
-			color: var(--White-100);
-			font-family: 'Fira Code', monospace;
-			font-size: 13px;
-			letter-spacing: -0.3px;
-			font-weight: 500;
-			opacity: 0.9;
+		.info-text {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+
+			.label {
+				font-size: 11px;
+				font-weight: 600;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+				color: var(--White-40);
+			}
+
+			.selector-name {
+				font-family: 'Fira Code', 'JetBrains Mono', monospace;
+				font-size: 13px;
+				color: var(--Theme-0);
+				font-weight: 500;
+			}
 		}
 	}
 

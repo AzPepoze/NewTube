@@ -66,13 +66,13 @@
 		box-sizing: border-box;
 
 		&.STYLESHIFT-Notification-error {
-			border-left: 4px solid #ff4444;
+			border-left: 4px solid var(--Theme-Error);
 		}
 		&.STYLESHIFT-Notification-warning {
-			border-left: 4px solid #ffbb33;
+			border-left: 4px solid var(--Theme-Warning);
 		}
 		&.STYLESHIFT-Notification-success {
-			border-left: 4px solid #00c851;
+			border-left: 4px solid var(--Theme-Success, #00c851);
 		}
 
 		.STYLESHIFT-Notification-Icon {

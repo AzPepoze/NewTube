@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { logger } from "@/shared/logger";
-	import {
-		codemirrorInstance,
-		globalMetadataCache,
-	} from "@core/runtime/controller";
 	import { onDestroy, onMount } from "svelte";
+	import { CodeEditorController } from "./CodeEditorController.svelte";
 	import TextEditor from "./TextEditor.svelte";
 
 	let {
@@ -17,328 +14,40 @@
 
 	let container: HTMLDivElement;
 	let editorWrapper = $state<HTMLDivElement>();
-	let view: any;
 	let fallbackMode = $state(false);
+	let controller: CodeEditorController | null = null;
 
-	function normalizeInfo(text: string) {
-		return String(text || "")
-			.replace(/\r/g, "")
-			.replace(/\s*@/g, "\n@")
-			.trim();
-	}
-
-	function parseInfoSections(text: string) {
-		const normalized = normalizeInfo(text);
-		if (!normalized) {
-			return { summary: "", tags: [] as string[] };
-		}
-
-		const lines = normalized
-			.split(/\n+/)
-			.map((line) => line.trim())
-			.filter(Boolean);
-
-		const summaryLines: string[] = [];
-		const tags: string[] = [];
-
-		for (const line of lines) {
-			if (line.startsWith("@")) {
-				tags.push(line);
-			} else {
-				summaryLines.push(line);
-			}
-		}
-
-		return {
-			summary: summaryLines.join(" "),
-			tags,
-		};
-	}
-
-	function renderInfoNode(entry: any) {
-		const root = document.createElement("div");
-		root.className = "cm-metadata-doc";
-
-		const { summary, tags } = parseInfoSections(entry.info || "");
-
-		if (summary) {
-			const summaryEl = document.createElement("div");
-			summaryEl.className = "cm-metadata-summary";
-			summaryEl.textContent = summary;
-			root.appendChild(summaryEl);
-		}
-
-		if (tags.length) {
-			const tagsEl = document.createElement("div");
-			tagsEl.className = "cm-metadata-tags";
-
-			for (const tagText of tags) {
-				const row = document.createElement("div");
-				row.className = "cm-metadata-tag-row";
-
-				const match = /^(@\w+)\s*(.*)$/.exec(tagText);
-				const tag = document.createElement("span");
-				tag.className = "cm-metadata-tag";
-				tag.textContent = match ? match[1] : "@tag";
-
-				const body = document.createElement("span");
-				body.className = "cm-metadata-tag-body";
-				body.textContent = match ? match[2] : tagText;
-
-				row.append(tag, body);
-				tagsEl.appendChild(row);
-			}
-
-			root.appendChild(tagsEl);
-		}
-
-		return root;
-	}
-
-	function metadataOptions() {
-		return globalMetadataCache.map((entry) => ({
-			label: entry.label,
-			type: entry.type,
-			detail: entry.detail,
-			info: () => renderInfoNode(entry),
-			boost: 20,
-		}));
-	}
-
-	function normalizeSymbol(text: string) {
-		return text.trim().replace(/[\s(){}\[\],;]+$/g, "");
-	}
-
-	function findMetadata(word: string) {
-		const normalized = normalizeSymbol(word);
-		if (!normalized) return null;
-
-		return (
-			globalMetadataCache.find(
-				(entry: any) => entry.label === normalized,
-			) ||
-			globalMetadataCache.find(
-				(entry: any) =>
-					String(entry.label).toLowerCase() ===
-					normalized.toLowerCase(),
-			)
-		);
-	}
-
-	onMount(() => {
+	onMount(async () => {
 		if (!editorWrapper) return;
 
-		const init = () => {
-			if (!codemirrorInstance) {
-				setTimeout(init, 100);
-				return;
-			}
-
-			try {
-				const {
-					EditorView: editorView,
-					basicSetup,
-					javascript,
-					localCompletionSource,
-					scopeCompletionSource,
-					css,
-					cssCompletionSource,
-					dracula,
-					EditorState: editorState,
-					autocompletion,
-					search,
-					hoverTooltip,
-					tooltips,
-				} = codemirrorInstance;
-
-				const styleshiftCompletions = (context: any) => {
-					const word = context.matchBefore(/[\w$]*/);
-					if (
-						!word ||
-						(word.from === word.to && !context.explicit)
-					) {
-						return null;
-					}
-
-					return {
-						from: word.from,
-						options: metadataOptions(),
-					};
-				};
-
-				const jsDefaultCompletion =
-					scopeCompletionSource(globalThis);
-
-				const styleshiftHover = hoverTooltip(
-					(view: any, pos: number, side: number) => {
-						const { from, to, text } =
-							view.state.doc.lineAt(pos);
-						let start = pos;
-						let end = pos;
-
-						while (
-							start > from &&
-							/[\w$]/.test(text[start - from - 1])
-						) {
-							start--;
-						}
-						while (
-							end < to &&
-							/[\w$]/.test(text[end - from])
-						) {
-							end++;
-						}
-
-						if (
-							(start === pos && side < 0) ||
-							(end === pos && side > 0)
-						) {
-							return null;
-						}
-
-						const word = text.slice(start - from, end - from);
-						const metadata = findMetadata(word);
-						if (!metadata) {
-							return null;
-						}
-
-						return {
-							pos: start,
-							end,
-							above: true,
-							create() {
-								const dom =
-									document.createElement("div");
-								dom.className = "cm-styleshift-tooltip";
-								dom.style.maxHeight = "34vh";
-								dom.style.overflow = "auto";
-
-								const header =
-									document.createElement("div");
-								header.className = "cm-tooltip-header";
-
-								const title =
-									document.createElement("div");
-								title.className = "cm-tooltip-title";
-								title.textContent = metadata.label;
-								header.appendChild(title);
-
-								if (metadata.detail || metadata.type) {
-									const badge =
-										document.createElement(
-											"span",
-										);
-									badge.className =
-										"cm-tooltip-badge";
-									badge.textContent =
-										metadata.detail ||
-										metadata.type;
-									header.appendChild(badge);
-								}
-
-								dom.appendChild(header);
-
-								if (metadata.info) {
-									const info =
-										renderInfoNode(metadata);
-									info.classList.add(
-										"cm-tooltip-info",
-									);
-									dom.appendChild(info);
-								}
-
-								return { dom };
-							},
-						};
-					},
-				);
-
-				const extensions = [
-					...basicSetup,
-					dracula,
-					search({ top: true }),
-					tooltips({ parent: document.body }),
-					editorView.updateListener.of((update: any) => {
-						if (update.docChanged) {
-							const newValue = update.state.doc.toString();
-							value = newValue;
-							onInput?.(newValue);
-						}
-					}),
-					editorView.domEventHandlers({
-						blur: () => {
-							onBlur?.(view.state.doc.toString());
-						},
-					}),
-					styleshiftHover,
-				];
-
-				if (language === "javascript" || language === "js") {
-					extensions.push(javascript());
-					extensions.push(
-						autocompletion({
-							override: [
-								styleshiftCompletions,
-								localCompletionSource,
-								jsDefaultCompletion,
-							],
-						}),
-					);
-				} else if (language === "css") {
-					extensions.push(css());
-					extensions.push(
-						autocompletion({
-							override: [cssCompletionSource],
-						}),
-					);
-				} else {
-					extensions.push(autocompletion());
-				}
-
-				view = new editorView({
-					state: editorState.create({
-						doc:
-							typeof value === "string"
-								? value
-								: String(value || ""),
-						extensions,
-					}),
-					parent: editorWrapper,
-				});
-
-				logger.info(
-					"ui",
-					"CodeEditor initialized with CodeMirror 6",
-				);
-			} catch (err) {
-				logger.error("ui", "Failed to initialize CodeEditor", err);
-				fallbackMode = true;
-			}
-		};
-
-		init();
+		try {
+			controller = new CodeEditorController({
+				value,
+				language,
+				onInput,
+				onBlur,
+			});
+			await controller.initialize(editorWrapper);
+		} catch (err) {
+			logger.error("ui", "Failed to initialize CodeEditor", err);
+			fallbackMode = true;
+		}
 	});
 
 	onDestroy(() => {
-		if (view) {
-			view.destroy();
+		if (controller) {
+			controller.destroy();
 		}
 	});
 
 	export function setValue(newVal: string) {
-		if (view) {
-			view.dispatch({
-				changes: {
-					from: 0,
-					to: view.state.doc.length,
-					insert: newVal,
-				},
-			});
+		if (controller) {
+			controller.setValue(newVal);
 		}
 	}
 
 	export function getValue() {
-		return view ? view.state.doc.toString() : value;
+		return controller ? controller.getValue() : value;
 	}
 </script>
 
@@ -494,35 +203,62 @@
 		z-index: 10000001 !important;
 		min-width: 480px;
 		max-width: min(86ch, 62vw);
+		background: #1f2330 !important;
+		border: 1px solid #6272a4 !important;
+		border-radius: 8px !important;
+		box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55) !important;
 	}
 
 	:global(.cm-tooltip.cm-tooltip-autocomplete > ul) {
 		max-height: 320px;
 		overflow-y: auto;
+		background: #1f2330;
+		list-style: none;
+		padding: 0;
+		margin: 0;
 	}
 
 	:global(.cm-tooltip.cm-tooltip-autocomplete > ul > li) {
 		font-size: 14px;
 		line-height: 1.45;
-		padding: 6px 10px;
+		padding: 8px 12px;
+		color: #f8f8f2;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		border-bottom: 1px solid rgba(98, 114, 164, 0.15);
+	}
+
+	:global(.cm-tooltip.cm-tooltip-autocomplete > ul > li:last-child) {
+		border-bottom: none;
 	}
 
 	:global(.cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected]) {
-		background: rgba(98, 114, 164, 0.35);
-		outline: 1px solid rgba(189, 147, 249, 0.6);
+		background: rgba(189, 147, 249, 0.15);
+		outline: 1px solid #bd93f9;
 	}
 
 	:global(.cm-completionLabel) {
+		font-weight: 600;
 		font-size: 14px;
+		color: #f8f8f2;
 	}
 
 	:global(.cm-completionDetail) {
-		font-size: 14px;
-		opacity: 0.95;
+		font-size: 13px;
+		opacity: 1;
+		color: #d7d9e4;
+		flex: 1;
+		text-align: right;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	:global(.cm-completionIcon) {
-		transform: scale(1.1);
+		width: 20px;
+		height: 20px;
+		flex-shrink: 0;
 	}
 
 	:global(.cm-panels) {
@@ -606,11 +342,6 @@
 	:global(.cm-textfield.cm-invalid) {
 		border-color: rgba(255, 85, 85, 0.85);
 		box-shadow: 0 0 0 2px rgba(255, 85, 85, 0.2);
-	}
-
-	:global(.cm-tooltip.cm-tooltip-autocomplete > ul > li) {
-		padding: 4px !important;
-		border-radius: 3px;
 	}
 
 	:global(.cm-panel.cm-search input[type="text"]) {

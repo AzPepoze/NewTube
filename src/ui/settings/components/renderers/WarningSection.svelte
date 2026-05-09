@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { Setting } from "@settings/types/styleshiftTypes";
+	import Icon from "../primitives/Icon.svelte";
+	import { WarningSectionController } from "./WarningSectionController.svelte";
 
 	let {
 		isLocked,
@@ -17,130 +19,164 @@
 			{ name: string; value: any; type: string; options?: any }
 		>;
 	} = $props();
+
+	const controller = $derived(new WarningSectionController({
+		isLocked,
+		lockMessage,
+		requirementsMet,
+		require,
+		requiredSettings
+	}));
 </script>
 
 {#if isLocked || !requirementsMet}
-	<div class="STYLESHIFT-Setting-Warning-Section">
-		<div class="lock-info">
-			<div class="lock-messages">
-				{#if isLocked}
-					<div class="lock-message">
-						{lockMessage ||
-							"This setting is currently locked."}
+	<div class="STYLESHIFT-Warning-Section-Container" class:is-locked={isLocked}>
+		<div class="warning-content">
+			{#if isLocked}
+				<div class="warning-item lock">
+					<div class="icon-wrapper">
+						<Icon name="lock" size={14} color="var(--White-100)" />
 					</div>
-				{/if}
-				{#if !requirementsMet && require}
-					<div class="requirement-warning">
-						<div
-							style="display: flex; align-items: center; gap: 5px; color: #ffffff; font-weight: bold;"
-						>
-							This setting requires:
-						</div>
-						<ul class="requirement-list">
-							{#each Object.keys(require) as reqId (reqId)}
-								{#if requiredSettings[reqId]?.value !== require[reqId]}
-									<li>
-										<span class="highlight">
-											{requiredSettings[reqId]
-												?.name || reqId}
-										</span>
-										{#if requiredSettings[reqId]?.type === "checkbox"}
-											to be enabled
-										{:else}
-											to be
-											{#if Array.isArray(require[reqId])}
-												{#each require[reqId] as val, i (val)}
-													<span
-														class="highlight"
-														>{requiredSettings[
-															reqId
-														]
-															?.options?.[
-															val
-														]?.name ||
-															val}</span
-													>
-													{#if i < require[reqId].length - 1}
-														or
-													{/if}
-												{/each}
-											{:else}
-												<span
-													class="highlight"
-													>{requiredSettings[
-														reqId
-													]?.options?.[
-														require[
-															reqId
-														]
-													]?.name ||
-														require[
-															reqId
-														]}</span
-												>
-											{/if}
-										{/if}
-									</li>
-								{/if}
+					<span class="message">{lockMessage || "This setting is currently locked."}</span>
+				</div>
+			{/if}
+
+			{#if !requirementsMet && controller.unmetRequirements.length > 0}
+				<div class="warning-item requirement">
+					<div class="icon-wrapper">
+						<Icon name="error_outline" size={14} color="var(--White-100)" />
+					</div>
+					<div class="requirement-details">
+						<span class="title">Missing Requirements:</span>
+						<ul class="unmet-list">
+							{#each controller.unmetRequirements as req (req.id)}
+								<li>
+									<span class="req-name">{req.name}</span>
+									<span class="req-action">{controller.formatValue(req)}</span>
+								</li>
 							{/each}
 						</ul>
 					</div>
-				{/if}
-			</div>
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}
 
 <style lang="scss">
-	.STYLESHIFT-Setting-Warning-Section {
-		margin-top: 10px;
-		padding: 10px 15px;
-		background: rgba(255, 204, 0, 0.1);
-		border: 1px dashed #ffcc00;
-		border-radius: 5px;
-		z-index: 5;
-		pointer-events: all;
+	.STYLESHIFT-Warning-Section-Container {
+		margin-top: 12px;
+		padding: 12px 16px;
+		background: var(--Theme-Warning-10);
+		border: 1px solid var(--Theme-Warning-20);
+		border-radius: 12px;
+		position: relative;
+		overflow: hidden;
+		animation: slideIn 0.3s ease-out;
+
+		&.is-locked {
+			background: var(--Theme-Error-10);
+			border-color: var(--Theme-Error-20);
+
+			.icon-wrapper {
+				background: var(--Theme-Error-20);
+			}
+		}
+
+		&::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			bottom: 0;
+			width: 4px;
+			background: var(--Theme-Warning-50);
+		}
+
+		&.is-locked::before {
+			background: var(--Theme-Error-50);
+		}
 	}
 
-	.lock-info {
-		display: flex;
-		gap: 10px;
-		align-items: flex-start;
-		width: 100%;
+	@keyframes slideIn {
+		from { opacity: 0; transform: translateY(-5px); }
+		to { opacity: 1; transform: translateY(0); }
 	}
 
-	.lock-messages {
+	.warning-content {
 		display: flex;
 		flex-direction: column;
-		gap: 5px;
-		font-size: 13px;
-		line-height: 1.4;
+		gap: 12px;
 	}
 
-	.lock-message {
-		font-weight: 500;
-		color: #ffffff;
-		white-space: normal;
-		overflow-wrap: break-word;
+	.warning-item {
+		display: flex;
+		align-items: flex-start;
+		gap: 12px;
+
+		.icon-wrapper {
+			flex-shrink: 0;
+			width: 24px;
+			height: 24px;
+			background: var(--Theme-Warning-20);
+			border-radius: 6px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.message {
+			font-size: 13px;
+			color: var(--White-90);
+			line-height: 1.5;
+			padding-top: 2px;
+		}
 	}
 
-	.requirement-warning {
-		color: #ffffff;
+	.requirement-details {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding-top: 2px;
+
+		.title {
+			font-size: 13px;
+			font-weight: 600;
+			color: var(--White-100);
+		}
 	}
 
-	.requirement-list {
-		margin: 5px 0 0 18px;
+	.unmet-list {
+		margin: 0;
 		padding: 0;
-		list-style: disc;
-		font-size: 12px;
-		opacity: 0.9;
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
 
-		.highlight {
-			color: #fff;
-			font-weight: bold;
-			background: rgba(255, 255, 255, 0.1);
-			padding: 0 4px;
-			border-radius: 4px;
+		li {
+			font-size: 12px;
+			color: var(--White-70);
+			display: flex;
+			align-items: center;
+			gap: 6px;
+
+			&::before {
+				content: '•';
+				color: var(--White-30);
+			}
+
+			.req-name {
+				color: var(--White-100);
+				font-weight: 500;
+				background: var(--White-05);
+				padding: 1px 6px;
+				border-radius: 4px;
+			}
+
+			.req-action {
+				color: var(--White-60);
+			}
 		}
 	}
 </style>

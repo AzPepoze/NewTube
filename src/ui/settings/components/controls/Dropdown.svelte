@@ -26,9 +26,16 @@
 	let value = $state("");
 
 	async function init() {
+		logger.debug("ui", `[Dropdown] Initializing for setting: ${setting.id || "no-id"}`, { 
+			initialValue: setting.value,
+			optionsCount: setting.options?.length 
+		});
 		if (setting.id) {
 			const storedValue = await getFromStorage(setting.id);
-			if (storedValue !== undefined) value = storedValue;
+			if (storedValue !== undefined) {
+				logger.debug("ui", `[Dropdown] Loaded stored value: ${storedValue} for ${setting.id}`);
+				value = storedValue;
+			}
 		} else {
 			value = setting.value;
 		}
@@ -44,15 +51,23 @@
 	const name = $derived(setting.name);
 	const description = $derived(setting.description);
 
-	const optionsList = $derived(setting.options || []);
+	const optionsList = $derived(Array.isArray(setting.options) ? setting.options : []);
 	const currentLabel = $derived(
 		optionsList.find((opt: any) => opt.value === value)?.label || value,
 	);
 
+	$effect(() => {
+		logger.debug("ui", `[Dropdown] State change for ${setting.id || "no-id"}:`, {
+			value,
+			label: currentLabel,
+			optionsAvailable: optionsList.length
+		});
+	});
+
 	let menuEl = $state<HTMLElement | null>(null);
 
 	function toggleDropdown(e: MouseEvent) {
-		logger.info("ui", "Toggling dropdown");
+		logger.info("ui", `[Dropdown] Toggling dropdown for ${setting.id || "no-id"}. Current state: ${isOpen}`);
 		e.stopPropagation();
 		isOpen = !isOpen;
 		if (!isOpen) onClose();
@@ -61,8 +76,7 @@
 	async function handleSelect(e: MouseEvent, optionValue: string) {
 		logger.debug(
 			"ui",
-			`[Dropdown] Option selected: "${optionValue}" for setting:`,
-			setting.id || "no-id",
+			`[Dropdown] Option selected: "${optionValue}" for setting: ${setting.id || "no-id"}`,
 		);
 		e.stopPropagation();
 		value = optionValue;
