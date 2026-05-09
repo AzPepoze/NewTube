@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount } from "svelte";
-	import TextEditor from "./TextEditor.svelte";
+	import TextEditor from "../TextEditor.svelte";
 	import { CodeEditorController } from "./CodeEditorController.svelte";
 
 	let {

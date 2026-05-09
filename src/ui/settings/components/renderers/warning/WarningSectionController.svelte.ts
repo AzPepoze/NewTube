@@ -1,4 +1,5 @@
 import type { Setting } from "@settings/types/styleshiftTypes";
+import { formatRequirementValue } from "../shared/requirementUtils";
 
 export class WarningSectionController {
 	isLocked = $state(false);
@@ -41,12 +42,6 @@ export class WarningSectionController {
 	}
 
 	formatValue(req: any) {
-		if (req.type === "checkbox") return "to be enabled";
-		
-		const values = Array.isArray(req.requiredValue) ? req.requiredValue : [req.requiredValue];
-		const names = values.map(v => req.options?.[v]?.name || v);
-		
-		if (names.length === 1) return `to be ${names[0]}`;
-		return `to be ${names.slice(0, -1).join(", ")} or ${names.slice(-1)}`;
+		return formatRequirementValue(req.type, req.requiredValue, req.options);
 	}
 }

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SettingsListRenderer from "@renderers/list/SettingsListRenderer.svelte";
 	import type {
 		Category,
 		SeparateCategory,
@@ -6,7 +7,6 @@
 	import LeftTitle from "@ui/settings/components/primitives/LeftTitle.svelte";
 	import { getCategoryParts } from "@ui/window/utils";
 	import Search from "../primitives/Search.svelte";
-	import SettingsListRenderer from "../renderers/SettingsListRenderer.svelte";
 	import { SettingsWindowController } from "./SettingsWindowController.svelte";
 
 	let {
@@ -32,12 +32,24 @@
 	} = $props();
 
 	const controller = new SettingsWindowController({
-		get internalSettings() { return internalSettings; },
-		get externalSettings() { return externalSettings || []; },
-		get devOnlyItems() { return devOnlyItems || []; },
-		get isDeveloperMode() { return isDeveloperMode; },
-		get isDevModulesLoaded() { return isDevModulesLoaded; },
-		get onAddCategory() { return onAddCategory; }
+		get internalSettings() {
+			return internalSettings;
+		},
+		get externalSettings() {
+			return externalSettings || [];
+		},
+		get devOnlyItems() {
+			return devOnlyItems || [];
+		},
+		get isDeveloperMode() {
+			return isDeveloperMode;
+		},
+		get isDevModulesLoaded() {
+			return isDevModulesLoaded;
+		},
+		get onAddCategory() {
+			return onAddCategory;
+		},
 	});
 
 	$effect(() => {
@@ -59,6 +71,8 @@
 				{#if controller.isHeaderItem(item)}
 					<div
 						class="STYLESHIFT-Sidebar-Header"
+						class:centered={item.label === "BUILD-IN" ||
+							item.label === "ADD-ON"}
 						style="animation-delay: {skipAnimation
 							? '0ms'
 							: i * 50 + 'ms'};"
@@ -78,10 +92,12 @@
 					>
 						<LeftTitle
 							category={category.category}
-							selected={controller.activeCategoryLabel === parts.text}
+							selected={controller.activeCategoryLabel ===
+								parts.text}
 							{isDeveloperMode}
 							editable={category.editable}
-							onMove={(dir) => controller.moveCategory(category, dir)}
+							onMove={(dir) =>
+								controller.moveCategory(category, dir)}
 						/>
 					</button>
 				{/if}
@@ -124,7 +140,6 @@
 			{/if}
 
 			{#if controller.addOnItemsData.length > 0}
-				<div class="STYLESHIFT-Category-Separator"></div>
 				<div class="STYLESHIFT-Section-Header">ADD-ON</div>
 				<SettingsListRenderer
 					items={controller.addOnItemsData}
@@ -218,14 +233,47 @@
 		text-transform: uppercase;
 		letter-spacing: 1px;
 		font-weight: 700;
+		margin-bottom: 4px;
+		border-top: 2px solid rgba(255, 255, 255, 0.1);
+		animation: sidebar-animation 1s both;
+
+		&.centered {
+			font-size: 12px;
+			color: rgba(255, 255, 255, 0.4);
+			letter-spacing: 2px;
+			font-weight: 800;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 10px;
+			margin-top: 20px;
+			margin-bottom: 10px;
+			border-top: none;
+
+			&::before,
+			&::after {
+				content: "";
+				flex: 1;
+				height: 1px;
+				background: linear-gradient(
+					to var(--direction, right),
+					rgba(255, 255, 255, 0.1),
+					transparent
+				);
+			}
+
+			&::before {
+				--direction: left;
+			}
+
+			&::after {
+				--direction: right;
+			}
+		}
 
 		:global(.skip-animation) & {
 			animation: none;
 		}
-		margin-top: 8px;
-		margin-bottom: 4px;
-		border-top: 2px solid rgba(255, 255, 255, 0.1);
-		animation: sidebar-animation 1s both;
 	}
 
 	.STYLESHIFT-Sidebar-Header:first-child {
@@ -233,35 +281,37 @@
 		margin-top: 0;
 	}
 
-	.STYLESHIFT-Category-Separator {
-		height: 2px;
-		background: linear-gradient(
-			90deg,
-			transparent,
-			var(--White-10),
-			transparent
-		);
-		margin: 30px 0 20px;
-	}
-
 	.STYLESHIFT-Section-Header {
-		font-size: 11px;
-		font-weight: 800;
-		color: var(--White-40);
-		letter-spacing: 2px;
-		margin-top: 10px;
-		margin-bottom: 15px;
-		padding-left: 10px;
+		font-size: 28px;
+		font-weight: 900;
+		color: var(--White-60);
+		letter-spacing: 6px;
+		margin-top: 40px;
+		margin-bottom: 25px;
 		text-transform: uppercase;
 		display: flex;
 		align-items: center;
-		gap: 15px;
+		justify-content: center;
+		gap: 25px;
 
+		&::before,
 		&::after {
 			content: "";
 			flex: 1;
 			height: 1px;
-			background: linear-gradient(90deg, var(--White-05), transparent);
+			background: linear-gradient(
+				to var(--direction, right),
+				var(--White-10),
+				transparent
+			);
+		}
+
+		&::before {
+			--direction: left;
+		}
+
+		&::after {
+			--direction: right;
 		}
 	}
 

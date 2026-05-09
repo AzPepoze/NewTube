@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Setting } from "@settings/types/styleshiftTypes";
-	import Icon from "../primitives/Icon.svelte";
+	import Icon from "@primitives/Icon.svelte";
 	import { WarningSectionController } from "./WarningSectionController.svelte";
 
 	let {
@@ -35,7 +35,7 @@
 			{#if isLocked}
 				<div class="warning-item lock">
 					<div class="icon-wrapper">
-						<Icon name="lock" size={14} color="var(--White-100)" />
+						<Icon name="lock" size={16} color="var(--Theme-Error-50)" />
 					</div>
 					<span class="message">{lockMessage || "This setting is currently locked."}</span>
 				</div>
@@ -44,7 +44,7 @@
 			{#if !requirementsMet && controller.unmetRequirements.length > 0}
 				<div class="warning-item requirement">
 					<div class="icon-wrapper">
-						<Icon name="error_outline" size={14} color="var(--White-100)" />
+						<Icon name="warning" size={18} color="var(--Theme-Warning-50)" />
 					</div>
 					<div class="requirement-details">
 						<span class="title">Missing Requirements:</span>
@@ -79,7 +79,7 @@
 			border-color: var(--Theme-Error-20);
 
 			.icon-wrapper {
-				background: var(--Theme-Error-20);
+				background: transparent;
 			}
 		}
 
@@ -116,10 +116,9 @@
 
 		.icon-wrapper {
 			flex-shrink: 0;
-			width: 24px;
+			width: 20px;
 			height: 24px;
-			background: var(--Theme-Warning-20);
-			border-radius: 6px;
+			background: transparent;
 			display: flex;
 			align-items: center;
 			justify-content: center;

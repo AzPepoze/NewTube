@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import CapsuleTabs from "../window/components/CapsuleTabs.svelte";
-	import Icon from "../settings/components/primitives/Icon.svelte";
-	import TextInput from "../settings/components/controls/TextInput.svelte";
-	import CodeEditor from "../settings/components/primitives/CodeEditor.svelte";
+	import Icon from "@primitives/Icon.svelte";
+	import TextInput from "@controls/TextInput.svelte";
+	import CodeEditor from "@editor/CodeEditor.svelte";
 	import { logger } from "@shared/logger";
 	import QuickControlRow from "./QuickControlRow.svelte";
 	import { QuickCustomizeController } from "./QuickCustomizeController.svelte";

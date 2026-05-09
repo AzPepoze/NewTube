@@ -1,4 +1,5 @@
 import { isConditionMet } from "@settings/engine/functions";
+import { formatRequirementValue } from "../shared/requirementUtils";
 
 export class ConditionStatusController {
 	conditionsMet = $state(false);
@@ -35,14 +36,6 @@ export class ConditionStatusController {
 	}
 
 	formatCondition(item: any) {
-		if (item.type === "checkbox") {
-			return item.targetValue ? "to be enabled" : "to be disabled";
-		}
-		
-		const values = Array.isArray(item.targetValue) ? item.targetValue : [item.targetValue];
-		const names = values.map(v => item.options?.[v]?.name || v);
-		
-		if (names.length === 1) return `to be ${names[0]}`;
-		return `to be ${names.slice(0, -1).join(", ")} or ${names.slice(-1)}`;
+		return formatRequirementValue(item.type, item.targetValue, item.options);
 	}
 }

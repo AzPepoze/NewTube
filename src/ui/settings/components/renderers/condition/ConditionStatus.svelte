@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Icon from "../primitives/Icon.svelte";
+	import Icon from "@primitives/Icon.svelte";
 	import { ConditionStatusController } from "./ConditionStatusController.svelte";
 
 	let {
@@ -26,9 +26,9 @@
 	<div class="status-header">
 		<div class="icon-wrapper">
 			<Icon 
-				name={conditionsMet ? "check_circle" : "pending"} 
+				name={conditionsMet ? "check_circle" : "rule"} 
 				size={16} 
-				color={conditionsMet ? "var(--Theme-0)" : "var(--White-60)"} 
+				color={conditionsMet ? "var(--White-100)" : "var(--White-80)"} 
 			/>
 		</div>
 		<span class="status-title">
@@ -42,7 +42,7 @@
 				<li class:is-met={item.met}>
 					<div class="item-icon">
 						{#if item.met}
-							<Icon name="check" size={12} color="var(--Theme-0)" />
+							<Icon name="check" size={12} color="var(--White-100)" />
 						{:else}
 							<div class="dot"></div>
 						{/if}
@@ -61,8 +61,8 @@
 	.STYLESHIFT-Condition-Status-Container {
 		margin-top: 8px;
 		padding: 12px;
-		background: var(--White-02);
-		border: 1px solid var(--White-05);
+		background: var(--White-05);
+		border: 1px solid var(--White-10);
 		border-radius: 12px;
 		display: flex;
 		flex-direction: column;
@@ -70,9 +70,9 @@
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
 		&.is-all-met {
-			background: rgba(0, 255, 255, 0.03);
-			border-color: rgba(0, 255, 255, 0.1);
-			box-shadow: 0 4px 20px rgba(0, 255, 255, 0.05);
+			background: rgba(0, 255, 255, 0.05);
+			border-color: rgba(0, 255, 255, 0.15);
+			box-shadow: 0 4px 20px rgba(0, 255, 255, 0.08);
 		}
 	}
 
@@ -121,7 +121,7 @@
 				.dot {
 					width: 4px;
 					height: 4px;
-					background: var(--White-20);
+					background: var(--White-30);
 					border-radius: 50%;
 				}
 			}
@@ -134,7 +134,7 @@
 			}
 
 			.item-name {
-				color: var(--White-80);
+				color: var(--White-100);
 				font-weight: 500;
 				background: var(--White-05);
 				padding: 1px 6px;
@@ -142,19 +142,18 @@
 			}
 
 			.item-target {
-				color: var(--White-40);
+				color: var(--White-60);
 			}
 
 			&.is-met {
-				background: rgba(0, 255, 255, 0.05);
+				background: rgba(0, 255, 255, 0.08);
 				
 				.item-name {
-					color: var(--Theme-0);
-					background: rgba(0, 255, 255, 0.1);
+					background: rgba(0, 255, 255, 0.15);
 				}
 
 				.item-target {
-					color: rgba(0, 255, 255, 0.5);
+					color: var(--White-80);
 				}
 			}
 		}

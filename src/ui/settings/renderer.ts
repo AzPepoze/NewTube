@@ -4,7 +4,7 @@ import Prompt from "@ui/window/components/Prompt.svelte";
 import Taskbar from "@ui/window/components/Taskbar.svelte";
 import Window from "@ui/window/components/Window.svelte";
 import { mount, unmount } from "svelte";
-import SettingRenderer from "./components/renderers/SettingRenderer.svelte";
+import SettingRenderer from "@renderers/setting/SettingRenderer.svelte";
 import { registerExternalCategory } from "./settingsManager";
 
 export { unmount };

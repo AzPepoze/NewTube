@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { generateSelectors } from "./selectorUtils";
 	import { logger } from "@shared/logger";
-	import { onMount, onDestroy } from "svelte";
 	import { showUserConfirmation } from "@ui/window/windowFactory";
+	import { onDestroy, onMount } from "svelte";
+	import { fly } from "svelte/transition";
+	import { generateSelectors } from "./selectorUtils";
 
 	let { onSelect, onClose } = $props<{
 		onSelect: (selector: string) => void;
@@ -16,13 +17,14 @@
 	let menuPosition = $state({ x: 0, y: 0 });
 
 	let overlay = $state<HTMLDivElement | null>(null);
+	let hintHovered = $state(false);
 
 	function teleport(node: HTMLElement) {
 		document.body.appendChild(node);
 		return {
 			destroy() {
 				node.remove();
-			}
+			},
 		};
 	}
 
@@ -34,23 +36,29 @@
 
 		for (const el of elements) {
 			const htmlEl = el as HTMLElement;
-			const isInternal = htmlEl.closest(".STYLESHIFT-Main") || 
-							   htmlEl.closest(".STYLESHIFT-Window-Container") ||
-							   htmlEl.classList.contains("selection-overlay") ||
-							   htmlEl.classList.contains("STYLESHIFT-Highlight");
+			const isInternal =
+				htmlEl.closest(".STYLESHIFT-Main") ||
+				htmlEl.closest(".STYLESHIFT-Window-Container") ||
+				htmlEl.classList.contains("selection-overlay") ||
+				htmlEl.classList.contains("STYLESHIFT-Highlight");
 
 			if (!isInternal) {
 				target = htmlEl;
 				break;
 			}
 		}
-		
+
 		if (target !== hoveredElement) {
 			hoveredElement = target;
 			if (target) {
 				setTimeout(() => updateOverlay(), 0);
 			}
 		}
+
+		const isNearBottom = window.innerHeight - e.clientY < 70;
+		const isNearCenter =
+			Math.abs(e.clientX - window.innerWidth / 2) < 100;
+		hintHovered = isNearBottom && isNearCenter;
 	}
 
 	function updateOverlay() {
@@ -64,7 +72,7 @@
 
 	function handleClick(e: MouseEvent) {
 		if (!picking || !hoveredElement || showSuggestions) return;
-		
+
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -98,22 +106,21 @@
 	async function selectSelector(s: string) {
 		showSuggestions = false;
 		const wasPicking = picking;
-		picking = false; 
-		
+		picking = false;
+
 		const confirmed = await showUserConfirmation(
 			`Do you want to use this selector?\n\n${s}`,
 			"Confirm Selector",
 			{
 				confirmLabel: "Use Selector",
-				confirmColor: "var(--Theme-0)"
-			}
+				confirmColor: "var(--Theme-0)",
+			},
 		);
 
 		if (confirmed) {
 			exit();
 			onSelect(s);
 		} else {
-			// Back to picking
 			picking = wasPicking;
 			showSuggestions = false;
 		}
@@ -121,7 +128,11 @@
 
 	function exit() {
 		picking = false;
-		window.dispatchEvent(new CustomEvent("STYLESHIFT-Picker-State", { detail: { picking: false } }));
+		window.dispatchEvent(
+			new CustomEvent("STYLESHIFT-Picker-State", {
+				detail: { picking: false },
+			}),
+		);
 		onClose();
 	}
 
@@ -130,7 +141,10 @@
 	function handleSuggestionHover(selector: string) {
 		try {
 			const elements = document.querySelectorAll(selector);
-			previewElements = Array.from(elements).slice(0, 50) as HTMLElement[];
+			previewElements = Array.from(elements).slice(
+				0,
+				50,
+			) as HTMLElement[];
 		} catch {
 			previewElements = [];
 		}
@@ -146,7 +160,11 @@
 
 	onMount(() => {
 		logger.debug("Picker", "SelectorPicker mounted");
-		window.dispatchEvent(new CustomEvent("STYLESHIFT-Picker-State", { detail: { picking: true } }));
+		window.dispatchEvent(
+			new CustomEvent("STYLESHIFT-Picker-State", {
+				detail: { picking: true },
+			}),
+		);
 		window.addEventListener("mousemove", handleMouseMove);
 		window.addEventListener("mousedown", handleClick, true);
 		window.addEventListener("keydown", handleKeyDown);
@@ -157,24 +175,31 @@
 		window.removeEventListener("mousemove", handleMouseMove);
 		window.removeEventListener("mousedown", handleClick, true);
 		window.removeEventListener("keydown", handleKeyDown);
-		window.dispatchEvent(new CustomEvent("STYLESHIFT-Picker-State", { detail: { picking: false } }));
+		window.dispatchEvent(
+			new CustomEvent("STYLESHIFT-Picker-State", {
+				detail: { picking: false },
+			}),
+		);
 	});
 </script>
 
 {#if showSuggestions}
-	<div 
+	<div
 		use:teleport
-		class="suggestions-list context-menu" 
+		class="suggestions-list context-menu"
 		style="top: {menuPosition.y}px; left: {menuPosition.x}px;"
 	>
 		<div class="suggestions-header">
 			Select Selector:
-			<button class="close-suggestions" onclick={() => showSuggestions = false}>✕</button>
+			<button
+				class="close-suggestions"
+				onclick={() => (showSuggestions = false)}>✕</button
+			>
 		</div>
 		<div class="suggestions-content">
 			{#each suggestedSelectors as s (s)}
-				<button 
-					class="suggestion-item" 
+				<button
+					class="suggestion-item"
 					onclick={() => selectSelector(s)}
 					onmouseenter={() => handleSuggestionHover(s)}
 					onmouseleave={handleSuggestionLeave}
@@ -188,9 +213,9 @@
 
 {#each previewElements as el, i (i)}
 	{@const rect = getRect(el)}
-	<div 
-		use:teleport 
-		class="selection-overlay preview" 
+	<div
+		use:teleport
+		class="selection-overlay preview"
 		style="top: {rect.top}px; left: {rect.left}px; width: {rect.width}px; height: {rect.height}px;"
 	></div>
 {/each}
@@ -200,6 +225,12 @@
 		<div class="selector-tooltip">
 			{generateSelectors(hoveredElement)[0] || "No selector found"}
 		</div>
+	</div>
+{/if}
+
+{#if picking && !showSuggestions && !hintHovered}
+	<div class="exit-hint" transition:fly={{ y: 20, duration: 400 }}>
+		Press <b>ESC</b> to exit
 	</div>
 {/if}
 
@@ -222,8 +253,14 @@
 	}
 
 	@keyframes menuFadeIn {
-		from { opacity: 0; transform: translateY(-5px); }
-		to { opacity: 1; transform: translateY(0); }
+		from {
+			opacity: 0;
+			transform: translateY(-5px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
 	.suggestions-header {
@@ -247,7 +284,9 @@
 		cursor: pointer;
 		padding: 2px 5px;
 		opacity: 0.5;
-		&:hover { opacity: 1; }
+		&:hover {
+			opacity: 1;
+		}
 	}
 
 	.suggestions-content {
@@ -265,7 +304,7 @@
 		padding: 8px 12px;
 		text-align: left;
 		cursor: pointer;
-		font-family: 'Fira Code', monospace;
+		font-family: "Fira Code", monospace;
 		font-size: 12px;
 		border-radius: 4px;
 		transition: all 0.1s;
@@ -288,7 +327,9 @@
 		box-sizing: border-box;
 		border-radius: 4px;
 		transition: all 0.05s ease-out;
-		box-shadow: 0 0 15px rgba(127, 93, 183, 0.3), 0 0 0 9999px rgba(0, 0, 0, 0.4);
+		box-shadow:
+			0 0 15px rgba(127, 93, 183, 0.3),
+			0 0 0 9999px rgba(0, 0, 0, 0.4);
 
 		&.preview {
 			border-style: dashed;
@@ -308,13 +349,13 @@
 		font-size: 12px;
 		border-radius: 6px;
 		white-space: nowrap;
-		font-family: 'Fira Code', monospace;
+		font-family: "Fira Code", monospace;
 		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 		font-weight: 600;
 		animation: tooltipFadeIn 0.1s ease-out;
 
 		&::after {
-			content: '';
+			content: "";
 			position: absolute;
 			top: 100%;
 			left: 10px;
@@ -323,8 +364,23 @@
 		}
 	}
 
-	@keyframes tooltipFadeIn {
-		from { opacity: 0; transform: translateY(5px); }
-		to { opacity: 1; transform: translateY(0); }
+	.exit-hint {
+		position: fixed;
+		bottom: 30px;
+		left: 50%;
+		transform: translateX(-50%);
+		color: rgba(255, 255, 255, 0.6);
+		font-size: 13px;
+		font-weight: 500;
+		z-index: 2147483647;
+		pointer-events: auto;
+		user-select: none;
+		text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+		b {
+			color: white;
+			font-weight: 800;
+			margin: 0 2px;
+		}
 	}
 </style>

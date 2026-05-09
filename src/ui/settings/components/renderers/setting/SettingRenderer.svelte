@@ -1,26 +1,29 @@
 <script lang="ts">
-	import { onDestroy } from "svelte";
-	import { registerSettingUi, unregisterSettingUi } from "../../settingsManager";
-	import { getTextAlign } from "../../utils";
-	import Button from "../controls/Button.svelte";
-	import Checkbox from "../controls/Checkbox.svelte";
-	import ColorPicker from "../controls/ColorPicker.svelte";
-	import Dropdown from "../controls/Dropdown.svelte";
-	import ImageInput from "../controls/ImageInput.svelte";
-	import PreviewImage from "../controls/PreviewImage.svelte";
-	import Selector from "../controls/SelectorInput.svelte";
-	import Slider from "../controls/Slider.svelte";
-	import Text from "../controls/Text.svelte";
-	import TextInput from "../controls/TextInput.svelte";
-	import Description from "../primitives/Description.svelte";
-	import Icon from "../primitives/Icon.svelte";
-	import ConditionStatus from "./ConditionStatus.svelte";
-	import SettingFrame from "./SettingFrame.svelte";
-	import WarningSection from "./WarningSection.svelte";
-	import { highlight as highlightAction } from "@ui/settings/searchHighlight";
-	import { addDropTarget, addDrag } from "../../reorder";
 	import type { Setting } from "@settings/types/styleshiftTypes";
-	import { SettingRendererController } from "./SettingRendererController.svelte";
+	import { highlight as highlightAction } from "@ui/settings/searchHighlight";
+	import { onDestroy } from "svelte";
+	import { addDrag, addDropTarget } from "@ui/settings/reorder";
+	import {
+		registerSettingUi,
+		unregisterSettingUi,
+	} from "@ui/settings/settingsManager";
+	import { getTextAlign } from "@ui/settings/utils";
+	import Button from "@controls/Button.svelte";
+	import Checkbox from "@controls/Checkbox.svelte";
+	import ColorPicker from "@controls/ColorPicker.svelte";
+	import Dropdown from "@controls/Dropdown.svelte";
+	import ImageInput from "@controls/ImageInput.svelte";
+	import PreviewImage from "@controls/PreviewImage.svelte";
+	import Selector from "@controls/SelectorInput.svelte";
+	import Slider from "@controls/Slider.svelte";
+	import Text from "@controls/Text.svelte";
+	import TextInput from "@controls/TextInput.svelte";
+	import Description from "@primitives/Description.svelte";
+	import Icon from "@primitives/Icon.svelte";
+	import ConditionStatus from "@renderers/condition/ConditionStatus.svelte";
+	import WarningSection from "@renderers/warning/WarningSection.svelte";
+	import SettingFrame from "@renderers/setting/SettingFrame.svelte";
+	import { SettingRendererController } from "@renderers/setting/SettingRendererController.svelte";
 
 	let {
 		setting,
@@ -51,7 +54,12 @@
 
 	$effect(() => {
 		if (controller.isDeveloperMode && domNode && domNode.parentElement) {
-			addDropTarget(domNode, domNode.parentElement, setting, "setting");
+			addDropTarget(
+				domNode,
+				domNode.parentElement,
+				setting,
+				"setting",
+			);
 		}
 	});
 
@@ -169,10 +177,14 @@
 						title="Edit in Quick Customize"
 						onclick={() => controller.handleQuickEdit()}
 					>
-						<Icon name="brush" size={16} color="var(--White-100)" />
+						<Icon
+							name="brush"
+							size={16}
+							color="var(--White-100)"
+						/>
 					</button>
 				{/if}
-				
+
 				{#if controller.isDeveloperMode}
 					<button
 						class="STYLESHIFT-Config-Button edit"

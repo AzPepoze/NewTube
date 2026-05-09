@@ -5,7 +5,7 @@
 	} from "@settings/types/styleshiftTypes";
 	import Title from "@ui/settings/components/primitives/Title.svelte";
 	import { getCategoryParts } from "@ui/window/utils";
-	import SettingRenderer from "./SettingRenderer.svelte";
+	import SettingRenderer from "@renderers/setting/SettingRenderer.svelte";
 
 	let {
 		items = [],

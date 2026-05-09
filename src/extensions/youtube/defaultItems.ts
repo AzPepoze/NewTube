@@ -5,8 +5,8 @@ import { checkAndUpdateTheme, openThemeStore } from "@core/theme/storeIntegratio
 import { getAddOnItems } from "@settings/registry/items";
 import { type Category, type SeparateCategory } from "@settings/types/styleshiftTypes";
 import { toggleCustomize } from "@ui/highlight/highlight";
-import { showThemeManager } from "@ui/themes/themeManagerService";
 import { startQuickCustomize } from "@ui/highlight/quickCustomizeService";
+import { showThemeManager } from "@ui/themes/themeManagerService";
 
 const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 	{ isHeader: true, label: "Extension" },
@@ -159,7 +159,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				id: "SettingsBackgroundBlurAmount",
 				name: "Glass Intensity",
 				description: "Adjusts the strength of the background blur for the settings menu.",
-				value: 10,
+				value: 30,
 				min: 0,
 				max: 50,
 				step: 1,

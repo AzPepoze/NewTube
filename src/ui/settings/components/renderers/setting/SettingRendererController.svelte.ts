@@ -12,11 +12,11 @@ import {
 } from "@settings/engine/functions";
 import { getSettingsList, removeSetting } from "@settings/registry/items";
 import type { Setting } from "@settings/types/styleshiftTypes";
+import { startQuickCustomize } from "@ui/highlight/quickCustomizeService";
+import KeyboardShortcuts from "@ui/settings/components/developer/KeyboardShortcuts.svelte";
 import { settingsUi } from "@ui/settings/settingsApi";
 import { removeConfigUi, showConfigUi } from "@ui/window/config";
 import { SvelteMap } from "svelte/reactivity";
-import { startQuickCustomize } from "@ui/highlight/quickCustomizeService";
-import KeyboardShortcuts from "../developer/KeyboardShortcuts.svelte";
 
 export class SettingRendererController {
 	setting = $state<Setting>();
