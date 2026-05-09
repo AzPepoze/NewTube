@@ -3,13 +3,16 @@ import { logger } from '@core/shared/webPageLogger';
 import { createUniqueId } from './utilities';
 
 /**
- * Fires a custom event with the specified function name and arguments.
- * @param {string} [prefix="Function"] - The event prefix.
- * @param {string} functionName - The function name.
- * @param {...any[]} args - The function arguments.
+ * Fires a custom event on the window object with the specified function name and arguments.
+ * 
+ * @param {string} [prefix="Function"] - The event prefix (e.g., "Command").
+ * @param {string} functionName - The name of the function/action.
+ * @param {...any[]} args - Arguments to pass in the event detail data.
  * @returns {Promise<void>}
+ * 
  * @example
- * await fireFunctionEvent("custom", "MyFunction", 1, 2, 3);
+ * await fireFunctionEvent("StyleShift", "toggleTheme", true);
+ * // Dispatches event: "StyleShift_toggleTheme" with { data: [true] }
  */
 export async function fireFunctionEvent(
 	prefix: string = "Function",
@@ -24,13 +27,17 @@ export async function fireFunctionEvent(
 }
 
 /**
- * Fires a custom event with the specified function name and arguments, and waits for a return value.
+ * Fires a custom event and waits for a response from another part of the extension.
+ * Uses a unique remoteId to ensure the return data matches the request.
+ * 
  * @param {string} [prefix="Function"] - The event prefix.
  * @param {string} functionName - The function name.
- * @param {...any[]} args - The function arguments.
- * @returns {Promise<any>}
+ * @param {...any[]} args - Arguments to pass.
+ * @returns {Promise<any>} A promise that resolves with the returned data.
+ * 
  * @example
- * const result = await fireFunctionEventWithReturn("custom", "MyFunction", 1, 2, 3);
+ * const result = await fireFunctionEventWithReturn("Storage", "getValue", "myKey");
+ * console.log("Value:", result);
  */
 export async function fireFunctionEventWithReturn(
 	prefix: string = "Function",
@@ -62,14 +69,19 @@ export async function fireFunctionEventWithReturn(
 }
 
 /**
- * Listens for a custom event with the specified function name and executes a callback.
+ * Listens for a custom event and executes a callback, then dispatches the result back.
+ * 
  * @param {string} [prefix="Function"] - The event prefix.
  * @param {string} functionName - The function name.
- * @param {Function} callback - The callback function.
- * @returns {Promise<{ Cancel: Function }>}
+ * @param {Function} callback - The function to execute when the event is received.
+ * @returns {Promise<{ Cancel: Function }>} A promise resolving to an object with a Cancel function to stop listening.
+ * 
  * @example
- * const listener = await onFunctionEvent("custom", "MyFunction", (data) => logger.info(data));
- * listener.Cancel(); // Cancels the event listener
+ * const listener = await onFunctionEvent("Storage", "getValue", (key) => {
+ *   return localStorage.getItem(key);
+ * });
+ * // To stop listening:
+ * listener.Cancel();
  */
 export async function onFunctionEvent(
 	prefix: string = "Function",
@@ -106,11 +118,13 @@ export async function onFunctionEvent(
 }
 
 /**
- * Applies drag functionality to an element.
- * @param {HTMLElement} dragObject - The draggable object.
- * @param {HTMLElement} target - The target element.
+ * Applies drag-and-drop functionality to an element.
+ * 
+ * @param {HTMLElement} dragObject - The handle or element that initiates the drag.
+ * @param {HTMLElement} target - The element that actually moves.
+ * 
  * @example
- * applyDrag(document.querySelector("#dragObject"), document.querySelector("#target"));
+ * applyDrag(titleBar, windowContainer);
  */
 export function applyDrag(dragObject: HTMLElement, target: HTMLElement): void {
 	let isDragging = false;
@@ -153,23 +167,29 @@ export function applyDrag(dragObject: HTMLElement, target: HTMLElement): void {
 }
 
 /**
- * updates the drag position of an element.
- * @param {HTMLElement} element - The element to update.
- * @param {MouseEvent} event - The mouse event.
- * @param {number} offsetX - The X offset.
- * @param {number} offsetY - The Y offset.
+ * Directly updates the translation position of an element during a drag event.
+ * 
+ * @param {HTMLElement} element - The element to move.
+ * @param {MouseEvent} event - The current mouse event.
+ * @param {number} offsetX - The initial X offset from the element's origin.
+ * @param {number} offsetY - The initial Y offset from the element's origin.
+ * 
  * @example
- * updateDragPosition(document.querySelector("#element"), event, 10, 10);
+ * updateDragPosition(el, mouseEvent, 50, 50);
  */
 export function updateDragPosition(element: HTMLElement, event: MouseEvent, offsetX: number, offsetY: number): void {
 	element.style.translate = `${event.clientX - offsetX}px ${event.clientY - offsetY}px`;
 }
 
 /**
- * Waits for one animation frame.
+ * Returns a promise that resolves on the next animation frame.
+ * Useful for ensuring DOM updates are processed.
+ * 
  * @returns {Promise<boolean>}
+ * 
  * @example
- * await Wait_One_frame(); // Waits for one animation frame
+ * await waitOneFrame();
+ * // DOM should be updated now
  */
 export function waitOneFrame(): Promise<boolean> {
 	return new Promise((resolve) => {
@@ -180,22 +200,27 @@ export function waitOneFrame(): Promise<boolean> {
 }
 
 /**
- * Inserts a new node after an existing node.
- * @param {Node} newNode - The new node.
- * @param {Node} existingNode - The existing node.
+ * Inserts a new DOM node immediately after an existing node.
+ * 
+ * @param {Node} newNode - The node to insert.
+ * @param {Node} existingNode - The reference node.
+ * @param {Node} [parentNode] - Optional parent node if existingNode's parent is not accessible.
+ * 
  * @example
- * insertAfter(document.createElement("div"), document.querySelector("#existingNode"));
+ * insertAfter(newDiv, oldDiv);
  */
 export function insertAfter(newNode: Node, existingNode: Node, parentNode?: Node): void {
 	(existingNode.parentNode || parentNode).insertBefore(newNode, existingNode.nextSibling);
 }
 
 /**
- * Formats a number with commas as thousands separators.
- * @param {number} x - The number to format.
- * @returns {string} The formatted number with commas.
+ * Formats a number or string into a comma-separated thousands string.
+ * 
+ * @param {number | string} x - The number to format.
+ * @returns {string} The formatted string (e.g., "1,234,567").
+ * 
  * @example
- * numberWithCommas(1000); // "1,000"
+ * const formatted = numberWithCommas(1000000); // "1,000,000"
  */
 export function numberWithCommas(x: number | string) {
 	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

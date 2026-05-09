@@ -1,7 +1,13 @@
 /**
  * Converts a hex color string to an RGBA object.
- * @param {string} hex - The hex color string.
- * @returns {{ r: number; g: number; b: number; a: number }}
+ * 
+ * @param {string} hex - The hex color string (e.g., "#RRGGBB" or "#RRGGBBAA").
+ * @returns {{ r: number; g: number; b: number; a: number }} An object containing red, green, blue (0-255), and alpha (0-1) values.
+ * @throws {Error} If the hex format is invalid.
+ * 
+ * @example
+ * const rgba = hexToRgba("#ff000080");
+ * // Result: { r: 255, g: 0, b: 0, a: 0.5019... }
  */
 export function hexToRgba(hex: string): { r: number; g: number; b: number; a: number } {
 	hex = hex.replace(/^#/, "");
@@ -21,9 +27,14 @@ export function hexToRgba(hex: string): { r: number; g: number; b: number; a: nu
 }
 
 /**
- * Converts a hex color string to an RGB object.
- * @param {string} hex - The hex color string.
- * @returns {{ r: number; g: number; b: number }}
+ * Converts a hex color string to an RGB object. Supports 3-digit shorthand.
+ * 
+ * @param {string} hex - The hex color string (e.g., "#RGB" or "#RRGGBB").
+ * @returns {{ r: number; g: number; b: number }} An object containing red, green, and blue values (0-255).
+ * 
+ * @example
+ * const rgb = hexToRgb("#f00");
+ * // Result: { r: 255, g: 0, b: 0 }
  */
 export function hexToRgb(hex: string): { r: number; g: number; b: number } {
 	hex = hex.replace(/^#/, "");
@@ -46,6 +57,16 @@ export function hexToRgb(hex: string): { r: number; g: number; b: number } {
 
 /**
  * Converts RGBA values to a hex color string.
+ * 
+ * @param {number} r - Red component (0-255).
+ * @param {number} g - Green component (0-255).
+ * @param {number} b - Blue component (0-255).
+ * @param {number} [a=1] - Alpha component (0-1).
+ * @returns {string} The hex color string (e.g., "#RRGGBB" or "#RRGGBBAA").
+ * 
+ * @example
+ * const hex = rgbaToHex(255, 0, 0, 0.5);
+ * // Result: "#ff000080"
  */
 export function rgbaToHex(r: number, g: number, b: number, a: number = 1): string {
 	r = Math.round(Math.min(255, Math.max(0, r)));
@@ -66,7 +87,17 @@ export function rgbaToHex(r: number, g: number, b: number, a: number = 1): strin
 }
 
 /**
- * Converts RGB values to an HSV object.
+ * Converts an RGB object to an HSV object.
+ * 
+ * @param {Object} rgb - The RGB object.
+ * @param {number} rgb.r - Red component (0-255).
+ * @param {number} rgb.g - Green component (0-255).
+ * @param {number} rgb.b - Blue component (0-255).
+ * @returns {{ h: number; s: number; v: number }} An object containing hue (0-360), saturation (0-100), and value (0-100).
+ * 
+ * @example
+ * const hsv = rgbToHsv({ r: 255, g: 0, b: 0 });
+ * // Result: { h: 0, s: 100, v: 100 }
  */
 export function rgbToHsv(rgb: { r: number; g: number; b: number }): { h: number; s: number; v: number } {
 	let r = rgb.r,
@@ -86,7 +117,17 @@ export function rgbToHsv(rgb: { r: number; g: number; b: number }): { h: number;
 }
 
 /**
- * Converts HSV values to an RGB object.
+ * Converts an HSV object to an RGB object.
+ * 
+ * @param {Object} hsv - The HSV object.
+ * @param {number} hsv.h - Hue component (0-360).
+ * @param {number} hsv.s - Saturation component (0-100).
+ * @param {number} hsv.v - Value component (0-100).
+ * @returns {{ r: number; g: number; b: number }} An object containing red, green, and blue values (0-255).
+ * 
+ * @example
+ * const rgb = hsvToRgb({ h: 0, s: 100, v: 100 });
+ * // Result: { r: 255, g: 0, b: 0 }
  */
 export function hsvToRgb(hsv: { h: number; s: number; v: number }): { r: number; g: number; b: number } {
 	const h = hsv.h;

@@ -8,7 +8,20 @@ import { globalNotificationContainer, playUiAnimation } from '@ui/window/windowF
 import { sleep } from './utilities';
 
 /**
- * Creates a notification.
+ * Creates and displays a stylish notification in the extension's UI.
+ * 
+ * @param {Object} options - The notification options.
+ * @param {string | null} [options.icon=null] - The name of the material icon to display.
+ * @param {string} [options.iconColor=""] - The CSS color for the icon.
+ * @param {string} [options.title="StyleShift"] - The title of the notification.
+ * @param {string} [options.content=""] - The HTML content of the notification.
+ * @param {number} [options.timeout=3000] - Duration in ms before auto-closing (0 for manual close, -1 for persistent).
+ * @returns {Promise<Object>} An object containing methods to control the notification (setIcon, setIconColor, setContent, setTitle, close).
+ * 
+ * @example
+ * const notification = await createNotification({ title: "Update", content: "Settings saved!" });
+ * // Later...
+ * notification.close();
  */
 export async function createNotification({ icon = null, iconColor = "", title = "StyleShift", content = "", timeout = 3000 }) {
 	logger.info("extension", title, content);
@@ -127,6 +140,19 @@ export async function createNotification({ icon = null, iconColor = "", title = 
 	};
 }
 
+/**
+ * Creates and displays an error notification.
+ * 
+ * @param {any} content - The error message or error object to display.
+ * @returns {Promise<Object>} The notification controller object.
+ * 
+ * @example
+ * try {
+ *   // ...
+ * } catch (e) {
+ *   await createError(e);
+ * }
+ */
 export async function createError(content: any) {
 	return await createNotification({
 		icon: "error",
@@ -137,6 +163,15 @@ export async function createError(content: any) {
 	});
 }
 
+/**
+ * Creates and displays a warning notification.
+ * 
+ * @param {string} content - The warning message to display.
+ * @returns {Promise<Object>} The notification controller object.
+ * 
+ * @example
+ * await createWarning("Unsupported feature detected.");
+ */
 export async function createWarning(content: string) {
 	return await createNotification({
 		icon: "warning",
@@ -147,6 +182,15 @@ export async function createWarning(content: string) {
 	});
 }
 
+/**
+ * Creates and displays a success notification.
+ * 
+ * @param {string} content - The success message to display.
+ * @returns {Promise<Object>} The notification controller object.
+ * 
+ * @example
+ * await createSuccess("Changes applied successfully!");
+ */
 export async function createSuccess(content: string) {
 	return await createNotification({
 		icon: "check_circle",

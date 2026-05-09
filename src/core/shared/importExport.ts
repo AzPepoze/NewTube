@@ -8,7 +8,14 @@ import { createError, createNotification, createWarning } from './notifications'
 import { deepClone, sleep } from './utilities';
 
 /**
- * Imports StyleShift data and updates the saved data.
+ * Imports StyleShift data from an object and updates the cached storage.
+ * Shows a progress notification during the process.
+ * 
+ * @param {object} styleshiftData - The object containing StyleShift configuration data.
+ * @returns {Promise<void>}
+ * 
+ * @example
+ * await importStyleShiftData(myConfigObject);
  */
 export async function importStyleShiftData(styleshiftData: object) {
 	const notification = await createNotification({
@@ -43,7 +50,14 @@ export async function importStyleShiftData(styleshiftData: object) {
 }
 
 /**
- * Exports add-on items.
+ * Exports current add-on items and settings into a data object.
+ * Cleans up internal properties (like Highlight_color, editable) before exporting.
+ * 
+ * @returns {any} The cleaned export data object.
+ * 
+ * @example
+ * const data = exportStyleShiftData();
+ * console.log(JSON.stringify(data));
  */
 export function exportStyleShiftData() {
 	const exportData: any = {};
@@ -73,21 +87,40 @@ export function exportStyleShiftData() {
 }
 
 /**
- * Imports StyleShift data from a JSON string.
+ * Imports StyleShift data from a JSON formatted string.
+ * 
+ * @param {string} text - The JSON string to parse and import.
+ * @returns {Promise<void>}
+ * 
+ * @example
+ * await importStyleShiftJsonText('{"currentSettings": {}}');
  */
 export async function importStyleShiftJsonText(text: string) {
 	await importStyleShiftData(JSON.parse(text));
 }
 
 /**
- * Exports add-on items as a JSON string.
+ * Exports StyleShift data as a prettified JSON string.
+ * 
+ * @returns {string} The JSON string representation of the exported data.
+ * 
+ * @example
+ * const jsonText = exportStyleShiftJsonText();
  */
 export function exportStyleShiftJsonText() {
 	return JSON.stringify(exportStyleShiftData(), null, 2);
 }
 
 /**
- * Parses a StyleShift ZIP file into a data object.
+ * Parses a StyleShift backup ZIP file into a structured data object.
+ * This function extracts categories, settings, and property files from the ZIP.
+ * 
+ * @param {File | Blob} zipFile - The ZIP file to parse.
+ * @returns {Promise<any>} A promise resolving to the parsed StyleShift data object.
+ * @throws {Error} If JSZip is not loaded or the ZIP structure is invalid.
+ * 
+ * @example
+ * const data = await parseStyleShiftZip(myZipBlob);
  */
 export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 	if (!jszip) {
@@ -220,7 +253,13 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 }
 
 /**
- * Imports StyleShift data from a ZIP file and applies it immediately.
+ * Imports StyleShift data from a backup ZIP file and applies it to the extension immediately.
+ * 
+ * @param {File | Blob} zipFile - The backup ZIP file.
+ * @returns {Promise<void>}
+ * 
+ * @example
+ * await importStyleShiftZip(myZipFile);
  */
 export async function importStyleShiftZip(zipFile: File | Blob) {
 	const styleshiftData = await parseStyleShiftZip(zipFile);

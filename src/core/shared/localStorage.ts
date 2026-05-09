@@ -1,6 +1,20 @@
 import { logger } from '@/shared/logger';
 
+/**
+ * Utility for interacting with the browser's LocalStorage with automatic JSON serialization and error handling.
+ */
 export const localStorageUtil = {
+	/**
+	 * Retrieves and parses a value from LocalStorage.
+	 * 
+	 * @template T
+	 * @param {string} key - The key of the item to retrieve.
+	 * @param {T | null} [defaultValue=null] - The value to return if the key is not found or parsing fails.
+	 * @returns {T | null} The parsed value or defaultValue.
+	 * 
+	 * @example
+	 * const settings = localStorageUtil.get("userSettings", { theme: "dark" });
+	 */
 	get: <T>(key: string, defaultValue: T | null = null): T | null => {
 		try {
 			const item = localStorage.getItem(key);
@@ -13,6 +27,16 @@ export const localStorageUtil = {
 		}
 	},
 
+	/**
+	 * Serializes and saves a value to LocalStorage.
+	 * 
+	 * @template T
+	 * @param {string} key - The key to save the item under.
+	 * @param {T} value - The value to save.
+	 * 
+	 * @example
+	 * localStorageUtil.set("userSettings", { theme: "light" });
+	 */
 	set: <T>(key: string, value: T): void => {
 		try {
 			localStorage.setItem(key, JSON.stringify(value));
@@ -22,6 +46,14 @@ export const localStorageUtil = {
 		}
 	},
 
+	/**
+	 * Removes an item from LocalStorage.
+	 * 
+	 * @param {string} key - The key of the item to remove.
+	 * 
+	 * @example
+	 * localStorageUtil.remove("userSettings");
+	 */
 	remove: (key: string): void => {
 		try {
 			localStorage.removeItem(key);
