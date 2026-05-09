@@ -6,10 +6,14 @@
 	let {
 		value = $bindable(""),
 		language = "javascript",
-		height = 400,
+		height = 400 as string | number,
 		onBlur,
 		onInput,
 	} = $props();
+
+	const normalizedHeight = $derived(
+		typeof height === "number" ? `${height}px` : height,
+	);
 
 	const controller = new CodeEditorController({
 		get language() {
@@ -50,7 +54,7 @@
 <div
 	bind:this={container}
 	class="STYLESHIFT-Code-Editor-Container"
-	style:height="{height}px"
+	style:height={normalizedHeight}
 >
 	{#if !controller.fallbackMode}
 		<div bind:this={editorWrapper} class="editor-wrapper"></div>
@@ -178,6 +182,20 @@
 		width: 100%;
 		display: inline-block;
 		box-sizing: border-box;
+	}
+
+	:global(.cm-metadata-type-badge) {
+		font-family: "Fira Code", monospace;
+		font-size: 12px;
+		padding: 2px 8px;
+		margin-inline: 4px;
+		border-radius: 6px;
+		background: rgba(139, 233, 253, 0.1);
+		border: 1px solid rgba(139, 233, 253, 0.4);
+		color: #8be9fd;
+		display: inline-block;
+		vertical-align: middle;
+		font-weight: 500;
 	}
 
 	:global(.cm-metadata-tag-body) {

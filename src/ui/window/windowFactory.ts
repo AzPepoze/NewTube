@@ -149,6 +149,27 @@ export async function triggerWindowHideAnimation(target: HTMLElement): Promise<v
 }
 
 /**
+ * Internal helper to render a dialog component and handle its lifecycle.
+ */
+function renderDialog<T>(renderFn: (mountPoint: HTMLElement, resolve: (val: T) => void) => any): Promise<T> {
+	return new Promise((resolve) => {
+		const mountPoint = document.createElement("div");
+		document.body.appendChild(mountPoint);
+
+		let component: any;
+		const handleResolve = (val: T) => {
+			resolve(val);
+			setTimeout(() => {
+				if (component) unmount(component);
+				mountPoint.remove();
+			}, 400);
+		};
+
+		component = renderFn(mountPoint, handleResolve);
+	});
+}
+
+/**
  * Displays a confirmation dialog to the user.
  */
 export async function showUserConfirmation(
@@ -162,11 +183,8 @@ export async function showUserConfirmation(
 		align?: "left" | "center" | "right";
 	} = {},
 ): Promise<boolean> {
-	return new Promise((resolve) => {
-		const mountPoint = document.createElement("div");
-		document.body.appendChild(mountPoint);
-
-		const component = settingsUi.confirm(
+	return renderDialog((mountPoint, resolve) =>
+		settingsUi.confirm(
 			{
 				title,
 				message,
@@ -175,27 +193,19 @@ export async function showUserConfirmation(
 					{
 						label: options.confirmLabel || "Confirm",
 						color: options.confirmColor || "#4caf50",
-						onClick: () => handleResolve(true),
+						onClick: () => resolve(true),
 					},
 					{
 						label: options.cancelLabel || "Cancel",
 						color: options.cancelColor || "#f44336",
-						onClick: () => handleResolve(false),
+						onClick: () => resolve(false),
 					},
 				],
-				onClose: () => handleResolve(false),
+				onClose: () => resolve(false),
 			},
 			mountPoint,
-		);
-
-		function handleResolve(val: boolean) {
-			resolve(val);
-			setTimeout(() => {
-				unmount(component);
-				mountPoint.remove();
-			}, 400);
-		}
-	});
+		),
+	);
 }
 
 /**
@@ -208,11 +218,8 @@ export async function showSelection(
 	buttons: { label: string; color?: string; description?: string }[] = [],
 	options: { align?: "left" | "center" | "right"; vertical?: boolean } = {},
 ): Promise<string | null> {
-	return new Promise((resolve) => {
-		const mountPoint = document.createElement("div");
-		document.body.appendChild(mountPoint);
- 
-		const component = settingsUi.confirm(
+	return renderDialog((mountPoint, resolve) =>
+		settingsUi.confirm(
 			{
 				title,
 				message,
@@ -222,21 +229,13 @@ export async function showSelection(
 					label: btn.label,
 					color: btn.color || "#7f5db7",
 					description: btn.description,
-					onClick: () => handleResolve(btn.label),
+					onClick: () => resolve(btn.label),
 				})),
-				onClose: () => handleResolve(null),
+				onClose: () => resolve(null),
 			},
 			mountPoint,
-		);
-
-		function handleResolve(val: string | null) {
-			resolve(val);
-			setTimeout(() => {
-				unmount(component);
-				mountPoint.remove();
-			}, 400);
-		}
-	});
+		),
+	);
 }
 
 /**
@@ -248,31 +247,20 @@ export async function showUserPrompt(
 	value: string = "",
 	options: { content?: string; multiline?: boolean } = {},
 ): Promise<string | null> {
-	return new Promise((resolve) => {
-		const mountPoint = document.createElement("div");
-		document.body.appendChild(mountPoint);
-
-		const component = settingsUi.prompt(
+	return renderDialog((mountPoint, resolve) =>
+		settingsUi.prompt(
 			{
 				title,
 				placeholder,
 				value,
 				content: options.content || "",
 				multiline: options.multiline || false,
-				onConfirm: (val: string) => handleResolve(val),
-				onCancel: () => handleResolve(null),
+				onConfirm: (val: string) => resolve(val),
+				onCancel: () => resolve(null),
 			},
 			mountPoint,
-		);
-
-		function handleResolve(val: string | null) {
-			resolve(val);
-			setTimeout(() => {
-				unmount(component);
-				mountPoint.remove();
-			}, 400);
-		}
-	});
+		),
+	);
 }
 
 /**
@@ -304,11 +292,8 @@ export async function showAlert(
 	title: string = "Alert",
 	options: { okLabel?: string; okColor?: string; align?: "left" | "center" | "right" } = {},
 ): Promise<void> {
-	return new Promise((resolve) => {
-		const mountPoint = document.createElement("div");
-		document.body.appendChild(mountPoint);
-
-		const component = settingsUi.confirm(
+	return renderDialog((mountPoint, resolve) =>
+		settingsUi.confirm(
 			{
 				title,
 				message,
@@ -317,20 +302,12 @@ export async function showAlert(
 					{
 						label: options.okLabel || "OK",
 						color: options.okColor || "var(--Theme-0)",
-						onClick: () => handleResolve(),
+						onClick: () => resolve(),
 					},
 				],
-				onClose: () => handleResolve(),
+				onClose: () => resolve(),
 			},
 			mountPoint,
-		);
-
-		function handleResolve() {
-			resolve();
-			setTimeout(() => {
-				unmount(component);
-				mountPoint.remove();
-			}, 400);
-		}
-	});
+		),
+	);
 }

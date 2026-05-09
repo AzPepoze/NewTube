@@ -89,6 +89,19 @@ interface SettingsWindow {
 	closeWindowHandler: () => Promise<void>;
 }
 
+/**
+ * Gathers all settings data for UI rendering.
+ */
+async function fetchSettingsData(getCategory: (() => Category[] | Promise<Category[]>) | null) {
+	return {
+		internalSettings: getCategory ? await getCategory() : [],
+		externalSettings: [...getAddOnItems(), ...getExternalCategories()],
+		devOnlyItems: isDevModulesLoaded ? getStyleShiftDevOnlyItems() : [],
+		isDeveloperMode: (await getRootValue("developerMode")) as boolean,
+		isDevModulesLoaded,
+	};
+}
+
 export async function createMainSettingsUi({
 	showCategoryList = true,
 	onCreate = null as ((styleshiftWindow: SettingsWindow) => void) | null,
@@ -98,24 +111,49 @@ export async function createMainSettingsUi({
 	let svelteInstance: any = null;
 	let cooldown = false;
 
-	const returnObj = {
-		renderContent: async function (_skipAnimation = false) {
+	async function mountSettingsComponent(skipAnimation = false) {
+		if (!settingsWindow) return;
+
+		const settingsData = await fetchSettingsData(getCategory);
+		svelteInstance = settingsUi.settingsWindow(
+			{
+				...settingsData,
+				showCategoryList,
+				skipAnimation,
+				onClose: () => returnObject.removeUi(),
+				onAddCategory: (categoryName: string) => addCategory(categoryName),
+			},
+			settingsWindow.contentElement,
+		);
+	}
+
+	function getScrollPositions() {
+		const sidebar = settingsWindow?.contentElement.querySelector(".STYLESHIFT-Sidebar");
+		const content = settingsWindow?.contentElement.querySelector(".STYLESHIFT-Settings-List");
+		return {
+			sidebar: sidebar?.scrollTop || 0,
+			content: content?.scrollTop || 0,
+		};
+	}
+
+	function restoreScrollPositions(positions: { sidebar: number; content: number }) {
+		const sidebar = settingsWindow?.contentElement.querySelector(".STYLESHIFT-Sidebar");
+		const content = settingsWindow?.contentElement.querySelector(".STYLESHIFT-Settings-List");
+		if (sidebar) sidebar.scrollTop = positions.sidebar;
+		if (content) content.scrollTop = positions.content;
+	}
+
+	const returnObject = {
+		renderContent: async function () {
 			if (svelteInstance) {
-				const internalSettings = getCategory ? await getCategory() : [];
-				const externalSettings = [...getAddOnItems(), ...getExternalCategories()];
-				const devOnlyItems = isDevModulesLoaded ? getStyleShiftDevOnlyItems() : [];
-				svelteInstance.internalSettings = internalSettings;
-				svelteInstance.externalSettings = externalSettings;
-				svelteInstance.devOnlyItems = devOnlyItems;
-				svelteInstance.isDeveloperMode = await getRootValue("developerMode");
-				svelteInstance.isDevModulesLoaded = isDevModulesLoaded;
+				const data = await fetchSettingsData(getCategory);
+				Object.assign(svelteInstance, data);
 			}
 		},
 
 		createUi: async function (skipAnimation = false) {
-			logger.info("ui", "Creating UI", { settingsWindow });
 			if (settingsWindow) {
-				returnObj.recreateUi(skipAnimation);
+				returnObject.recreateUi(skipAnimation);
 				return;
 			}
 
@@ -128,134 +166,76 @@ export async function createMainSettingsUi({
 				},
 			});
 
-			logger.info("ui", "Created_styleshift_window");
+			settingsWindow.windowElement.style.minWidth = "500px";
+			await mountSettingsComponent(skipAnimation);
 
-			const settingsWindowElement = settingsWindow.windowElement;
-			settingsWindowElement.style.minWidth = "500px";
-
-			const internalSettings = getCategory ? await getCategory() : [];
-			const externalSettings = [...getAddOnItems(), ...getExternalCategories()];
-			const devOnlyItems = isDevModulesLoaded ? getStyleShiftDevOnlyItems() : [];
-			const isDeveloperMode = await getRootValue("developerMode");
-
-			svelteInstance = settingsUi.settingsWindow(
-				{
-					internalSettings,
-					externalSettings,
-					showCategoryList,
-					devOnlyItems,
-					isDeveloperMode,
-					isDevModulesLoaded,
-					onClose: () => returnObj.removeUi(),
-					onAddCategory: (categoryName: string) => addCategory(categoryName),
-				},
-				settingsWindow.contentElement,
-			);
-
-			if (onCreate) {
-				onCreate(settingsWindow);
-			}
+			if (onCreate) onCreate(settingsWindow);
 		},
-		removeUi: function (skipAnimation = false, _delay = false) {
-			if (settingsWindow) {
-				if (svelteInstance) {
-					unmount(svelteInstance);
-					svelteInstance = null;
-				}
 
-				if (skipAnimation) {
-					const overlayFrame = settingsWindow.overlayFrame;
-					requestAnimationFrame(() => {
-						overlayFrame.remove();
-					});
-				} else {
-					settingsWindow.closeWindowHandler();
-				}
-				settingsWindow = null;
+		removeUi: function (skipAnimation = false) {
+			if (!settingsWindow) return;
+
+			if (svelteInstance) {
+				unmount(svelteInstance);
+				svelteInstance = null;
 			}
+
+			if (skipAnimation) {
+				const overlayFrame = settingsWindow.overlayFrame;
+				requestAnimationFrame(() => overlayFrame.remove());
+			} else {
+				settingsWindow.closeWindowHandler();
+			}
+			settingsWindow = null;
 		},
+
 		recreateUi: async function (skipAnimation = true) {
-			logger.info("ui", "recreateUi triggered - full remount", { settingsWindow, skipAnimation });
-			if (settingsWindow) {
-				await updateStyleShiftItems();
+			if (!settingsWindow) return;
 
-				// Save scroll positions before unmounting
-				const sidebar = settingsWindow.contentElement.querySelector(".STYLESHIFT-Sidebar") as HTMLElement;
-				const content = settingsWindow.contentElement.querySelector(".STYLESHIFT-Settings-List") as HTMLElement;
-				const sidebarScrollTop = sidebar?.scrollTop || 0;
-				const contentScrollTop = content?.scrollTop || 0;
-				logger.info("ui", "Saved scroll positions", { sidebarScrollTop, contentScrollTop });
+			await updateStyleShiftItems();
 
-				// Unmount old component
-				if (svelteInstance) {
-					unmount(svelteInstance);
-					svelteInstance = null;
-				}
+			const positions = getScrollPositions();
 
-				// Clear content element
-				settingsWindow.contentElement.innerHTML = "";
-
-				// Remount with fresh data
-				const internalSettings = getCategory ? await getCategory() : [];
-				const externalSettings = [...getAddOnItems(), ...getExternalCategories()];
-				const devOnlyItems = isDevModulesLoaded ? getStyleShiftDevOnlyItems() : [];
-				const isDeveloperMode = await getRootValue("developerMode");
-
-				svelteInstance = settingsUi.settingsWindow(
-					{
-						internalSettings,
-						externalSettings,
-						showCategoryList,
-						devOnlyItems,
-						isDeveloperMode,
-						isDevModulesLoaded,
-						skipAnimation,
-						onClose: () => returnObj.removeUi(),
-						onAddCategory: (categoryName: string) => addCategory(categoryName),
-					},
-					settingsWindow.contentElement,
-				);
-
-				logger.info("ui", "UI remounted successfully");
-
-				await waitOneFrame();
-				await waitOneFrame();
-
-				const newSidebar = settingsWindow.contentElement.querySelector(".STYLESHIFT-Sidebar") as HTMLElement;
-				const newContent = settingsWindow.contentElement.querySelector(".STYLESHIFT-Settings-List") as HTMLElement;
-				if (newSidebar) newSidebar.scrollTop = sidebarScrollTop;
-				if (newContent) newContent.scrollTop = contentScrollTop;
-				logger.info("ui", "Restored scroll positions", { sidebarScrollTop, contentScrollTop });
+			if (svelteInstance) {
+				unmount(svelteInstance);
+				svelteInstance = null;
 			}
+
+			settingsWindow.contentElement.innerHTML = "";
+			await mountSettingsComponent(skipAnimation);
+
+			await waitOneFrame();
+			await waitOneFrame();
+			restoreScrollPositions(positions);
 		},
+
 		toggle: async function () {
 			if (cooldown) return;
 			cooldown = true;
+
 			if (settingsWindow) {
-				returnObj.removeUi();
-				setTimeout(() => (cooldown = false), 200);
+				returnObject.removeUi();
 			} else {
-				await returnObj.createUi();
-				setTimeout(() => (cooldown = false), 200);
+				await returnObject.createUi();
 			}
+
+			setTimeout(() => (cooldown = false), 200);
 		},
 
 		setGetCategory: function (newFunction: () => Category[] | Promise<Category[]> | null) {
 			getCategory = newFunction as any;
-			if (settingsWindow) {
-				returnObj.recreateUi();
-			}
+			if (settingsWindow) returnObject.recreateUi();
 		},
 	};
 
-	return returnObj;
+	return returnObject;
 }
 
 async function createBaseUiElement(uiType: string, thisData: any) {
 	try {
-		const renderFunc = settingsUi[uiType as keyof typeof settingsUi];
-		if (typeof renderFunc === "function") {
-			return await (renderFunc as any)(thisData);
+		const renderFunction = settingsUi[uiType as keyof typeof settingsUi];
+		if (typeof renderFunction === "function") {
+			return await (renderFunction as any)(thisData);
 		}
 		throw new Error(`UI component type "${uiType}" not found in settingsUi`);
 	} catch (error) {

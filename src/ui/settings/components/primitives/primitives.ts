@@ -113,7 +113,7 @@ export async function codeEditor(
 	obj: any,
 	key: string,
 	language: string,
-	height: number = 400,
+	height: string | number = 400,
 ) {
 	let afterOnChange: ((value: string) => void) | null = null;
 	let rearrangeValue: ((value: string) => Promise<string> | string) | null = null;
@@ -131,6 +131,9 @@ export async function codeEditor(
 	});
 
 	const target = document.createElement("div");
+	target.style.height = "100%";
+	target.style.display = "flex";
+	target.style.flexDirection = "column";
 	parent.append(target);
 	const codeEditorInstance = settingsUi.renderComponent(
 		CodeEditorComponent as any,

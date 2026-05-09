@@ -21,8 +21,6 @@ export class CodeEditorController {
 		this.#options = options;
 	}
 
-	/* --- Getters & Setters --- */
-
 	get fallbackMode() {
 		return this.#fallbackMode;
 	}
@@ -30,8 +28,6 @@ export class CodeEditorController {
 	set editorWrapper(el: HTMLDivElement | null) {
 		this.#editorWrapper = el;
 	}
-
-	/* --- Lifecycle Methods --- */
 
 	async init(initialValue: string) {
 		if (!this.#editorWrapper) return;
@@ -82,7 +78,26 @@ export class CodeEditorController {
 		return this.#view ? this.#view.state.doc.toString() : "";
 	}
 
-	/* --- Private Initialization Helpers --- */
+	#createDomElement<T extends keyof HTMLElementTagNameMap>(
+		tag: T,
+		className?: string,
+		content?: string | Node | (string | Node)[],
+	): HTMLElementTagNameMap[T] {
+		const element = document.createElement(tag);
+		if (className) element.className = className;
+
+		if (content) {
+			const children = Array.isArray(content) ? content : [content];
+			for (const child of children) {
+				if (typeof child === "string") {
+					element.appendChild(document.createTextNode(child));
+				} else {
+					element.appendChild(child);
+				}
+			}
+		}
+		return element;
+	}
 
 	async #waitForCodeMirror() {
 		while (!codemirrorInstance) {
@@ -101,13 +116,13 @@ export class CodeEditorController {
 			this.#createHoverTooltip(cm),
 		];
 
-		const lang = this.#options.language;
+		const lang = this.#options.language.toLowerCase();
 		const isJS = lang === "javascript" || lang === "js";
 		const isCSS = lang === "css";
 
 		if (isJS) {
-			extensions.push(cm.javascript());
 			extensions.push(
+				cm.javascript(),
 				cm.autocompletion({
 					override: [
 						this.#createCompletions(),
@@ -117,11 +132,9 @@ export class CodeEditorController {
 				}),
 			);
 		} else if (isCSS) {
-			extensions.push(cm.css());
 			extensions.push(
-				cm.autocompletion({
-					override: [cm.cssCompletionSource],
-				}),
+				cm.css(),
+				cm.autocompletion({ override: [cm.cssCompletionSource] }),
 			);
 		} else {
 			extensions.push(cm.autocompletion());
@@ -142,16 +155,15 @@ export class CodeEditorController {
 
 	#createBlurHandler(cm: any) {
 		return cm.EditorView.domEventHandlers({
-			blur: () => {
-				this.#options.onBlur?.(this.#view.state.doc.toString());
-			},
+			blur: () => this.#options.onBlur?.(this.#view.state.doc.toString()),
 		});
 	}
 
 	#createHoverTooltip(cm: any) {
 		return cm.hoverTooltip((view: any, pos: number, side: number) => {
 			const { from, to, text } = view.state.doc.lineAt(pos);
-			let start = pos, end = pos;
+			let start = pos,
+				end = pos;
 
 			while (start > from && /[\w$]/.test(text[start - from - 1])) start--;
 			while (end < to && /[\w$]/.test(text[end - from])) end++;
@@ -186,26 +198,20 @@ export class CodeEditorController {
 	/* --- DOM Rendering Helpers --- */
 
 	#renderTooltipDOM(metadata: any) {
-		const dom = document.createElement("div");
-		dom.className = "cm-styleshift-tooltip";
+		const dom = this.#createDomElement("div", "cm-styleshift-tooltip");
 		dom.style.cssText = "max-width: 60ch; max-height: 34vh; overflow: auto;";
 
-		const header = document.createElement("div");
-		header.className = "cm-tooltip-header";
+		const badge =
+			metadata.detail || metadata.type
+				? [this.#createDomElement("span", "cm-tooltip-badge", metadata.detail || metadata.type)]
+				: [];
 
-		const title = document.createElement("div");
-		title.className = "cm-tooltip-title";
-		title.textContent = metadata.label;
-		header.appendChild(title);
-
-		if (metadata.detail || metadata.type) {
-			const badge = document.createElement("span");
-			badge.className = "cm-tooltip-badge";
-			badge.textContent = metadata.detail || metadata.type;
-			header.appendChild(badge);
-		}
-
-		dom.appendChild(header);
+		dom.append(
+			this.#createDomElement("div", "cm-tooltip-header", [
+				this.#createDomElement("div", "cm-tooltip-title", metadata.label),
+				...badge,
+			]),
+		);
 
 		if (metadata.info) {
 			const info = this.#renderMetadataInfo(metadata.info);
@@ -217,49 +223,51 @@ export class CodeEditorController {
 	}
 
 	#renderMetadataInfo(infoText: string) {
-		const root = document.createElement("div");
-		root.className = "cm-metadata-doc";
-
 		const { summary, tags } = this.#parseInfoSections(infoText);
+		const root = this.#createDomElement("div", "cm-metadata-doc");
 
 		if (summary) {
-			const summaryEl = document.createElement("div");
-			summaryEl.className = "cm-metadata-summary";
-			summaryEl.textContent = summary;
-			root.appendChild(summaryEl);
+			root.appendChild(
+				this.#createDomElement("div", "cm-metadata-summary", this.#formatTextWithTypes(summary)),
+			);
 		}
 
 		if (tags.length) {
-			const tagsEl = document.createElement("div");
-			tagsEl.className = "cm-metadata-tags";
+			const tagsEl = this.#createDomElement("div", "cm-metadata-tags");
+			for (const { tag, body } of tags) {
+				const row = this.#createDomElement("div", "cm-metadata-tag-row");
+				if (tag === "@example") row.classList.add("cm-metadata-example-row");
 
-			for (const tagData of tags) {
-				const row = document.createElement("div");
-				row.className = "cm-metadata-tag-row";
-				if (tagData.tag === "@example") {
-					row.classList.add("cm-metadata-example-row");
-				}
+				const bodyEl = this.#createDomElement(
+					"span",
+					"cm-metadata-tag-body",
+					this.#formatTextWithTypes(body.trim()),
+				);
+				if (tag === "@example") bodyEl.classList.add("cm-metadata-example");
 
-				const tagEl = document.createElement("span");
-				tagEl.className = "cm-metadata-tag";
-				tagEl.textContent = tagData.tag;
-
-				const bodyEl = document.createElement("span");
-				bodyEl.className = "cm-metadata-tag-body";
-				bodyEl.textContent = tagData.body.trim();
-
-				if (tagData.tag === "@example") {
-					bodyEl.classList.add("cm-metadata-example");
-				}
-
-				row.append(tagEl, bodyEl);
+				row.append(this.#createDomElement("span", "cm-metadata-tag", tag), bodyEl);
 				tagsEl.appendChild(row);
 			}
-
 			root.appendChild(tagsEl);
 		}
 
 		return root;
+	}
+
+	#formatTextWithTypes(text: string) {
+		const fragment = document.createDocumentFragment();
+		const parts = text.split(/(\{[\w<>|[\] ,;:]+\})/g);
+
+		for (const part of parts) {
+			if (part.startsWith("{") && part.endsWith("}")) {
+				fragment.appendChild(
+					this.#createDomElement("span", "cm-metadata-type-badge", part.slice(1, -1)),
+				);
+			} else if (part) {
+				fragment.appendChild(document.createTextNode(part));
+			}
+		}
+		return fragment;
 	}
 
 	/* --- Metadata Parsing Helpers --- */
@@ -280,18 +288,21 @@ export class CodeEditorController {
 
 		const lower = normalized.toLowerCase();
 		return globalMetadataCache.find(
-			(e: any) => e.label === normalized || String(e.label).toLowerCase() === lower
+			(e: any) =>
+				e.label === normalized || String(e.label).toLowerCase() === lower,
 		);
 	}
 
 	#parseInfoSections(text: string) {
-		const normalized = String(text || "").replace(/\r/g, "").trim();
-		if (!normalized) return { summary: "", tags: [] as { tag: string, body: string }[] };
+		const normalized = String(text || "")
+			.replace(/\r/g, "")
+			.trim();
+		if (!normalized) return { summary: "", tags: [] };
 
 		const lines = normalized.split("\n");
 		const summaryLines: string[] = [];
-		const tags: { tag: string, body: string }[] = [];
-		let currentTag: { tag: string, body: string } | null = null;
+		const tags: { tag: string; body: string }[] = [];
+		let currentTag: (typeof tags)[0] | null = null;
 
 		for (const line of lines) {
 			const match = /^\s*(@\w+)\s*(.*)$/.exec(line);
@@ -299,7 +310,7 @@ export class CodeEditorController {
 				currentTag = { tag: match[1], body: match[2] };
 				tags.push(currentTag);
 			} else if (currentTag) {
-				currentTag.body += (currentTag.body ? "\n" : "") + line;
+				currentTag.body += `\n${line}`;
 			} else {
 				summaryLines.push(line);
 			}

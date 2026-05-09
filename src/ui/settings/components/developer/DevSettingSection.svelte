@@ -96,7 +96,7 @@
 				setting,
 				runType + ext,
 				typeLangMap[typeName] || typeLangMap[ext] || typeName,
-				isWorkspace ? 550 : runType == "var" ? 100 : 400,
+				isWorkspace ? "100%" : (runType == "var" ? 100 : 400),
 			);
 			editor.afterOnChange(() => handleLogicUpdate(onUpdateConfig));
 		})();
@@ -193,6 +193,7 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+		height: 100%;
 	}
 
 	.section-header {
@@ -263,12 +264,22 @@
 
 	.section-editor-area {
 		width: 100%;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
 	}
 
 	.editor-mount {
 		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
 
 		:global(.STYLESHIFT-Code-Editor-Container) {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
 			border: 1px solid var(--Border-Color) !important;
 			background: var(--BG-Input) !important;
 			border-radius: 16px !important;

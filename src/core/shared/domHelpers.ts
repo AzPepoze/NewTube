@@ -43,41 +43,29 @@ export function getScrollParent(element: HTMLElement | null): HTMLElement | null
 }
 
 /**
- * Gets the document body element, waiting if it's not yet available (e.g., during early script execution).
- * 
- * @returns {Promise<HTMLElement>} A promise that resolves to the document body element.
- * 
- * @example
- * const body = await getDocumentBody();
+ * Polls for a condition to be met and ensures the result is returned.
  */
-export async function getDocumentBody(): Promise<HTMLElement> {
-	const documentBody = document.body;
-
-	if (documentBody) {
-		return documentBody;
-	} else {
-		await sleep(100);
-		return await getDocumentBody();
+async function ensure<T>(fn: () => T | null | undefined, interval = 100): Promise<T> {
+	let result = fn();
+	while (!result) {
+		await sleep(interval);
+		result = fn();
 	}
+	return result;
+}
+
+/**
+ * Gets the document body element, waiting if it's not yet available.
+ */
+export function getDocumentBody(): Promise<HTMLElement> {
+	return ensure(() => document.body);
 }
 
 /**
  * Gets the document head element, waiting if it's not yet available.
- * 
- * @returns {Promise<HTMLElement>} A promise that resolves to the document head element.
- * 
- * @example
- * const head = await getDocumentHead();
  */
-export async function getDocumentHead(): Promise<HTMLElement> {
-	const documentHead = document.head;
-
-	if (documentHead) {
-		return documentHead;
-	} else {
-		await sleep(100);
-		return await getDocumentHead();
-	}
+export function getDocumentHead(): Promise<HTMLElement> {
+	return ensure(() => document.head);
 }
 
 /**
@@ -152,11 +140,7 @@ export async function waitDocumentLoaded(): Promise<number> {
  * const domain = getCurrentDomain(); // e.g., "google.com"
  */
 export function getCurrentDomain(): string {
-	const hostname = window.location.origin;
-	const domainParts = hostname.split(".");
-	const domain = domainParts.slice(-2).join(".");
-
-	return domain;
+	return window.location.hostname.split(".").slice(-2).join(".");
 }
 
 /**
@@ -184,17 +168,18 @@ export function rearrangeSelector(value: string): string {
  * const btn = await waitForElement("#submit-btn", 5000);
  */
 export async function waitForElement(selector: string, timeout?: number): Promise<HTMLElement | null> {
-	const startTime = Date.now();
-	while (true) {
-		const element = document.querySelector(selector) as HTMLElement | null;
-		if (element) {
-			return element;
-		}
-		if (timeout && Date.now() - startTime >= timeout) {
-			logger.warn("dom", `timeout: element "${selector}" not found within ${timeout}ms`);
-			return null;
-		}
-		await sleep(100);
+	try {
+		const startTime = Date.now();
+		return await ensure(() => {
+			const el = document.querySelector(selector) as HTMLElement | null;
+			if (!el && timeout && Date.now() - startTime >= timeout) {
+				throw new Error(`timeout: element "${selector}" not found within ${timeout}ms`);
+			}
+			return el;
+		});
+	} catch (error) {
+		logger.warn("dom", error);
+		return null;
 	}
 }
 

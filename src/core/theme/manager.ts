@@ -12,6 +12,17 @@ export type Theme = {
 	addOnStyleShiftItems?: any[];
 };
 
+/**
+ * Helper to show confirmation and log cancelation
+ */
+async function confirmAction(message: string, title: string, cancelLog?: string): Promise<boolean> {
+	const confirmed = await showUserConfirmation(message, title);
+	if (!confirmed && cancelLog) {
+		logger.info("themeManager", cancelLog);
+	}
+	return confirmed;
+}
+
 
 /**
  * Validate if origin is allowed to send theme events
@@ -169,22 +180,11 @@ export async function saveTheme(
 		);
 
 		if (existingIndex > -1) {
-			const confirmedReplace = await showUserConfirmation(
-				`Theme "${name}" already exists. Replace it?`,
-				"Replace Theme",
-			);
-			if (!confirmedReplace) {
+			if (!(await confirmAction(`Theme "${name}" already exists. Replace it?`, "Replace Theme"))) {
 				return false;
 			}
-		} else {
-			const confirmed = await showUserConfirmation(
-				`Save as "${name}" to ${targetDomain}?`,
-				"Save theme",
-			);
-			if (!confirmed) {
-				logger.info("themeManager", `Theme save cancelled: ${name}`);
-				return false;
-			}
+		} else if (!(await confirmAction(`Save as "${name}" to ${targetDomain}?`, "Save theme", `Theme save cancelled: ${name}`))) {
+			return false;
 		}
 
 		const updatedTheme: Theme = {
@@ -221,13 +221,7 @@ export async function applyTheme(id: string, name: string, targetDomain: string)
 		return false;
 	}
 
-	const confirmed = await showUserConfirmation(
-		`Apply "${name}" to ${targetDomain}?`,
-		"Apply Theme"
-	);
-
-	if (!confirmed) {
-		logger.info("themeManager", `Theme apply cancelled: ${name}`);
+	if (!(await confirmAction(`Apply "${name}" to ${targetDomain}?`, "Apply Theme", `Theme apply cancelled: ${name}`))) {
 		return false;
 	}
 
@@ -264,13 +258,7 @@ export async function updateTheme(
 		return false;
 	}
 
-	const confirmed = await showUserConfirmation(
-		`Update "${name}" to the latest version?`,
-		"Update Theme"
-	);
-
-	if (!confirmed) {
-		logger.info("themeManager", `Theme update cancelled: ${name}`);
+	if (!(await confirmAction(`Update "${name}" to the latest version?`, "Update Theme", `Theme update cancelled: ${name}`))) {
 		return false;
 	}
 
@@ -310,14 +298,7 @@ export async function installTheme(
 		return false;
 	}
 
-	const domainList = targetDomains.join(", ");
-	const confirmed = await showUserConfirmation(
-		`Install "${name}" to ${domainList}?`,
-		"Install Theme"
-	);
-
-	if (!confirmed) {
-		logger.info("themeManager", `Theme install cancelled: ${name}`);
+	if (!(await confirmAction(`Install "${name}" to ${targetDomains.join(", ")}?`, "Install Theme", `Theme install cancelled: ${name}`))) {
 		return false;
 	}
 
@@ -350,13 +331,7 @@ export async function deleteTheme(id: string, name: string, targetDomain: string
 		return false;
 	}
 
-	const confirmed = await showUserConfirmation(
-		`Delete "${name}" from ${targetDomain}?`,
-		"Delete Theme"
-	);
-
-	if (!confirmed) {
-		logger.info("themeManager", `Theme delete cancelled: ${name}`);
+	if (!(await confirmAction(`Delete "${name}" from ${targetDomain}?`, "Delete Theme", `Theme delete cancelled: ${name}`))) {
 		return false;
 	}
 

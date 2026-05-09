@@ -1,23 +1,13 @@
 <script lang="ts">
-	import { refreshExtensionState } from "@core/index";
-	import { saveToStorage } from "@core/storage/manager";
-	import {
-		getAddOnItems,
-		updateStyleShiftItems,
-	} from "@settings/registry/items";
 	import type {
 		Category,
 		SeparateCategory,
 	} from "@settings/types/styleshiftTypes";
 	import LeftTitle from "@ui/settings/components/primitives/LeftTitle.svelte";
-	import {
-		addDrag,
-		addDropTarget,
-		clearDropTargets,
-	} from "@ui/settings/reorder";
 	import { getCategoryParts } from "@ui/window/utils";
 	import Search from "../primitives/Search.svelte";
 	import SettingsListRenderer from "../renderers/SettingsListRenderer.svelte";
+	import { SettingsWindowController } from "./SettingsWindowController.svelte";
 
 	let {
 		internalSettings = [],
@@ -41,242 +31,32 @@
 		onAddCategory?: (name: string) => void;
 	} = $props();
 
-	let searchQuery = $state("");
-	let scrollContainer = $state<HTMLElement | null>(null);
-	let leftSidebar = $state<HTMLElement | null>(null);
-	let activeCategoryLabel = $state("");
-	let sidebarWidth = $state(200);
-
-	function isHeaderItem(
-		item: Category | SeparateCategory,
-	): item is SeparateCategory {
-		return "isHeader" in item;
-	}
-
-	async function moveCategory(category: Category, direction: "up" | "down") {
-		const addOnItems = getAddOnItems();
-		const index = addOnItems.indexOf(category);
-		if (index === -1) return;
-
-		const newIndex = direction === "up" ? index - 1 : index + 1;
-		if (newIndex < 0 || newIndex >= addOnItems.length) return;
-
-		const [movedItem] = addOnItems.splice(index, 1);
-		addOnItems.splice(newIndex, 0, movedItem);
-
-		await saveToStorage("addOnStyleShiftItems", addOnItems);
-		await updateStyleShiftItems();
-		refreshExtensionState();
-	}
-
-	function setupDragAndDrop(
-		node: HTMLElement,
-		item: Category | SeparateCategory,
-	) {
-		if (isHeaderItem(item) || !isDeveloperMode || !(item as Category).editable) return;
-
-		const dragHandle = node.querySelector(".drag-handle") as HTMLElement;
-		if (dragHandle) {
-			addDrag(dragHandle, node, leftSidebar, item);
-			addDropTarget(node, leftSidebar!, item, "category");
-		}
-	}
+	const controller = new SettingsWindowController({
+		get internalSettings() { return internalSettings; },
+		get externalSettings() { return externalSettings || []; },
+		get devOnlyItems() { return devOnlyItems || []; },
+		get isDeveloperMode() { return isDeveloperMode; },
+		get isDevModulesLoaded() { return isDevModulesLoaded; },
+		get onAddCategory() { return onAddCategory; }
+	});
 
 	$effect(() => {
-		if (leftSidebar) {
-			clearDropTargets();
+		if (controller.leftSidebar) {
+			controller.clearTargets();
 		}
 	});
-
-	function mergeDevItems(
-		categories: (Category | SeparateCategory)[],
-		allCategoriesForSearch: (Category | SeparateCategory)[],
-		shouldPushNew: boolean = true,
-	) {
-		if (!isDevModulesLoaded || !isDeveloperMode) return categories;
-
-		const devOnlyCategories = devOnlyItems.filter(
-			(item) => !isHeaderItem(item),
-		);
-
-		for (const devCategory of devOnlyCategories) {
-			const devCategoryJson = JSON.stringify(devCategory.category);
-			
-			// Check if it exists in the current list being modified
-			const existingIdx = categories.findIndex(
-				(item) =>
-					!isHeaderItem(item) &&
-					JSON.stringify(item.category) === devCategoryJson,
-			);
-
-			if (existingIdx > -1) {
-				const item = categories[existingIdx];
-				if (!isHeaderItem(item)) {
-					const category = item as Category;
-					category.settings = [
-						...category.settings,
-						...devCategory.settings,
-					];
-				}
-			} else if (shouldPushNew) {
-				// If it's not in the current list, check if it exists in the OTHER list
-				const existsElsewhere = allCategoriesForSearch.some(
-					(item) =>
-						!isHeaderItem(item) &&
-						JSON.stringify(item.category) === devCategoryJson,
-				);
-
-				if (!existsElsewhere) {
-					categories.push(devCategory);
-				}
-			}
-		}
-		return categories;
-	}
-
-	function filterBySearch(
-		allCategories: (Category | SeparateCategory)[],
-		searchTerm: string,
-	) {
-		const query = searchTerm.toLowerCase();
-
-		return allCategories
-			.map((item) => {
-				if (isHeaderItem(item)) return item;
-
-				const category = item as Category;
-				const settings = category.settings.filter((s: any) => {
-					const name = s.name?.toLowerCase() || "";
-					const desc = s.description?.toLowerCase() || "";
-					return name.includes(query) || desc.includes(query);
-				});
-
-				return { ...category, settings };
-			})
-			.filter(
-				(item) => isHeaderItem(item) || item.settings.length > 0,
-			);
-	}
-
-	function getVisibleSettings(settings: any[], isDev: boolean) {
-		return settings.filter((s) => s.type !== "conditionSetting" || isDev);
-	}
-
-	let internalData = $derived.by(() => {
-		let result: (Category | SeparateCategory)[] = internalSettings.map(
-			(c) =>
-				isHeaderItem(c)
-					? c
-					: {
-							...c,
-							settings: getVisibleSettings(
-								c.settings,
-								isDeveloperMode,
-							),
-						},
-		);
-
-		result = mergeDevItems(result, externalSettings);
-
-		if (searchQuery) {
-			result = filterBySearch(result, searchQuery);
-		}
-
-		return result as (Category | SeparateCategory)[];
-	});
-
-	let externalCategoriesData = $derived.by(() => {
-		let result = externalSettings.map((c) => ({
-			...c,
-			settings: getVisibleSettings(c.settings, isDeveloperMode),
-		}));
-
-		result = mergeDevItems(result, internalSettings, false) as Category[];
-
-		if (searchQuery) {
-			result = filterBySearch(result, searchQuery) as Category[];
-		}
-
-		return result;
-	});
-
-	const sidebarData = $derived.by(() => {
-		const result: (Category | SeparateCategory)[] = [];
-
-		if (buildInItemsData.length > 0) {
-			result.push({ isHeader: true, label: "BUILD-IN" });
-			result.push(...buildInItemsData);
-		}
-
-		if (addOnItemsData.length > 0) {
-			result.push({ isHeader: true, label: "ADD-ON" });
-			result.push(...addOnItemsData);
-		}
-		return result;
-	});
-
-	const buildInItemsData = $derived(internalData.filter(
-		(item) => isHeaderItem(item) || !item.editable,
-	));
-	const addOnItemsData = $derived([
-		...internalData.filter(
-			(item) => !isHeaderItem(item) && item.editable,
-		),
-		...externalCategoriesData,
-	]);
-
-	function handleScroll() {
-		if (!scrollContainer) return;
-		const frames = scrollContainer.querySelectorAll(
-			".STYLESHIFT-Category-Frame",
-		);
-		const containerRect = scrollContainer.getBoundingClientRect();
-
-		frames.forEach((frame) => {
-			const rect = frame.getBoundingClientRect();
-			if (
-				rect.top <= containerRect.top + 100 &&
-				rect.bottom > containerRect.top + 100
-			) {
-				const label = (frame as HTMLElement).dataset.category;
-				if (label) activeCategoryLabel = label;
-			}
-		});
-	}
-
-	function handleResizeStart(e: MouseEvent) {
-		e.preventDefault();
-		const startX = e.clientX;
-		const startWidth = sidebarWidth;
-
-		function handleMouseMove(moveEvent: MouseEvent) {
-			const delta = moveEvent.clientX - startX;
-			sidebarWidth = Math.max(100, startWidth + delta);
-			if (leftSidebar) {
-				leftSidebar.style.width = `${sidebarWidth}px`;
-			}
-		}
-
-		function handleMouseUp() {
-			document.removeEventListener("mousemove", handleMouseMove);
-			document.removeEventListener("mouseup", handleMouseUp);
-		}
-
-		document.addEventListener("mousemove", handleMouseMove);
-		document.addEventListener("mouseup", handleMouseUp);
-	}
 </script>
 
 <div class="STYLESHIFT-Settings-Main" class:skip-animation={skipAnimation}>
 	{#if showCategoryList}
 		<div
-			bind:this={leftSidebar}
+			bind:this={controller.leftSidebar}
 			class="STYLESHIFT-Sidebar STYLESHIFT-Scrollable"
 			data-left="true"
-			style:width={`${sidebarWidth}px`}
+			style:width={`${controller.sidebarWidth}px`}
 		>
-			{#each sidebarData as item, i (i)}
-				{#if isHeaderItem(item)}
+			{#each controller.sidebarData as item, i (i)}
+				{#if controller.isHeaderItem(item)}
 					<div
 						class="STYLESHIFT-Sidebar-Header"
 						style="animation-delay: {skipAnimation
@@ -290,30 +70,18 @@
 					{@const parts = getCategoryParts(category.category)}
 					<button
 						class="STYLESHIFT-Sidebar-Item-Wrapper"
-						use:setupDragAndDrop={category}
+						use:controller.setupDragAndDrop={category}
 						style="animation-delay: {skipAnimation
 							? '0ms'
 							: i * 50 + 'ms'};"
-						onclick={() => {
-							const target =
-								scrollContainer?.querySelector(
-									`.STYLESHIFT-Category-Frame[data-category="${parts.text}"]`,
-								);
-							if (target) {
-								target.scrollIntoView({
-									behavior: "smooth",
-								});
-								activeCategoryLabel = parts.text;
-							}
-						}}
+						onclick={() => controller.scrollToCategory(parts)}
 					>
 						<LeftTitle
 							category={category.category}
-							selected={activeCategoryLabel === parts.text}
+							selected={controller.activeCategoryLabel === parts.text}
 							{isDeveloperMode}
 							editable={category.editable}
-							onMove={(dir) =>
-								moveCategory(category, dir)}
+							onMove={(dir) => controller.moveCategory(category, dir)}
 						/>
 					</button>
 				{/if}
@@ -322,14 +90,7 @@
 			{#if isDeveloperMode && isDevModulesLoaded}
 				<button
 					class="STYLESHIFT-Add-Category-button"
-					onclick={() => {
-						const categoryName = prompt(
-							"Enter category name:",
-						);
-						if (categoryName) {
-							onAddCategory(categoryName);
-						}
-					}}
+					onclick={controller.handleAddCategory}
 				>
 					+
 				</button>
@@ -341,33 +102,33 @@
 			tabindex="0"
 			aria-label="Resize sidebar"
 			title="Drag to resize sidebar"
-			onmousedown={handleResizeStart}
+			onmousedown={controller.handleResizeStart}
 		></div>
 	{/if}
 
 	<div class="STYLESHIFT-Content">
-		<Search bind:value={searchQuery} />
+		<Search bind:value={controller.searchQuery} />
 
 		<div
-			bind:this={scrollContainer}
+			bind:this={controller.scrollContainer}
 			class="STYLESHIFT-Scrollable STYLESHIFT-Settings-List"
-			onscroll={handleScroll}
+			onscroll={controller.handleScroll}
 		>
-			{#if buildInItemsData.length > 0}
+			{#if controller.buildInItemsData.length > 0}
 				<div class="STYLESHIFT-Section-Header">BUILD-IN</div>
 				<SettingsListRenderer
-					items={buildInItemsData}
-					{searchQuery}
+					items={controller.buildInItemsData}
+					searchQuery={controller.searchQuery}
 					{isDeveloperMode}
 				/>
 			{/if}
 
-			{#if addOnItemsData.length > 0}
+			{#if controller.addOnItemsData.length > 0}
 				<div class="STYLESHIFT-Category-Separator"></div>
 				<div class="STYLESHIFT-Section-Header">ADD-ON</div>
 				<SettingsListRenderer
-					items={addOnItemsData}
-					{searchQuery}
+					items={controller.addOnItemsData}
+					searchQuery={controller.searchQuery}
 					{isDeveloperMode}
 				/>
 			{/if}

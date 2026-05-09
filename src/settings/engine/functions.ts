@@ -24,33 +24,25 @@ const updateThrottleState: Record<string, "Idle" | "Waiting" | "Processing"> = {
 export async function deactivateSetting(settingId: string) {
 	const allSettings = await getAllStyleShiftSettings();
 	const setting = allSettings.find(s => s.id === settingId);
-	if (!setting) return;
+	if (!setting || activeSettingsState[settingId] === undefined) return;
 
-	if (activeSettingsState[settingId] !== undefined) {
-		switch (setting.type) {
-			case "checkbox":
-				if (activeSettingsState[settingId] && (setting as any).disableFunction) {
-					logger.debug("settings", `Executing disableFunction for ${settingId} (checkbox)`);
-					executeSettingScript(setting, "disableFunction");
-				}
-				break;
-			case "dropdown":
-				const previousValue = activeSettingsState[settingId];
-				const options = Array.isArray((setting as any).options) ? (setting as any).options : [];
-				const previousOption = options.find((opt: any) => opt.value === previousValue);
-				if (previousOption?.disableFunction) {
-					logger.debug("settings", `Executing disableFunction for ${settingId} (dropdown option: ${previousValue})`);
-					executeSettingScript(previousOption, "disableFunction");
-				}
-				break;
+	const currentValue = activeSettingsState[settingId];
+
+	if (setting.type === "checkbox" && currentValue) {
+		logger.debug("settings", `Executing disableFunction for ${settingId} (checkbox)`);
+		executeSettingScript(setting, "disableFunction");
+	} else if (setting.type === "dropdown") {
+		const options = Array.isArray((setting as any).options) ? (setting as any).options : [];
+		const option = options.find((opt: any) => opt.value === currentValue);
+		if (option?.disableFunction) {
+			logger.debug("settings", `Executing disableFunction for ${settingId} (dropdown option: ${currentValue})`);
+			executeSettingScript(option, "disableFunction");
 		}
-		const stylesheet = document.getElementById(`styleshift-stylesheet-${settingId}`);
-		if (stylesheet) {
-			stylesheet.remove();
-		}
-		delete activeSettingsState[settingId];
-		logger.debug("settings", `Deactivated setting: ${settingId}`);
 	}
+
+	document.getElementById(`styleshift-stylesheet-${settingId}`)?.remove();
+	delete activeSettingsState[settingId];
+	logger.debug("settings", `Deactivated setting: ${settingId}`);
 }
 
 /**

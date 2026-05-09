@@ -5,7 +5,6 @@ import Icon from '@ui/settings/components/primitives/Icon.svelte';
 import { settingsUi } from '@ui/settings/settingsApi';
 import { globalNotificationContainer, playUiAnimation } from '@ui/window/windowFactory';
 
-import { sleep } from './utilities';
 
 /**
  * Creates and displays a stylish notification in the extension's UI.
@@ -26,15 +25,9 @@ import { sleep } from './utilities';
 export async function createNotification({ icon = null, iconColor = "", title = "StyleShift", content = "", timeout = 3000 }) {
 	logger.info("extension", title, content);
 
-	const notificationFrame = await settingsUi.settingFrame(true, false, {
-		x: false,
-		y: true,
-	});
-
+	const notificationFrame = await settingsUi.settingFrame(true, false, { x: false, y: true });
 	notificationFrame.classList.add("STYLESHIFT-Notification");
-	setTimeout(() => {
-		globalNotificationContainer.append(notificationFrame);
-	}, 1);
+	setTimeout(() => globalNotificationContainer.append(notificationFrame), 1);
 
 	let iconUi: any = null;
 	const iconTarget = document.createElement("div");
@@ -42,100 +35,59 @@ export async function createNotification({ icon = null, iconColor = "", title = 
 	iconTarget.style.display = "none";
 	notificationFrame.append(iconTarget);
 
-	let currentIconColor = iconColor;
-
-	const updateIcon = (name: string | null, color: string = currentIconColor) => {
-		currentIconColor = color;
-		if (iconUi) {
-			unmount(iconUi);
-			iconUi = null;
-		}
-
+	const updateIcon = (name: string | null, color: string = iconColor) => {
+		if (iconUi) unmount(iconUi);
+		iconUi = null;
 		if (name) {
 			iconTarget.style.display = "flex";
-			iconUi = mount(Icon, {
-				target: iconTarget,
-				props: {
-					name,
-					size: 24,
-					color,
-				},
-			});
+			iconUi = mount(Icon, { target: iconTarget, props: { name, size: 24, color } });
 		} else {
 			iconTarget.style.display = "none";
 		}
 	};
+	if (icon) updateIcon(icon);
 
-	if (icon) {
-		updateIcon(icon);
-	}
+	const contentFrame = await settingsUi.settingFrame(false, true);
+	contentFrame.classList.add("STYLESHIFT-Notification-Content-Frame");
+	notificationFrame.append(contentFrame);
 
-	const notificationContentFrame = await settingsUi.settingFrame(false, true);
-	notificationContentFrame.classList.add("STYLESHIFT-Notification-Content-Frame");
-	notificationFrame.append(notificationContentFrame);
-
-	const titleUi = await settingsUi.settingFrame(true, false, {
-		x: false,
-		y: true,
-	});
+	const titleUi = await settingsUi.settingFrame(true, false, { x: false, y: true });
 	titleUi.classList.add("STYLESHIFT-Notification-Title");
 	titleUi.textContent = title;
-	notificationContentFrame.append(titleUi);
+	contentFrame.append(titleUi);
 
 	const contentUi = await settingsUi.settingFrame(true, false);
 	contentUi.classList.add("STYLESHIFT-Notification-Content");
 	contentUi.style.display = "block";
-	notificationContentFrame.append(contentUi);
+	contentFrame.append(contentUi);
 
-	const setContent = (newContent: any) => {
-		newContent = String(newContent);
-		contentUi.innerHTML = newContent.replaceAll("<script", "").replaceAll("/script>", "");
+	const setContent = (val: any) => {
+		contentUi.innerHTML = String(val).replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gim, "");
 	};
-
 	setContent(content);
 
 	async function close() {
 		await playUiAnimation(notificationFrame, "Notification-Hide");
-		if (iconUi) {
-			unmount(iconUi);
-		}
+		if (iconUi) unmount(iconUi);
 		notificationFrame.remove();
 	}
 
-	if (timeout == 0) {
-		const closeUi = await settingsUi.settingFrame(true, false, {
-			x: true,
-			y: true,
-		});
+	if (timeout === 0) {
+		const closeUi = await settingsUi.settingFrame(true, false, { x: true, y: true });
 		closeUi.className += " STYLESHIFT-Notification-Close";
 		closeUi.textContent = "X";
+		closeUi.onclick = close;
 		notificationFrame.append(closeUi);
-
-		closeUi.addEventListener("click", function (e) {
-			e.preventDefault();
-			close();
-		});
 	}
 
 	await playUiAnimation(notificationFrame, "Notification-Show");
-	setTimeout(async () => {
-		if (timeout > 0) {
-			await sleep(timeout);
-			close();
-		}
-	}, 0);
+	if (timeout > 0) setTimeout(close, timeout);
 
 	return {
-		setIcon: (newIcon: string) => {
-			updateIcon(newIcon, currentIconColor);
-		},
-		setIconColor: (newColor: string) => {
-			updateIcon(icon, newColor);
-		},
+		setIcon: (newIcon: string) => updateIcon(newIcon),
+		setIconColor: (newColor: string) => updateIcon(icon, newColor),
 		setContent,
-		setTitle: (newTitle: string) => {
-			titleUi.textContent = newTitle;
-		},
+		setTitle: (newTitle: string) => { titleUi.textContent = newTitle; },
 		close,
 	};
 }
