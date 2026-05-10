@@ -6,42 +6,38 @@ export class QuickCustomizeController {
 	rawCss = $state("");
 	settingName = $state("");
 	isEditorLoading = $state(false);
-	
+
 	basicStyles = $state<Record<string, string>>({
 		"background-color": "#ffffff",
-		"color": "#000000",
+		color: "#000000",
 		"font-size": "14px",
-		"opacity": "1",
+		opacity: "1",
 		"border-radius": "0px",
-		"display": "block",
+		display: "block",
 	});
 
 	enabledStyles = $state<Record<string, boolean>>({
 		"background-color": false,
-		"color": false,
+		color: false,
 		"font-size": false,
-		"opacity": false,
+		opacity: false,
 		"border-radius": false,
-		"display": false,
+		display: false,
 	});
 
 	defaultName = $derived(`Custom: ${this.selector.slice(0, 20)}${this.selector.length > 20 ? "..." : ""}`);
-	
+
 	previewStyleElement: HTMLStyleElement | null = null;
-	private props: { 
-		selector: string, 
-		initialData: any, 
-		onSave: (data: any) => void 
+	private props: {
+		selector: string;
+		initialData: any;
+		onSave: (data: any) => void;
 	};
 
-	constructor(props: { 
-		selector: string, 
-		initialData: any, 
-		onSave: (data: any) => void 
-	}) {
+	constructor(props: { selector: string; initialData: any; onSave: (data: any) => void }) {
 		this.props = props;
 		this.selector = props.selector;
-		
+
 		const initialData = props.initialData;
 		if (initialData) {
 			this.settingName = initialData.name;
@@ -103,8 +99,8 @@ export class QuickCustomizeController {
 			name: this.settingName || this.defaultName,
 			metadata: {
 				basicStyles: $state.snapshot(this.basicStyles),
-				enabledStyles: $state.snapshot(this.enabledStyles)
-			}
+				enabledStyles: $state.snapshot(this.enabledStyles),
+			},
 		});
 	}
 

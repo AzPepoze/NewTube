@@ -47,10 +47,7 @@
 
 		document.addEventListener("mousemove", onMouseMove);
 		document.addEventListener("mouseup", onMouseUp);
-		document.body.style.cursor =
-			position === "left" || position === "right"
-				? "col-resize"
-				: "row-resize";
+		document.body.style.cursor = position === "left" || position === "right" ? "col-resize" : "row-resize";
 	}
 </script>
 

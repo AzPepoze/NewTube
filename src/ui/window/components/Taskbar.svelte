@@ -10,11 +10,7 @@
 </script>
 
 {#if windowManager.minimizedWindows.length > 0}
-	<div
-		class="styleshift-taskbar"
-		in:fade={{ duration: 300 }}
-		out:fade={{ duration: 200 }}
-	>
+	<div class="styleshift-taskbar" in:fade={{ duration: 300 }} out:fade={{ duration: 200 }}>
 		{#each windowManager.minimizedWindows as window (window.id)}
 			<button
 				class="taskbar-item"

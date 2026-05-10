@@ -20,7 +20,7 @@ export const sidebarCategory: Category = {
 					border-radius: var(--nt-sidebar-roundness);
 					overflow: hidden;
 				}
-			`
+			`,
 		},
 		{
 			type: "numberSlide",
@@ -32,7 +32,8 @@ export const sidebarCategory: Category = {
 			step: 1,
 			value: 10,
 			varCss: "--nt-sidebar-roundness",
-		}, {
+		},
+		{
 			type: "checkbox",
 			id: "EnableSidebarBlur",
 			name: "Sidebar Blur",
@@ -42,7 +43,7 @@ export const sidebarCategory: Category = {
 				#guide[position="left"] {
 					backdrop-filter: blur(10px);
 				}
-			`
-		}
+			`,
+		},
 	],
 };

@@ -1,6 +1,11 @@
 import { createError, createNotification } from "@core/shared/notifications";
 import { appBootstrap, shouldEnableExtension } from "@extensions/youtube";
-import { attachBehaviorToSetting, initializeAllActiveSettings, reactivateAllSettings, registerSettingListener } from "@settings/engine/functions";
+import {
+	attachBehaviorToSetting,
+	initializeAllActiveSettings,
+	reactivateAllSettings,
+	registerSettingListener,
+} from "@settings/engine/functions";
 import { getAllStyleShiftItems, getAllStyleShiftSettings, updateStyleShiftItems } from "@settings/registry/items";
 import { createStylesheetHolder, injectMaterialIconsStyles } from "@settings/stylesheet/styleSheet";
 import { type Category } from "@settings/types/styleshiftTypes";
@@ -14,7 +19,11 @@ import { synchronizeAvailableFunctions } from "./runtime/controller";
 import { getDocumentBody, getDocumentHead, rearrangeSelector } from "./shared/domHelpers";
 import { disableExtension, enableExtension, toggleDeveloperMode } from "./shared/extensionHelpers";
 import { sleep } from "./shared/utilities";
-import { initializeDefaultAddOnItems, performStorageGarbageCollection, populateMissingDefaultSettings } from "./storage/maintenance";
+import {
+	initializeDefaultAddOnItems,
+	performStorageGarbageCollection,
+	populateMissingDefaultSettings,
+} from "./storage/maintenance";
 import { getRootValue, initializeStorageConnection, persistCachedDataToStorage } from "./storage/manager";
 import { EXTENSION_BASE_URL, IS_FIREFOX, IS_IN_EXTENSION_SETTINGS_PAGE, currentContextDomain } from "./shared/context";
 export { EXTENSION_BASE_URL, IS_FIREFOX, IS_IN_EXTENSION_SETTINGS_PAGE, currentContextDomain };
@@ -25,7 +34,6 @@ export { EXTENSION_BASE_URL, IS_FIREFOX, IS_IN_EXTENSION_SETTINGS_PAGE, currentC
 
 export const EXTENSION_VERSION = chrome.runtime.getManifest().version;
 export let isExtensionReady = false;
-
 
 // Global container for StyleShift elements that shouldn't be directly in the body
 export const styleshiftContainer: HTMLElement = document.createElement("div");
@@ -83,7 +91,6 @@ async function bootstrapExtension(): Promise<void> {
 	await injectMaterialIconsStyles();
 	await updateStyleShiftItems();
 	await populateMissingDefaultSettings();
-
 
 	// Set up global theme listeners
 	registerSettingListener("EnableAppLightTheme", syncAllThemes, true);
@@ -205,7 +212,6 @@ chrome.runtime.onMessage.addListener(async (message) => {
 			initializeAllActiveSettings();
 			updateAllUiComponents();
 		}
-
 
 		if (message === "toggle_settings") {
 			if (!isExtensionReady) {

@@ -1,6 +1,11 @@
 import { loadWorker } from "@core/runtime/controller";
 import { getDocumentBody } from "@core/shared/domHelpers";
-import { onYoutubeFullscreen, onYoutubeNavigate, onYoutubeSmallMode, videoElement } from "@extensions/youtube/modules/youtube";
+import {
+	onYoutubeFullscreen,
+	onYoutubeNavigate,
+	onYoutubeSmallMode,
+	videoElement,
+} from "@extensions/youtube/modules/youtube";
 import { registerSettingListener } from "@settings/engine/functions";
 import { logger } from "@shared/logger";
 import { showBg } from "../background/main";
@@ -93,8 +98,7 @@ export async function enableVideoAmbient() {
 	await updateVideoAmbientSettings();
 
 	const init = async () => {
-		if (document.getElementById("newtube-bg-container") || !state.enabled || state.sessionId !== mySession)
-			return;
+		if (document.getElementById("newtube-bg-container") || !state.enabled || state.sessionId !== mySession) return;
 		logger.info("video-ambient", "Initializing Video Ambient...", { engine: settings.engine, session: mySession });
 		const app = (await getDocumentBody()) || document.body;
 		if (!app || state.sessionId !== mySession) return;
@@ -229,7 +233,6 @@ export async function disableVideoAmbient(force = false) {
 	state.enabled = false;
 	showBg();
 
-
 	const container = state.container;
 	if (container) {
 		container.style.opacity = "0";
@@ -299,7 +302,6 @@ export async function disableVideoAmbient(force = false) {
 		lastProcessTime: 0,
 		renderMethod: "Unknown",
 	});
-
 }
 
 export function registerVideoBgListeners() {

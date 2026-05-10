@@ -7,7 +7,8 @@ export const subtitlesCategory: Category = {
 			type: "checkbox",
 			id: "EnableCustomSubtitles",
 			name: "Custom Subtitles",
-			description: "Enables advanced styling for YouTube's closed captions. When active, you can customize colors, fonts, and shadows to make text easier to read.",
+			description:
+				"Enables advanced styling for YouTube's closed captions. When active, you can customize colors, fonts, and shadows to make text easier to read.",
 			value: true,
 			enableCss: `
                 .ytp-caption-segment {
@@ -38,7 +39,8 @@ export const subtitlesCategory: Category = {
 			type: "color",
 			id: "SubtitleBackgroundColor",
 			name: "Background Color",
-			description: "Changes the color of the box behind the subtitle text. Set to transparent for a floating text look.",
+			description:
+				"Changes the color of the box behind the subtitle text. Set to transparent for a floating text look.",
 			value: "#00000000",
 			varCss: "--nt-subtitle-bg",
 			require: { EnableCustomSubtitles: true },
@@ -71,7 +73,8 @@ export const subtitlesCategory: Category = {
 			type: "color",
 			id: "SubtitleShadowColor",
 			name: "Shadow Color",
-			description: "Sets the color of the drop shadow behind the subtitle text, helping it stand out against any background.",
+			description:
+				"Sets the color of the drop shadow behind the subtitle text, helping it stand out against any background.",
 			value: "#000000ff",
 			varCss: "--nt-subtitle-shadow-color",
 			require: { EnableCustomSubtitles: true },
@@ -80,7 +83,8 @@ export const subtitlesCategory: Category = {
 			type: "numberSlide",
 			id: "SubtitleShadowBlur",
 			name: "Shadow Blur",
-			description: "Adjusts the softness of the subtitle shadow. Higher values create a soft glow, while lower values keep it sharp.",
+			description:
+				"Adjusts the softness of the subtitle shadow. Higher values create a soft glow, while lower values keep it sharp.",
 			value: 2,
 			min: 0,
 			max: 20,

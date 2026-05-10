@@ -1,11 +1,5 @@
 <script lang="ts">
-	let {
-		title,
-		color = "#999999",
-		children = undefined,
-		collapsed = $bindable(true),
-		onToggle = undefined,
-	} = $props();
+	let { title, color = "#999999", children = undefined, collapsed = $bindable(true), onToggle = undefined } = $props();
 
 	function handleToggle() {
 		collapsed = !collapsed;
@@ -13,16 +7,11 @@
 	}
 </script>
 
-<div
-	class="styleshift-dev-card {collapsed ? 'collapsed' : ''}"
-	style:--card-color={color}
->
+<div class="styleshift-dev-card {collapsed ? 'collapsed' : ''}" style:--card-color={color}>
 	<button class="styleshift-dev-card-header" onclick={handleToggle}>
 		<span class="styleshift-dev-card-title">{title}</span>
 		<div class="styleshift-dev-card-chevrons">
-			<span class="styleshift-dev-card-chevron"
-				>{collapsed ? "▼" : "▲"}</span
-			>
+			<span class="styleshift-dev-card-chevron">{collapsed ? "▼" : "▲"}</span>
 		</div>
 	</button>
 

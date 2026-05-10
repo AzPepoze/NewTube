@@ -17,7 +17,7 @@ export class ConditionStatusController {
 	}
 
 	get conditionItems() {
-		return Object.keys(this.condition).map(id => {
+		return Object.keys(this.condition).map((id) => {
 			const targetValue = this.condition[id];
 			const info = this.requiredSettings[id];
 			const actualValue = info?.value;
@@ -30,7 +30,7 @@ export class ConditionStatusController {
 				targetValue,
 				actualValue,
 				met,
-				options: info?.options
+				options: info?.options,
 			};
 		});
 	}

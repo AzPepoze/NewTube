@@ -1,19 +1,19 @@
-import { jszipInstance as jszip, saveAndRefreshAll } from '@core/runtime/controller';
-import { initializeRequiredStorageStructures as setNullSave } from '@core/storage/maintenance';
-import { ALLOWED_STORAGE_KEYS, cachedStorageData as savedData } from '@core/storage/manager';
-import type { Category, Setting } from '@settings/types/styleshiftTypes';
-import { logger } from '@shared/logger';
+import { jszipInstance as jszip, saveAndRefreshAll } from "@core/runtime/controller";
+import { initializeRequiredStorageStructures as setNullSave } from "@core/storage/maintenance";
+import { ALLOWED_STORAGE_KEYS, cachedStorageData as savedData } from "@core/storage/manager";
+import type { Category, Setting } from "@settings/types/styleshiftTypes";
+import { logger } from "@shared/logger";
 
-import { createError, createNotification, createWarning } from './notifications';
-import { deepClone, sleep } from './utilities';
+import { createError, createNotification, createWarning } from "./notifications";
+import { deepClone, sleep } from "./utilities";
 
 /**
  * Imports StyleShift data from an object and updates the cached storage.
  * Shows a progress notification during the process.
- * 
+ *
  * @param {object} styleshiftData - The object containing StyleShift configuration data.
  * @returns {Promise<void>}
- * 
+ *
  * @example
  * await importStyleShiftData(myConfigObject);
  */
@@ -52,9 +52,9 @@ export async function importStyleShiftData(styleshiftData: object) {
 /**
  * Exports current add-on items and settings into a data object.
  * Cleans up internal properties (like Highlight_color, editable) before exporting.
- * 
+ *
  * @returns {any} The cleaned export data object.
- * 
+ *
  * @example
  * const data = exportStyleShiftData();
  * console.log(JSON.stringify(data));
@@ -69,7 +69,7 @@ export function exportStyleShiftData() {
 	}
 
 	const addOnItems = exportData["addOnStyleShiftItems"];
- 
+
 	if (addOnItems) {
 		for (const thisCategory of addOnItems) {
 			delete thisCategory.Highlight_color;
@@ -88,10 +88,10 @@ export function exportStyleShiftData() {
 
 /**
  * Imports StyleShift data from a JSON formatted string.
- * 
+ *
  * @param {string} text - The JSON string to parse and import.
  * @returns {Promise<void>}
- * 
+ *
  * @example
  * await importStyleShiftJsonText('{"currentSettings": {}}');
  */
@@ -101,9 +101,9 @@ export async function importStyleShiftJsonText(text: string) {
 
 /**
  * Exports StyleShift data as a prettified JSON string.
- * 
+ *
  * @returns {string} The JSON string representation of the exported data.
- * 
+ *
  * @example
  * const jsonText = exportStyleShiftJsonText();
  */
@@ -114,11 +114,11 @@ export function exportStyleShiftJsonText() {
 /**
  * Parses a StyleShift backup ZIP file into a structured data object.
  * This function extracts categories, settings, and property files from the ZIP.
- * 
+ *
  * @param {File | Blob} zipFile - The ZIP file to parse.
  * @returns {Promise<any>} A promise resolving to the parsed StyleShift data object.
  * @throws {Error} If JSZip is not loaded or the ZIP structure is invalid.
- * 
+ *
  * @example
  * const data = await parseStyleShiftZip(myZipBlob);
  */
@@ -141,7 +141,7 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 	}
 
 	let itemsBasePath = "";
-	if (Object.keys(loadedZip.files).some(f => f.startsWith("addOnStyleShiftItems/"))) {
+	if (Object.keys(loadedZip.files).some((f) => f.startsWith("addOnStyleShiftItems/"))) {
 		itemsBasePath = "addOnStyleShiftItems/";
 	}
 
@@ -176,8 +176,8 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 			if (!isNaN(indexPart)) categoryIndex = indexPart;
 		}
 
-		const categoryConfig = loadedZip.file(`${categoryPathName}/config.json`) ||
-			loadedZip.file(`${categoryPathName}/Config.json`);
+		const categoryConfig =
+			loadedZip.file(`${categoryPathName}/config.json`) || loadedZip.file(`${categoryPathName}/Config.json`);
 
 		if (!categoryConfig) continue;
 
@@ -215,14 +215,15 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 				if (!isNaN(indexPart)) settingIndex = indexPart;
 			}
 
-			const settingConfig = loadedZip.file(`${settingPathName}/config.json`) ||
-				loadedZip.file(`${settingPathName}/Config.json`);
+			const settingConfig =
+				loadedZip.file(`${settingPathName}/config.json`) || loadedZip.file(`${settingPathName}/Config.json`);
 			if (!settingConfig) continue;
 
 			const settingData = JSON.parse(await settingConfig.async("string")) || {};
 
 			for (const filePath of Object.keys(loadedZip.files)) {
-				const isPropertyFile = filePath.startsWith(settingPath) &&
+				const isPropertyFile =
+					filePath.startsWith(settingPath) &&
 					!filePath.endsWith("/") &&
 					!filePath.toLowerCase().endsWith("/config.json") &&
 					!filePath.toLowerCase().endsWith("/order.json");
@@ -240,9 +241,9 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 		categoryData["settings"] = settings.filter((s) => s !== null);
 		addOnStyleShiftItems[categoryIndex] = categoryData;
 	}
- 
+
 	const styleshiftData: any = {
-		addOnStyleShiftItems: addOnStyleShiftItems.filter(c => c !== null),
+		addOnStyleShiftItems: addOnStyleShiftItems.filter((c) => c !== null),
 	};
 
 	if (currentSettings) {
@@ -254,10 +255,10 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 
 /**
  * Imports StyleShift data from a backup ZIP file and applies it to the extension immediately.
- * 
+ *
  * @param {File | Blob} zipFile - The backup ZIP file.
  * @returns {Promise<void>}
- * 
+ *
  * @example
  * await importStyleShiftZip(myZipFile);
  */

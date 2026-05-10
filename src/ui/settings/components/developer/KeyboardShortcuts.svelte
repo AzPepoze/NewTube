@@ -122,8 +122,7 @@
 	}
 
 	.shortcut-key {
-		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco,
-			"Roboto Mono", "Courier New", monospace;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
 		font-size: 12px;
 		font-weight: 700;
 		background: var(--theme-0-20);

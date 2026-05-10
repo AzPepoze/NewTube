@@ -7,14 +7,10 @@ export async function checkAndShowWelcome() {
 	const hasShown = await getRootValue("welcomeShown");
 
 	if (!hasShown) {
-		const hasTime = await showUserConfirmation(
-			"Do you have a moment?",
-			"Welcome to NewTube!",
-			{
-				confirmLabel: "Uh.. Yes?",
-				cancelLabel: "Nope"
-			}
-		);
+		const hasTime = await showUserConfirmation("Do you have a moment?", "Welcome to NewTube!", {
+			confirmLabel: "Uh.. Yes?",
+			cancelLabel: "Nope",
+		});
 
 		if (!hasTime) {
 			await saveRootValue("welcomeShown", true);
@@ -33,8 +29,8 @@ export async function checkAndShowWelcome() {
 					await saveRootValue("welcomeShown", true);
 					unmount(component);
 					target.remove();
-				}
-			}
+				},
+			},
 		});
 	}
 }

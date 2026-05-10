@@ -11,7 +11,8 @@ export const videoAutomationCategory: Category = {
 			type: "checkbox",
 			id: "EnableAutoTheaterMode",
 			name: "Auto Theater",
-			description: "Automatically switches the player to 'Theater Mode' every time you open a new video for a larger viewing area.",
+			description:
+				"Automatically switches the player to 'Theater Mode' every time you open a new video for a larger viewing area.",
 			value: false,
 			enableFunction: setupAutoTheater,
 		},
@@ -32,13 +33,15 @@ export const videoAutomationCategory: Category = {
 			type: "checkbox",
 			id: "EnableAutoPictureInPicture",
 			name: "Auto PiP",
-			description: "Automatically shrinks the video into a small floating window when you switch browser tabs.\n\nNote: Need to click somewhere on the page after back to the tab to make the Auto PiP work.\n(Security limitations sorry for inconvenience.)",
+			description:
+				"Automatically shrinks the video into a small floating window when you switch browser tabs.\n\nNote: Need to click somewhere on the page after back to the tab to make the Auto PiP work.\n(Security limitations sorry for inconvenience.)",
 			value: true,
 			enableFunction: enableAutoPip,
 			disableFunction: disableAutoPip,
 			lock: {
 				condition: !IS_FIREFOX,
-				message: "Picture-in-Picture functionality has security limitations in Firefox and has been disabled for your protection.",
+				message:
+					"Picture-in-Picture functionality has security limitations in Firefox and has been disabled for your protection.",
 			},
 		},
 		{
@@ -51,7 +54,8 @@ export const videoAutomationCategory: Category = {
 			disableFunction: disableAutoPip,
 			lock: {
 				condition: !IS_FIREFOX,
-				message: "Picture-in-Picture functionality has security limitations in Firefox and has been disabled for your protection.",
+				message:
+					"Picture-in-Picture functionality has security limitations in Firefox and has been disabled for your protection.",
 			},
 		},
 		{

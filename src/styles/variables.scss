@@ -74,10 +74,10 @@
 	--text-secondary: var(--fg-opacity-80);
 	--text-muted: var(--fg-opacity-50);
 	--text-disabled: var(--fg-opacity-70);
-	
+
 	--border-subtle: var(--fg-opacity-10);
 	--border-strong: var(--fg-opacity-20);
-	
+
 	--surface-highlight: var(--fg-opacity-10);
 	--surface-hover: var(--fg-opacity-20);
 
@@ -90,11 +90,7 @@
 	--border-radius: 12px;
 	--drag-top-bg: rgba(128, 128, 128, 0.2);
 
-	--category-title-bg: radial-gradient(
-		at center top,
-		rgb(255, 255, 255),
-		var(--fg-opacity-50)
-	);
+	--category-title-bg: radial-gradient(at center top, rgb(255, 255, 255), var(--fg-opacity-50));
 	--category-title-text-color: black;
 
 	--category-left-bg: linear-gradient(90deg, transparent, var(--fg-opacity-10));
@@ -177,14 +173,10 @@
 
 	/* --- Refined Light Theme Accents --- */
 	--theme-1: #d81b60; /* Darker pink for better visibility on light background */
-	
-	--category-title-bg: radial-gradient(
-		at center top,
-		#ffffff,
-		var(--fg-opacity-05)
-	);
+
+	--category-title-bg: radial-gradient(at center top, #ffffff, var(--fg-opacity-05));
 	--category-title-text-color: var(--text-primary);
-	
+
 	--category-left-title-bg-selected: var(--fg-opacity-10);
 	--category-left-title-text-color-selected: var(--theme-0);
 

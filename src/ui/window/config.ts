@@ -11,7 +11,7 @@ export async function createConfigUi(skipAnimation = false) {
 		width: "60%",
 		height: "85%",
 		skipAnimation,
-		title: "Config Editor"
+		title: "Config Editor",
 	});
 
 	configWindow.closeButton.addEventListener(

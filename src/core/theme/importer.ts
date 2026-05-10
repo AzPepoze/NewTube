@@ -1,19 +1,23 @@
-import { deepClone, sleep } from '@/core/shared/utilities';
-import { initializeDeveloperEnvironment, jszipInstance } from '@core/runtime/controller';
-import { downloadFile } from '@core/shared/extensionHelpers';
-import { createError, createNotification } from '@core/shared/notifications';
-import { performStorageGarbageCollection } from '@core/storage/maintenance';
+import { deepClone, sleep } from "@/core/shared/utilities";
+import { initializeDeveloperEnvironment, jszipInstance } from "@core/runtime/controller";
+import { downloadFile } from "@core/shared/extensionHelpers";
+import { createError, createNotification } from "@core/shared/notifications";
+import { performStorageGarbageCollection } from "@core/storage/maintenance";
 import {
-	getRootValue, persistCachedDataToStorage, saveAddOnStyleShiftItems, saveRootValue,
-	saveUserSetting, suppressStoragePersistence
-} from '@core/storage/manager';
-import { triggerSettingsUpdateBatch } from '@settings/engine/functions';
-import { styleshiftCategoryList } from '@settings/registry/defaultItems';
-import { updateStyleShiftItems } from '@settings/registry/items';
-import { logger } from '@shared/logger';
-import { showUserConfirmation } from '@ui/window/windowFactory';
+	getRootValue,
+	persistCachedDataToStorage,
+	saveAddOnStyleShiftItems,
+	saveRootValue,
+	saveUserSetting,
+	suppressStoragePersistence,
+} from "@core/storage/manager";
+import { triggerSettingsUpdateBatch } from "@settings/engine/functions";
+import { styleshiftCategoryList } from "@settings/registry/defaultItems";
+import { updateStyleShiftItems } from "@settings/registry/items";
+import { logger } from "@shared/logger";
+import { showUserConfirmation } from "@ui/window/windowFactory";
 
-import { convertToExportSetting } from './exportConverter';
+import { convertToExportSetting } from "./exportConverter";
 
 /**
  * Resolves a stored color ID into a CSS-ready RGBA string.
@@ -40,9 +44,20 @@ export async function resolveRgbaFromStorage(colorBaseId: string): Promise<strin
 export async function validateAddOnItemsForJs(items: any[]): Promise<boolean> {
 	let hasJs = false;
 	for (const item of items) {
-		const jsProperties = ["clickFunction", "setupFunction", "updateFunction", "enableFunction", "disableFunction", "constantCss", "uiFunction"];
+		const jsProperties = [
+			"clickFunction",
+			"setupFunction",
+			"updateFunction",
+			"enableFunction",
+			"disableFunction",
+			"constantCss",
+			"uiFunction",
+		];
 		for (const prop of jsProperties) {
-			if (item[prop] && (typeof item[prop] === "function" || (typeof item[prop] === "string" && item[prop].trim() !== ""))) {
+			if (
+				item[prop] &&
+				(typeof item[prop] === "function" || (typeof item[prop] === "string" && item[prop].trim() !== ""))
+			) {
 				hasJs = true;
 				break;
 			}
@@ -65,13 +80,16 @@ Do you want to install these items?`,
 /**
  * Imports preset data into the current user settings.
  */
-export async function importPresetToSettings(presetData: any, persist = true, themeName: string | null = null): Promise<void> {
+export async function importPresetToSettings(
+	presetData: any,
+	persist = true,
+	themeName: string | null = null,
+): Promise<void> {
 	if (!persist) suppressStoragePersistence(true);
 	let loaderUi: any = null;
 
 	if (themeName) {
-		const isReverting =
-			themeName.toLowerCase().includes("setting") || themeName.toLowerCase().includes("previous");
+		const isReverting = themeName.toLowerCase().includes("setting") || themeName.toLowerCase().includes("previous");
 		loaderUi = await createNotification({
 			icon: "palette",
 			title: isReverting ? `Restoring: ${themeName}` : `Applying Theme: ${themeName}`,
@@ -107,7 +125,7 @@ export async function importPresetToSettings(presetData: any, persist = true, th
 		if (typeof value === "string" && (value.startsWith("{") || value.startsWith("["))) {
 			try {
 				processedValue = JSON.parse(value);
-			} catch (_ignore) { }
+			} catch (_ignore) {}
 		}
 
 		await saveUserSetting(key, processedValue, true);
@@ -115,7 +133,6 @@ export async function importPresetToSettings(presetData: any, persist = true, th
 		changedKeys.push(key);
 		changesDetected = true;
 	};
-
 
 	if (loaderUi) loaderUi.setContent("Parsing theme data...");
 
@@ -186,15 +203,10 @@ export async function exportCurrentSettingsAsString(): Promise<string> {
 	return JSON.stringify(settingsObj, null, 2);
 }
 
-
 /**
  * Common utility for generating and downloading a ZIP file with a notification.
  */
-export async function downloadZip(
-	zipName: string,
-	folderName: string,
-	files: Record<string, string | Blob>,
-) {
+export async function downloadZip(zipName: string, folderName: string, files: Record<string, string | Blob>) {
 	const notification = await createNotification({
 		icon: "inventory_2",
 		title: "Preparing Export",
@@ -231,9 +243,7 @@ export async function downloadZip(
 	} catch (error) {
 		notification.close();
 		logger.error("export", "ZIP Export Failed", error);
-		createError(
-			`Failed to generate ZIP: ${error instanceof Error ? error.message : String(error)}`,
-		);
+		createError(`Failed to generate ZIP: ${error instanceof Error ? error.message : String(error)}`);
 	}
 }
 
@@ -241,20 +251,15 @@ export async function downloadZip(
  * Recursively adds StyleShift items (categories and settings) to a ZIP file structure.
  * Uses a manifest-based ordering system (order.json) for clean folder names.
  */
-export async function addItemsToZip(
-	items: any[],
-	files: Record<string, string | Blob>,
-	baseFolder: string = "",
-) {
+export async function addItemsToZip(items: any[], files: Record<string, string | Blob>, baseFolder: string = "") {
 	const prefix = baseFolder ? (baseFolder.endsWith("/") ? baseFolder : `${baseFolder}/`) : "";
 	const categoryOrder: string[] = [];
 
 	for (const thisCategory of items) {
-		const categoryName = (
-			thisCategory.category?.label ||
-			thisCategory.label ||
-			"Untitled Category"
-		).replace(/\/|\n/g, "_");
+		const categoryName = (thisCategory.category?.label || thisCategory.label || "Untitled Category").replace(
+			/\/|\n/g,
+			"_",
+		);
 		categoryOrder.push(categoryName);
 
 		const categoryPath = `${prefix}${categoryName}`;
@@ -272,11 +277,7 @@ export async function addItemsToZip(
 		if (thisCategory.settings) {
 			const settingOrder: string[] = [];
 			for (const originalSetting of thisCategory.settings) {
-				const settingName = (
-					originalSetting.name ||
-					originalSetting.id ||
-					"Untitled Setting"
-				).replace(/\/|\n/g, "_");
+				const settingName = (originalSetting.name || originalSetting.id || "Untitled Setting").replace(/\/|\n/g, "_");
 				settingOrder.push(settingName);
 
 				const settingPath = `${categoryPath}/${settingName}`;
@@ -303,12 +304,8 @@ export async function addItemsToZip(
 /**
  * Packs multiple add-on StyleShift items into a ZIP file using the high-fidelity structure.
  */
-export async function exportStyleShiftZip(
-	styleshiftData: any[],
-	zipFileName: string,
-) {
+export async function exportStyleShiftZip(styleshiftData: any[], zipFileName: string) {
 	const files: Record<string, string | Blob> = {};
 	await addItemsToZip(styleshiftData, files);
 	await downloadZip(zipFileName, "", files);
 }
-

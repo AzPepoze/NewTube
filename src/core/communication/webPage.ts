@@ -31,12 +31,7 @@ const buildInFunctions = {
 	},
 
 	createStyleShiftSettingUi: async function (type, thisSetting, ...args) {
-		const uiId = await StyleShift["buildIn"]["_call_function"](
-			"createStyleShiftSettingUi",
-			type,
-			thisSetting,
-			...args,
-		);
+		const uiId = await StyleShift["buildIn"]["_call_function"]("createStyleShiftSettingUi", type, thisSetting, ...args);
 
 		const ui = await StyleShift["buildIn"]["waitForElement"](`.StyleShift-Station [styleshift-ui-id="${uiId}"]`);
 

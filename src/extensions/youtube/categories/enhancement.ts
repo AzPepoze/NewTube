@@ -14,7 +14,8 @@ export const enhancementCategory: Category = {
 			type: "checkbox",
 			id: "EnhancementSwapLayout",
 			name: "Swap Sidebar",
-			description: "Swaps the positions of the video player and the sidebar (recommendations/chat). Moves the sidebar to the left and the video to the right.",
+			description:
+				"Swaps the positions of the video player and the sidebar (recommendations/chat). Moves the sidebar to the left and the video to the right.",
 			value: false,
 			enableCss: `
                 #columns {
@@ -31,7 +32,8 @@ export const enhancementCategory: Category = {
 			type: "checkbox",
 			id: "EnhancementIndependentScroll",
 			name: "Independent Scroll",
-			description: "Allows you to scroll through the sidebar and comments independently without moving the video player. Note: This feature is incompatible with Flyout Player.",
+			description:
+				"Allows you to scroll through the sidebar and comments independently without moving the video player. Note: This feature is incompatible with Flyout Player.",
 			value: false,
 			enableCss: `
                 ytd-watch-flexy #columns {
@@ -73,16 +75,16 @@ export const enhancementCategory: Category = {
 				}
 			`,
 			require: {
-				"EnhancementIndependentScroll": true
-			}
+				EnhancementIndependentScroll: true,
+			},
 		},
 		{
 			type: "conditionSetting",
 			id: "EnhancementIndependentScrollLayout-Video-Side",
 			name: "Independent Scroll Layout - Video | Sidebar",
 			condition: {
-				"EnhancementSwapLayout": false,
-				"EnhancementIndependentScroll": true
+				EnhancementSwapLayout: false,
+				EnhancementIndependentScroll: true,
 			},
 			enableCss: `
 				${primaryContainer} {
@@ -100,8 +102,8 @@ export const enhancementCategory: Category = {
 			id: "EnhancementIndependentScrollLayout-Side-Video",
 			name: "Independent Scroll Layout - Sidebar | Video",
 			condition: {
-				"EnhancementSwapLayout": true,
-				"EnhancementIndependentScroll": true
+				EnhancementSwapLayout: true,
+				EnhancementIndependentScroll: true,
 			},
 			enableCss: `
 				${secondaryContainer} {
@@ -121,7 +123,8 @@ export const enhancementCategory: Category = {
 			type: "checkbox",
 			id: "EnhancementFlyoutPlayer",
 			name: "Flyout Player",
-			description: "Attaches a small, persistent version of the video player to the corner of your screen when you scroll down to read comments. Keeps the video visible at all times.",
+			description:
+				"Attaches a small, persistent version of the video player to the corner of your screen when you scroll down to read comments. Keeps the video visible at all times.",
 			value: true,
 			enableFunction: enableFlyout,
 			disableFunction: disableFlyout,
@@ -135,7 +138,8 @@ export const enhancementCategory: Category = {
 			type: "checkbox",
 			id: "EnhancementAutoChatReplay",
 			name: "Auto Chat Replay",
-			description: "Automatically enables and expands the 'Chat Replay' window for premiered videos and past livestreams.",
+			description:
+				"Automatically enables and expands the 'Chat Replay' window for premiered videos and past livestreams.",
 			value: false,
 			enableFunction: setupAutoShowChatReplay,
 			disableFunction: disableAutoShowChatReplay,

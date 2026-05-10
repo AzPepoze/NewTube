@@ -29,6 +29,8 @@
         "eslint-plugin-svelte": "^3.17.1",
         "fs-extra": "^11.3.5",
         "globals": "^17.6.0",
+        "prettier": "^3.8.3",
+        "prettier-plugin-svelte": "^3.5.1",
         "sass": "^1.99.0",
         "svelte": "^5.55.5",
         "svelte-check": "^4.4.8",
@@ -734,6 +736,10 @@
     "powershell-utils": ["powershell-utils@0.1.0", "", {}, "sha512-dM0jVuXJPsDN6DvRpea484tCUaMiXWjuCn++HGTqUWzGDjv5tZkEZldAJ/UMlqRYGFrD/etByo4/xOuC/snX2A=="],
 
     "prelude-ls": ["prelude-ls@1.2.1", "", {}, "sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g=="],
+
+    "prettier": ["prettier@3.8.3", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-7igPTM53cGHMW8xWuVTydi2KO233VFiTNyF5hLJqpilHfmn8C8gPf+PS7dUT64YcXFbiMGZxS9pCSxL/Dxm/Jw=="],
+
+    "prettier-plugin-svelte": ["prettier-plugin-svelte@3.5.1", "", { "peerDependencies": { "prettier": "^3.0.0", "svelte": "^3.2.0 || ^4.0.0-next.0 || ^5.0.0-next.0" } }, "sha512-65+fr5+cgIKWKiqM1Doum4uX6bY8iFCdztvvp2RcF+AJoieaw9kJOFMNcJo/bkmKYsxFaM9OsVZK/gWauG/5mg=="],
 
     "prism-code-editor": ["prism-code-editor@5.1.0", "", {}, "sha512-f88t0IFxdHouB9GxpoGWVD4hV68VvCoP2R3XVkKDB0UTQN1cFoT8u20j69M4KUj94FaarR40tQgOzO9VXjRv3w=="],
 

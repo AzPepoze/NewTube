@@ -1,5 +1,5 @@
-import type { Color_obj } from '@/settings/types/styleshiftTypes';
-import { logger } from '@shared/logger';
+import type { Color_obj } from "@/settings/types/styleshiftTypes";
+import { logger } from "@shared/logger";
 
 export function colorObjToHex({ hex, alpha }: Color_obj): string {
 	const processedAlpha = Math.round((alpha / 100) * 255)

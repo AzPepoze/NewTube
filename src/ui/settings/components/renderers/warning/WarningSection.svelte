@@ -17,9 +17,15 @@
 		requiredSettings: Record<string, any>;
 	} = $props();
 
-	const controller = $derived(new WarningSectionController({
-		isLocked, lockMessage, requirementsMet, require, requiredSettings
-	}));
+	const controller = $derived(
+		new WarningSectionController({
+			isLocked,
+			lockMessage,
+			requirementsMet,
+			require,
+			requiredSettings,
+		}),
+	);
 
 	function scrollToSetting(id: string) {
 		const el = document.getElementById(id);
@@ -140,7 +146,7 @@
 			gap: 8px;
 
 			&::before {
-				content: '•';
+				content: "•";
 				color: var(--fg-opacity-30);
 			}
 		}
@@ -176,8 +182,14 @@
 	}
 
 	@keyframes slideIn {
-		from { opacity: 0; transform: translateY(-5px); }
-		to { opacity: 1; transform: translateY(0); }
+		from {
+			opacity: 0;
+			transform: translateY(-5px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
 	:global(.highlight-flash) {
@@ -185,8 +197,14 @@
 	}
 
 	@keyframes flash-animation {
-		0% { box-shadow: 0 0 0 0 var(--theme-0); }
-		20% { box-shadow: 0 0 0 4px var(--theme-0); }
-		100% { box-shadow: 0 0 0 0 transparent; }
+		0% {
+			box-shadow: 0 0 0 0 var(--theme-0);
+		}
+		20% {
+			box-shadow: 0 0 0 4px var(--theme-0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 transparent;
+		}
 	}
 </style>

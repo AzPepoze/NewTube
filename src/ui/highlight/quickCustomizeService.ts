@@ -16,7 +16,7 @@ export async function startQuickCustomize(existingSetting?: any) {
 	}
 
 	logger.info("QuickCustomize", "Starting quick customize flow");
-	
+
 	await openSelectorPicker(
 		(selector) => {
 			logger.info("QuickCustomize", "Element selected for customization", selector);
@@ -24,7 +24,7 @@ export async function startQuickCustomize(existingSetting?: any) {
 		},
 		() => {
 			logger.info("QuickCustomize", "Selection canceled");
-		}
+		},
 	);
 }
 
@@ -44,41 +44,43 @@ async function openQuickCustomizeUI(selector: string, existingSetting?: any) {
 		target: pickerWindow.contentElement,
 		props: {
 			selector,
-			initialData: existingSetting ? {
-				name: existingSetting.name,
-				mode: existingSetting.quickCustomize?.mode || "basic",
-				basicStyles: existingSetting.quickCustomize?.metadata?.basicStyles,
-				enabledStyles: existingSetting.quickCustomize?.metadata?.enabledStyles,
-				rawCss: existingSetting.enableCss
-			} : null,
+			initialData: existingSetting
+				? {
+						name: existingSetting.name,
+						mode: existingSetting.quickCustomize?.mode || "basic",
+						basicStyles: existingSetting.quickCustomize?.metadata?.basicStyles,
+						enabledStyles: existingSetting.quickCustomize?.metadata?.enabledStyles,
+						rawCss: existingSetting.enableCss,
+					}
+				: null,
 			onClose: () => {
 				pickerWindow.closeWindowHandler();
 			},
-			onSave: async (data: { selector: string, css: string, mode: string, name: string, metadata: any }) => {
+			onSave: async (data: { selector: string; css: string; mode: string; name: string; metadata: any }) => {
 				logger.info("QuickCustomize", "Saving customization", data);
-				
+
 				if (existingSetting) {
 					existingSetting.name = data.name;
 					existingSetting.enableCss = data.css;
 					existingSetting.quickCustomize = {
 						selector: data.selector,
 						mode: data.mode,
-						metadata: data.metadata
+						metadata: data.metadata,
 					};
 					// Trigger update in storage/engine
-					await addSetting([], existingSetting); 
+					await addSetting([], existingSetting);
 				} else {
 					const categoryName = "Custom Elements";
 					let addOnItems = getAddOnItems();
-					let customCategory = addOnItems.find(c => 
-						(typeof c.category === "string" ? c.category : c.category.label) === categoryName
+					let customCategory = addOnItems.find(
+						(c) => (typeof c.category === "string" ? c.category : c.category.label) === categoryName,
 					);
 
 					if (!customCategory) {
 						await addCategory(categoryName);
 						addOnItems = getAddOnItems();
-						customCategory = addOnItems.find(c => 
-							(typeof c.category === "string" ? c.category : c.category.label) === categoryName
+						customCategory = addOnItems.find(
+							(c) => (typeof c.category === "string" ? c.category : c.category.label) === categoryName,
 						);
 					}
 
@@ -93,9 +95,9 @@ async function openQuickCustomizeUI(selector: string, existingSetting?: any) {
 							quickCustomize: {
 								selector: data.selector,
 								mode: data.mode,
-								metadata: data.metadata
+								metadata: data.metadata,
 							},
-							editable: true
+							editable: true,
 						};
 
 						await addSetting(customCategory.settings, newSetting);
@@ -104,8 +106,8 @@ async function openQuickCustomizeUI(selector: string, existingSetting?: any) {
 				}
 
 				pickerWindow.closeWindowHandler();
-			}
-		}
+			},
+		},
 	});
 
 	const originalClose = pickerWindow.closeWindowHandler;

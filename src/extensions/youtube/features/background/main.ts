@@ -1,4 +1,3 @@
-
 import { logger } from "@/shared/logger";
 import { getUserSetting } from "@core/storage/manager";
 import { registerSettingListener } from "@settings/engine/functions";
@@ -67,9 +66,13 @@ class BackgroundModeDispatcher {
 	}
 
 	registerListeners(): void {
-		registerSettingListener("BackgroundMode", async (value) => {
-			await this.switchMode(value as BackgroundMode);
-		}, true);
+		registerSettingListener(
+			"BackgroundMode",
+			async (value) => {
+				await this.switchMode(value as BackgroundMode);
+			},
+			true,
+		);
 
 		registerSettingListener("EnableBackground", async (value) => {
 			if (value) {

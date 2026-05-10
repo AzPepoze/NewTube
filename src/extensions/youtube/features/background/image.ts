@@ -1,4 +1,3 @@
-
 import { getUserSetting } from "@core/storage/manager";
 import { getYoutubeVideoId, onYoutubeNavigate } from "@extensions/youtube/modules/youtube";
 import { registerSettingListener } from "@settings/engine/functions";

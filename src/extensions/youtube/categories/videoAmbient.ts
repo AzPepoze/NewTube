@@ -48,7 +48,8 @@ export const videoAmbientCategory: Category = {
 			disableFunction: updateVideoAmbientSettings,
 			lock: {
 				condition: !isFirefox,
-				message: "I didn't want to lock this feature for Firefox only, but Chromium browsers (Chrome, Edge, etc.) are making it really hard to get workers running correctly. Maybe I'm just stupid and can't make it work, but honestly, Chrome's rendering is already so fast that you won't see much of a performance boost anyway.",
+				message:
+					"I didn't want to lock this feature for Firefox only, but Chromium browsers (Chrome, Edge, etc.) are making it really hard to get workers running correctly. Maybe I'm just stupid and can't make it work, but honestly, Chrome's rendering is already so fast that you won't see much of a performance boost anyway.",
 			},
 			require: { VideoAmbient: true },
 		},
@@ -113,8 +114,7 @@ export const videoAmbientCategory: Category = {
 			type: "numberSlide",
 			id: "VideoAmbientContrast",
 			name: "Contrast",
-			description:
-				"Enhances or reduces the difference between the light and dark areas of the ambient background.",
+			description: "Enhances or reduces the difference between the light and dark areas of the ambient background.",
 			value: 1,
 			min: 0,
 			max: 4,
@@ -138,8 +138,7 @@ export const videoAmbientCategory: Category = {
 			type: "numberSlide",
 			id: "VideoAmbientOpacity",
 			name: "Opacity",
-			description:
-				"Sets the transparency level of the background effect, allowing it to blend with your page theme.",
+			description: "Sets the transparency level of the background effect, allowing it to blend with your page theme.",
 			value: 100,
 			min: 0,
 			max: 100,
@@ -163,8 +162,7 @@ export const videoAmbientCategory: Category = {
 			type: "checkbox",
 			id: "VideoAmbientStick",
 			name: "Stick to Video",
-			description:
-				"Force the ambient background to stay aligned with the video player.",
+			description: "Force the ambient background to stay aligned with the video player.",
 			value: false,
 			enableFunction: updateVideoAmbientSettings,
 			disableFunction: updateVideoAmbientSettings,

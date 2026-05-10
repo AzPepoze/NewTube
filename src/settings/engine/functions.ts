@@ -23,7 +23,7 @@ const updateThrottleState: Record<string, "Idle" | "Waiting" | "Processing"> = {
  */
 export async function deactivateSetting(settingId: string) {
 	const allSettings = await getAllStyleShiftSettings();
-	const setting = allSettings.find(s => s.id === settingId);
+	const setting = allSettings.find((s) => s.id === settingId);
 	if (!setting || activeSettingsState[settingId] === undefined) return;
 
 	const currentValue = activeSettingsState[settingId];

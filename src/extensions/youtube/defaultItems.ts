@@ -18,7 +18,8 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				clickFunction: 'window.open("https://github.com/sponsors/AzPepoze");',
 				color: "#e45eff",
 				fontSize: 20,
-				description: "Support the development of NewTube by becoming a sponsor. Your contribution helps fund new features, improvements, maintenance and my life.",
+				description:
+					"Support the development of NewTube by becoming a sponsor. Your contribution helps fund new features, improvements, maintenance and my life.",
 				icon: "https://media.tenor.com/XmUpFK6JyU8AAAAj/cute-please.gif",
 				iconSize: 100,
 				iconScale: 1.3,
@@ -57,7 +58,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				name: "Themes",
 				align: "left",
 				type: "button",
-				icon: "collections"
+				icon: "collections",
 			},
 			{
 				clickFunction: openThemeStore,
@@ -68,7 +69,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				name: "Explore Themes",
 				align: "left",
 				type: "button",
-				icon: "storefront"
+				icon: "storefront",
 			},
 			{
 				clickFunction: startQuickCustomize,
@@ -79,7 +80,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				fontSize: 15,
 				color: "#e45eff",
 				align: "left",
-				icon: "auto_fix_high"
+				icon: "auto_fix_high",
 			},
 			{
 				clickFunction: toggleCustomize,
@@ -90,7 +91,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				fontSize: 15,
 				color: "#3eadad",
 				align: "left",
-				icon: "highlight_alt"
+				icon: "highlight_alt",
 			},
 			{
 				clickFunction: openSettingPage,
@@ -101,7 +102,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				name: "Full Settings Page",
 				align: "left",
 				type: "button",
-				icon: "display_settings"
+				icon: "display_settings",
 			},
 		],
 	},
@@ -119,8 +120,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 			{
 				id: "enableRealtimeExtension",
 				name: "Realtime Updating",
-				description:
-					"Instantly applies visual changes as you move sliders or pick colors.",
+				description: "Instantly applies visual changes as you move sliders or pick colors.",
 				type: "checkbox",
 				value: false,
 			},

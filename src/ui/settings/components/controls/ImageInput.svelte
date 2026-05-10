@@ -34,9 +34,7 @@
 	const _description = $derived(setting.description);
 	const isBase64 = $derived(value?.startsWith("data:") ?? false);
 	const inputValue = $derived(isBase64 ? "" : value);
-	const inputPlaceholder = $derived(
-		isBase64 ? "Stored Image (Base64 Data)" : placeholder,
-	);
+	const inputPlaceholder = $derived(isBase64 ? "Stored Image (Base64 Data)" : placeholder);
 
 	let fileInput = $state<HTMLInputElement | null>(null);
 	let fileName = $state("");
@@ -47,9 +45,7 @@
 		if (urlStr.startsWith("data:")) return "Stored Image (Base64)";
 		try {
 			// Try to parse as URL
-			const urlStrSafe = urlStr.includes("://")
-				? urlStr
-				: "http://" + urlStr;
+			const urlStrSafe = urlStr.includes("://") ? urlStr : "http://" + urlStr;
 			const url = new URL(urlStrSafe);
 			const name = url.pathname.split("/").pop();
 			return name && name.includes(".") ? name : "Remote Image";
@@ -89,16 +85,10 @@
 		const fileType = file.type;
 		const maxSize = setting.maxFileSize || 10000000;
 
-		logger.info(
-			"UI",
-			`File selected: ${fileName} (${fileSize.toLocaleString()} bytes, type: ${fileType})`,
-		);
+		logger.info("UI", `File selected: ${fileName} (${fileSize.toLocaleString()} bytes, type: ${fileType})`);
 
 		if (fileSize > maxSize) {
-			logger.info(
-				"UI",
-				`File size exceeds limit (${maxSize} bytes). Showing confirmation.`,
-			);
+			logger.info("UI", `File size exceeds limit (${maxSize} bytes). Showing confirmation.`);
 
 			const warningTitle = "WARNING!";
 			const warningMessage = getWarningMessage(fileSize, maxSize);
@@ -109,11 +99,7 @@
 				align: "left" as const,
 			};
 
-			const confirmed = await showUserConfirmation(
-				warningMessage,
-				warningTitle,
-				confirmOptions,
-			);
+			const confirmed = await showUserConfirmation(warningMessage, warningTitle, confirmOptions);
 
 			if (confirmed) {
 				logger.info("UI", "User confirmed large file upload.");
@@ -178,15 +164,11 @@
 	}
 
 	async function removeImage() {
-		const confirmed = await showUserConfirmation(
-			"Are you sure you want to remove this image?",
-			"Remove Image",
-			{
-				confirmLabel: "Remove",
-				cancelLabel: "Cancel",
-				confirmColor: "#f44336",
-			},
-		);
+		const confirmed = await showUserConfirmation("Are you sure you want to remove this image?", "Remove Image", {
+			confirmLabel: "Remove",
+			cancelLabel: "Cancel",
+			confirmColor: "#f44336",
+		});
 
 		if (confirmed) {
 			await handleUpdate("");
@@ -222,21 +204,11 @@
 			onkeydown={(e) => e.key === "Enter" && fileInput?.click()}
 			title="Click or Drag & Drop image to upload"
 		>
-			<img
-				class="styleshift-upload-icon"
-				src={getAssetUrl(uploadIcon)}
-				alt="Upload"
-			/>
+			<img class="styleshift-upload-icon" src={getAssetUrl(uploadIcon)} alt="Upload" />
 			<span class="styleshift-upload-text">Upload</span>
 		</div>
 
-		<input
-			type="file"
-			bind:this={fileInput}
-			onchange={handleFileChange}
-			accept="image/*"
-			style="display: none;"
-		/>
+		<input type="file" bind:this={fileInput} onchange={handleFileChange} accept="image/*" style="display: none;" />
 
 		<div class="styleshift-url-input-wrapper">
 			<input
@@ -253,9 +225,7 @@
 		<div class="styleshift-image-preview-wrapper">
 			<PreviewImage src={value} />
 			{#if fileName}
-				<span class="styleshift-file-name" title={fileName}
-					>{fileName}</span
-				>
+				<span class="styleshift-file-name" title={fileName}>{fileName}</span>
 			{/if}
 			<div class="styleshift-button-center-wrapper">
 				<Button

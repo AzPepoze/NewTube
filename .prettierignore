@@ -1,0 +1,10 @@
+node_modules
+out
+dist
+.vscode
+package-lock.json
+bun.lockb
+*.svg
+*.png
+*.jpg
+*.zip

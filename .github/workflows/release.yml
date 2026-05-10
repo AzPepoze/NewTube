@@ -1,42 +1,42 @@
 name: Auto Release
 
 on:
-     push:
-          tags:
-             - 'v*'
+  push:
+    tags:
+      - "v*"
 
 jobs:
-     release:
-          runs-on: ubuntu-latest
-          permissions:
-               contents: write
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
-          steps:
-             - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-             - name: Setup Bun
-               uses: oven-sh/setup-bun@v2
-               with:
-                    bun-version: latest
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
-             - name: Update Version in Manifest
-               run: |
-                    RAW_VERSION=${GITHUB_REF_NAME#v}
-                    VERSION=${RAW_VERSION%%-*}
-                    echo "Updating manifest.json to version $VERSION"
-                    jq ".version = \"$VERSION\"" src/entrypoints/manifest.json > temp.json && mv temp.json src/entrypoints/manifest.json
+      - name: Update Version in Manifest
+        run: |
+          RAW_VERSION=${GITHUB_REF_NAME#v}
+          VERSION=${RAW_VERSION%%-*}
+          echo "Updating manifest.json to version $VERSION"
+          jq ".version = \"$VERSION\"" src/entrypoints/manifest.json > temp.json && mv temp.json src/entrypoints/manifest.json
 
-             - name: Install Dependencies
-               run: bun install
+      - name: Install Dependencies
+        run: bun install
 
-             - name: Build and Pack Extension
-               run: bun run release
+      - name: Build and Pack Extension
+        run: bun run release
 
-             - name: Create GitHub Release
-               uses: softprops/action-gh-release@v2
-               with:
-                    files: |
-                         out/release/*.zip
-                    draft: false
-                    prerelease: false
-                    generate_release_notes: true
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            out/release/*.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true

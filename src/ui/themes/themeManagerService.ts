@@ -17,7 +17,11 @@ export async function showThemeManager() {
 	themeWindow.contentElement.style.padding = "20px";
 	themeWindow.contentElement.style.overflowY = "auto";
 
-	settingsUi.renderComponent(ThemeManager, {
-		closeWindow: themeWindow.closeWindowHandler
-	}, themeWindow.contentElement);
+	settingsUi.renderComponent(
+		ThemeManager,
+		{
+			closeWindow: themeWindow.closeWindowHandler,
+		},
+		themeWindow.contentElement,
+	);
 }

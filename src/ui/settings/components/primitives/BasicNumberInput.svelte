@@ -15,12 +15,7 @@
 	}
 </script>
 
-<input
-	type="number"
-	{value}
-	oninput={handleInput}
-	class="styleshift-number-input"
-/>
+<input type="number" {value} oninput={handleInput} class="styleshift-number-input" />
 
 <style lang="scss">
 	.styleshift-number-input {

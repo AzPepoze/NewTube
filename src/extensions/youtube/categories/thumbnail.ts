@@ -59,7 +59,8 @@ export const thumbnailCategory: Category = {
 			type: "checkbox",
 			id: "ThumbnailTimeHideOnHover",
 			name: "Hide Time on Hover",
-			description: "Automatically fades out the duration timestamp when you hover over a thumbnail, keeping the image clear.",
+			description:
+				"Automatically fades out the duration timestamp when you hover over a thumbnail, keeping the image clear.",
 			value: true,
 			enableCss: `
                 yt-thumbnail-bottom-overlay-view-model {
@@ -75,7 +76,8 @@ export const thumbnailCategory: Category = {
 			type: "checkbox",
 			id: "ThumbnailTimeCenterEnabled",
 			name: "Center Time Overlay",
-			description: "Centers the duration timestamp and bottom panel on thumbnails instead of keeping them in the corner.",
+			description:
+				"Centers the duration timestamp and bottom panel on thumbnails instead of keeping them in the corner.",
 			value: true,
 			enableCss: `
 				yt-thumbnail-bottom-overlay-view-model {
@@ -129,7 +131,7 @@ export const thumbnailCategory: Category = {
 			description: "Sets the color of the glow and outline when a thumbnail is hovered.",
 			value: "#659affff",
 			varCss: "--nt-hover-color",
-			require: { ThumbnailHoverOverlayEnabled: true }
+			require: { ThumbnailHoverOverlayEnabled: true },
 		},
 		{
 			type: "color",
@@ -138,7 +140,7 @@ export const thumbnailCategory: Category = {
 			description: "Sets the color of the border at the moment you click a thumbnail.",
 			value: "#ffffffff",
 			varCss: "--nt-click-color",
-			require: { ThumbnailHoverOverlayEnabled: true }
+			require: { ThumbnailHoverOverlayEnabled: true },
 		},
 		{
 			type: "numberSlide",
@@ -150,7 +152,7 @@ export const thumbnailCategory: Category = {
 			max: 10,
 			step: 1,
 			varCss: "--nt-hover-border-width",
-			require: { ThumbnailHoverOverlayEnabled: true }
+			require: { ThumbnailHoverOverlayEnabled: true },
 		},
 		{
 			type: "numberSlide",
@@ -162,7 +164,7 @@ export const thumbnailCategory: Category = {
 			max: 1.5,
 			step: 0.005,
 			varCss: "--nt-zoom-scale",
-			require: { ThumbnailHoverAnimationStyle: ["Zoom", "Slide&Zoom"] }
+			require: { ThumbnailHoverAnimationStyle: ["Zoom", "Slide&Zoom"] },
 		},
 		{
 			type: "checkbox",

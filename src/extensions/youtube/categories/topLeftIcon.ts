@@ -41,14 +41,15 @@ export const topLeftIconCategory: Category = {
 			type: "checkbox",
 			id: "EnableTopLeftIconSyncTheme",
 			name: "Sync Logo Color",
-			description: "Makes the default YouTube logo match your main theme color. This setting is ignored if a 'Custom Logo' is enabled.",
+			description:
+				"Makes the default YouTube logo match your main theme color. This setting is ignored if a 'Custom Logo' is enabled.",
 			value: true,
 			enableCss: `
                 #logo-icon.ytd-topbar-logo-renderer .yt-spec-icon-shape-fill {
                     fill: var(--nt-theme-color, #FF0000) !important;
                 }
             `,
-			require: { EnableCustomTopLeftIcon: false }
+			require: { EnableCustomTopLeftIcon: false },
 		},
 		{
 			type: "imageInput",
@@ -57,7 +58,7 @@ export const topLeftIconCategory: Category = {
 			description: "Upload or paste a URL for your custom logo. Transparent PNGs or GIFs work best.",
 			value: "https://i.gifer.com/17xo.gif",
 			maxFileSize: 2000000,
-			require: { EnableCustomTopLeftIcon: true }
+			require: { EnableCustomTopLeftIcon: true },
 		},
 		{
 			type: "numberSlide",
@@ -68,7 +69,7 @@ export const topLeftIconCategory: Category = {
 			min: 0.1,
 			max: 5,
 			step: 0.1,
-			require: { EnableCustomTopLeftIcon: true }
+			require: { EnableCustomTopLeftIcon: true },
 		},
 		{
 			type: "numberSlide",
@@ -79,7 +80,7 @@ export const topLeftIconCategory: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
-			require: { EnableCustomTopLeftIcon: true }
+			require: { EnableCustomTopLeftIcon: true },
 		},
 		{
 			type: "numberSlide",
@@ -90,7 +91,7 @@ export const topLeftIconCategory: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
-			require: { EnableCustomTopLeftIcon: true }
+			require: { EnableCustomTopLeftIcon: true },
 		},
 		{
 			type: "checkbox",
@@ -100,7 +101,7 @@ export const topLeftIconCategory: Category = {
 			value: false,
 			enableCss: `ytd-topbar-logo-renderer { --nt-top-icon-flip: scaleX(-1); }`,
 			disableCss: `ytd-topbar-logo-renderer { --nt-top-icon-flip: scaleX(1); }`,
-			require: { EnableCustomTopLeftIcon: true }
+			require: { EnableCustomTopLeftIcon: true },
 		},
 		{
 			type: "checkbox",
@@ -110,7 +111,7 @@ export const topLeftIconCategory: Category = {
 			value: false,
 			enableCss: `ytd-topbar-logo-renderer { --nt-top-icon-repeat: repeat; }`,
 			disableCss: `ytd-topbar-logo-renderer { --nt-top-icon-repeat: no-repeat; }`,
-			require: { EnableCustomTopLeftIcon: true }
+			require: { EnableCustomTopLeftIcon: true },
 		},
 	],
 };

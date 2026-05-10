@@ -40,11 +40,7 @@
 		topbarChildren?: any;
 		children: any;
 		el?: HTMLElement | null;
-		onPositionChange?: (pos: {
-			translate: string;
-			width: string;
-			height: string;
-		}) => void;
+		onPositionChange?: (pos: { translate: string; width: string; height: string }) => void;
 		translate?: string;
 	} = $props();
 
@@ -53,19 +49,9 @@
 	let contentEl = $state<HTMLElement | null>(null);
 
 	const vw =
-		typeof window !== "undefined"
-			? Math.max(
-					document.documentElement.clientWidth || 0,
-					window.innerWidth || 0,
-				)
-			: 0;
+		typeof window !== "undefined" ? Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) : 0;
 	const vh =
-		typeof window !== "undefined"
-			? Math.max(
-					document.documentElement.clientHeight || 0,
-					window.innerHeight || 0,
-				)
-			: 0;
+		typeof window !== "undefined" ? Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) : 0;
 
 	let currentWidth = $state(untrack(() => width));
 	let currentHeight = $state(untrack(() => height));
@@ -96,13 +82,7 @@
 			top = vh * 0.1;
 		}
 
-		const constrained = constrainWindowPosition(
-			left,
-			top,
-			elWidth,
-			elHeight,
-			m,
-		);
+		const constrained = constrainWindowPosition(left, top, elWidth, elHeight, m);
 		return `${constrained.left}px ${constrained.top}px`;
 	};
 
@@ -135,22 +115,12 @@
 		window.addEventListener("styleshift-picker-state", handlePickerState);
 
 		return () => {
-			window.removeEventListener(
-				"styleshift-picker-state",
-				handlePickerState,
-			);
+			window.removeEventListener("styleshift-picker-state", handlePickerState);
 		};
 	});
 
 	function handleViewportResize() {
-		if (
-			!windowEl ||
-			logic.isMaximized ||
-			logic.isDragging ||
-			logic.isResizing ||
-			fullscreen
-		)
-			return;
+		if (!windowEl || logic.isMaximized || logic.isDragging || logic.isResizing || fullscreen) return;
 
 		const [x, y] = currentTranslate.split(" ");
 		const currentLeft = parseInt(x) || 0;
@@ -164,10 +134,7 @@
 			minVisibleRatio,
 		);
 
-		if (
-			currentLeft !== constrained.left ||
-			currentTop !== constrained.top
-		) {
+		if (currentLeft !== constrained.left || currentTop !== constrained.top) {
 			const finalTranslate = `${constrained.left}px ${constrained.top}px`;
 			currentTranslate = finalTranslate;
 			onPositionChange({
@@ -189,12 +156,7 @@
 	});
 
 	$effect(() => {
-		if (
-			!logic.isMinimized &&
-			contentEl &&
-			contentEl.childElementCount === 0 &&
-			typeof children === "function"
-		) {
+		if (!logic.isMinimized && contentEl && contentEl.childElementCount === 0 && typeof children === "function") {
 			try {
 				children(contentEl);
 			} catch (_e) {}
@@ -213,10 +175,7 @@
 	class:mini
 	class:auto-hide-topbar={autoHideTopbar}
 	class:disable-backdrop-filter={disableBackdropFilter}
-	class:hide-topbar={autoHideTopbar &&
-		!logic.isHovering &&
-		!logic.isDragging &&
-		!logic.isResizing}
+	class:hide-topbar={autoHideTopbar && !logic.isHovering && !logic.isDragging && !logic.isResizing}
 	style:width={fullscreen ? "100vw" : currentWidth}
 	style:height={fullscreen ? "100vh" : currentHeight}
 	style:translate={currentTranslate}
@@ -257,11 +216,7 @@
 			/>
 		{/if}
 
-		<div
-			class="styleshift-window-content"
-			class:no-padding={noPadding}
-			bind:this={contentEl}
-		>
+		<div class="styleshift-window-content" class:no-padding={noPadding} bind:this={contentEl}>
 			{#if children}
 				{@render children()}
 			{/if}

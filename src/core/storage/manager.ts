@@ -1,8 +1,8 @@
-import { sleep } from '@/core/shared/utilities';
-import { createError } from '@core/shared/notifications';
-import { getOptionalExternalStorageKeys } from '@extensions/youtube/index';
-import { logger } from '@shared/logger';
-import { currentContextDomain } from '../shared/context';
+import { sleep } from "@/core/shared/utilities";
+import { createError } from "@core/shared/notifications";
+import { getOptionalExternalStorageKeys } from "@extensions/youtube/index";
+import { logger } from "@shared/logger";
+import { currentContextDomain } from "../shared/context";
 
 export let cachedStorageData: any = {};
 let isStorageInitialized = false;
@@ -112,8 +112,6 @@ export async function saveAddOnStyleShiftItems(items: any[], delayPersistence = 
 	return await saveRootValue("addOnStyleShiftItems", items, delayPersistence);
 }
 
-
-
 /**
  * Writes the entire cached data object to Chrome local storage.
  */
@@ -160,5 +158,3 @@ export async function getFromStorage(key: string): Promise<any> {
 export async function wipeAllExtensionStorage(): Promise<void> {
 	await chrome.storage.local.clear();
 }
-
-

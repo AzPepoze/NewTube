@@ -11,11 +11,7 @@
 	<div class="preview-body">
 		<div class="preview-main">
 			<div class="preview-player">
-				<img
-					src={getAssetUrl("icon/128.png")}
-					alt="NewTube"
-					class="preview-newtube-icon"
-				/>
+				<img src={getAssetUrl("icon/128.png")} alt="NewTube" class="preview-newtube-icon" />
 			</div>
 			<div class="preview-title"></div>
 			<div class="preview-channel-row">

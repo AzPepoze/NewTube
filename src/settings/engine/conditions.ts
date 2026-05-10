@@ -2,8 +2,8 @@ import { getFromStorage } from "@core/storage/manager";
 
 /**
  * Checks if a specific condition is met.
- * @param {any} requiredValue 
- * @param {any} currentValue 
+ * @param {any} requiredValue
+ * @param {any} currentValue
  * @returns {boolean}
  */
 export function isConditionMet(requiredValue: any, currentValue: any): boolean {
@@ -31,7 +31,7 @@ export function evaluateCondition(
 
 /**
  * Evaluates whether a set of conditions are met by fetching current values from storage.
- * @param {Record<string, any>} condition 
+ * @param {Record<string, any>} condition
  * @returns {Promise<boolean>}
  */
 export async function evaluateConditionAsync(condition: Record<string, any> | undefined): Promise<boolean> {

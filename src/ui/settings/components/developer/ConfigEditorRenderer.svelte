@@ -11,10 +11,7 @@
 	let activeTab = $state("general");
 
 	const displayName = $derived(
-		(setting as any).name ||
-			(setting as any).category?.label ||
-			(setting as any).category ||
-			"New Item",
+		(setting as any).name || (setting as any).category?.label || (setting as any).category || "New Item",
 	);
 
 	const tabs = [
@@ -85,9 +82,7 @@
 							try {
 								(setting as any).options = JSON.parse(val);
 							} catch (_e) {
-								console.error(
-									"Invalid JSON for options",
-								);
+								console.error("Invalid JSON for options");
 							}
 						},
 					],
@@ -122,9 +117,7 @@
 						try {
 							(setting as any).settingIds = JSON.parse(val);
 						} catch (_e) {
-							(setting as any).settingIds = val
-								.split(",")
-								.map((s) => s.trim());
+							(setting as any).settingIds = val.split(",").map((s) => s.trim());
 						}
 					},
 				];
@@ -205,11 +198,7 @@
 				in:fly={{ y: 10, duration: 300, delay: 150 }}
 				out:fade={{ duration: 150 }}
 			>
-				<ConfigMainSection
-					{setting}
-					props={mainProps}
-					updateUi={refreshExtensionState}
-				/>
+				<ConfigMainSection {setting} props={mainProps} updateUi={refreshExtensionState} />
 			</div>
 		{:else if activeTab === "logic"}
 			<div

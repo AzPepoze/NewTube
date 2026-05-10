@@ -17,14 +17,18 @@ async function main() {
 	try {
 		// 1. Build CSS
 		log.step("Building CSS...");
-		const sassResult = spawnSync("sass", [
-			"src/styles/setting.scss",
-			"out/build/style.css",
-			"--style=compressed",
-			"--no-source-map",
-			"--load-path=node_modules"
-		], { stdio: "inherit", shell: true, cwd: ROOT });
-		
+		const sassResult = spawnSync(
+			"sass",
+			[
+				"src/styles/setting.scss",
+				"out/build/style.css",
+				"--style=compressed",
+				"--no-source-map",
+				"--load-path=node_modules",
+			],
+			{ stdio: "inherit", shell: true, cwd: ROOT },
+		);
+
 		if (sassResult.status !== 0) throw new Error("CSS build failed");
 		log.success("CSS build completed.");
 
@@ -33,7 +37,11 @@ async function main() {
 
 		// 3. Build Templates & Types
 		log.step("Building Templates & Types...");
-		const tscResult = spawnSync("tsc", ["-p", "utils/tsconfigBuilderTypes.json"], { stdio: "inherit", shell: true, cwd: ROOT });
+		const tscResult = spawnSync("tsc", ["-p", "utils/tsconfigBuilderTypes.json"], {
+			stdio: "inherit",
+			shell: true,
+			cwd: ROOT,
+		});
 		if (tscResult.status !== 0) throw new Error("Type generation failed");
 		await buildTemplates();
 		log.success("Templates & Types built.");

@@ -9,7 +9,8 @@ export const backgroundCategory: Category = {
 			type: "checkbox",
 			id: "EnableBackground",
 			name: "Enable Background",
-			description: "Toggle the entire custom background system. When enabled, you can apply custom images, colors, blurs, or YouTube videos to the page background.",
+			description:
+				"Toggle the entire custom background system. When enabled, you can apply custom images, colors, blurs, or YouTube videos to the page background.",
 			value: true,
 			enableFunction: enableBg,
 			enableCss: enableBackgroundCss,
@@ -18,7 +19,8 @@ export const backgroundCategory: Category = {
 			type: "dropdown",
 			id: "BackgroundMode",
 			name: "Background Mode",
-			description: "Select the type of background to display: Image (static or custom), Thumbnail (current video's thumbnail), or YouTube (embed a YouTube video).",
+			description:
+				"Select the type of background to display: Image (static or custom), Thumbnail (current video's thumbnail), or YouTube (embed a YouTube video).",
 			value: "Image",
 			options: [
 				{ label: "Image", value: "Image" },
@@ -37,7 +39,8 @@ export const backgroundCategory: Category = {
 			type: "imageInput",
 			id: "BackgroundImageUrl",
 			name: "Background Image",
-			description: "Upload or paste a URL for your custom background image. This image will be placed behind all YouTube content.",
+			description:
+				"Upload or paste a URL for your custom background image. This image will be placed behind all YouTube content.",
 			value: "https://cdn.wallpapersafari.com/74/55/4dgN3G.jpg",
 			maxFileSize: 5000000,
 			require: { EnableBackground: true, BackgroundMode: "Image" },
@@ -47,7 +50,8 @@ export const backgroundCategory: Category = {
 			type: "color",
 			id: "BackgroundTintColor",
 			name: "Tint Color",
-			description: "Applies a color overlay on top of your background image or as a solid background color if no image is used. Useful for improving readability.",
+			description:
+				"Applies a color overlay on top of your background image or as a solid background color if no image is used. Useful for improving readability.",
 			value: "#0000005e",
 			varCss: "--nt-bg-main",
 			require: { EnableBackground: true, BackgroundMode: "Image" },
@@ -56,7 +60,8 @@ export const backgroundCategory: Category = {
 			type: "numberSlide",
 			id: "BackgroundOpacity",
 			name: "Tint Opacity",
-			description: "Adjusts how strong the tint color is. Lower values make the background image more visible, while higher values make it more solid.",
+			description:
+				"Adjusts how strong the tint color is. Lower values make the background image more visible, while higher values make it more solid.",
 			value: 80,
 			min: 0,
 			max: 100,
@@ -69,7 +74,8 @@ export const backgroundCategory: Category = {
 			type: "numberSlide",
 			id: "BackgroundBlurAmount",
 			name: "Blur Intensity",
-			description: "Applies a soft blur effect to the background image. This helps content stand out and creates a more modern, 'frosted glass' aesthetic.",
+			description:
+				"Applies a soft blur effect to the background image. This helps content stand out and creates a more modern, 'frosted glass' aesthetic.",
 			value: 10,
 			min: 0,
 			max: 50,
@@ -131,7 +137,8 @@ export const backgroundCategory: Category = {
 			type: "button",
 			id: "YouTubeSetCurrentVideoAsBackground",
 			name: "🎬 Set Current Video as Background",
-			description: "Click this button while viewing a YouTube video to automatically extract and set it as your background",
+			description:
+				"Click this button while viewing a YouTube video to automatically extract and set it as your background",
 			clickFunction: setCurrentVideoAsBackground,
 			color: "#FF0000",
 			fontSize: 14,
@@ -143,7 +150,8 @@ export const backgroundCategory: Category = {
 			type: "textInput",
 			id: "YouTubeBackgroundVideoId",
 			name: "YouTube Embed URL",
-			description: "Paste the full embed URL from YouTube's share feature. (Recommended to use the Set Current Video button)",
+			description:
+				"Paste the full embed URL from YouTube's share feature. (Recommended to use the Set Current Video button)",
 			value: "",
 			require: { EnableBackground: true, BackgroundMode: "YouTube" },
 		},
@@ -167,7 +175,8 @@ export const backgroundCategory: Category = {
 			type: "numberSlide",
 			id: "YouTubeBackgroundOpacity",
 			name: "YouTube Opacity",
-			description: "Controls the transparency of the YouTube video background. Lower values make it more transparent, revealing content behind it.",
+			description:
+				"Controls the transparency of the YouTube video background. Lower values make it more transparent, revealing content behind it.",
 			value: 50,
 			min: 0,
 			max: 100,

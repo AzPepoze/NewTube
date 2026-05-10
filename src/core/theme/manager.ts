@@ -1,9 +1,9 @@
-import { getRootValue, saveRootValue } from '@core/storage/manager';
-import { STYLESHIFT_STORE_API_URL, STYLESHIFT_STORE_ORIGINS } from '@core/theme/config';
-import { importPresetToSettings } from '@core/theme/importer';
-import { STORE_TARGET_SITES } from '@extensions/youtube/constants';
-import { logger } from '@shared/logger';
-import { showUserConfirmation } from '@ui/window/windowFactory';
+import { getRootValue, saveRootValue } from "@core/storage/manager";
+import { STYLESHIFT_STORE_API_URL, STYLESHIFT_STORE_ORIGINS } from "@core/theme/config";
+import { importPresetToSettings } from "@core/theme/importer";
+import { STORE_TARGET_SITES } from "@extensions/youtube/constants";
+import { logger } from "@shared/logger";
+import { showUserConfirmation } from "@ui/window/windowFactory";
 
 export type Theme = {
 	themeId: string;
@@ -22,7 +22,6 @@ async function confirmAction(message: string, title: string, cancelLog?: string)
 	}
 	return confirmed;
 }
-
 
 /**
  * Validate if origin is allowed to send theme events
@@ -60,7 +59,7 @@ export function validateDomains(domains: string[]): boolean {
 		logger.warn("themeManager", "Invalid domains: must be non-empty array");
 		return false;
 	}
-	return domains.every(domain => validateDomain(domain));
+	return domains.every((domain) => validateDomain(domain));
 }
 
 /**
@@ -71,14 +70,14 @@ export async function applyThemeToDomainStorage(
 	domain: string,
 	themeId: string,
 	themeName: string,
-	themeData: any
+	themeData: any,
 ): Promise<void> {
 	const result = await chrome.storage.local.get(domain);
 	const domainStorage = (result[domain] || {}) as Record<string, any>;
 
 	// Update theme registry (Array based)
 	const themes = (domainStorage.themes || []) as Theme[];
-	const existingIndex = themes.findIndex(t => t.themeId === themeId);
+	const existingIndex = themes.findIndex((t) => t.themeId === themeId);
 
 	const updatedTheme: Theme = {
 		themeId,
@@ -161,12 +160,7 @@ export async function fetchThemeFromApi(themeId: string): Promise<Theme | null> 
  * Save a theme with user confirmation
  * Prompts: "Save as '{name}' to '{targetDomain}'?"
  */
-export async function saveTheme(
-	name: string,
-	data: Theme,
-	targetDomain: string,
-	id?: string,
-): Promise<boolean> {
+export async function saveTheme(name: string, data: Theme, targetDomain: string, id?: string): Promise<boolean> {
 	if (!validateDomain(targetDomain)) {
 		return false;
 	}
@@ -175,15 +169,15 @@ export async function saveTheme(
 		const themes = (await getRootValue("themes")) || [];
 		const themeArray = Array.isArray(themes) ? themes : [];
 		const themeId = id || name; // Use provided ID or fallback to name
-		const existingIndex = themeArray.findIndex(
-			(t: Theme) => t.themeId === themeId,
-		);
+		const existingIndex = themeArray.findIndex((t: Theme) => t.themeId === themeId);
 
 		if (existingIndex > -1) {
 			if (!(await confirmAction(`Theme "${name}" already exists. Replace it?`, "Replace Theme"))) {
 				return false;
 			}
-		} else if (!(await confirmAction(`Save as "${name}" to ${targetDomain}?`, "Save theme", `Theme save cancelled: ${name}`))) {
+		} else if (
+			!(await confirmAction(`Save as "${name}" to ${targetDomain}?`, "Save theme", `Theme save cancelled: ${name}`))
+		) {
 			return false;
 		}
 
@@ -248,17 +242,14 @@ export async function applyTheme(id: string, name: string, targetDomain: string)
  * Update a theme to latest version with confirmation
  * Prompts: "Update '{name}' to latest version?"
  */
-export async function updateTheme(
-	id: string,
-	name: string,
-	latestData: Theme,
-	targetDomain: string
-): Promise<boolean> {
+export async function updateTheme(id: string, name: string, latestData: Theme, targetDomain: string): Promise<boolean> {
 	if (!validateDomain(targetDomain)) {
 		return false;
 	}
 
-	if (!(await confirmAction(`Update "${name}" to the latest version?`, "Update Theme", `Theme update cancelled: ${name}`))) {
+	if (
+		!(await confirmAction(`Update "${name}" to the latest version?`, "Update Theme", `Theme update cancelled: ${name}`))
+	) {
 		return false;
 	}
 
@@ -289,16 +280,18 @@ export async function updateTheme(
  * Install a theme to multiple domains with confirmation
  * Prompts: "Install '{name}' to {domain list}?"
  */
-export async function installTheme(
-	id: string,
-	name: string,
-	targetDomains: string[]
-): Promise<boolean> {
+export async function installTheme(id: string, name: string, targetDomains: string[]): Promise<boolean> {
 	if (!validateDomains(targetDomains)) {
 		return false;
 	}
 
-	if (!(await confirmAction(`Install "${name}" to ${targetDomains.join(", ")}?`, "Install Theme", `Theme install cancelled: ${name}`))) {
+	if (
+		!(await confirmAction(
+			`Install "${name}" to ${targetDomains.join(", ")}?`,
+			"Install Theme",
+			`Theme install cancelled: ${name}`,
+		))
+	) {
 		return false;
 	}
 
@@ -310,9 +303,7 @@ export async function installTheme(
 		}
 
 		// Apply to all target domains
-		await Promise.all(
-			targetDomains.map(domain => applyThemeToDomainStorage(domain, id, name, themeData))
-		);
+		await Promise.all(targetDomains.map((domain) => applyThemeToDomainStorage(domain, id, name, themeData)));
 
 		logger.info("themeManager", `Theme installed to ${targetDomains.length} domain(s): ${name}`);
 		return true;
@@ -331,7 +322,9 @@ export async function deleteTheme(id: string, name: string, targetDomain: string
 		return false;
 	}
 
-	if (!(await confirmAction(`Delete "${name}" from ${targetDomain}?`, "Delete Theme", `Theme delete cancelled: ${name}`))) {
+	if (
+		!(await confirmAction(`Delete "${name}" from ${targetDomain}?`, "Delete Theme", `Theme delete cancelled: ${name}`))
+	) {
 		return false;
 	}
 
@@ -425,8 +418,3 @@ export async function checkAndUpdateTheme(manual: boolean = false, targetDomain:
 		logger.error("themeManager", "Failed to check for theme updates", error);
 	}
 }
-
-
-
-
-

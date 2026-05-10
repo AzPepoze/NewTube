@@ -24,7 +24,7 @@
 			const storedValue = await getFromStorage(setting.id);
 			if (storedValue !== undefined) value = storedValue;
 		} else {
-			value = setting.value as string || "";
+			value = (setting.value as string) || "";
 		}
 	}
 	init();
@@ -76,7 +76,7 @@
 			() => {
 				// On Cancel (Esc or manual stop)
 				isPicking = false;
-			}
+			},
 		);
 	}
 </script>
@@ -94,12 +94,7 @@
 				onchange={handleChange}
 			/>
 		</div>
-		<button
-			class="styleshift-pick-button"
-			class:is-picking={isPicking}
-			onclick={togglePicking}
-			type="button"
-		>
+		<button class="styleshift-pick-button" class:is-picking={isPicking} onclick={togglePicking} type="button">
 			<Icon name="⌖" size={18} />
 			<span>{isPicking ? "Cancel Picking" : "Pick Element"}</span>
 		</button>
@@ -134,7 +129,7 @@
 		color: white;
 		border-radius: 20px;
 		padding: 12px 20px;
-		font-family: 'Fira Code', monospace;
+		font-family: "Fira Code", monospace;
 		font-size: 14px;
 		outline: none;
 		transition: all 0.2s;
@@ -189,8 +184,14 @@
 	}
 
 	@keyframes pulse {
-		0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); }
-		70% { box-shadow: 0 0 0 10px rgba(244, 67, 54, 0); }
-		100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+		0% {
+			box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4);
+		}
+		70% {
+			box-shadow: 0 0 0 10px rgba(244, 67, 54, 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
+		}
 	}
 </style>

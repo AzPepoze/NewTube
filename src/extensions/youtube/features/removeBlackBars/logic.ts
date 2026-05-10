@@ -11,10 +11,7 @@ async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number
 
 	updateDebugUI(finalDetectedHeight, vHeight);
 
-	if (
-		Math.abs(finalDetectedHeight - state.lastHeight) > 5 ||
-		(finalDetectedHeight > 10 && state.lastHeight === 0)
-	) {
+	if (Math.abs(finalDetectedHeight - state.lastHeight) > 5 || (finalDetectedHeight > 10 && state.lastHeight === 0)) {
 		applyCrop(finalDetectedHeight, vHeight);
 	}
 
@@ -120,22 +117,38 @@ export async function checkBlackBars() {
 	state.isChecking = true;
 
 	if (settings.worker && !settings.debugCanvas && state.worker) {
-		state.worker.postMessage({
-			type: "detect",
-			data: {
-				imgData, vHeight, threshold, sR, sG, sB,
-				pixelBudget,
-				currentLastHeight: state.lastHeight
+		state.worker.postMessage(
+			{
+				type: "detect",
+				data: {
+					imgData,
+					vHeight,
+					threshold,
+					sR,
+					sG,
+					sB,
+					pixelBudget,
+					currentLastHeight: state.lastHeight,
+				},
 			},
-		}, [imgData.buffer]);
+			[imgData.buffer],
+		);
 
 		scheduleNext();
 		return;
 	}
-	const heightsFound = await detectBlackBars({
-		imgData, vHeight, threshold, sR, sG, sB,
-		pixelBudget
-	}, settings.debugCanvas ? ctx : null);
+	const heightsFound = await detectBlackBars(
+		{
+			imgData,
+			vHeight,
+			threshold,
+			sR,
+			sG,
+			sB,
+			pixelBudget,
+		},
+		settings.debugCanvas ? ctx : null,
+	);
 
 	if (state.sessionId !== mySession) {
 		state.isChecking = false;

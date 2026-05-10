@@ -1,11 +1,11 @@
 /**
  * StyleShift Theme Store Configuration
- * 
+ *
  * This module loads theme store configuration from extension.config.json
  * and exports constants for use throughout the theme manager system.
  */
 
-import { logger } from '@shared/logger';
+import { logger } from "@shared/logger";
 
 // Load configuration from extension.config.json
 let config: any = {};
@@ -36,5 +36,5 @@ export const STYLESHIFT_STORE_URL: string = config.store_url || "";
 logger.info("themeConfig", "Theme store configuration loaded", {
 	origins: STYLESHIFT_STORE_ORIGINS,
 	apiUrl: STYLESHIFT_STORE_API_URL,
-	storeUrl: STYLESHIFT_STORE_URL
+	storeUrl: STYLESHIFT_STORE_URL,
 });

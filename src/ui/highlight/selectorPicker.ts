@@ -8,7 +8,7 @@ let container: HTMLDivElement | null = null;
 export async function openSelectorPicker(
 	onSelect?: (selector: string) => void,
 	onCancel?: () => void,
-	_options: any = {}
+	_options: any = {},
 ) {
 	if (pickerComponent) {
 		cleanup();
@@ -18,7 +18,7 @@ export async function openSelectorPicker(
 	document.body.appendChild(container);
 
 	logger.debug("Picker", "Starting integrated SelectorPicker");
-	
+
 	pickerComponent = mount(SelectorPicker, {
 		target: container,
 		props: {
@@ -30,8 +30,8 @@ export async function openSelectorPicker(
 			onClose: () => {
 				if (onCancel) onCancel();
 				cleanup();
-			}
-		}
+			},
+		},
 	});
 }
 

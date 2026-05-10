@@ -150,11 +150,7 @@
 
 		.styleshift-category-frame .styleshift-setting-frame,
 		.styleshift-main-setting-frame:has(.styleshift-setting-frame) {
-			background: radial-gradient(
-				at center top,
-				var(--fg-opacity-20),
-				var(--fg-opacity-10)
-			);
+			background: radial-gradient(at center top, var(--fg-opacity-20), var(--fg-opacity-10));
 			overflow: visible;
 
 			&:hover {
@@ -373,11 +369,7 @@ textarea.styleshift-selector-text-editor {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: radial-gradient(
-		at center top,
-		var(--fg-opacity-20),
-		var(--fg-opacity-10)
-	);
+	background: radial-gradient(at center top, var(--fg-opacity-20), var(--fg-opacity-10));
 	color: var(--text-primary);
 	border: var(--fg-opacity-10) solid 1px;
 	transition: all 0.2s;

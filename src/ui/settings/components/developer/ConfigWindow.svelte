@@ -20,10 +20,7 @@
 
 <div class="styleshift-config-window-wrapper">
 	<div class="styleshift-config-window-content styleshift-scrollable">
-		<div
-			bind:this={container}
-			class="styleshift-config-container-inner"
-		></div>
+		<div bind:this={container} class="styleshift-config-container-inner"></div>
 	</div>
 </div>
 

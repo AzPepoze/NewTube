@@ -1,13 +1,15 @@
-import { sleep } from '@/core/shared/utilities';
-import { createNotification } from '@core/shared/notifications';
+import { sleep } from "@/core/shared/utilities";
+import { createNotification } from "@core/shared/notifications";
 import {
-	fetchThemeFromApi, installTheme,
-	isThemeInstalled, saveTheme,
+	fetchThemeFromApi,
+	installTheme,
+	isThemeInstalled,
+	saveTheme,
 	checkAndUpdateTheme as themeManagerCheckAndUpdate,
-	validateOrigin
-} from '@core/theme/manager';
-import { NEWTUBE_STORE_DISCOVER_URL } from '@extensions/youtube/constants';
-import { logger } from '@shared/logger';
+	validateOrigin,
+} from "@core/theme/manager";
+import { NEWTUBE_STORE_DISCOVER_URL } from "@extensions/youtube/constants";
+import { logger } from "@shared/logger";
 
 export async function initWebsiteIntegration(): Promise<void> {
 	if (!validateOrigin(window.location.origin)) {
@@ -24,7 +26,10 @@ export async function initWebsiteIntegration(): Promise<void> {
 			return;
 		}
 
-		logger.info("themeStore", `Install event received: ${detail.themeId} to domains: ${detail.targetDomains.join(", ")}`);
+		logger.info(
+			"themeStore",
+			`Install event received: ${detail.themeId} to domains: ${detail.targetDomains.join(", ")}`,
+		);
 		const success = await installTheme(detail.themeId, detail.themeName || detail.themeId, detail.targetDomains);
 
 		if (success) {
@@ -75,7 +80,7 @@ export async function initWebsiteIntegration(): Promise<void> {
 		window.dispatchEvent(
 			new CustomEvent("styleshift_theme_install_status", {
 				detail: { themeId: detail.themeId, isInstalled },
-			})
+			}),
 		);
 	});
 

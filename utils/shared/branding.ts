@@ -25,7 +25,7 @@ export function applyFirefoxCompatibility(content: string): string {
 export async function processOutputFile(filePath: string, isFirefox = false) {
 	try {
 		let content = await fs.readFile(filePath, "utf8");
-		if (![".css", ".js", ".json", ".html"].some(ext => filePath.endsWith(ext))) return;
+		if (![".css", ".js", ".json", ".html"].some((ext) => filePath.endsWith(ext))) return;
 
 		content = applyBranding(content);
 		if (isFirefox) {

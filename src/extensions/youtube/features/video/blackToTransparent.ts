@@ -1,5 +1,10 @@
 import { getUserSetting } from "@core/storage/manager";
-import { getVideoElement, isYoutubeFullscreen, onYoutubeFullscreen, onYoutubeNavigate } from "@extensions/youtube/modules/youtube";
+import {
+	getVideoElement,
+	isYoutubeFullscreen,
+	onYoutubeFullscreen,
+	onYoutubeNavigate,
+} from "@extensions/youtube/modules/youtube";
 import { registerSettingListener } from "@settings/engine/functions";
 import { logger } from "@shared/logger";
 
@@ -63,7 +68,8 @@ function initWebGL() {
 	}
 
 	// Try WebGL 2 first, then fallback to WebGL 1
-	gl = (canvas.getContext("webgl2", { alpha: true, premultipliedAlpha: false }) as WebGL2RenderingContext) ||
+	gl =
+		(canvas.getContext("webgl2", { alpha: true, premultipliedAlpha: false }) as WebGL2RenderingContext) ||
 		(canvas.getContext("webgl", { alpha: true, premultipliedAlpha: false }) as unknown as WebGL2RenderingContext);
 
 	if (!gl) {
@@ -221,16 +227,12 @@ async function render() {
 		ctx2d.putImageData(imgData, 0, 0);
 	} else {
 		if (video.style.opacity !== "1") {
-			logger.warn(
-				"black-to-transparent",
-				"Missing GL resources or invalid canvas width, reverting to video display",
-				{
-					gl: !!gl,
-					program: !!program,
-					videoTexture: !!videoTexture,
-					canvasWidth: canvas.width,
-				},
-			);
+			logger.warn("black-to-transparent", "Missing GL resources or invalid canvas width, reverting to video display", {
+				gl: !!gl,
+				program: !!program,
+				videoTexture: !!videoTexture,
+				canvasWidth: canvas.width,
+			});
 			video.style.opacity = "1";
 		}
 	}

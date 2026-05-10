@@ -1,7 +1,12 @@
 import { sleep } from "@/core/shared/utilities";
 import { logger } from "@/shared/logger";
 import { localStorageUtil } from "@core/shared/localStorage";
-import { getPlayerElement, onYoutubeFullscreen, onYoutubeNavigate, onYoutubeSmallMode } from "@extensions/youtube/modules/youtube";
+import {
+	getPlayerElement,
+	onYoutubeFullscreen,
+	onYoutubeNavigate,
+	onYoutubeSmallMode,
+} from "@extensions/youtube/modules/youtube";
 import { settingsUi } from "@ui/settings/settingsApi";
 import { triggerWindowHideAnimation, triggerWindowShowAnimation } from "@ui/window/windowFactory";
 import { unmount } from "svelte";
@@ -33,7 +38,10 @@ export function enableFlyout() {
 					logger.debug("flyout", "Player is intersecting, queuing hide");
 					hideFlyout();
 				} else if (entry.boundingClientRect.top < 0 && isFlyoutEnabled) {
-					if (moviePlayer.classList.contains("ytp-fullscreen") || moviePlayer.classList.contains("ytp-player-minimized")) {
+					if (
+						moviePlayer.classList.contains("ytp-fullscreen") ||
+						moviePlayer.classList.contains("ytp-player-minimized")
+					) {
 						logger.debug("flyout", "Player is hidden but in fullscreen/mini mode, skipping flyout");
 						return;
 					}
@@ -100,9 +108,7 @@ async function showFlyout() {
 		flyoutMountPoint,
 	);
 
-	const windowContainer = flyoutMountPoint.querySelector(
-		".styleshift-window-container",
-	) as HTMLElement;
+	const windowContainer = flyoutMountPoint.querySelector(".styleshift-window-container") as HTMLElement;
 	if (windowContainer) {
 		triggerWindowShowAnimation(windowContainer);
 	}
@@ -121,9 +127,7 @@ async function hideFlyout() {
 	flyoutMountPoint = null;
 
 	if (oldFlyoutInstance && oldFlyoutMountPoint) {
-		const windowContainer = oldFlyoutMountPoint.querySelector(
-			".styleshift-window-container",
-		) as HTMLElement;
+		const windowContainer = oldFlyoutMountPoint.querySelector(".styleshift-window-container") as HTMLElement;
 		if (windowContainer) {
 			await triggerWindowHideAnimation(windowContainer);
 			await sleep(300);

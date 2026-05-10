@@ -21,8 +21,8 @@ async function updateLogo() {
 		if (img.src !== url) {
 			img.src = url;
 		}
-		img.style.scale = (await getUserSetting("TopLeftIconSize"));
-		img.style.translate = `${(await getUserSetting("TopLeftIconPositionX"))}% ${(await getUserSetting("TopLeftIconPositionY"))}%`;
+		img.style.scale = await getUserSetting("TopLeftIconSize");
+		img.style.translate = `${await getUserSetting("TopLeftIconPositionX")}% ${await getUserSetting("TopLeftIconPositionY")}%`;
 	} else {
 		const logo = document.querySelector("#nt-custom-logo");
 		if (logo) logo.remove();

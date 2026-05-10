@@ -45,10 +45,7 @@
 		outline: none;
 		cursor: pointer;
 		border: 1px solid var(--fg-opacity-10);
-		background-image: linear-gradient(
-			var(--theme-0, #7f5db7),
-			var(--theme-0, #7f5db7)
-		);
+		background-image: linear-gradient(var(--theme-0, #7f5db7), var(--theme-0, #7f5db7));
 		background-size: var(--progress) 100%;
 		background-repeat: no-repeat;
 		margin: 10px 0;

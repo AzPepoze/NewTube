@@ -17,10 +17,11 @@ export const tabIconCategory: Category = {
 			type: "imageInput",
 			id: "TabIconImageUrl",
 			name: "Icon Image",
-			description: "Upload or paste a URL for the image you want to use as your browser tab icon. Works best with square PNG or ICO files.",
+			description:
+				"Upload or paste a URL for the image you want to use as your browser tab icon. Works best with square PNG or ICO files.",
 			value: "https://newtube.azpepoze.com/favicon.ico",
 			maxFileSize: 1000000,
-			require: { EnableCustomTabIcon: true }
+			require: { EnableCustomTabIcon: true },
 		},
 	],
 };

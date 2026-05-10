@@ -15,25 +15,13 @@
 </script>
 
 <div class="styleshift-window-controls">
-	<button
-		class="control-btn minimize"
-		onclick={(e) => onMinimize(e)}
-		title="Minimize"
-	>
+	<button class="control-btn minimize" onclick={(e) => onMinimize(e)} title="Minimize">
 		<Icon name="remove" size={18} />
 	</button>
-	<button
-		class="control-btn maximize"
-		onclick={(e) => onMaximize(e)}
-		title={isMaximized ? "Restore" : "Maximize"}
-	>
+	<button class="control-btn maximize" onclick={(e) => onMaximize(e)} title={isMaximized ? "Restore" : "Maximize"}>
 		<Icon name={isMaximized ? "filter_none" : "crop_square"} size={14} />
 	</button>
-	<button
-		class="control-btn close"
-		onclick={(e) => onClose(e)}
-		title="Close"
-	>
+	<button class="control-btn close" onclick={(e) => onClose(e)} title="Close">
 		<Icon name="close" size={18} />
 	</button>
 </div>

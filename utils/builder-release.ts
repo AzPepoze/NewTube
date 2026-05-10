@@ -51,5 +51,5 @@ export async function buildRelease() {
 }
 
 if (require.main === module) {
-	buildRelease().catch(err => log.error("Release build failed", err));
+	buildRelease().catch((err) => log.error("Release build failed", err));
 }

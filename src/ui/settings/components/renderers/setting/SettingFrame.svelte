@@ -32,14 +32,7 @@
 	} = $props();
 
 	const isButton = $derived(clickable);
-	const role = $derived(
-		roleProp ??
-			(isButton
-				? "button"
-				: tabindexProp !== undefined
-					? "region"
-					: undefined),
-	);
+	const role = $derived(roleProp ?? (isButton ? "button" : tabindexProp !== undefined ? "region" : undefined));
 	const tabindex = $derived(tabindexProp ?? (isButton ? 0 : undefined));
 
 	function handleKeyDown(e: KeyboardEvent) {
@@ -113,8 +106,7 @@
 			transition: all 0.2s;
 
 			&:hover {
-				filter: brightness(1.5) drop-shadow(2px 2px 3px black)
-					drop-shadow(-2px -2px 3px var(--fg-opacity-40));
+				filter: brightness(1.5) drop-shadow(2px 2px 3px black) drop-shadow(-2px -2px 3px var(--fg-opacity-40));
 			}
 
 			&:active {

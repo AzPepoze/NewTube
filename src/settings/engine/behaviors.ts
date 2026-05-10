@@ -36,7 +36,8 @@ export const SETTING_TYPE_BEHAVIORS = {
 			const currentValue = await getFromStorage(setting.id);
 			logger.debug("settings", `Applying checkbox update for ${setting.id}:`, currentValue);
 
-			stylesheet.textContent = (setting.constantCss || ``) + (currentValue ? (setting.enableCss || ``) : (setting.disableCss || ``));
+			stylesheet.textContent =
+				(setting.constantCss || ``) + (currentValue ? setting.enableCss || `` : setting.disableCss || ``);
 
 			logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
 
@@ -127,7 +128,8 @@ export const SETTING_TYPE_BEHAVIORS = {
 			activeSettingsState[setting.id] = value;
 
 			if (stylesheet) {
-				stylesheet.textContent = (typeof setting.constantCss === "function" ? setting.constantCss(value) : setting.constantCss) || ``;
+				stylesheet.textContent =
+					(typeof setting.constantCss === "function" ? setting.constantCss(value) : setting.constantCss) || ``;
 				logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
 			}
 		}
@@ -163,7 +165,7 @@ export const SETTING_TYPE_BEHAVIORS = {
 			const isMet = await checkConditionsMet();
 			logger.debug("settings", `Applying condition update for ${setting.id}: met=${isMet}`);
 
-			stylesheet.textContent = isMet ? (setting.enableCss || "") : (setting.disableCss || "");
+			stylesheet.textContent = isMet ? setting.enableCss || "" : setting.disableCss || "";
 
 			if (lastStatus === isMet) return;
 			lastStatus = isMet;

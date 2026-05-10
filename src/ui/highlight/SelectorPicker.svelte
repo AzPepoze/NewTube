@@ -58,8 +58,7 @@
 		}
 
 		const isNearBottom = window.innerHeight - e.clientY < 70;
-		const isNearCenter =
-			Math.abs(e.clientX - window.innerWidth / 2) < 100;
+		const isNearCenter = Math.abs(e.clientX - window.innerWidth / 2) < 100;
 		hintHovered = isNearBottom && isNearCenter;
 	}
 
@@ -110,14 +109,10 @@
 		const wasPicking = picking;
 		picking = false;
 
-		const confirmed = await showUserConfirmation(
-			`Do you want to use this selector?\n\n${s}`,
-			"Confirm Selector",
-			{
-				confirmLabel: "Use Selector",
-				confirmColor: "var(--theme-0)",
-			},
-		);
+		const confirmed = await showUserConfirmation(`Do you want to use this selector?\n\n${s}`, "Confirm Selector", {
+			confirmLabel: "Use Selector",
+			confirmColor: "var(--theme-0)",
+		});
 
 		if (confirmed) {
 			exit();
@@ -143,10 +138,7 @@
 	function handleSuggestionHover(selector: string) {
 		try {
 			const elements = document.querySelectorAll(selector);
-			previewElements = Array.from(elements).slice(
-				0,
-				50,
-			) as HTMLElement[];
+			previewElements = Array.from(elements).slice(0, 50) as HTMLElement[];
 		} catch {
 			previewElements = [];
 		}
@@ -186,17 +178,10 @@
 </script>
 
 {#if showSuggestions}
-	<div
-		use:teleport
-		class="suggestions-list context-menu"
-		style="top: {menuPosition.y}px; left: {menuPosition.x}px;"
-	>
+	<div use:teleport class="suggestions-list context-menu" style="top: {menuPosition.y}px; left: {menuPosition.x}px;">
 		<div class="suggestions-header">
 			Select Selector:
-			<button
-				class="close-suggestions"
-				onclick={() => (showSuggestions = false)}>✕</button
-			>
+			<button class="close-suggestions" onclick={() => (showSuggestions = false)}>✕</button>
 		</div>
 		<div class="suggestions-content">
 			{#each suggestedSelectors as s (s)}

@@ -19,8 +19,7 @@
 <button
 	class="styleshift-icon-button styleshift-glow-hover {className}"
 	onclick={onClick}
-	style={style +
-		`min-width: ${size}px; min-height: ${size}px; padding: 10px;`}
+	style={style + `min-width: ${size}px; min-height: ${size}px; padding: 10px;`}
 	type="button"
 >
 	{#if typeof icon === "string" && icon !== ""}

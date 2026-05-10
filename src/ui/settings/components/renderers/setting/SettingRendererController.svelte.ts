@@ -109,7 +109,7 @@ export class SettingRendererController {
 		if (this.setting) {
 			this.conditionsMet = evaluateCondition(
 				this.setting.type === "conditionSetting" ? this.setting.condition : undefined,
-				this.requiredSettings
+				this.requiredSettings,
 			);
 		}
 	}
@@ -171,11 +171,7 @@ export class SettingRendererController {
 		if (!this.setting) return;
 		try {
 			if (this.setting.type === "keyboardShortcuts") {
-				const instance = settingsUi.mountComponent(
-					KeyboardShortcuts,
-					{},
-					node,
-				);
+				const instance = settingsUi.mountComponent(KeyboardShortcuts, {}, node);
 
 				return {
 					destroy() {

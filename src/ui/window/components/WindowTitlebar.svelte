@@ -21,12 +21,7 @@
 	} = $props();
 </script>
 
-<div
-	class="styleshift-window-topbar"
-	onmousedown={onDragStart}
-	ondblclick={onMaximize}
-	role="presentation"
->
+<div class="styleshift-window-topbar" onmousedown={onDragStart} ondblclick={onMaximize} role="presentation">
 	<div class="styleshift-window-title">
 		<img src={getAssetUrl("icon/32.png")} alt="" class="title-icon" />
 		<span>{title}</span>
@@ -117,12 +112,7 @@
 		top: 0;
 		left: 0;
 		right: 0;
-		background: linear-gradient(
-			to bottom,
-			var(--bg-overlay-60),
-			var(--bg-overlay-30),
-			transparent
-		);
+		background: linear-gradient(to bottom, var(--bg-overlay-60), var(--bg-overlay-30), transparent);
 		border-bottom: none;
 	}
 </style>

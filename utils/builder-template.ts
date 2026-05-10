@@ -38,7 +38,11 @@ function extractMetadata(content: string) {
 			label: name,
 			type: "function",
 			detail: `(${params}) => ${isAsync ? "Promise<any>" : "any"}`,
-			info: jsdoc.replace(/\*\/$/, "").replace(/^\/\*\*/, "").replace(/^\s*\* ?/gm, "").trim(),
+			info: jsdoc
+				.replace(/\*\/$/, "")
+				.replace(/^\/\*\*/, "")
+				.replace(/^\s*\* ?/gm, "")
+				.trim(),
 		});
 	}
 
@@ -52,7 +56,6 @@ function extractMetadata(content: string) {
 	}
 	return metadata;
 }
-
 
 export async function buildTemplates() {
 	log.info("Generating UI Templates...");
@@ -88,8 +91,18 @@ export async function buildTemplates() {
 	}
 
 	allMetadata.push(
-		{ label: "setValue", type: "function", detail: "(id: string, value: any) => void", info: `Sets a value in the ${extensionConfig.name} storage.` },
-		{ label: "getValue", type: "function", detail: "(id: string) => any", info: `Gets a value from the ${extensionConfig.name} storage.` },
+		{
+			label: "setValue",
+			type: "function",
+			detail: "(id: string, value: any) => void",
+			info: `Sets a value in the ${extensionConfig.name} storage.`,
+		},
+		{
+			label: "getValue",
+			type: "function",
+			detail: "(id: string) => any",
+			info: `Gets a value from the ${extensionConfig.name} storage.`,
+		},
 	);
 
 	const combinedSignatures = allMetadata
@@ -103,7 +116,15 @@ export async function buildTemplates() {
 	fs.writeFileSync(path.join(TEMPLATE, TYPE_FILE_NAME), dTsContent);
 
 	const templateTsconfig = {
-		compilerOptions: { target: "es2022", module: "esnext", moduleResolution: "node", strict: true, skipLibCheck: true, lib: ["es2022", "dom"], ignoreDeprecations: "6.0" },
+		compilerOptions: {
+			target: "es2022",
+			module: "esnext",
+			moduleResolution: "node",
+			strict: true,
+			skipLibCheck: true,
+			lib: ["es2022", "dom"],
+			ignoreDeprecations: "6.0",
+		},
 		include: ["**/*.js", "**/*.ts", TYPE_FILE_NAME],
 	};
 	fs.writeFileSync(path.join(TEMPLATE, "tsconfig.json"), JSON.stringify(templateTsconfig, null, 2));
@@ -114,5 +135,5 @@ export async function buildTemplates() {
 }
 
 if (require.main === module) {
-	buildTemplates().catch(err => log.error("Templates build failed", err));
+	buildTemplates().catch((err) => log.error("Templates build failed", err));
 }

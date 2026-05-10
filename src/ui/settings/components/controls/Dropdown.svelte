@@ -27,9 +27,9 @@
 	let value = $state("");
 
 	async function init() {
-		logger.debug("ui", `[Dropdown] Initializing for setting: ${setting.id || "no-id"}`, { 
+		logger.debug("ui", `[Dropdown] Initializing for setting: ${setting.id || "no-id"}`, {
 			initialValue: setting.value,
-			optionsCount: setting.options?.length 
+			optionsCount: setting.options?.length,
 		});
 		if (setting.id) {
 			const storedValue = await getFromStorage(setting.id);
@@ -53,15 +53,13 @@
 	const description = $derived(setting.description);
 
 	const optionsList = $derived(Array.isArray(setting.options) ? setting.options : []);
-	const currentLabel = $derived(
-		optionsList.find((opt: any) => opt.value === value)?.label || value,
-	);
+	const currentLabel = $derived(optionsList.find((opt: any) => opt.value === value)?.label || value);
 
 	$effect(() => {
 		logger.debug("ui", `[Dropdown] State change for ${setting.id || "no-id"}:`, {
 			value,
 			label: currentLabel,
-			optionsAvailable: optionsList.length
+			optionsAvailable: optionsList.length,
 		});
 	});
 
@@ -75,10 +73,7 @@
 	}
 
 	async function handleSelect(e: MouseEvent, optionValue: string) {
-		logger.debug(
-			"ui",
-			`[Dropdown] Option selected: "${optionValue}" for setting: ${setting.id || "no-id"}`,
-		);
+		logger.debug("ui", `[Dropdown] Option selected: "${optionValue}" for setting: ${setting.id || "no-id"}`);
 		e.stopPropagation();
 		value = optionValue;
 
@@ -86,10 +81,7 @@
 			await setAndSave(setting, value);
 			triggerSettingUpdate(setting.id);
 		} else if (typeof setting.updateFunction === "function") {
-			logger.debug(
-				"ui",
-				`[Dropdown] Executing updateFunction for non-id setting`,
-			);
+			logger.debug("ui", `[Dropdown] Executing updateFunction for non-id setting`);
 			(setting.updateFunction as Function)(value);
 		}
 
@@ -113,8 +105,7 @@
 				}
 			};
 			window.addEventListener("click", handleClickOutside);
-			return () =>
-				window.removeEventListener("click", handleClickOutside);
+			return () => window.removeEventListener("click", handleClickOutside);
 		}
 	});
 
@@ -130,9 +121,7 @@
 		if (!triggerEl || !menuEl) return;
 
 		if (!scrollParent) {
-			scrollParent = triggerEl.closest(
-				".styleshift-scrollable",
-			) as HTMLElement;
+			scrollParent = triggerEl.closest(".styleshift-scrollable") as HTMLElement;
 		}
 
 		const triggerRect = triggerEl.getBoundingClientRect();
@@ -212,12 +201,7 @@
 {#if !justMenu}
 	<Description {name} {description} />
 	<div class="styleshift-dropdown-wrapper">
-		<button
-			bind:this={triggerEl}
-			class="styleshift-dropdown-trigger"
-			class:open={isOpen}
-			onclick={toggleDropdown}
-		>
+		<button bind:this={triggerEl} class="styleshift-dropdown-trigger" class:open={isOpen} onclick={toggleDropdown}>
 			<div class="styleshift-dropdown-display">
 				{#each optionsList as option (option.value)}
 					<span class="tester-item" aria-hidden="true">
@@ -377,8 +361,7 @@
 		transition: all 0.2s ease;
 		opacity: 0;
 		transform: translateX(-10px);
-		animation: itemSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)
-			forwards;
+		animation: itemSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 
 		&:hover {
 			background: var(--fg-opacity-10);

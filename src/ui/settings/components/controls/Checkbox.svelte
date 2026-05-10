@@ -46,12 +46,7 @@
 {#if !hideLabel}
 	<Description {name} {description} />
 {/if}
-<input
-	type="checkbox"
-	class="styleshift-checkbox"
-	bind:checked={value}
-	onchange={handleChange}
-/>
+<input type="checkbox" class="styleshift-checkbox" bind:checked={value} onchange={handleChange} />
 
 <style lang="scss">
 	.styleshift-checkbox {

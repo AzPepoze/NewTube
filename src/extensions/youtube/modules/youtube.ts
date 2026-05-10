@@ -14,8 +14,8 @@ const navigateListeners: (() => void)[] = [];
 const fullscreenListeners: ((isFullscreen: boolean) => void)[] = [];
 const smallModeListeners: ((isSmallMode: boolean) => void)[] = [];
 
-
-export const playerWatchModeSelector = "div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)";
+export const playerWatchModeSelector =
+	"div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)";
 export const ytVideoContainerWatchMode = `#primary ${playerWatchModeSelector}`;
 export const ytPlayerWatchMode = `#primary #player:has(${playerWatchModeSelector})`;
 export const ytdPlayerWatchMode = `#primary #ytd-player:has(${playerWatchModeSelector})`;

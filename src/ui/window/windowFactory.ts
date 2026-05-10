@@ -129,7 +129,7 @@ export async function playUiAnimation(target: HTMLElement, animationName: string
 		await waitOneFrame();
 	}
 
-	target.style.animation = `STYLESHIFT-${animationName} ${DEFAULT_ANIMATION_DURATION_MS / 1000}s forwards`;
+	target.style.animation = `styleshift-${animationName.toLowerCase()} ${DEFAULT_ANIMATION_DURATION_MS / 1000}s forwards`;
 
 	await sleep(DEFAULT_ANIMATION_DURATION_MS);
 

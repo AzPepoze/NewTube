@@ -3,10 +3,7 @@
 	import { highlight as highlightAction } from "@ui/settings/searchHighlight";
 	import { onDestroy } from "svelte";
 	import { addDrag, addDropTarget } from "@ui/settings/reorder";
-	import {
-		registerSettingUi,
-		unregisterSettingUi,
-	} from "@ui/settings/settingsManager";
+	import { registerSettingUi, unregisterSettingUi } from "@ui/settings/settingsManager";
 	import { getTextAlign } from "@ui/settings/utils";
 	import Button from "@controls/Button.svelte";
 	import Checkbox from "@controls/Checkbox.svelte";
@@ -54,12 +51,7 @@
 
 	$effect(() => {
 		if (controller.isDeveloperMode && domNode && domNode.parentElement) {
-			addDropTarget(
-				domNode,
-				domNode.parentElement,
-				setting,
-				"setting",
-			);
+			addDropTarget(domNode, domNode.parentElement, setting, "setting");
 		}
 	});
 
@@ -76,16 +68,10 @@
 	type={setting.type}
 	className="{controller.isDeveloperMode ? 'developer-mode' : ''} {isLocked
 		? 'styleshift-setting-hard-locked'
-		: ''} {!controller.requirementsMet
-		? 'styleshift-setting-requirement-warning'
-		: ''}"
-	style="{controller.isDeveloperMode &&
-	setting.type !== 'subText' &&
-	setting.type !== 'text'
+		: ''} {!controller.requirementsMet ? 'styleshift-setting-requirement-warning' : ''}"
+	style="{controller.isDeveloperMode && setting.type !== 'subText' && setting.type !== 'text'
 		? 'gap: 10px;'
-		: ''} {isLocked || !controller.requirementsMet
-		? 'flex-direction: column; align-items: stretch;'
-		: ''}"
+		: ''} {isLocked || !controller.requirementsMet ? 'flex-direction: column; align-items: stretch;' : ''}"
 	useAction={(node) => {
 		domNode = node;
 		highlightAction(node, highlight);
@@ -94,20 +80,12 @@
 		}
 	}}
 	padding={setting.type !== "button" && setting.type !== "subText"}
-	transparent={setting.type === "button" ||
-		setting.type === "subText" ||
-		setting.type === "text"}
+	transparent={setting.type === "button" || setting.type === "subText" || setting.type === "text"}
 	vertical={isVerticalSetting}
 >
-	<div
-		class="styleshift-setting-row-content"
-		class:is-vertical={isVerticalSetting}
-	>
+	<div class="styleshift-setting-row-content" class:is-vertical={isVerticalSetting}>
 		{#if controller.isDeveloperMode}
-			<button
-				class="styleshift-config-button drag-handle"
-				use:dragAction
-			>
+			<button class="styleshift-config-button drag-handle" use:dragAction>
 				<Icon name="drag" size={16} />
 			</button>
 		{/if}
@@ -125,11 +103,7 @@
 		{:else if setting.type === "dropdown"}
 			<Dropdown {setting} />
 		{:else if setting.type === "text"}
-			<Text
-				html={setting.html}
-				fontSize={setting.fontSize}
-				{textAlign}
-			/>
+			<Text html={setting.html} fontSize={setting.fontSize} {textAlign} />
 		{:else if setting.type === "subText"}
 			<Text
 				text={setting.text}
@@ -145,18 +119,10 @@
 		{:else if setting.type === "custom"}
 			<div use:controller.customSettingAction></div>
 		{:else if setting.type === "combineSetting"}
-			<Description
-				name={setting.name}
-				description={setting.description}
-			/>
+			<Description name={setting.name} description={setting.description} />
 		{:else if setting.type === "conditionSetting"}
-			<div
-				style="display: flex; flex-direction: column; width: 100%; gap: 5px;"
-			>
-				<Description
-					name={setting.name}
-					description={setting.description}
-				/>
+			<div style="display: flex; flex-direction: column; width: 100%; gap: 5px;">
+				<Description name={setting.name} description={setting.description} />
 				<ConditionStatus
 					conditionsMet={controller.conditionsMet}
 					condition={setting.condition}
@@ -177,25 +143,15 @@
 						title="Edit in Quick Customize"
 						onclick={() => controller.handleQuickEdit()}
 					>
-						<Icon
-							name="brush"
-							size={16}
-							color="var(--fg-opacity-100)"
-						/>
+						<Icon name="brush" size={16} color="var(--fg-opacity-100)" />
 					</button>
 				{/if}
 
 				{#if controller.isDeveloperMode}
-					<button
-						class="styleshift-config-button edit"
-						onclick={() => controller.handleEdit()}
-					>
+					<button class="styleshift-config-button edit" onclick={() => controller.handleEdit()}>
 						<Icon name="edit" size={16} />
 					</button>
-					<button
-						class="styleshift-config-button delete"
-						onclick={() => controller.handleDelete()}
-					>
+					<button class="styleshift-config-button delete" onclick={() => controller.handleDelete()}>
 						<Icon name="delete" size={16} />
 					</button>
 				{/if}
@@ -227,20 +183,15 @@
 		}
 	}
 
-	:global(
-			.styleshift-setting-frame.styleshift-setting-hard-locked
-				.styleshift-setting-row-content
-		) {
+	:global(.styleshift-setting-frame.styleshift-setting-hard-locked .styleshift-setting-row-content) {
 		pointer-events: none !important;
 		opacity: 0.6 !important;
 	}
 
 	:global(
-			.styleshift-setting-frame.styleshift-setting-requirement-warning:not(
-					.styleshift-setting-hard-locked
-				)
-				.styleshift-setting-row-content
-		) {
+		.styleshift-setting-frame.styleshift-setting-requirement-warning:not(.styleshift-setting-hard-locked)
+			.styleshift-setting-row-content
+	) {
 		pointer-events: all;
 		opacity: 1;
 	}

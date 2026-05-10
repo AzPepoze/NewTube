@@ -21,7 +21,8 @@ export const uiCleanerCategory: Category = {
 			type: "checkbox",
 			id: "HideTheaterModeBackground",
 			name: "Clear Theater BG",
-			description: "Removes the default black background that appears behind the video player when YouTube is in theater mode.",
+			description:
+				"Removes the default black background that appears behind the video player when YouTube is in theater mode.",
 			value: true,
 			enableCss: `
                 #full-bleed-container:has(div.html5-video-player:not(.ytp-fullscreen)) {

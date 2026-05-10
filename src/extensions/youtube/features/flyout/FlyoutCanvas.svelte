@@ -49,11 +49,7 @@
 		},
 		volumechange: () => {
 			if (videoEl) {
-				logger.debug(
-					"flyout",
-					"Video volume change event caught",
-					videoEl.volume,
-				);
+				logger.debug("flyout", "Video volume change event caught", videoEl.volume);
 				volume = videoEl.volume;
 				isMuted = videoEl.muted;
 			}
@@ -61,12 +57,7 @@
 	} as const;
 
 	function updateCanvas(force = false) {
-		if (
-			ctx &&
-			canvasEl &&
-			videoEl &&
-			(force || (!videoEl.paused && !videoEl.ended))
-		) {
+		if (ctx && canvasEl && videoEl && (force || (!videoEl.paused && !videoEl.ended))) {
 			const cw = canvasEl.width;
 			const ch = canvasEl.height;
 			const vw = videoEl.videoWidth;
@@ -96,13 +87,9 @@
 
 		if (!force) {
 			if (videoEl && "requestVideoFrameCallback" in videoEl) {
-				rvfcId = (videoEl as any).requestVideoFrameCallback(() =>
-					updateCanvas(false),
-				);
+				rvfcId = (videoEl as any).requestVideoFrameCallback(() => updateCanvas(false));
 			} else {
-				rafId = requestAnimationFrame(() =>
-					updateCanvas(false),
-				) as any;
+				rafId = requestAnimationFrame(() => updateCanvas(false)) as any;
 			}
 		}
 	}
@@ -125,8 +112,7 @@
 		const h = Math.floor(seconds / 3600);
 		const m = Math.floor((seconds % 3600) / 60);
 		const s = Math.floor(seconds % 60);
-		if (h > 0)
-			return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+		if (h > 0) return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 		return `${m}:${s.toString().padStart(2, "0")}`;
 	}
 
@@ -150,10 +136,7 @@
 	}
 
 	onMount(async () => {
-		logger.debug(
-			"flyout",
-			"FlyoutCanvas mounted, searching for video element",
-		);
+		logger.debug("flyout", "FlyoutCanvas mounted, searching for video element");
 		videoEl = await getVideoElement();
 		if (videoEl) {
 			logger.info("flyout", "Video element found for FlyoutCanvas");
@@ -163,10 +146,7 @@
 			volume = videoEl.volume;
 			isMuted = videoEl.muted;
 
-			logger.debug(
-				"flyout",
-				"Adding event listeners to video element",
-			);
+			logger.debug("flyout", "Adding event listeners to video element");
 			Object.entries(eventHandlers).forEach(([event, handler]) => {
 				videoEl!.addEventListener(event, handler);
 			});
@@ -193,10 +173,7 @@
 
 			updateCanvas(false);
 		} else {
-			logger.error(
-				"flyout",
-				"Could not find video element for FlyoutCanvas",
-			);
+			logger.error("flyout", "Could not find video element for FlyoutCanvas");
 		}
 	});
 
@@ -206,10 +183,7 @@
 		if (resizeObserver) resizeObserver.disconnect();
 		ctx = null;
 		if (videoEl) {
-			logger.debug(
-				"flyout",
-				"Removing event listeners from video element",
-			);
+			logger.debug("flyout", "Removing event listeners from video element");
 			Object.entries(eventHandlers).forEach(([event, handler]) => {
 				videoEl!.removeEventListener(event, handler);
 			});
@@ -226,10 +200,7 @@
 
 	function handleContainerClick(e: MouseEvent) {
 		const target = e.target as HTMLElement;
-		if (
-			!target.closest("button") &&
-			!target.closest(".styleshift-slider")
-		) {
+		if (!target.closest("button") && !target.closest(".styleshift-slider")) {
 			togglePlay();
 		}
 	}
@@ -265,11 +236,7 @@
 				/>
 				<button class="icon-btn" onclick={toggleMute}>
 					<span class="material-icons"
-						>{isMuted || volume === 0
-							? "volume_off"
-							: volume < 0.5
-								? "volume_down"
-								: "volume_up"}</span
+						>{isMuted || volume === 0 ? "volume_off" : volume < 0.5 ? "volume_down" : "volume_up"}</span
 					>
 				</button>
 			</div>
@@ -277,13 +244,8 @@
 
 		<div class="bottom-controls">
 			<div class="timeline-container">
-				<button
-					class="icon-btn play-pause-btn"
-					onclick={togglePlay}
-				>
-					<span class="material-icons"
-						>{isPlaying ? "pause" : "play_arrow"}</span
-					>
+				<button class="icon-btn play-pause-btn" onclick={togglePlay}>
+					<span class="material-icons">{isPlaying ? "pause" : "play_arrow"}</span>
 				</button>
 				<span class="time-label">{formatTime(currentTime)}</span>
 				<div class="range-wrapper">
@@ -327,11 +289,7 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		background: linear-gradient(
-			to top,
-			rgba(0, 0, 0, 0.6) 0%,
-			transparent 40%
-		);
+		background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 40%);
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-end;

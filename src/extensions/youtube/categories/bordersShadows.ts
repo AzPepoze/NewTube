@@ -7,7 +7,8 @@ export const bordersShadowsCategory: Category = {
 			type: "dropdown",
 			id: "GlobalStyleType",
 			name: "Style Mode",
-			description: "Select the primary visual enhancement for YouTube elements. 'Outline' adds a solid border, 'Shadow' creates a glowing depth effect, and 'None' keeps it flat.",
+			description:
+				"Select the primary visual enhancement for YouTube elements. 'Outline' adds a solid border, 'Shadow' creates a glowing depth effect, and 'None' keeps it flat.",
 			value: "Sha",
 			options: [
 				{
@@ -46,10 +47,11 @@ export const bordersShadowsCategory: Category = {
 			type: "color",
 			id: "GlobalBorderColor",
 			name: "Effect Color",
-			description: "Sets the color for both the global outlines and the glow shadows. Best paired with your primary theme color.",
+			description:
+				"Sets the color for both the global outlines and the glow shadows. Best paired with your primary theme color.",
 			value: "#099DFF80",
 			varCss: "--nt-border-color",
-			require: { GlobalStyleType: ["Out", "Sha"] }
+			require: { GlobalStyleType: ["Out", "Sha"] },
 		},
 		{
 			type: "numberSlide",
@@ -61,13 +63,14 @@ export const bordersShadowsCategory: Category = {
 			max: 50,
 			step: 1,
 			varCss: "--nt-border-width",
-			require: { GlobalStyleType: ["Out", "Sha"] }
+			require: { GlobalStyleType: ["Out", "Sha"] },
 		},
 		{
 			type: "numberSlide",
 			id: "GlobalCornerRadius",
 			name: "Corner Rounding",
-			description: "Controls the global roundness of thumbnails, buttons, and panels. Higher values create a more organic, bubbly look.",
+			description:
+				"Controls the global roundness of thumbnails, buttons, and panels. Higher values create a more organic, bubbly look.",
 			value: 10,
 			min: 0,
 			max: 100,

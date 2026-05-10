@@ -35,7 +35,8 @@ export const removeBlackBarsCategory: Category = {
 			type: "checkbox",
 			id: "RemoveBlackBarsDisableFullscreen",
 			name: "Disable in Fullscreen",
-			description: "Automatically disables the black bar removal feature when the video player is in fullscreen mode. This can help prevent visual artifacts on some displays.",
+			description:
+				"Automatically disables the black bar removal feature when the video player is in fullscreen mode. This can help prevent visual artifacts on some displays.",
 			value: true,
 			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },
@@ -49,7 +50,8 @@ export const removeBlackBarsCategory: Category = {
 			value: true,
 			lock: {
 				condition: !isFirefox,
-				message: "I didn't want to lock this feature for Firefox only, but Chromium browsers (Chrome, Edge, etc.) are making it really hard to get workers running correctly. Maybe I'm just stupid and can't make it work, but honestly, Chrome's rendering is already so fast that you won't see much of a performance boost anyway.",
+				message:
+					"I didn't want to lock this feature for Firefox only, but Chromium browsers (Chrome, Edge, etc.) are making it really hard to get workers running correctly. Maybe I'm just stupid and can't make it work, but honestly, Chrome's rendering is already so fast that you won't see much of a performance boost anyway.",
 			},
 			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },

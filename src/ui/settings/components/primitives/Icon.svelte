@@ -3,13 +3,9 @@
 	const del = "assets/icons/delete.svg";
 	const drag = "assets/icons/drag.svg";
 	const add = "assets/icons/add.svg";
-	const close = "assets/icons/close.svg";
 	const code = "assets/icons/code.svg";
 	const arrowUp = "assets/icons/arrowUp.svg";
 	const arrowDown = "assets/icons/arrowDown.svg";
-	const minimize = "assets/icons/minimize.svg";
-	const maximize = "assets/icons/maximize.svg";
-	const restore = "assets/icons/restore.svg";
 	const exportIcon = "assets/icons/export.svg";
 	const openInNew = "assets/icons/openInNew.svg";
 
@@ -47,18 +43,9 @@
 
 	const isUrl = $derived(name.includes("://") || name.startsWith("data:"));
 	const iconPath = $derived(icons[name]);
-	const src = $derived(
-		iconPath ? getAssetUrl(iconPath) : isUrl ? getAssetUrl(name) : "",
-	);
-	const isMaterialIcon = $derived(
-		!iconPath &&
-			!isUrl &&
-			typeof name === "string" &&
-			/^[a-z_0-9]+$/.test(name),
-	);
-	const isEmoji = $derived(
-		!iconPath && !isUrl && !isMaterialIcon && name.length > 0,
-	);
+	const src = $derived(iconPath ? getAssetUrl(iconPath) : isUrl ? getAssetUrl(name) : "");
+	const isMaterialIcon = $derived(!iconPath && !isUrl && typeof name === "string" && /^[a-z_0-9]+$/.test(name));
+	const isEmoji = $derived(!iconPath && !isUrl && !isMaterialIcon && name.length > 0);
 </script>
 
 {#if src}
@@ -67,10 +54,7 @@
 		alt={name}
 		class="styleshift-icon {className}"
 		class:with-filter={applyFilter && !color}
-		style="transform: scale({Math.min(
-			scale,
-			2,
-		)}); width: {size}px; height: {size}px; {color
+		style="transform: scale({Math.min(scale, 2)}); width: {size}px; height: {size}px; {color
 			? `filter: none;`
 			: ''}{style}"
 		style:color={color || undefined}

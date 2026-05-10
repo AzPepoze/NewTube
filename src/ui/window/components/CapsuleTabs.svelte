@@ -7,25 +7,14 @@
 
 	import Icon from "@ui/settings/components/primitives/Icon.svelte";
 
-	let {
-		options = [] as TabOption[],
-		activeId = $bindable(""),
-		className = "",
-		style = "",
-	} = $props();
+	let { options = [] as TabOption[], activeId = $bindable(""), className = "", style = "" } = $props();
 
-	const activeIndex = $derived(
-		options.findIndex((opt) => opt.id === activeId),
-	);
+	const activeIndex = $derived(options.findIndex((opt) => opt.id === activeId));
 
 	const slideTransform = $derived(`translateX(${activeIndex * 100}%)`);
 </script>
 
-<div
-	class="styleshift-capsule-toggle {className}"
-	style:--options-count={options.length}
-	{style}
->
+<div class="styleshift-capsule-toggle {className}" style:--options-count={options.length} {style}>
 	{#if options.length > 0}
 		<div class="capsule-slide" style:transform={slideTransform}></div>
 		{#each options as option (option.id)}

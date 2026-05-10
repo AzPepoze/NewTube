@@ -7,7 +7,8 @@ export const hoverClickColorCategory: Category = {
 			type: "color",
 			id: "GlobalHoverBackgroundColor",
 			name: "Main Hover",
-			description: "Sets the background color for most clickable elements when you hover over them, such as menu items and buttons.",
+			description:
+				"Sets the background color for most clickable elements when you hover over them, such as menu items and buttons.",
 			value: "#659aff80",
 			varCss: "--nt-hover-bg",
 			constantCss: `

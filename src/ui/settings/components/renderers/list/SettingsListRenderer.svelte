@@ -1,8 +1,5 @@
 <script lang="ts">
-	import type {
-		Category,
-		SeparateCategory,
-	} from "@settings/types/styleshiftTypes";
+	import type { Category, SeparateCategory } from "@settings/types/styleshiftTypes";
 	import Title from "@ui/settings/components/primitives/Title.svelte";
 	import { getCategoryParts } from "@ui/window/utils";
 	import SettingRenderer from "@renderers/setting/SettingRenderer.svelte";
@@ -17,9 +14,7 @@
 		isDeveloperMode?: boolean;
 	} = $props();
 
-	function isHeaderItem(
-		item: Category | SeparateCategory,
-	): item is SeparateCategory {
+	function isHeaderItem(item: Category | SeparateCategory): item is SeparateCategory {
 		return "isHeader" in item;
 	}
 </script>
@@ -30,10 +25,7 @@
 	{:else}
 		{@const category = item}
 		{@const parts = getCategoryParts(category.category)}
-		<div
-			class="styleshift-category-frame styleshift-settings-group"
-			data-category={parts.text}
-		>
+		<div class="styleshift-category-frame styleshift-settings-group" data-category={parts.text}>
 			<Title
 				text={parts.text}
 				icon={parts.icon}

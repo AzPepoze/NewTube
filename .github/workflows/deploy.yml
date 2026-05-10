@@ -27,10 +27,10 @@ jobs:
         run: |
           CHROME_FILE=$(ls out/release/newtube_chromium_*.zip 2>/dev/null | head -n 1)
           FIREFOX_FILE=$(ls out/release/newtube_firefox_*.zip 2>/dev/null | head -n 1)
-          
+
           if [ -z "$CHROME_FILE" ]; then echo "Error: Chrome zip not found"; exit 1; fi
           if [ -z "$FIREFOX_FILE" ]; then echo "Error: Firefox zip not found"; exit 1; fi
-          
+
           echo "chrome_file=$CHROME_FILE" >> $GITHUB_OUTPUT
           echo "firefox_file=$FIREFOX_FILE" >> $GITHUB_OUTPUT
           echo "Found Chrome asset: $CHROME_FILE"

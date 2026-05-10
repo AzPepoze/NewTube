@@ -54,11 +54,11 @@
 # Table of Contents
 
 - [Install the Extension](#install-the-extension)
-     - [Browser store](#browser-store)
-     - [Releases](#releases)
+  - [Browser store](#browser-store)
+  - [Releases](#releases)
 - [Statistics](#statistics)
-     - [Chrome Web Store Statistics](#chrome-web-store-statistics)
-     - [Firefox Add-on Statistics](#firefox-add-on-statistics)
+  - [Chrome Web Store Statistics](#chrome-web-store-statistics)
+  - [Firefox Add-on Statistics](#firefox-add-on-statistics)
 - [Prerequisites](#prerequisites)
 - [Build from Source](#build-from-source)
 - [Development](#development)
@@ -80,8 +80,8 @@
 </p>
 
 - #### [Releases](https://github.com/AzPepoze/NewTube/releases/latest)
-     - **Chromium**: For browsers based on the Chromium engine, such as Google Chrome, Microsoft Edge, Opera, Brave, and Vivaldi.
-     - **Firefox**: For Mozilla Firefox and browsers based on the Gecko engine.
+  - **Chromium**: For browsers based on the Chromium engine, such as Google Chrome, Microsoft Edge, Opera, Brave, and Vivaldi.
+  - **Firefox**: For Mozilla Firefox and browsers based on the Gecko engine.
 
 ---
 
@@ -96,24 +96,24 @@
 
 1. **Clone & Enter:**
 
-     ```bash
-     git clone https://github.com/AzPepoze/NewTube
-     cd NewTube
-     ```
+   ```bash
+   git clone https://github.com/AzPepoze/NewTube
+   cd NewTube
+   ```
 
 2. **Install Dependencies:**
 
-     ```bash
-     bun install
-     ```
+   ```bash
+   bun install
+   ```
 
 3. **Build:**
 
-     ```bash
-     bun run build
-     ```
+   ```bash
+   bun run build
+   ```
 
-     The output will be in the `out/dist` directory.
+   The output will be in the `out/dist` directory.
 
 Run the extension in development mode with hot-reloading:
 

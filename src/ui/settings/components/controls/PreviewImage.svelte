@@ -41,10 +41,7 @@
 			ctx.drawImage(img, 0, 0, width, height);
 			isLoading = false;
 
-			logger.debug(
-				"ui",
-				`Rendered preview: ${img.width}x${img.height} -> ${width}x${height}`,
-			);
+			logger.debug("ui", `Rendered preview: ${img.width}x${img.height} -> ${width}x${height}`);
 		};
 
 		img.onerror = () => {
@@ -96,9 +93,7 @@
 		<canvas
 			bind:this={canvas}
 			class="styleshift-preview-canvas"
-			style:display={isVisible && !isLoading && !hasError
-				? "block"
-				: "none"}
+			style:display={isVisible && !isLoading && !hasError ? "block" : "none"}
 		></canvas>
 	{:else}
 		<div class="styleshift-no-image">No image selected</div>

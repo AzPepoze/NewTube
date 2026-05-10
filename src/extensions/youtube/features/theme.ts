@@ -35,9 +35,11 @@ async function getSampleColor(img: HTMLImageElement): Promise<[number, number, n
 	if (hsv.s > 20 && hsv.v > 39.2) {
 		return dominant;
 	} else {
-		const palette = (await getPalette(img, {
-			colorCount: 10,
-		})).map((c) => c.array());
+		const palette = (
+			await getPalette(img, {
+				colorCount: 10,
+			})
+		).map((c) => c.array());
 
 		const sorted = getSortedPalette(palette);
 		return sorted[0] || dominant;

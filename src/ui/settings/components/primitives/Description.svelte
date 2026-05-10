@@ -34,12 +34,7 @@
 	{#if name}
 		<div class="setting-name" style:justify-content={flexAlign}>
 			{#if name.includes(".svg") || name.includes("data:image/svg+xml") || name.startsWith("chrome-extension://")}
-				<Icon
-					name={getAssetUrl(name)}
-					size={20}
-					className="styleshift-description-icon"
-					applyFilter={true}
-				/>
+				<Icon name={getAssetUrl(name)} size={20} className="styleshift-description-icon" applyFilter={true} />
 			{:else}
 				{name}
 			{/if}

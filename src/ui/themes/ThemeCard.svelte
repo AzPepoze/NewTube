@@ -28,7 +28,7 @@
 		isLoading?: boolean;
 		isStoreItem?: boolean;
 		isInstalled?: boolean;
-		animationDelay?: number; // New animationDelay prop
+		animationDelay?: number;
 		onApply: (id: string) => void;
 		onSave?: (id: string) => void;
 		onExport?: (id: string) => void;
@@ -58,17 +58,12 @@
 
 	<div
 		class="preview-area"
-		style:background-image={preview.bgImg
-			? `url(${preview.bgImg})`
-			: "none"}
+		style:background-image={preview.bgImg ? `url(${preview.bgImg})` : "none"}
 		style:background-color={preview.bgColor}
 	>
 		<div class="overlay"></div>
 		<ThemePreviewUi />
-		<div
-			class="accent-bar"
-			style:background-color={preview.bgColor}
-		></div>
+		<div class="accent-bar" style:background-color={preview.bgColor}></div>
 	</div>
 	<div class="card-footer">
 		<span class="theme-name">{name}</span>
@@ -79,10 +74,7 @@
 						icon="openInNew"
 						onClick={(e) => {
 							e.stopPropagation();
-							window.open(
-								`${NEWTUBE_STORE_THEMES_URL}/${themeId}`,
-								"_blank",
-							);
+							window.open(`${NEWTUBE_STORE_THEMES_URL}/${themeId}`, "_blank");
 						}}
 						size={18}
 						className="link-btn"
@@ -238,11 +230,7 @@
 			position: absolute;
 			inset: 0;
 			z-index: 1;
-			background: linear-gradient(
-				to bottom,
-				var(--bg-overlay-10) 0%,
-				var(--bg-overlay-30) 100%
-			);
+			background: linear-gradient(to bottom, var(--bg-overlay-10) 0%, var(--bg-overlay-30) 100%);
 		}
 
 		.accent-bar {

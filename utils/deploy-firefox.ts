@@ -29,7 +29,7 @@ async function deployFirefox() {
 			`--source-dir ${dummyDir}`,
 			"--artifacts-dir out/signed",
 			`--upload-file ${filePath}`,
-			"--channel listed"
+			"--channel listed",
 		].join(" ");
 
 		console.log("Executing web-ext sign...");
@@ -41,7 +41,7 @@ async function deployFirefox() {
 	}
 }
 
-deployFirefox().catch(err => {
+deployFirefox().catch((err) => {
 	console.error("Fatal error in Firefox deployment:", err);
 	process.exit(1);
 });

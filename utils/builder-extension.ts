@@ -24,11 +24,18 @@ async function generateBuildInFunctions() {
 
 	if (fs.existsSync(functionsListPath)) {
 		const functionsList = fs.readFileSync(functionsListPath, "utf8");
-		const functionNames = [...new Set([...functionsList.matchAll(/\bexport\s+(?:async\s+)?function\s+(\w+)\s*\(/g)].map((x) => x[1]))];
-		const wrappableFunctions = functionNames.filter((name) => !new Set(["_call_function", "fireFunctionEventWithReturn", "onFunctionEvent"]).has(name));
+		const functionNames = [
+			...new Set([...functionsList.matchAll(/\bexport\s+(?:async\s+)?function\s+(\w+)\s*\(/g)].map((x) => x[1])),
+		];
+		const wrappableFunctions = functionNames.filter(
+			(name) => !new Set(["_call_function", "fireFunctionEventWithReturn", "onFunctionEvent"]).has(name),
+		);
 
 		functionsListData = wrappableFunctions
-			.map((name) => `StyleShift["buildIn"]["${name}"] = async function(...args){return await StyleShift["buildIn"]["_call_function"]("${name}",...args)};`)
+			.map(
+				(name) =>
+					`StyleShift["buildIn"]["${name}"] = async function(...args){return await StyleShift["buildIn"]["_call_function"]("${name}",...args)};`,
+			)
 			.join("\n");
 	}
 
@@ -140,7 +147,7 @@ export async function buildExtension() {
 		ensureDir(firefoxWorkersPath);
 		const workerEntries = [
 			{ src: "extensions/youtube/features/videoAmbient/worker.ts", out: "videoAmbientWorker.js" },
-			{ src: "extensions/youtube/features/removeBlackBars/worker.ts", out: "removeBlackBarsWorker.js" }
+			{ src: "extensions/youtube/features/removeBlackBars/worker.ts", out: "removeBlackBarsWorker.js" },
 		];
 		for (const entry of workerEntries) {
 			const entryPath = path.join(SRC, entry.src);
@@ -173,7 +180,7 @@ async function build() {
 	isBuilding = true;
 	try {
 		await buildExtension();
-	} catch (_e) { }
+	} catch (_e) {}
 	isBuilding = false;
 }
 
@@ -189,6 +196,8 @@ if (require.main === module) {
 	if (isOnce()) {
 		buildExtension().catch(() => process.exit(1));
 	} else {
-		build().then(watchExtension).catch(() => process.exit(1));
+		build()
+			.then(watchExtension)
+			.catch(() => process.exit(1));
 	}
 }

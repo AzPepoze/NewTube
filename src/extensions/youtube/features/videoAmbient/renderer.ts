@@ -72,7 +72,7 @@ export class VideoBGRenderer {
 		preBlurAmountLocation: null as WebGLUniformLocation | null,
 	};
 	private videoTexture: WebGLTexture | null = null;
-	constructor() { }
+	constructor() {}
 
 	private initProgram(gl: WebGLRenderingContext | WebGL2RenderingContext, vs: string, fs: string): WebGLProgram | null {
 		const vShader = this.loadShader(gl, gl.VERTEX_SHADER, vs);
@@ -90,7 +90,11 @@ export class VideoBGRenderer {
 		return prog;
 	}
 
-	private loadShader(gl: WebGLRenderingContext | WebGL2RenderingContext, type: number, source: string): WebGLShader | null {
+	private loadShader(
+		gl: WebGLRenderingContext | WebGL2RenderingContext,
+		type: number,
+		source: string,
+	): WebGLShader | null {
 		const shader = gl.createShader(type);
 		if (!shader) return null;
 		gl.shaderSource(shader, source);
@@ -108,17 +112,20 @@ export class VideoBGRenderer {
 		this.settings = settings;
 
 		if (this.settings.engine === "GPU") {
-			this.gl = (this.canvas.getContext("webgl2", { preserveDrawingBuffer: true }) as WebGL2RenderingContext) ||
+			this.gl =
+				(this.canvas.getContext("webgl2", { preserveDrawingBuffer: true }) as WebGL2RenderingContext) ||
 				(this.canvas.getContext("webgl", { preserveDrawingBuffer: true }) as WebGLRenderingContext);
 
 			if (this.gl) {
 				const gl = this.gl;
 				this.preCanvas = new OffscreenCanvas(this.canvas.width, this.canvas.height);
-				this.preGl = (this.preCanvas.getContext("webgl2", {
-					preserveDrawingBuffer: true,
-				}) as WebGL2RenderingContext) || (this.preCanvas.getContext("webgl", {
-					preserveDrawingBuffer: true,
-				}) as WebGLRenderingContext);
+				this.preGl =
+					(this.preCanvas.getContext("webgl2", {
+						preserveDrawingBuffer: true,
+					}) as WebGL2RenderingContext) ||
+					(this.preCanvas.getContext("webgl", {
+						preserveDrawingBuffer: true,
+					}) as WebGLRenderingContext);
 				const preGl = this.preGl;
 
 				this.program = this.initProgram(gl, vsSource, fsSource);
@@ -129,10 +136,7 @@ export class VideoBGRenderer {
 					const positionAttr = gl.getAttribLocation(this.program, "a_position");
 					this.uniformLocations.mainBlurAmountLocation = gl.getUniformLocation(this.program, "u_BlurAm");
 					this.uniformLocations.mainAlphaLocation = gl.getUniformLocation(this.program, "u_Alpha");
-					this.uniformLocations.mainResolutionLocation = gl.getUniformLocation(
-						this.program,
-						"canvasRes",
-					);
+					this.uniformLocations.mainResolutionLocation = gl.getUniformLocation(this.program, "canvasRes");
 					const uImageMain = gl.getUniformLocation(this.program, "u_image");
 					gl.uniform1i(uImageMain, 0);
 
@@ -151,20 +155,13 @@ export class VideoBGRenderer {
 					preGl.blendFunc(preGl.ONE, preGl.ONE_MINUS_SRC_ALPHA);
 					preGl.enable(preGl.BLEND);
 					const prePos = preGl.getAttribLocation(this.preProgram, "a_position");
-					this.uniformLocations.preSmoothingAlphaLocation = preGl.getUniformLocation(
-						this.preProgram,
-						"u_Alpha",
-					);
-					this.uniformLocations.preBlurAmountLocation = preGl.getUniformLocation(
-						this.preProgram,
-						"u_BlurAm",
-					);
+					this.uniformLocations.preSmoothingAlphaLocation = preGl.getUniformLocation(this.preProgram, "u_Alpha");
+					this.uniformLocations.preBlurAmountLocation = preGl.getUniformLocation(this.preProgram, "u_BlurAm");
 					const preResolutionLocation = preGl.getUniformLocation(this.preProgram, "canvasRes");
 					const uImagePre = preGl.getUniformLocation(this.preProgram, "u_image");
 					preGl.uniform1i(uImagePre, 0);
 					preGl.uniform2f(this.uniformLocations.preBlurAmountLocation, 0, 0);
-					if (preResolutionLocation)
-						preGl.uniform2f(preResolutionLocation, this.canvas.width, this.canvas.height);
+					if (preResolutionLocation) preGl.uniform2f(preResolutionLocation, this.canvas.width, this.canvas.height);
 
 					const pBuf = preGl.createBuffer();
 					preGl.bindBuffer(preGl.ARRAY_BUFFER, pBuf);
@@ -193,7 +190,7 @@ export class VideoBGRenderer {
 				ctx2d: !!this.ctx2d,
 				preCtx2d: !!this.preCtx2d,
 				width: this.canvas.width,
-				height: this.canvas.height
+				height: this.canvas.height,
 			});
 		}
 	}

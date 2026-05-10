@@ -20,8 +20,6 @@
 			"@functions/*": ["../src/core/shared/extensionHelpers.ts"]
 		}
 	},
-	"include": [
-		"../src/core/shared/extensionHelpers.ts"
-	],
+	"include": ["../src/core/shared/extensionHelpers.ts"],
 	"exclude": ["../node_modules"]
 }

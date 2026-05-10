@@ -3,17 +3,9 @@
 	import TextEditor from "../TextEditor.svelte";
 	import { CodeEditorController } from "./CodeEditorController.svelte";
 
-	let {
-		value = $bindable(""),
-		language = "javascript",
-		height = 400 as string | number,
-		onBlur,
-		onInput,
-	} = $props();
+	let { value = $bindable(""), language = "javascript", height = 400 as string | number, onBlur, onInput } = $props();
 
-	const normalizedHeight = $derived(
-		typeof height === "number" ? `${height}px` : height,
-	);
+	const normalizedHeight = $derived(typeof height === "number" ? `${height}px` : height);
 
 	const controller = new CodeEditorController({
 		get language() {
@@ -51,11 +43,7 @@
 	}
 </script>
 
-<div
-	bind:this={container}
-	class="styleshift-code-editor-container"
-	style:height={normalizedHeight}
->
+<div bind:this={container} class="styleshift-code-editor-container" style:height={normalizedHeight}>
 	{#if !controller.fallbackMode}
 		<div bind:this={editorWrapper} class="editor-wrapper"></div>
 	{:else}

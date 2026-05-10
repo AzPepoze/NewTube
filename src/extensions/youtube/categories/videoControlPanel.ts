@@ -1,7 +1,6 @@
 import { type Category } from "@settings/types/styleshiftTypes";
 import { ytPlayerWatchMode, ytVideoContainerWatchMode, ytdPlayerWatchMode } from "../modules/youtube";
 
-
 export const videoControlPanelCategory: Category = {
 	category: { icon: "settings_input_component", label: "Video Control Panel" },
 	selector: "#movie_player",
@@ -90,8 +89,7 @@ export const videoControlPanelCategory: Category = {
 			type: "checkbox",
 			id: "EnableControlPanelButtonHoverScale",
 			name: "Button Pop",
-			description:
-				"Makes control icons grow slightly when you hover over them for better interactive feedback.",
+			description: "Makes control icons grow slightly when you hover over them for better interactive feedback.",
 			value: true,
 			enableCss: `
                 .ytp-chrome-bottom .ytp-button,
@@ -169,7 +167,8 @@ export const videoControlPanelCategory: Category = {
 			type: "color",
 			id: "ControlPanelButtonGroupColor",
 			name: "Button Group Color",
-			description: "Sets the background color for groups of buttons within the control bar, such as the play button or volume control.",
+			description:
+				"Sets the background color for groups of buttons within the control bar, such as the play button or volume control.",
 			value: "#5bbdff20",
 			varCss: "--nt-theme-control-panel-button-group",
 			constantCss: `

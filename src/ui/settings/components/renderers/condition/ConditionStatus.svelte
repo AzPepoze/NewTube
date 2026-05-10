@@ -9,26 +9,25 @@
 	}: {
 		conditionsMet: boolean;
 		condition: Record<string, any>;
-		requiredSettings: Record<
-			string,
-			{ name: string; value: any; type: string; options?: any }
-		>;
+		requiredSettings: Record<string, { name: string; value: any; type: string; options?: any }>;
 	} = $props();
 
-	const controller = $derived(new ConditionStatusController({
-		conditionsMet,
-		condition,
-		requiredSettings
-	}));
+	const controller = $derived(
+		new ConditionStatusController({
+			conditionsMet,
+			condition,
+			requiredSettings,
+		}),
+	);
 </script>
 
 <div class="styleshift-condition-status-container" class:is-all-met={conditionsMet}>
 	<div class="status-header">
 		<div class="icon-wrapper">
-			<Icon 
-				name={conditionsMet ? "check_circle" : "rule"} 
-				size={16} 
-				color={conditionsMet ? "var(--fg-opacity-100)" : "var(--fg-opacity-80)"} 
+			<Icon
+				name={conditionsMet ? "check_circle" : "rule"}
+				size={16}
+				color={conditionsMet ? "var(--fg-opacity-100)" : "var(--fg-opacity-80)"}
 			/>
 		</div>
 		<span class="status-title">
@@ -147,7 +146,7 @@
 
 			&.is-met {
 				background: var(--theme-success-10);
-				
+
 				.item-name {
 					background: var(--theme-success-20);
 				}

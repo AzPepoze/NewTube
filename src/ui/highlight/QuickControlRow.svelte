@@ -5,14 +5,14 @@
 	import TextInput from "../settings/components/controls/TextInput.svelte";
 	import Dropdown from "../settings/components/controls/Dropdown.svelte";
 
-	let { 
-		ctrl, 
-		enabled = $bindable(false), 
-		value = $bindable("") 
-	}: { 
-		ctrl: any; 
-		enabled: boolean; 
-		value: any; 
+	let {
+		ctrl,
+		enabled = $bindable(false),
+		value = $bindable(""),
+	}: {
+		ctrl: any;
+		enabled: boolean;
+		value: any;
 	} = $props();
 
 	const currentSetting = $derived({
@@ -20,20 +20,20 @@
 		name: ctrl.label,
 		value: value,
 		id: "",
-		updateFunction: (val: any) => (value = val)
+		updateFunction: (val: any) => (value = val),
 	});
 </script>
 
 <div class="control-row" class:disabled={!enabled}>
 	<div class="toggle-side">
-		<Checkbox 
+		<Checkbox
 			hideLabel={true}
-			setting={{ 
-				type: "checkbox", 
-				id: "", 
-				name: "", 
-				value: enabled, 
-				updateFunction: (v) => (enabled = v)
+			setting={{
+				type: "checkbox",
+				id: "",
+				name: "",
+				value: enabled,
+				updateFunction: (v) => (enabled = v),
 			}}
 		/>
 	</div>

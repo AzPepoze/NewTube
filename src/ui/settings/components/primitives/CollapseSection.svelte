@@ -1,12 +1,7 @@
 <script lang="ts">
 	import Button from "../controls/Button.svelte";
 
-	let {
-		buttonName,
-		color,
-		collapsed = $bindable(true),
-		contentEl,
-	} = $props();
+	let { buttonName, color, collapsed = $bindable(true), contentEl } = $props();
 
 	function toggle() {
 		collapsed = !collapsed;

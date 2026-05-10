@@ -40,6 +40,6 @@ export const fontsCategory: Category = {
                     }
                 `;
 			},
-		}
+		},
 	],
 };

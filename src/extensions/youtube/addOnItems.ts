@@ -103,7 +103,8 @@ const addOnStyleShiftItems: Category[] = [
 			{
 				type: "custom",
 				id: "Test_custom",
-				uiFunction: 'thisSettingFrame.innerHTML = "<div style=\'padding: 20px; background: #333; color: gold; border-radius: 10px;\'>Custom UI Rendered</div>";',
+				uiFunction:
+					"thisSettingFrame.innerHTML = \"<div style='padding: 20px; background: #333; color: gold; border-radius: 10px;'>Custom UI Rendered</div>\";",
 				editable: true,
 			},
 			{

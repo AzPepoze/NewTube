@@ -45,31 +45,18 @@
 	});
 </script>
 
-<Modal
-	{isOpen}
-	onClose={() => handleAction(onCancel)}
-	width={multiline ? "600px" : "400px"}
->
-	<div
-		class="header"
-		in:fly={{ y: 20, duration: 600, easing: quintOut, delay: 100 }}
-	>
+<Modal {isOpen} onClose={() => handleAction(onCancel)} width={multiline ? "600px" : "400px"}>
+	<div class="header" in:fly={{ y: 20, duration: 600, easing: quintOut, delay: 100 }}>
 		{title}
 	</div>
 
 	{#if content}
-		<div
-			class="content-desc"
-			in:fly={{ y: 20, duration: 600, easing: quintOut, delay: 150 }}
-		>
+		<div class="content-desc" in:fly={{ y: 20, duration: 600, easing: quintOut, delay: 150 }}>
 			{content}
 		</div>
 	{/if}
 
-	<div
-		class="body"
-		in:fly={{ y: 20, duration: 600, easing: quintOut, delay: 200 }}
-	>
+	<div class="body" in:fly={{ y: 20, duration: 600, easing: quintOut, delay: 200 }}>
 		{#if multiline}
 			<textarea
 				bind:this={inputEl}
@@ -90,10 +77,7 @@
 		{/if}
 	</div>
 
-	<div
-		class="footer"
-		in:fly={{ y: 20, duration: 600, easing: quintOut, delay: 300 }}
-	>
+	<div class="footer" in:fly={{ y: 20, duration: 600, easing: quintOut, delay: 300 }}>
 		<Button
 			setting={{
 				type: "button",

@@ -53,9 +53,7 @@ export class WindowLogic {
 
 	toggleMaximize = (e?: MouseEvent) => {
 		if (e) e.stopPropagation();
-		const windowEl = document.querySelector(
-			`[data-window-id="${this.windowId}"]`,
-		) as HTMLElement;
+		const windowEl = document.querySelector(`[data-window-id="${this.windowId}"]`) as HTMLElement;
 		if (!windowEl) return;
 
 		if (this.isMaximized) {
@@ -97,9 +95,7 @@ export class WindowLogic {
 		const target = e.target as HTMLElement;
 		if (target.closest("button") || target.closest(".control-btn")) return;
 
-		const windowEl = document.querySelector(
-			`[data-window-id="${this.windowId}"]`,
-		) as HTMLElement;
+		const windowEl = document.querySelector(`[data-window-id="${this.windowId}"]`) as HTMLElement;
 		if (!windowEl) return;
 
 		this.isDragging = true;
@@ -115,13 +111,7 @@ export class WindowLogic {
 			const windowWidth = windowEl.offsetWidth;
 			const windowHeight = windowEl.offsetHeight;
 
-			const constrainedPosition = constrainWindowPosition(
-				newLeft,
-				newTop,
-				windowWidth,
-				windowHeight,
-				minVisibleRatio,
-			);
+			const constrainedPosition = constrainWindowPosition(newLeft, newTop, windowWidth, windowHeight, minVisibleRatio);
 
 			windowEl.style.translate = `${constrainedPosition.left}px ${constrainedPosition.top}px`;
 		};

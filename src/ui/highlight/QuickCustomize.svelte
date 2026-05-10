@@ -12,18 +12,24 @@
 		selector = "",
 		onClose = () => {},
 		onSave = (_data: any) => {},
-		initialData = null as any
+		initialData = null as any,
 	}: {
 		selector: string;
 		onClose: () => void;
-		onSave: (data: { selector: string, css: string, mode: string, name: string, metadata: any }) => void;
-		initialData?: { name: string, mode: string, basicStyles: any, enabledStyles: any, rawCss?: string } | null;
+		onSave: (data: { selector: string; css: string; mode: string; name: string; metadata: any }) => void;
+		initialData?: { name: string; mode: string; basicStyles: any; enabledStyles: any; rawCss?: string } | null;
 	} = $props();
 
-	const controller = new QuickCustomizeController({ 
-		get selector() { return selector }, 
-		get initialData() { return initialData }, 
-		get onSave() { return onSave } 
+	const controller = new QuickCustomizeController({
+		get selector() {
+			return selector;
+		},
+		get initialData() {
+			return initialData;
+		},
+		get onSave() {
+			return onSave;
+		},
 	});
 
 	$effect(() => {
@@ -39,17 +45,33 @@
 		{ id: "color", label: "Text Color", type: "color", icon: "title" },
 		{ id: "font-size", label: "Font Size", type: "numberSlide", icon: "text_fields", min: 8, max: 72, unit: "px" },
 		{ id: "opacity", label: "Opacity", type: "numberSlide", icon: "opacity", min: 0, max: 1, step: 0.05 },
-		{ id: "border-radius", label: "Rounding", type: "numberSlide", icon: "rounded_corner", min: 0, max: 50, unit: "px" },
-		{ id: "display", label: "Visibility", type: "dropdown", icon: "visibility", options: [
-			{ label: "Show", value: "block" },
-			{ label: "Hide", value: "none" }
-		]},
+		{
+			id: "border-radius",
+			label: "Rounding",
+			type: "numberSlide",
+			icon: "rounded_corner",
+			min: 0,
+			max: 50,
+			unit: "px",
+		},
+		{
+			id: "display",
+			label: "Visibility",
+			type: "dropdown",
+			icon: "visibility",
+			options: [
+				{ label: "Show", value: "block" },
+				{ label: "Hide", value: "none" },
+			],
+		},
 	];
 
-	onMount(() => { 
-		logger.debug("QuickCustomize", "Mounted for selector", selector); 
+	onMount(() => {
+		logger.debug("QuickCustomize", "Mounted for selector", selector);
 	});
-	onDestroy(() => { controller.destroy(); });
+	onDestroy(() => {
+		controller.destroy();
+	});
 	$effect(() => {
 		controller.handleTabChange(controller.activeTab);
 	});
@@ -57,13 +79,13 @@
 
 <div class="styleshift-quick-customize-container">
 	<div class="setting-name-header">
-		<TextInput 
+		<TextInput
 			setting={{
 				type: "textInput",
 				name: "Setting Name",
 				value: controller.settingName,
 				id: "",
-				updateFunction: (val) => (controller.settingName = val)
+				updateFunction: (val) => (controller.settingName = val),
 			}}
 			placeholder={controller.defaultName}
 		/>
@@ -80,10 +102,10 @@
 	</div>
 
 	<div class="tabs-wrapper">
-		<CapsuleTabs 
+		<CapsuleTabs
 			options={[
 				{ id: "basic", label: "Basic" },
-				{ id: "advanced", label: "Advanced" }
+				{ id: "advanced", label: "Advanced" },
 			]}
 			bind:activeId={controller.activeTab}
 		/>
@@ -93,7 +115,7 @@
 		{#if controller.activeTab === "basic"}
 			<div class="basic-controls-list">
 				{#each controls as control (control.id)}
-					<QuickControlRow 
+					<QuickControlRow
 						ctrl={control}
 						bind:value={controller.basicStyles[control.id]}
 						bind:enabled={controller.enabledStyles[control.id]}
@@ -108,7 +130,7 @@
 						<span>Loading Code Editor...</span>
 					</div>
 				{/if}
-				<CodeEditor 
+				<CodeEditor
 					value={controller.rawCss}
 					language="css"
 					onInput={(val) => (controller.rawCss = val)}
@@ -171,7 +193,7 @@
 			}
 
 			.selector-name {
-				font-family: 'Fira Code', 'JetBrains Mono', monospace;
+				font-family: "Fira Code", "JetBrains Mono", monospace;
 				font-size: 13px;
 				color: var(--theme-0);
 				font-weight: 500;
@@ -214,13 +236,19 @@
 		background: var(--bg-overlay-20);
 		border-radius: 12px;
 		color: var(--fg-opacity-60);
-		
-		:global(svg) { animation: spin 1.5s linear infinite; }
+
+		:global(svg) {
+			animation: spin 1.5s linear infinite;
+		}
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.modal-footer {
@@ -245,14 +273,20 @@
 			color: white;
 			border: none;
 			box-shadow: 0 4px 12px var(--shadow-color);
-			&:hover { filter: brightness(1.1); transform: translateY(-1px); }
+			&:hover {
+				filter: brightness(1.1);
+				transform: translateY(-1px);
+			}
 		}
 
 		&.btn-secondary {
 			background: transparent;
 			color: var(--fg-opacity-60);
 			border: 1px solid var(--fg-opacity-20);
-			&:hover { color: var(--text-primary); background: var(--fg-opacity-05); }
+			&:hover {
+				color: var(--text-primary);
+				background: var(--fg-opacity-05);
+			}
 		}
 	}
 </style>

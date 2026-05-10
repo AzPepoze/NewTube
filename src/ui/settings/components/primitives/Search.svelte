@@ -65,11 +65,7 @@
 	/>
 
 	{#if value}
-		<button
-			class="styleshift-search-clear-button"
-			onclick={clearSearch}
-			title="Clear search"
-		>
+		<button class="styleshift-search-clear-button" onclick={clearSearch} title="Clear search">
 			<Icon name="close" size={16} />
 		</button>
 	{/if}

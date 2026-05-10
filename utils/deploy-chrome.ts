@@ -40,7 +40,7 @@ async function deployChrome() {
 	console.log(`Uploading ${filePath}...`);
 	const fileBuffer = readFileSync(filePath);
 	const uploadUrl = `https://chromewebstore.googleapis.com/upload/v2/publishers/${publisherId}/items/${extensionId}:upload`;
-	
+
 	const uploadResponse = await fetch(uploadUrl, {
 		method: "POST",
 		headers: {
@@ -60,7 +60,7 @@ async function deployChrome() {
 	// 3. Publish the item
 	console.log("Publishing extension...");
 	const publishUrl = `https://chromewebstore.googleapis.com/v2/publishers/${publisherId}/items/${extensionId}:publish`;
-	
+
 	const publishResponse = await fetch(publishUrl, {
 		method: "POST",
 		headers: {
@@ -77,7 +77,7 @@ async function deployChrome() {
 	console.log("Successfully submitted for review/published!");
 }
 
-deployChrome().catch(err => {
+deployChrome().catch((err) => {
 	console.error("Chrome deployment failed:", err);
 	process.exit(1);
 });

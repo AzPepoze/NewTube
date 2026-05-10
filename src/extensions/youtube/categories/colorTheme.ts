@@ -64,8 +64,7 @@ export const colorThemeCategory: Category = {
 			type: "checkbox",
 			id: "EnableSolidThemeByVideo",
 			name: "Solid Dynamic Background",
-			description:
-				"When using Dynamic Video Theme, this makes the background tint solid instead of semi-transparent.",
+			description: "When using Dynamic Video Theme, this makes the background tint solid instead of semi-transparent.",
 			value: false,
 			require: { EnableThemeByVideo: true },
 		},
@@ -81,8 +80,7 @@ export const colorThemeCategory: Category = {
 			type: "color",
 			id: "TransparentThemeColor",
 			name: "Surface Accent",
-			description:
-				"A semi-transparent version of the theme color used for hover states and subtle backgrounds.",
+			description: "A semi-transparent version of the theme color used for hover states and subtle backgrounds.",
 			value: "#659aff33",
 			varCss: "--nt-theme-transparent",
 		},
@@ -176,7 +174,8 @@ export const colorThemeCategory: Category = {
 			type: "color",
 			id: "ThemeShadowColor",
 			name: "Theme Shadow",
-			description: "Customizes the shadow color used for thumbnails and panels. Works best when matched with your theme color.",
+			description:
+				"Customizes the shadow color used for thumbnails and panels. Works best when matched with your theme color.",
 			value: "#659aff80",
 			varCss: "--nt-theme-shadow",
 		},

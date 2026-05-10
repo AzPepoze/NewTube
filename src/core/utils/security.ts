@@ -1,5 +1,5 @@
-import { createNotification } from '@core/shared/notifications';
-import { logger } from '@shared/logger';
+import { createNotification } from "@core/shared/notifications";
+import { logger } from "@shared/logger";
 
 export const dangerousPatterns = [
 	/eval/i,
@@ -85,7 +85,6 @@ export function isSafeCode(code: string, codeName: string): boolean {
 					content: `<b>"${match[0]}"</b> is not allowed.<br>Found at line: <b>${lineNumber}</b>, character: <b>${charPosition}</b><br>From: <b>${codeName}</b><br><br><pre>${highlightedError}</pre>`,
 					timeout: 0,
 				});
-
 
 				logger.warn("security", match, pattern);
 			}

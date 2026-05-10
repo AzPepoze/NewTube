@@ -1,14 +1,13 @@
-import { mount, unmount } from 'svelte';
+import { mount, unmount } from "svelte";
 
-import { logger } from '@shared/logger';
-import Icon from '@ui/settings/components/primitives/Icon.svelte';
-import { settingsUi } from '@ui/settings/settingsApi';
-import { globalNotificationContainer, playUiAnimation } from '@ui/window/windowFactory';
-
+import { logger } from "@shared/logger";
+import Icon from "@ui/settings/components/primitives/Icon.svelte";
+import { settingsUi } from "@ui/settings/settingsApi";
+import { globalNotificationContainer, playUiAnimation } from "@ui/window/windowFactory";
 
 /**
  * Creates and displays a stylish notification in the extension's UI.
- * 
+ *
  * @param {Object} options - The notification options.
  * @param {string | null} [options.icon=null] - The name of the material icon to display.
  * @param {string} [options.iconColor=""] - The CSS color for the icon.
@@ -16,13 +15,19 @@ import { globalNotificationContainer, playUiAnimation } from '@ui/window/windowF
  * @param {string} [options.content=""] - The HTML content of the notification.
  * @param {number} [options.timeout=3000] - Duration in ms before auto-closing (0 for manual close, -1 for persistent).
  * @returns {Promise<Object>} An object containing methods to control the notification (setIcon, setIconColor, setContent, setTitle, close).
- * 
+ *
  * @example
  * const notification = await createNotification({ title: "Update", content: "Settings saved!" });
  * // Later...
  * notification.close();
  */
-export async function createNotification({ icon = null, iconColor = "", title = "StyleShift", content = "", timeout = 3000 }) {
+export async function createNotification({
+	icon = null,
+	iconColor = "",
+	title = "StyleShift",
+	content = "",
+	timeout = 3000,
+}) {
 	logger.info("extension", title, content);
 
 	const notificationFrame = await settingsUi.settingFrame(true, false, { x: false, y: true });
@@ -87,17 +92,19 @@ export async function createNotification({ icon = null, iconColor = "", title = 
 		setIcon: (newIcon: string) => updateIcon(newIcon),
 		setIconColor: (newColor: string) => updateIcon(icon, newColor),
 		setContent,
-		setTitle: (newTitle: string) => { titleUi.textContent = newTitle; },
+		setTitle: (newTitle: string) => {
+			titleUi.textContent = newTitle;
+		},
 		close,
 	};
 }
 
 /**
  * Creates and displays an error notification.
- * 
+ *
  * @param {any} content - The error message or error object to display.
  * @returns {Promise<Object>} The notification controller object.
- * 
+ *
  * @example
  * try {
  *   // ...
@@ -117,10 +124,10 @@ export async function createError(content: any) {
 
 /**
  * Creates and displays a warning notification.
- * 
+ *
  * @param {string} content - The warning message to display.
  * @returns {Promise<Object>} The notification controller object.
- * 
+ *
  * @example
  * await createWarning("Unsupported feature detected.");
  */
@@ -136,10 +143,10 @@ export async function createWarning(content: string) {
 
 /**
  * Creates and displays a success notification.
- * 
+ *
  * @param {string} content - The success message to display.
  * @returns {Promise<Object>} The notification controller object.
- * 
+ *
  * @example
  * await createSuccess("Changes applied successfully!");
  */

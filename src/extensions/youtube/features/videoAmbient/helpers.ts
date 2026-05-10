@@ -51,9 +51,7 @@ export async function checkStaticVDO(): Promise<boolean> {
 	if (videoID === lastStaticCheckVideoID) return cachedStaticResult;
 
 	lastStaticCheckVideoID = videoID;
-	const frames = await Promise.all(
-		[1, 2, 3].map((i) => getImageColor(`https://i.ytimg.com/vi/${videoID}/${i}.jpg`)),
-	);
+	const frames = await Promise.all([1, 2, 3].map((i) => getImageColor(`https://i.ytimg.com/vi/${videoID}/${i}.jpg`)));
 
 	if (frames.some((f) => f === null)) {
 		cachedStaticResult = false;

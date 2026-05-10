@@ -12,7 +12,7 @@
 		selected = false,
 		isDeveloperMode = false,
 		editable = false,
-		onMove = null as ((direction: 'up' | 'down') => void) | null,
+		onMove = null as ((direction: "up" | "down") => void) | null,
 	} = $props();
 	let titleEl: HTMLDivElement = $state(null!);
 
@@ -43,10 +43,24 @@
 				<Icon name="drag" size={14} />
 			</button>
 			<div class="styleshift-sidebar-arrows">
-				<button class="styleshift-sidebar-control-btn arrow" onclick={(e) => { e.stopPropagation(); onMove?.('up'); }} title="Move Up">
+				<button
+					class="styleshift-sidebar-control-btn arrow"
+					onclick={(e) => {
+						e.stopPropagation();
+						onMove?.("up");
+					}}
+					title="Move Up"
+				>
 					<Icon name="arrowUp" size={12} />
 				</button>
-				<button class="styleshift-sidebar-control-btn arrow" onclick={(e) => { e.stopPropagation(); onMove?.('down'); }} title="Move Down">
+				<button
+					class="styleshift-sidebar-control-btn arrow"
+					onclick={(e) => {
+						e.stopPropagation();
+						onMove?.("down");
+					}}
+					title="Move Down"
+				>
 					<Icon name="arrowDown" size={12} />
 				</button>
 			</div>
@@ -151,8 +165,7 @@
 		}
 
 		&.is-new {
-			animation: styleshift-new-category-pop 1s
-				cubic-bezier(0.175, 0.885, 0.32, 1.275);
+			animation: styleshift-new-category-pop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 		}
 
 		&:hover {

@@ -5,7 +5,6 @@
 
 import { logger } from "@/shared/logger";
 
-
 interface ContentScriptMessage {
 	Command: string;
 	workerId?: string;
@@ -42,32 +41,22 @@ async function execFunction(execText: string): Promise<void> {
 			// Create TrustedScript policy
 			if (!win.__styleshift_script_policy) {
 				try {
-					win.__styleshift_script_policy = win.trustedTypes.createPolicy(
-						"styleshift-script-policy",
-						{
-							createScript: (s: string) => s,
-						},
-					);
+					win.__styleshift_script_policy = win.trustedTypes.createPolicy("styleshift-script-policy", {
+						createScript: (s: string) => s,
+					});
 				} catch (_e) {
-					win.__styleshift_script_policy = win.trustedTypes.getPolicy(
-						"styleshift-script-policy",
-					);
+					win.__styleshift_script_policy = win.trustedTypes.getPolicy("styleshift-script-policy");
 				}
 			}
 
 			// Create TrustedHTML policy
 			if (!win.__styleshift_html_policy) {
 				try {
-					win.__styleshift_html_policy = win.trustedTypes.createPolicy(
-						"styleshift-html-policy",
-						{
-							createHTML: (h: string) => h,
-						},
-					);
+					win.__styleshift_html_policy = win.trustedTypes.createPolicy("styleshift-html-policy", {
+						createHTML: (h: string) => h,
+					});
 				} catch (_e) {
-					win.__styleshift_html_policy = win.trustedTypes.getPolicy(
-						"styleshift-html-policy",
-					);
+					win.__styleshift_html_policy = win.trustedTypes.getPolicy("styleshift-html-policy");
 				}
 			}
 		}
@@ -75,12 +64,8 @@ async function execFunction(execText: string): Promise<void> {
 		const script = document.createElement("script");
 
 		// Use TrustedScript policy if available
-		if (
-			win.__styleshift_script_policy &&
-			win.__styleshift_script_policy.createScript
-		) {
-			script.textContent =
-				win.__styleshift_script_policy.createScript(execText);
+		if (win.__styleshift_script_policy && win.__styleshift_script_policy.createScript) {
+			script.textContent = win.__styleshift_script_policy.createScript(execText);
 		} else {
 			script.textContent = execText;
 		}
@@ -91,10 +76,7 @@ async function execFunction(execText: string): Promise<void> {
 		console.error("StyleShift: Execution failed", error);
 		const errorMsg = error instanceof Error ? error.message : String(error);
 		if (typeof (window as any).StyleShift !== "undefined") {
-			(window as any).StyleShift["buildIn"]?.["_call_function"]?.(
-				"createError",
-				"Injection failed: " + errorMsg,
-			);
+			(window as any).StyleShift["buildIn"]?.["_call_function"]?.("createError", "Injection failed: " + errorMsg);
 		}
 		try {
 			new Function(execText)();
@@ -106,11 +88,7 @@ async function execFunction(execText: string): Promise<void> {
 
 // Listen for messages from content scripts
 chrome.runtime.onMessage.addListener(
-	(
-		recivedMsg: ContentScriptMessage,
-		sender: chrome.runtime.MessageSender,
-		sendResponse,
-	) => {
+	(recivedMsg: ContentScriptMessage, sender: chrome.runtime.MessageSender, sendResponse) => {
 		// Log errors at error level, others at info level
 		if (recivedMsg.Command === "workerError" || recivedMsg.error) {
 			logger.error("message", recivedMsg);
@@ -131,10 +109,7 @@ chrome.runtime.onMessage.addListener(
 	},
 );
 
-async function handleMessage(
-	recivedMsg: ContentScriptMessage,
-	sender: chrome.runtime.MessageSender,
-): Promise<any> {
+async function handleMessage(recivedMsg: ContentScriptMessage, sender: chrome.runtime.MessageSender): Promise<any> {
 	logger.info("message", `Handling command: ${recivedMsg.Command}`);
 	switch (recivedMsg.Command) {
 		case "runScript": {
@@ -207,9 +182,7 @@ async function handleMessage(
 		}
 
 		case "openSettingPage": {
-			const url = chrome.runtime.getURL(
-				`setting/styleshift.html?domain=${recivedMsg.data?.domain || ""}`,
-			);
+			const url = chrome.runtime.getURL(`setting/styleshift.html?domain=${recivedMsg.data?.domain || ""}`);
 			chrome.tabs.create({ url });
 			return true;
 		}
@@ -221,11 +194,7 @@ async function handleMessage(
 					logger.info("message", "Calling chrome.commands.getAll()");
 					chrome.commands.getAll((commands) => {
 						if (!resolved) {
-							logger.info(
-								"message",
-								"chrome.commands.getAll() callback:",
-								commands,
-							);
+							logger.info("message", "chrome.commands.getAll() callback:", commands);
 							resolved = true;
 							resolve(commands || []);
 						}
@@ -233,10 +202,7 @@ async function handleMessage(
 					// Safety timeout in case callback never fires
 					setTimeout(() => {
 						if (!resolved) {
-							logger.warn(
-								"message",
-								"getCommands timeout - resolving with empty array",
-							);
+							logger.warn("message", "getCommands timeout - resolving with empty array");
 							resolved = true;
 							resolve([]);
 						}
@@ -256,11 +222,10 @@ async function handleMessage(
 			chrome.tabs.create({ url });
 			return true;
 		}
-
 	}
 
 	logger.info("message", "---------------------------------");
 	return false;
 }
 
-export { };
+export {};

@@ -11,6 +11,7 @@
 		"build:prod": "bun utils/build.ts --production",
 		"release": "bun utils/build.ts --release",
 		"check": "bun utils/check.ts",
+		"format": "prettier --write .",
 		"test:firefox": "web-ext run --pref gfx.webrender.all=true --source-dir=./out/dist/firefox",
 		"test:chromium": "web-ext run --target=chromium --source-dir=./out/dist/chromium"
 	},
@@ -40,6 +41,8 @@
 		"eslint-plugin-svelte": "^3.17.1",
 		"fs-extra": "^11.3.5",
 		"globals": "^17.6.0",
+		"prettier": "^3.8.3",
+		"prettier-plugin-svelte": "^3.5.1",
 		"sass": "^1.99.0",
 		"svelte": "^5.55.5",
 		"svelte-check": "^4.4.8",

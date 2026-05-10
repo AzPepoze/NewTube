@@ -1,12 +1,5 @@
 <script lang="ts">
-	let {
-		value = $bindable(0),
-		min = 0,
-		max = 1,
-		vertical = false,
-		onInput = () => {},
-		onChange = () => {},
-	} = $props();
+	let { value = $bindable(0), min = 0, max = 1, vertical = false, onInput = () => {}, onChange = () => {} } = $props();
 
 	let sliderEl = $state<HTMLElement | null>(null);
 	let isDragging = $state(false);
@@ -67,15 +60,9 @@
 	tabindex="0"
 >
 	<div class="slider-track">
-		<div
-			class="slider-progress"
-			style={vertical ? `height: ${progress}%` : `width: ${progress}%`}
-		></div>
+		<div class="slider-progress" style={vertical ? `height: ${progress}%` : `width: ${progress}%`}></div>
 	</div>
-	<div
-		class="slider-thumb"
-		style={vertical ? `bottom: ${progress}%` : `left: ${progress}%`}
-	></div>
+	<div class="slider-thumb" style={vertical ? `bottom: ${progress}%` : `left: ${progress}%`}></div>
 </div>
 
 <style lang="scss">

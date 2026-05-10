@@ -24,21 +24,23 @@ export class WarningSectionController {
 
 	get unmetRequirements() {
 		if (!this.require) return [];
-		return Object.keys(this.require).filter(reqId => {
-			const reqValue = this.require![reqId];
-			const actualValue = this.requiredSettings[reqId]?.value;
-			return actualValue !== reqValue;
-		}).map(reqId => {
-			const reqValue = this.require![reqId];
-			const info = this.requiredSettings[reqId];
-			return {
-				id: reqId,
-				name: info?.name || reqId,
-				type: info?.type,
-				requiredValue: reqValue,
-				options: info?.options
-			};
-		});
+		return Object.keys(this.require)
+			.filter((reqId) => {
+				const reqValue = this.require![reqId];
+				const actualValue = this.requiredSettings[reqId]?.value;
+				return actualValue !== reqValue;
+			})
+			.map((reqId) => {
+				const reqValue = this.require![reqId];
+				const info = this.requiredSettings[reqId];
+				return {
+					id: reqId,
+					name: info?.name || reqId,
+					type: info?.type,
+					requiredValue: reqValue,
+					options: info?.options,
+				};
+			});
 	}
 
 	formatValue(req: any) {

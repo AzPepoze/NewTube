@@ -150,13 +150,20 @@ async function moveItem(draggingData: any, targetInfo: any) {
 	}
 
 	const dropIndex =
-		targetInfo.dataType === "category" ? 0 : targetCategory.settings.indexOf(targetInfo.data as Setting) + (targetInfo.isAfter ? 1 : 0);
+		targetInfo.dataType === "category"
+			? 0
+			: targetCategory.settings.indexOf(targetInfo.data as Setting) + (targetInfo.isAfter ? 1 : 0);
 
 	targetCategory.settings.splice(dropIndex, 0, ...itemsToInsert);
 	await saveToStorage("addOnStyleShiftItems", getAddOnItems());
 }
 
-export async function addDrag(dragHandle: HTMLElement, frame: HTMLElement | null, _parent: HTMLElement | null, thisData: Setting | Category) {
+export async function addDrag(
+	dragHandle: HTMLElement,
+	frame: HTMLElement | null,
+	_parent: HTMLElement | null,
+	thisData: Setting | Category,
+) {
 	dragHandle.addEventListener("mousedown", (event) => {
 		event.preventDefault();
 

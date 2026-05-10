@@ -1,9 +1,6 @@
 <script lang="ts">
 	import SettingsListRenderer from "@renderers/list/SettingsListRenderer.svelte";
-	import type {
-		Category,
-		SeparateCategory,
-	} from "@settings/types/styleshiftTypes";
+	import type { Category, SeparateCategory } from "@settings/types/styleshiftTypes";
 	import LeftTitle from "@ui/settings/components/primitives/LeftTitle.svelte";
 	import { getCategoryParts } from "@ui/window/utils";
 	import Search from "../primitives/Search.svelte";
@@ -71,11 +68,8 @@
 				{#if controller.isHeaderItem(item)}
 					<div
 						class="styleshift-sidebar-header"
-						class:centered={item.label === "BUILD-IN" ||
-							item.label === "ADD-ON"}
-						style="animation-delay: {skipAnimation
-							? '0ms'
-							: i * 50 + 'ms'};"
+						class:centered={item.label === "BUILD-IN" || item.label === "ADD-ON"}
+						style="animation-delay: {skipAnimation ? '0ms' : i * 50 + 'ms'};"
 					>
 						{item.label}
 					</div>
@@ -85,31 +79,22 @@
 					<button
 						class="styleshift-sidebar-item-wrapper"
 						use:controller.setupDragAndDrop={category}
-						style="animation-delay: {skipAnimation
-							? '0ms'
-							: i * 50 + 'ms'};"
+						style="animation-delay: {skipAnimation ? '0ms' : i * 50 + 'ms'};"
 						onclick={() => controller.scrollToCategory(parts)}
 					>
 						<LeftTitle
 							category={category.category}
-							selected={controller.activeCategoryLabel ===
-								parts.text}
+							selected={controller.activeCategoryLabel === parts.text}
 							{isDeveloperMode}
 							editable={category.editable}
-							onMove={(dir) =>
-								controller.moveCategory(category, dir)}
+							onMove={(dir) => controller.moveCategory(category, dir)}
 						/>
 					</button>
 				{/if}
 			{/each}
 
 			{#if isDeveloperMode && isDevModulesLoaded}
-				<button
-					class="styleshift-add-category-button"
-					onclick={controller.handleAddCategory}
-				>
-					+
-				</button>
+				<button class="styleshift-add-category-button" onclick={controller.handleAddCategory}> + </button>
 			{/if}
 		</div>
 		<div
@@ -259,11 +244,7 @@
 				content: "";
 				flex: 1;
 				height: 1px;
-				background: linear-gradient(
-					to var(--direction, right),
-					var(--fg-opacity-10),
-					transparent
-				);
+				background: linear-gradient(to var(--direction, right), var(--fg-opacity-10), transparent);
 			}
 
 			&::before {
@@ -303,11 +284,7 @@
 			content: "";
 			flex: 1;
 			height: 1px;
-			background: linear-gradient(
-				to var(--direction, right),
-				var(--fg-opacity-10),
-				transparent
-			);
+			background: linear-gradient(to var(--direction, right), var(--fg-opacity-10), transparent);
 		}
 
 		&::before {

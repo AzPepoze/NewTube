@@ -1,4 +1,3 @@
-
 import { sleep } from "@/core/shared/utilities";
 import { logger } from "@/shared/logger";
 import { waitForElement } from "@core/shared/domHelpers";
@@ -21,18 +20,18 @@ export async function setCurrentVideoAsBackground() {
 		const shareCloseBtn = document.querySelector('[icon="close"]') as HTMLElement;
 		shareCloseBtn?.click();
 
-		const embedCloseBtn = document.querySelector('.yt-sharing-embed-renderer #close-panel-icon') as HTMLElement;
+		const embedCloseBtn = document.querySelector(".yt-sharing-embed-renderer #close-panel-icon") as HTMLElement;
 		embedCloseBtn?.click();
 	}
 
 	try {
-		const shareButton = await waitForElement('[aria-label="Share"]') as HTMLElement;
+		const shareButton = (await waitForElement('[aria-label="Share"]')) as HTMLElement;
 		if (!shareButton) {
 			throw new Error("Share button not found");
-		};
+		}
 		shareButton.click();
 
-		const embedButton = await waitForElement('button[title="Embed"]') as HTMLElement;
+		const embedButton = (await waitForElement('button[title="Embed"]')) as HTMLElement;
 		if (!embedButton) {
 			throw new Error("Embed button not found");
 		}
@@ -41,24 +40,28 @@ export async function setCurrentVideoAsBackground() {
 		let embedVideo = null;
 		let retries = 0;
 		while (!embedVideo && retries < 50) {
-			embedVideo = Array.from(document.querySelectorAll("iframe.yt-sharing-embed-renderer")).find((el: any) =>
-				el.src?.includes('youtube-nocookie.com/embed/') || el.src?.includes('youtube.com/embed/')
+			embedVideo = Array.from(document.querySelectorAll("iframe.yt-sharing-embed-renderer")).find(
+				(el: any) => el.src?.includes("youtube-nocookie.com/embed/") || el.src?.includes("youtube.com/embed/"),
 			);
 
 			if (!embedVideo) {
 				status.setTitle("Waiting for embed code...");
-				status.setContent("Still trying to retrieve the embed code from the share menu. This can take a few seconds, especially on slower connections. Please wait...");
-				await new Promise(r => setTimeout(r, 100));
+				status.setContent(
+					"Still trying to retrieve the embed code from the share menu. This can take a few seconds, especially on slower connections. Please wait...",
+				);
+				await new Promise((r) => setTimeout(r, 100));
 				retries++;
 			}
 		}
 
 		if (embedVideo) {
 			const embedUrl: string = embedVideo.src;
-			const cleanEmbedUrl = embedUrl.replace("https://www.youtube.com/embed/", "").replace("https://www.youtube-nocookie.com/embed/", "");
+			const cleanEmbedUrl = embedUrl
+				.replace("https://www.youtube.com/embed/", "")
+				.replace("https://www.youtube-nocookie.com/embed/", "");
 			await saveUserSetting("YouTubeBackgroundVideoId", cleanEmbedUrl);
 			triggerSettingUpdate("YouTubeBackgroundVideoId");
-			updateAllUiComponents()
+			updateAllUiComponents();
 			status.setTitle("Background updated");
 			status.setContent("The current video has been set as your background.");
 			await sleep(1000);
@@ -71,7 +74,9 @@ export async function setCurrentVideoAsBackground() {
 	} catch (error) {
 		closeAllPopups();
 		status.close();
-		createError("Failed to set current video as background.\n\n" + (error instanceof Error ? error.message : String(error)));
+		createError(
+			"Failed to set current video as background.\n\n" + (error instanceof Error ? error.message : String(error)),
+		);
 	}
 }
 
@@ -95,7 +100,7 @@ class YoutubeBackgroundMode implements IModeHandler {
 
 	async show(): Promise<void> {
 		this.youtubeElement = (getElement(bgYoutubeId) as HTMLIFrameElement) || this.youtubeElement;
-		const opacity = await getUserSetting("YouTubeBackgroundOpacity") as number;
+		const opacity = (await getUserSetting("YouTubeBackgroundOpacity")) as number;
 		await showElement(this.youtubeElement, (opacity / 100).toString());
 	}
 
@@ -121,17 +126,20 @@ class YoutubeBackgroundMode implements IModeHandler {
 
 		const cleanInput = videoIdOrUrl.trim();
 		let embedUrl: string;
-		const videoId = cleanInput.split("?")[0]
+		const videoId = cleanInput.split("?")[0];
 
 		embedUrl = `https://www.youtube-nocookie.com/embed/${cleanInput}&${await this.buildParams(videoId, isMuted, showControls)}`;
 
 		this.youtubeElement.src = embedUrl;
-		const opacity = await getUserSetting("YouTubeBackgroundOpacity") as number;
-		const blur = await getUserSetting("YouTubeBackgroundBlur") as number;
+		const opacity = (await getUserSetting("YouTubeBackgroundOpacity")) as number;
+		const blur = (await getUserSetting("YouTubeBackgroundBlur")) as number;
 		this.youtubeElement.style.opacity = (opacity / 100).toString();
 		this.youtubeElement.style.filter = `blur(${blur}px)`;
 		this.youtubeElement.title = "YouTube video player";
-		this.youtubeElement.setAttribute("sandbox", "allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-storage-access-by-user-activation");
+		this.youtubeElement.setAttribute(
+			"sandbox",
+			"allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-storage-access-by-user-activation",
+		);
 		this.youtubeElement.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
 		this.youtubeElement.setAttribute("allowfullscreen", "");
 
@@ -154,18 +162,26 @@ class YoutubeBackgroundMode implements IModeHandler {
 		registerSettingListener("YouTubeBackgroundVideoId", () => this.updateYoutube(), true);
 		registerSettingListener("YouTubeBackgroundMuted", () => this.updateYoutube(), true);
 		registerSettingListener("YouTubeBackgroundControls", () => this.updateYoutube(), true);
-		registerSettingListener("YouTubeBackgroundOpacity", async () => {
-			const opacity = await getUserSetting("YouTubeBackgroundOpacity");
-			if (this.youtubeElement) {
-				this.youtubeElement.style.opacity = ((opacity as number) / 100).toString();
-			}
-		}, true);
-		registerSettingListener("YouTubeBackgroundBlur", async () => {
-			const blur = await getUserSetting("YouTubeBackgroundBlur");
-			if (this.youtubeElement) {
-				this.youtubeElement.style.filter = `blur(${blur}px)`;
-			}
-		}, true);
+		registerSettingListener(
+			"YouTubeBackgroundOpacity",
+			async () => {
+				const opacity = await getUserSetting("YouTubeBackgroundOpacity");
+				if (this.youtubeElement) {
+					this.youtubeElement.style.opacity = ((opacity as number) / 100).toString();
+				}
+			},
+			true,
+		);
+		registerSettingListener(
+			"YouTubeBackgroundBlur",
+			async () => {
+				const blur = await getUserSetting("YouTubeBackgroundBlur");
+				if (this.youtubeElement) {
+					this.youtubeElement.style.filter = `blur(${blur}px)`;
+				}
+			},
+			true,
+		);
 	}
 }
 

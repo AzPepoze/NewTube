@@ -1,10 +1,10 @@
-import { chooseSelection } from '@core/shared/dialogs';
-import { copyToClipboard } from '@core/shared/extensionHelpers';
-import { parseStyleShiftZip } from '@core/shared/importExport';
-import { createNotification } from '@core/shared/notifications';
-import { addItemsToZip, downloadZip } from '@core/theme/importer';
-import { saveTheme } from '@core/theme/manager';
-import { logger } from '@shared/logger';
+import { chooseSelection } from "@core/shared/dialogs";
+import { copyToClipboard } from "@core/shared/extensionHelpers";
+import { parseStyleShiftZip } from "@core/shared/importExport";
+import { createNotification } from "@core/shared/notifications";
+import { addItemsToZip, downloadZip } from "@core/theme/importer";
+import { saveTheme } from "@core/theme/manager";
+import { logger } from "@shared/logger";
 
 /**
  * Handles the theme export process with user selection for content and format.
@@ -103,9 +103,7 @@ export async function exportThemeAsZip(name: string, data: any) {
 		if (
 			typeof value === "string" &&
 			!files[`${key}.js`] && // Avoid overwriting if they were already added
-			(key.endsWith("Css") ||
-				key.endsWith("Function") ||
-				key.endsWith("Script"))
+			(key.endsWith("Css") || key.endsWith("Function") || key.endsWith("Script"))
 		) {
 			files[`${key}.js`] = value;
 		}

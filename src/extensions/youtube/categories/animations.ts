@@ -123,7 +123,8 @@ export const animationCategory: Category = {
 			type: "checkbox",
 			id: "AnimationPageTransitions",
 			name: "Page Transitions",
-			description: "Adds a smooth fade-in and slide-in motion effect when navigating between different video pages or search results.",
+			description:
+				"Adds a smooth fade-in and slide-in motion effect when navigating between different video pages or search results.",
 			value: true,
 			enableCss: `
                 ytd-page-manager {
@@ -135,7 +136,8 @@ export const animationCategory: Category = {
 			type: "checkbox",
 			id: "AnimationMenu",
 			name: "Menu Animations",
-			description: "Applies a polished fade and scale-up animation to all dropdown menus, context menus, and popup windows.",
+			description:
+				"Applies a polished fade and scale-up animation to all dropdown menus, context menus, and popup windows.",
 			value: true,
 			enableCss: `
                 tp-yt-iron-dropdown {
@@ -220,7 +222,7 @@ export const animationCategory: Category = {
 				animated-thumbnail-overlay-view-model {
 					animation: thumbnailPreviewAnimation 0.2s forwards;
 				}
-			`
+			`,
 		},
 		{
 			type: "checkbox",
@@ -244,7 +246,7 @@ export const animationCategory: Category = {
 					opacity: 0;
 					animation: thumbnailButtonShow 0.5s forwards;
 				}
-			`
+			`,
 		},
 		{
 			type: "checkbox",
@@ -267,7 +269,7 @@ export const animationCategory: Category = {
 				thumbnail-hover-overlay-view-model {
 					animation: thumbnailOverlayShow 0.3s forwards;
 				}
-			`
+			`,
 		},
 		{
 			type: "checkbox",
@@ -287,14 +289,14 @@ export const animationCategory: Category = {
 				}
 
 				yt-lockup-view-model.yt-lockup-view-model--horizontal:
-			`
+			`,
 		},
 		{
 			type: "conditionSetting",
 			id: "ThumbnailSlideOnHoverAnimationPadding",
 			name: "Thumbnail Slide On Hover Animation",
 			condition: {
-				"EnhancementSwapLayout": false,
+				EnhancementSwapLayout: false,
 			},
 			enableCss: `
 				${secondaryContainer} {
@@ -320,13 +322,14 @@ export const animationCategory: Category = {
 					width: 0px !important;
 					left: unset !important;
 				}
-			`
+			`,
 		},
 		{
 			type: "checkbox",
 			id: "AnimationHoverVideoPreview",
 			name: "Player Controls Hover Preview Animation",
-			description: "Adds scale and fade animations to the video preview that appears when hovering over the progress bar.",
+			description:
+				"Adds scale and fade animations to the video preview that appears when hovering over the progress bar.",
 			value: true,
 			enableCss: `
 				${playerWatchModeSelector} .ytp-tooltip {
@@ -339,7 +342,7 @@ export const animationCategory: Category = {
 					transform: scale(1.1);
 					opacity: 0 !important;
 				}
-			`
-		}
+			`,
+		},
 	],
 };

@@ -12,7 +12,7 @@ export async function settingDeveloperTextEditor(
 	parent: HTMLElement,
 	thisSetting,
 	thisProperty,
-	updateUi = function (_value) { },
+	updateUi = function (_value) {},
 ) {
 	const mainUi = settingsUi.settingFrame(true, true, { x: false, y: false }, false, "styleshift-config-sub-frame");
 
@@ -52,7 +52,7 @@ export async function settingDeveloperFrame(
 	) as HTMLDivElement;
 }
 
-export async function configMainSection(parent, thisSetting, props, updateUi = function () { }) {
+export async function configMainSection(parent, thisSetting, props, updateUi = function () {}) {
 	settingsUi.renderComponent(
 		ConfigMainSectionComponent,
 		{

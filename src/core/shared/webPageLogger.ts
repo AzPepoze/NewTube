@@ -1,4 +1,4 @@
-import { categoryToLogStyle } from '@core/utils/logFormat';
+import { categoryToLogStyle } from "@core/utils/logFormat";
 
 /**
  * Logger utility for the web page context (injected script).
@@ -8,10 +8,10 @@ import { categoryToLogStyle } from '@core/utils/logFormat';
 export const logger = {
 	/**
 	 * Logs an informational message.
-	 * 
+	 *
 	 * @param {string} category - The log category (e.g., "dom", "runtime").
 	 * @param {...any[]} args - The values to log.
-	 * 
+	 *
 	 * @example
 	 * logger.info("runtime", "Extension started");
 	 */
@@ -30,10 +30,10 @@ export const logger = {
 
 	/**
 	 * Logs a warning message.
-	 * 
+	 *
 	 * @param {string} category - The log category.
 	 * @param {...any[]} args - The values to log.
-	 * 
+	 *
 	 * @example
 	 * logger.warn("dom", "Element not found");
 	 */
@@ -52,10 +52,10 @@ export const logger = {
 
 	/**
 	 * Logs an error message.
-	 * 
+	 *
 	 * @param {string} category - The log category.
 	 * @param {...any[]} args - The values to log.
-	 * 
+	 *
 	 * @example
 	 * logger.error("api", "Failed to fetch settings", error);
 	 */
@@ -74,10 +74,10 @@ export const logger = {
 
 	/**
 	 * Logs a debug message.
-	 * 
+	 *
 	 * @param {string} category - The log category.
 	 * @param {...any[]} args - The values to log.
-	 * 
+	 *
 	 * @example
 	 * logger.debug("events", "Received message", msg);
 	 */

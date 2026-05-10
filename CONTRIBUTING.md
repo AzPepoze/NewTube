@@ -16,8 +16,8 @@ First off, thank you for considering contributing to NewTube! It's people like y
 ### Pull Requests
 
 1. **Branching**:
-     > [!IMPORTANT]
-     > Please make sure to select the target branch `dev` before submitting pull requests.
+   > [!IMPORTANT]
+   > Please make sure to select the target branch `dev` before submitting pull requests.
 2. **Setup**: Follow the instructions in the [README.md](README.md#build-from-source) to set up your development environment.
 3. **Commit Messages**: Use clear and descriptive commit messages.
 4. **Code Quality**: Ensure your code follows the project's styling and passes the check (`bun run check`).

@@ -7,7 +7,8 @@ export const topbarSearchCategory: Category = {
 			type: "checkbox",
 			id: "EnableTopbarTransparency",
 			name: "Adaptive Topbar",
-			description: "Makes the top header bar transparent by default and applies your custom background color only when you begin to scroll down.",
+			description:
+				"Makes the top header bar transparent by default and applies your custom background color only when you begin to scroll down.",
 			value: true,
 			enableFunction: function () {
 				const masthead = document.querySelector("#background.ytd-masthead") as HTMLElement;
@@ -58,7 +59,8 @@ export const topbarSearchCategory: Category = {
 			type: "color",
 			id: "TopbarBackgroundColor",
 			name: "Topbar Color",
-			description: "Customizes the background color of the top header. Best used with 'Adaptive Topbar' for a smooth transition while scrolling.",
+			description:
+				"Customizes the background color of the top header. Best used with 'Adaptive Topbar' for a smooth transition while scrolling.",
 			value: "#00000080",
 			varCss: "--nt-topbar-bg",
 			require: { EnableTopbarTransparency: true },
@@ -88,7 +90,8 @@ export const topbarSearchCategory: Category = {
 			type: "color",
 			id: "ChipsBarBackgroundColor",
 			name: "Chips Bar Color",
-			description: "Changes the background color of the horizontal category list (the 'chips') found at the top of the home and search feeds.",
+			description:
+				"Changes the background color of the horizontal category list (the 'chips') found at the top of the home and search feeds.",
 			value: "#00000080",
 			varCss: "--nt-chips-bg",
 			constantCss: `
@@ -114,7 +117,8 @@ export const topbarSearchCategory: Category = {
 			type: "checkbox",
 			id: "EnableEnhancedSearchStyle",
 			name: "Enhanced Search Style",
-			description: "Adds a sleek slide-in and fade animation when the search bar is focused, enhancing the overall feel of the header.",
+			description:
+				"Adds a sleek slide-in and fade animation when the search bar is focused, enhancing the overall feel of the header.",
 			value: true,
 			enableCss: `
                 .ytSearchboxComponentInputBox {

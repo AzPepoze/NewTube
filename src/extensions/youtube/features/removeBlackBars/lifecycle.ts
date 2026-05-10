@@ -6,7 +6,15 @@ import { registerSettingListener } from "@settings/engine/functions";
 import { checkBlackBars } from "./logic";
 import { loadInitialSettings, settings } from "./settings";
 import { state } from "./state";
-import { applyCrop, checkUltraWide, createDebugCanvas, createDebugUI, disableUltraWide, removeDebugCanvas, removeDebugUI } from "./ui";
+import {
+	applyCrop,
+	checkUltraWide,
+	createDebugCanvas,
+	createDebugUI,
+	disableUltraWide,
+	removeDebugCanvas,
+	removeDebugUI,
+} from "./ui";
 
 async function initWorkerState() {
 	if (state.worker) {

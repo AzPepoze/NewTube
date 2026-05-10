@@ -8,7 +8,7 @@ export interface CodeEditorOptions {
 }
 
 /**
- * Controller for the CodeMirror 6 editor, handling initialization, 
+ * Controller for the CodeMirror 6 editor, handling initialization,
  * metadata tooltips, and custom completions.
  */
 export class CodeEditorController {
@@ -124,18 +124,11 @@ export class CodeEditorController {
 			extensions.push(
 				cm.javascript(),
 				cm.autocompletion({
-					override: [
-						this.#createCompletions(),
-						cm.localCompletionSource,
-						cm.scopeCompletionSource(globalThis),
-					],
+					override: [this.#createCompletions(), cm.localCompletionSource, cm.scopeCompletionSource(globalThis)],
 				}),
 			);
 		} else if (isCSS) {
-			extensions.push(
-				cm.css(),
-				cm.autocompletion({ override: [cm.cssCompletionSource] }),
-			);
+			extensions.push(cm.css(), cm.autocompletion({ override: [cm.cssCompletionSource] }));
 		} else {
 			extensions.push(cm.autocompletion());
 		}
@@ -227,9 +220,7 @@ export class CodeEditorController {
 		const root = this.#createDomElement("div", "cm-metadata-doc");
 
 		if (summary) {
-			root.appendChild(
-				this.#createDomElement("div", "cm-metadata-summary", this.#formatTextWithTypes(summary)),
-			);
+			root.appendChild(this.#createDomElement("div", "cm-metadata-summary", this.#formatTextWithTypes(summary)));
 		}
 
 		if (tags.length) {
@@ -238,11 +229,7 @@ export class CodeEditorController {
 				const row = this.#createDomElement("div", "cm-metadata-tag-row");
 				if (tag === "@example") row.classList.add("cm-metadata-example-row");
 
-				const bodyEl = this.#createDomElement(
-					"span",
-					"cm-metadata-tag-body",
-					this.#formatTextWithTypes(body.trim()),
-				);
+				const bodyEl = this.#createDomElement("span", "cm-metadata-tag-body", this.#formatTextWithTypes(body.trim()));
 				if (tag === "@example") bodyEl.classList.add("cm-metadata-example");
 
 				row.append(this.#createDomElement("span", "cm-metadata-tag", tag), bodyEl);
@@ -260,9 +247,7 @@ export class CodeEditorController {
 
 		for (const part of parts) {
 			if (part.startsWith("{") && part.endsWith("}")) {
-				fragment.appendChild(
-					this.#createDomElement("span", "cm-metadata-type-badge", part.slice(1, -1)),
-				);
+				fragment.appendChild(this.#createDomElement("span", "cm-metadata-type-badge", part.slice(1, -1)));
 			} else if (part) {
 				fragment.appendChild(document.createTextNode(part));
 			}
@@ -287,10 +272,7 @@ export class CodeEditorController {
 		if (!normalized) return null;
 
 		const lower = normalized.toLowerCase();
-		return globalMetadataCache.find(
-			(e: any) =>
-				e.label === normalized || String(e.label).toLowerCase() === lower,
-		);
+		return globalMetadataCache.find((e: any) => e.label === normalized || String(e.label).toLowerCase() === lower);
 	}
 
 	#parseInfoSections(text: string) {

@@ -52,10 +52,7 @@
 </script>
 
 {#if visible}
-	<div
-		class="Welcome-Overlay styleshift-main"
-		transition:fade={{ duration: 1000 }}
-	>
+	<div class="Welcome-Overlay styleshift-main" transition:fade={{ duration: 1000 }}>
 		<div class="Glow-Effect"></div>
 
 		<div
@@ -65,10 +62,7 @@
 		>
 			<div class="Welcome-Content">
 				{#if step === 1}
-					<div
-						class="Step-Container"
-						out:fade={{ duration: 400 }}
-					>
+					<div class="Step-Container" out:fade={{ duration: 400 }}>
 						<div
 							class="Welcome-Logo-Container"
 							in:fly|global={{
@@ -78,11 +72,7 @@
 								easing: backOut,
 							}}
 						>
-							<img
-								src={getAssetUrl("icon/128.png")}
-								alt="NewTube"
-								class="Main-Icon"
-							/>
+							<img src={getAssetUrl("icon/128.png")} alt="NewTube" class="Main-Icon" />
 						</div>
 
 						<div class="Main-Title">
@@ -94,13 +84,8 @@
 								}}
 							>
 								{#each "Welcome to NewTube".split("") as char, i (i)}
-									<span
-										class="wave-char white"
-										style="animation-delay: {i *
-											50}ms"
-										>{char === " "
-											? "\u00A0"
-											: char}</span
+									<span class="wave-char white" style="animation-delay: {i * 50}ms"
+										>{char === " " ? "\u00A0" : char}</span
 									>
 								{/each}
 							</h2>
@@ -116,35 +101,16 @@
 							}}
 						>
 							<div class="Button-With-Meme">
-								<img
-									src={getAssetUrl(
-										"welcome/kokoro.gif",
-									)}
-									alt=""
-									class="Side-Meme left"
-								/>
-								<button
-									class="Start-Button"
-									onclick={nextStep}
-								>
+								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme left" />
+								<button class="Start-Button" onclick={nextStep}>
 									<span class="btn-text">YAY!</span>
 								</button>
-								<img
-									src={getAssetUrl(
-										"welcome/kokoro.gif",
-									)}
-									alt=""
-									class="Side-Meme right"
-								/>
+								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme right" />
 							</div>
 						</div>
 					</div>
 				{:else if step === 2}
-					<div
-						class="Step-Container"
-						in:fade={{ duration: 600, delay: 200 }}
-						out:fade={{ duration: 400 }}
-					>
+					<div class="Step-Container" in:fade={{ duration: 600, delay: 200 }} out:fade={{ duration: 400 }}>
 						<div
 							class="Wave-Title"
 							in:fly|global={{
@@ -154,13 +120,7 @@
 							}}
 						>
 							{#each "⌨️ Keyboard Shortcuts".split("") as char, i (i)}
-								<span
-									class="wave-char"
-									style="animation-delay: {i * 50}ms"
-									>{char === " "
-										? "\u00A0"
-										: char}</span
-								>
+								<span class="wave-char" style="animation-delay: {i * 50}ms">{char === " " ? "\u00A0" : char}</span>
 							{/each}
 						</div>
 
@@ -174,32 +134,19 @@
 						>
 							{#if commands.length > 0}
 								<div class="shortcuts-section">
-									<p class="shortcuts-subtitle">
-										(You can change these in your
-										browser's extension settings)
-									</p>
+									<p class="shortcuts-subtitle">(You can change these in your browser's extension settings)</p>
 									<div class="shortcuts-list">
 										{#each commands as cmd (cmd.name)}
-											<div
-												class="shortcut-item"
-											>
-												<span
-													class="shortcut-desc"
-													>{cmd.description}</span
-												>
-												<span
-													class="shortcut-key"
-													>{cmd.shortcut}</span
-												>
+											<div class="shortcut-item">
+												<span class="shortcut-desc">{cmd.description}</span>
+												<span class="shortcut-key">{cmd.shortcut}</span>
 											</div>
 										{/each}
 									</div>
 								</div>
 							{:else}
 								<div class="shortcuts-empty-container">
-									<p class="shortcuts-empty-text">
-										No shortcuts configured
-									</p>
+									<p class="shortcuts-empty-text">No shortcuts configured</p>
 									<button
 										class="Start-Button highlight"
 										onclick={() => {
@@ -209,17 +156,13 @@
 													message: `Cannot open shortcut settings in Firefox.\nPlease navigate to "about:addons" manually to manage shortcuts.`,
 												});
 											} else {
-												chrome.runtime.sendMessage(
-													{
-														Command: "editCommands",
-													},
-												);
+												chrome.runtime.sendMessage({
+													Command: "editCommands",
+												});
 											}
 										}}
 									>
-										<span class="btn-text"
-											>Manage Shortcuts</span
-										>
+										<span class="btn-text">Manage Shortcuts</span>
 									</button>
 								</div>
 							{/if}
@@ -235,34 +178,16 @@
 							}}
 						>
 							<div class="Button-With-Meme">
-								<img
-									src={getAssetUrl(
-										"welcome/kokoro.gif",
-									)}
-									alt=""
-									class="Side-Meme left"
-								/>
-								<button
-									class="Start-Button"
-									onclick={nextStep}
-								>
+								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme left" />
+								<button class="Start-Button" onclick={nextStep}>
 									<span class="btn-text">Next</span>
 								</button>
-								<img
-									src={getAssetUrl(
-										"welcome/kokoro.gif",
-									)}
-									alt=""
-									class="Side-Meme right"
-								/>
+								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme right" />
 							</div>
 						</div>
 					</div>
 				{:else if step === 3}
-					<div
-						class="Step-Container"
-						in:fade={{ duration: 600, delay: 200 }}
-					>
+					<div class="Step-Container" in:fade={{ duration: 600, delay: 200 }}>
 						<div
 							class="Wave-Title"
 							in:fly|global={{
@@ -272,13 +197,7 @@
 							}}
 						>
 							{#each "Enjoy your new experience!".split("") as char, i (i)}
-								<span
-									class="wave-char"
-									style="animation-delay: {i * 50}ms"
-									>{char === " "
-										? "\u00A0"
-										: char}</span
-								>
+								<span class="wave-char" style="animation-delay: {i * 50}ms">{char === " " ? "\u00A0" : char}</span>
 							{/each}
 						</div>
 
@@ -291,16 +210,10 @@
 							}}
 						>
 							<p class="Text-Sub">
-								NewTube is a free, open-source project.
-								If you enjoy using it, please consider
-								supporting its development to help me
-								keep improving the experience for
-								everyone!
+								NewTube is a free, open-source project. If you enjoy using it, please consider supporting its
+								development to help me keep improving the experience for everyone!
 							</p>
-							<p class="Text-Sub secondary">
-								If you encounter any issues, please
-								report them on GitHub.
-							</p>
+							<p class="Text-Sub secondary">If you encounter any issues, please report them on GitHub.</p>
 						</div>
 
 						<div
@@ -313,28 +226,11 @@
 							}}
 						>
 							<div class="Button-With-Meme">
-								<img
-									src={getAssetUrl(
-										"welcome/kokoro.gif",
-									)}
-									alt=""
-									class="Side-Meme left"
-								/>
-								<button
-									class="Start-Button highlight"
-									onclick={close}
-								>
-									<span class="btn-text"
-										>Let's GO!!!</span
-									>
+								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme left" />
+								<button class="Start-Button highlight" onclick={close}>
+									<span class="btn-text">Let's GO!!!</span>
 								</button>
-								<img
-									src={getAssetUrl(
-										"welcome/kokoro.gif",
-									)}
-									alt=""
-									class="Side-Meme right"
-								/>
+								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme right" />
 							</div>
 						</div>
 					</div>
@@ -352,11 +248,8 @@
 		width: 100%;
 		height: 100%;
 		background-color: var(--bg-welcome);
-		background-image: linear-gradient(
-				to right,
-				var(--fg-opacity-03) 1px,
-				transparent 1px
-			),
+		background-image:
+			linear-gradient(to right, var(--fg-opacity-03) 1px, transparent 1px),
 			linear-gradient(to bottom, var(--fg-opacity-03) 1px, transparent 1px);
 		background-size: 40px 40px;
 		z-index: 999999;
@@ -372,11 +265,7 @@
 		position: absolute;
 		width: 150%;
 		height: 150%;
-		background: radial-gradient(
-			circle at center,
-			var(--theme-0-12) 0%,
-			transparent 60%
-		);
+		background: radial-gradient(circle at center, var(--theme-0-12) 0%, transparent 60%);
 		animation: pulseGlow 8s infinite alternate ease-in-out;
 		pointer-events: none;
 		z-index: 2;
@@ -619,8 +508,7 @@
 	}
 
 	.shortcut-key {
-		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco,
-			"Roboto Mono", "Courier New", monospace;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
 		font-size: 11px;
 		font-weight: 700;
 		background: var(--theme-0-15);

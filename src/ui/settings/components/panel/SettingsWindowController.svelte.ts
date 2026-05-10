@@ -1,18 +1,8 @@
 import { refreshExtensionState } from "@core/index";
 import { saveToStorage } from "@core/storage/manager";
-import {
-	getAddOnItems,
-	updateStyleShiftItems,
-} from "@settings/registry/items";
-import type {
-	Category,
-	SeparateCategory,
-} from "@settings/types/styleshiftTypes";
-import {
-	addDrag,
-	addDropTarget,
-	clearDropTargets,
-} from "@ui/settings/reorder";
+import { getAddOnItems, updateStyleShiftItems } from "@settings/registry/items";
+import type { Category, SeparateCategory } from "@settings/types/styleshiftTypes";
+import { addDrag, addDropTarget, clearDropTargets } from "@ui/settings/reorder";
 
 export interface SettingsWindowProps {
 	internalSettings: (Category | SeparateCategory)[];
@@ -78,23 +68,36 @@ export class SettingsWindowController {
 		return settings.filter((s) => s.type !== "conditionSetting" || this.#props.isDeveloperMode);
 	}
 
-	#mergeDevItems(categories: (Category | SeparateCategory)[], allCategories: (Category | SeparateCategory)[], pushMissing: boolean = true) {
+	#mergeDevItems(
+		categories: (Category | SeparateCategory)[],
+		allCategories: (Category | SeparateCategory)[],
+		pushMissing: boolean = true,
+	) {
 		if (!this.#props.isDevModulesLoaded || !this.#props.isDeveloperMode) return categories;
 
 		for (const devCategory of this.#props.devOnlyItems.filter((item) => !this.isHeaderItem(item))) {
 			const label = (devCategory as Category).category;
-			const target = categories.find((item) => !this.isHeaderItem(item) && (item as Category).category === label) as Category;
+			const target = categories.find(
+				(item) => !this.isHeaderItem(item) && (item as Category).category === label,
+			) as Category;
 
 			if (target) {
 				target.settings = [...target.settings, ...devCategory.settings];
-			} else if (pushMissing && !allCategories.some((item) => !this.isHeaderItem(item) && (item as Category).category === label)) {
+			} else if (
+				pushMissing &&
+				!allCategories.some((item) => !this.isHeaderItem(item) && (item as Category).category === label)
+			) {
 				categories.push(devCategory);
 			}
 		}
 		return categories;
 	}
 
-	#filterAndProcess(items: (Category | SeparateCategory)[], otherItems: (Category | SeparateCategory)[], pushMissing: boolean) {
+	#filterAndProcess(
+		items: (Category | SeparateCategory)[],
+		otherItems: (Category | SeparateCategory)[],
+		pushMissing: boolean,
+	) {
 		const processed = items.map((item) => {
 			if (this.isHeaderItem(item)) return item;
 			return { ...item, settings: this.#getVisibleSettings(item.settings) };
@@ -156,10 +159,12 @@ export class SettingsWindowController {
 	handleScroll = () => {
 		if (!this.scrollContainer) return;
 		const containerRect = this.scrollContainer.getBoundingClientRect();
-		const activeFrame = Array.from(this.scrollContainer.querySelectorAll(".styleshift-category-frame")).find((frame) => {
-			const rect = frame.getBoundingClientRect();
-			return rect.top <= containerRect.top + 100 && rect.bottom > containerRect.top + 100;
-		}) as HTMLElement;
+		const activeFrame = Array.from(this.scrollContainer.querySelectorAll(".styleshift-category-frame")).find(
+			(frame) => {
+				const rect = frame.getBoundingClientRect();
+				return rect.top <= containerRect.top + 100 && rect.bottom > containerRect.top + 100;
+			},
+		) as HTMLElement;
 
 		if (activeFrame?.dataset.category) {
 			this.activeCategoryLabel = activeFrame.dataset.category;
@@ -195,9 +200,7 @@ export class SettingsWindowController {
 	};
 
 	scrollToCategory = (parts: { text: string }) => {
-		const target = this.scrollContainer?.querySelector(
-			`.styleshift-category-frame[data-category="${parts.text}"]`,
-		);
+		const target = this.scrollContainer?.querySelector(`.styleshift-category-frame[data-category="${parts.text}"]`);
 		if (target) {
 			target.scrollIntoView({ behavior: "smooth" });
 			this.activeCategoryLabel = parts.text;

@@ -9,12 +9,7 @@
 		aspectRatio = 0,
 	}: {
 		target: HTMLElement;
-		onResize?: (size: {
-			width: number;
-			height: number;
-			x: number;
-			y: number;
-		}) => void;
+		onResize?: (size: { width: number; height: number; x: number; y: number }) => void;
 		onResizeStart?: () => void;
 		onResizeEnd?: () => void;
 		minWidth?: number;

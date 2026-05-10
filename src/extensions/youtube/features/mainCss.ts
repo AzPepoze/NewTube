@@ -10,8 +10,14 @@ import { videoCenteringCss } from "./css/videoCentering";
 
 export {
 	accentIntegrationCss,
-	animationsTransitionsCss, borderRadiusCss, playerEnhancementsCss, scrollbarCss,
-	shadowsOutlinesCss, transparencyLayoutCss, uiCleanupCss, videoCenteringCss
+	animationsTransitionsCss,
+	borderRadiusCss,
+	playerEnhancementsCss,
+	scrollbarCss,
+	shadowsOutlinesCss,
+	transparencyLayoutCss,
+	uiCleanupCss,
+	videoCenteringCss,
 };
 
 export const mainCss =

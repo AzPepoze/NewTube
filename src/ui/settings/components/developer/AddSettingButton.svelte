@@ -9,9 +9,7 @@
 	let isOpen = $state(false);
 	let triggerEl = $state<HTMLElement | null>(null);
 
-	const options = Object.keys(mainSettingUi).filter(
-		(key) => key !== "search",
-	);
+	const options = Object.keys(mainSettingUi).filter((key) => key !== "search");
 
 	async function handleSelect(selected: string) {
 		const preset = uiPreset.find((p) => p.type === selected);

@@ -17,8 +17,8 @@
 
 	async function handleEditCategory() {
 		const addOnItems = getAddOnItems();
-		const category = addOnItems.find(c => {
-			const label = typeof c.category === 'string' ? c.category : c.category.label;
+		const category = addOnItems.find((c) => {
+			const label = typeof c.category === "string" ? c.category : c.category.label;
 			return label === text;
 		});
 
@@ -37,10 +37,7 @@
 </script>
 
 {#if subtitle}
-	<div
-		class="styleshift-sub-title {className}"
-		class:styleshift-left-separator={leftSeparator}
-	>
+	<div class="styleshift-sub-title {className}" class:styleshift-left-separator={leftSeparator}>
 		{#if editable}
 			<div class="styleshift-group-drag drag-handle">
 				<Icon name="drag" size={14} />
@@ -49,11 +46,7 @@
 		{@html text}
 	</div>
 {:else}
-	<div
-		class="styleshift-category-title {rainbow
-			? 'styleshift-category-title-rainbow'
-			: ''} {className}"
-	>
+	<div class="styleshift-category-title {rainbow ? 'styleshift-category-title-rainbow' : ''} {className}">
 		{#if icon}
 			<span class="styleshift-category-title-icon">
 				<Icon name={icon} size={24} color="black" />

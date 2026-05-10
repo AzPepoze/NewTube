@@ -1,11 +1,15 @@
 import {
-	cachedStorageData, EXTERNAL_STORAGE_KEYS, getRootValue, persistCachedDataToStorage,
-	saveRootValue, saveToStorage
-} from '@core/storage/manager';
-import { getStyleShiftAddOnItems } from '@extensions/youtube/addOnItems';
-import { defaultSetting } from '@extensions/youtube/defaultSettings';
-import { getSettingsList } from '@settings/registry/items';
-import { logger } from '@shared/logger';
+	cachedStorageData,
+	EXTERNAL_STORAGE_KEYS,
+	getRootValue,
+	persistCachedDataToStorage,
+	saveRootValue,
+	saveToStorage,
+} from "@core/storage/manager";
+import { getStyleShiftAddOnItems } from "@extensions/youtube/addOnItems";
+import { defaultSetting } from "@extensions/youtube/defaultSettings";
+import { getSettingsList } from "@settings/registry/items";
+import { logger } from "@shared/logger";
 
 /**
  * Ensures add-on items are initialized for new users.
@@ -31,7 +35,9 @@ export async function populateMissingDefaultSettings(): Promise<void> {
 	for (const [settingId, config] of Object.entries(availableSettings) as [string, any]) {
 		if ("value" in config) {
 			const isExternal = EXTERNAL_STORAGE_KEYS.includes(settingId);
-			const currentValue = isExternal ? cachedStorageData[settingId] : (cachedStorageData["currentSettings"] || {})[settingId];
+			const currentValue = isExternal
+				? cachedStorageData[settingId]
+				: (cachedStorageData["currentSettings"] || {})[settingId];
 
 			if (currentValue == null) {
 				const isFoundInDefault = defaultSettingsConfig[settingId] !== undefined;
@@ -40,7 +46,11 @@ export async function populateMissingDefaultSettings(): Promise<void> {
 				if (isFoundInDefault) {
 					logger.info("maintenance", `Setting found in defaultSetting.ts: ${settingId}`, defaultValue);
 				} else {
-					logger.info("maintenance", `Setting not found in defaultSetting.ts, using internal default for: ${settingId}`, defaultValue);
+					logger.info(
+						"maintenance",
+						`Setting not found in defaultSetting.ts, using internal default for: ${settingId}`,
+						defaultValue,
+					);
 				}
 
 				if (isExternal) {
@@ -75,7 +85,11 @@ export async function performStorageGarbageCollection(): Promise<void> {
 	// Remove obsolete user settings
 	for (const key of Object.keys(userSettings)) {
 		if (!activeSettingIds.includes(key) || EXTERNAL_STORAGE_KEYS.includes(key)) {
-			logger.info("maintenance", `Removing ${EXTERNAL_STORAGE_KEYS.includes(key) ? "duplicated" : "obsolete"} setting from currentSettings:`, key);
+			logger.info(
+				"maintenance",
+				`Removing ${EXTERNAL_STORAGE_KEYS.includes(key) ? "duplicated" : "obsolete"} setting from currentSettings:`,
+				key,
+			);
 			delete userSettings[key];
 		}
 	}

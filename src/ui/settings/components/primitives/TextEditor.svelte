@@ -6,12 +6,7 @@
 		className?: string;
 	}
 
-	let {
-		value = $bindable(""),
-		onInput,
-		onBlur,
-		className = "",
-	}: Props = $props();
+	let { value = $bindable(""), onInput, onBlur, className = "" }: Props = $props();
 </script>
 
 <textarea

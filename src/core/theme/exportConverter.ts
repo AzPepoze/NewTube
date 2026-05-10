@@ -1,5 +1,5 @@
-import type { Setting } from '@/settings/types/styleshiftTypes';
-import { styleshiftPropertyList, typeConvertTable } from '@settings/registry/defaultItems';
+import type { Setting } from "@/settings/types/styleshiftTypes";
+import { styleshiftPropertyList, typeConvertTable } from "@settings/registry/defaultItems";
 
 export async function convertToExportSetting(
 	thisSetting: Setting,
@@ -10,10 +10,7 @@ export async function convertToExportSetting(
 		styleshiftPropertyList[thisSetting.type.charAt(0).toUpperCase() + thisSetting.type.slice(1)];
 	if (properties) {
 		for (const thisProperty of properties) {
-			if (
-				(thisProperty.includes("_css") || thisProperty.includes("_function")) &&
-				!(thisProperty in thisSetting)
-			) {
+			if ((thisProperty.includes("_css") || thisProperty.includes("_function")) && !(thisProperty in thisSetting)) {
 				thisSetting[thisProperty] = "";
 			}
 		}

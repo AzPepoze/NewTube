@@ -72,17 +72,8 @@
 <div class="styleshift-color-top-section">
 	<Description {name} {description} />
 	<div class="styleshift-color-preview-wrapper">
-		<div
-			class="styleshift-color-preview"
-			style="background-color: {hex}; opacity: {alpha / 100}"
-		></div>
-		<input
-			type="color"
-			class="styleshift-color-input"
-			bind:value={hex}
-			oninput={handleInput}
-			onchange={handleChange}
-		/>
+		<div class="styleshift-color-preview" style="background-color: {hex}; opacity: {alpha / 100}"></div>
+		<input type="color" class="styleshift-color-input" bind:value={hex} oninput={handleInput} onchange={handleChange} />
 	</div>
 </div>
 
@@ -119,10 +110,9 @@
 		overflow: hidden;
 		box-shadow: rgba(0, 0, 0, 0.34) 1px 1px 7px;
 		transition: all 0.2s;
-		background-image: linear-gradient(45deg, #111 25%, transparent 25%),
-			linear-gradient(-45deg, #111 25%, transparent 25%),
-			linear-gradient(45deg, transparent 75%, #111 75%),
-			linear-gradient(-45deg, transparent 75%, #111 75%);
+		background-image:
+			linear-gradient(45deg, #111 25%, transparent 25%), linear-gradient(-45deg, #111 25%, transparent 25%),
+			linear-gradient(45deg, transparent 75%, #111 75%), linear-gradient(-45deg, transparent 75%, #111 75%);
 		background-size: 10px 10px;
 
 		&:hover {

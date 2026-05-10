@@ -18,7 +18,7 @@ export function setupAutoTheater() {
 
 export function enableAutoRemoveAmbient() {
 	const removeAmbient = async () => {
-		const ambientContainer = document.querySelector("#cinematics-container")
+		const ambientContainer = document.querySelector("#cinematics-container");
 		logger.debug("AutoRemoveAmbient", "Attempting to remove ambient container");
 		if (ambientContainer) {
 			ambientContainer.remove();

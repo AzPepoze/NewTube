@@ -20,9 +20,7 @@
 		return property;
 	}
 
-	const sections = $derived(
-		Object.entries(props).filter(([title]) => title !== "updateConfig"),
-	);
+	const sections = $derived(Object.entries(props).filter(([title]) => title !== "updateConfig"));
 
 	$effect(() => {
 		if (sections.length > 0 && !activeSection) {
@@ -60,16 +58,10 @@
 				class="logic-nav-item"
 				class:active={activeSection === title}
 				onclick={() => (activeSection = title)}
-				style:--section-color={colorMap[
-					title as keyof typeof colorMap
-				] || "#999999"}
+				style:--section-color={colorMap[title as keyof typeof colorMap] || "#999999"}
 			>
 				<div class="nav-indicator"></div>
-				<span class="nav-label"
-					>{runTypeNameMap[
-						title as keyof typeof runTypeNameMap
-					] || title}</span
-				>
+				<span class="nav-label">{runTypeNameMap[title as keyof typeof runTypeNameMap] || title}</span>
 			</button>
 		{/each}
 	</aside>
@@ -77,11 +69,7 @@
 	<div class="logic-workspace-area">
 		{#each sections as [title, property] (title)}
 			{#if activeSection === title}
-				<div
-					class="workspace-mount"
-					in:fly={{ x: 10, duration: 300, delay: 150 }}
-					out:fade={{ duration: 150 }}
-				>
+				<div class="workspace-mount" in:fly={{ x: 10, duration: 300, delay: 150 }} out:fade={{ duration: 150 }}>
 					<DevSettingSection
 						{setting}
 						runType={title}

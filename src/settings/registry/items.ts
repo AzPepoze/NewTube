@@ -226,7 +226,7 @@ export async function addCategory(categoryName: string) {
 
 export async function removeCategory(thisCategory) {
 	const addOnItems = getAddOnItems();
- 
+
 	const index = addOnItems.findIndex((checkCategory) => checkCategory === thisCategory);
 
 	if (index > -1) {
@@ -237,4 +237,3 @@ export async function removeCategory(thisCategory) {
 }
 
 //-------------------------------------------------
-

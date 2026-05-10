@@ -76,7 +76,7 @@ export async function detectBlackBars(data: BarDetectionData, ctx?: any) {
 				break;
 			}
 			if (ctx) ctx.fillRect(x, i, 1, 1);
-			
+
 			if (pixelBudget && pixelsChecked >= pixelBudget) {
 				await new Promise((resolve) => setTimeout(resolve, 1));
 				pixelsChecked = 0;

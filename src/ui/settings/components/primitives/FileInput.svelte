@@ -32,13 +32,7 @@
 		Choose File
 	{/if}
 </button>
-<input
-	bind:this={inputRef}
-	type="file"
-	{accept}
-	onchange={handleChange}
-	style="display: none;"
-/>
+<input bind:this={inputRef} type="file" {accept} onchange={handleChange} style="display: none;" />
 
 <style lang="scss">
 	.styleshift-file-button {

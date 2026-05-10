@@ -18,7 +18,7 @@ export function setupAutoShowChatReplay() {
 		if (!navigateCleanup) {
 			navigateCleanup = onYoutubeNavigate(() => setTimeout(() => tryClickChat(), 1000));
 		}
-	} catch (_e) { }
+	} catch (_e) {}
 }
 
 export function disableAutoShowChatReplay() {
