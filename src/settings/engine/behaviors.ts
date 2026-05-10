@@ -10,7 +10,7 @@ import { registerSettingListener } from "./listeners";
  * Helper to execute a setting script if it exists.
  */
 function tryExecute(setting: any, scriptName: string) {
-	if (setting[scriptName]) {
+	if (setting && setting[scriptName]) {
 		logger.debug("settings", `Executing ${scriptName} for ${setting.id}`);
 		executeSettingScript(setting, scriptName);
 	}

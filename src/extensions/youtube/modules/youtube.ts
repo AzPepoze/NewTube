@@ -15,10 +15,11 @@ const fullscreenListeners: ((isFullscreen: boolean) => void)[] = [];
 const smallModeListeners: ((isSmallMode: boolean) => void)[] = [];
 
 export const playerWatchModeSelector =
-	"div.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)";
-export const ytVideoContainerWatchMode = `#primary ${playerWatchModeSelector}`;
-export const ytPlayerWatchMode = `#primary #player:has(${playerWatchModeSelector})`;
-export const ytdPlayerWatchMode = `#primary #ytd-player:has(${playerWatchModeSelector})`;
+	"#movie_player.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)";
+export const ytVideoContainerWatchMode = playerWatchModeSelector;
+export const ytPlayerWatchMode = `ytd-watch-flexy:has(${playerWatchModeSelector}), #player:has(${playerWatchModeSelector})`;
+export const ytdPlayerWatchMode = `ytd-watch-flexy ytd-player:has(${playerWatchModeSelector})`;
+export const ytTheaterModeContainer = `ytd-watch-flexy[theater] #full-bleed-container`;
 
 /**
  * Retrieves the main YouTube app element (ytd-app).
@@ -36,7 +37,7 @@ function isMainVideo(video: HTMLVideoElement): boolean {
 	if (!video.isConnected || !isYoutubeVideoPage) return false;
 
 	const player = video.closest("ytd-player, .html5-video-player");
-	if (!player) return false;
+	if (!player || player.id !== "movie_player") return false;
 
 	const context = player.getAttribute("context") || "";
 	const className = player.className || "";

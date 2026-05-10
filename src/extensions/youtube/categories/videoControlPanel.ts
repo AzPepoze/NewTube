@@ -1,5 +1,10 @@
 import { type Category } from "@settings/types/styleshiftTypes";
-import { ytPlayerWatchMode, ytVideoContainerWatchMode, ytdPlayerWatchMode } from "../modules/youtube";
+import {
+	ytPlayerWatchMode,
+	ytTheaterModeContainer,
+	ytVideoContainerWatchMode,
+	ytdPlayerWatchMode,
+} from "../modules/youtube";
 
 export const videoControlPanelCategory: Category = {
 	category: { icon: "settings_input_component", label: "Video Control Panel" },
@@ -13,31 +18,37 @@ export const videoControlPanelCategory: Category = {
 				"Moves the entire video control bar (play, volume, settings) from an overlay on top of the video to a dedicated space directly underneath it.",
 			value: true,
 			enableCss: `
-				${ytVideoContainerWatchMode},
-				${ytdPlayerWatchMode}
+				${ytdPlayerWatchMode},
+				${ytPlayerWatchMode}
 				{
-					padding-bottom: var(--nt-player-below-space, 70px);
+					padding-bottom: var(--nt-player-below-space, 70px) !important;
+				}
+
+				${ytTheaterModeContainer} {
+					margin-bottom: var(--nt-player-below-space, 70px) !important;
+				}
+
+				${ytVideoContainerWatchMode} {
+					overflow: visible !important;
+				}
+
+				${ytVideoContainerWatchMode} .ytp-chrome-bottom,
+				${ytVideoContainerWatchMode} .ytp-gradient-bottom,
+				${ytVideoContainerWatchMode} .ytp-tooltip {
+					overflow: visible !important;
+					transform: translateY(var(--nt-player-below-space, 70px)) !important;
 				}
 
 				${ytVideoContainerWatchMode} .ytp-chrome-bottom {
-					overflow: visible !important;
 					padding-top: 0px !important;
 				}
 
-				${ytPlayerWatchMode} > .ytp-chrome-bottom {
-					transform: translate(0px, var(--nt-player-below-space, 70px));
+				${ytVideoContainerWatchMode} #ytp-caption-window-container,
+				${ytVideoContainerWatchMode} .ytp-overlays-container {
+					height: 100% !important;
 				}
 
-				${ytPlayerWatchMode} {
-					margin-bottom: var(--nt-player-below-space, 70px);
-				}
-
-				${ytPlayerWatchMode} #ytp-caption-window-container,
-				${ytPlayerWatchMode} .ytp-overlays-container{
-					height: calc(100% - var(--nt-player-below-space)) !important;
-				}
-
-				${ytPlayerWatchMode} .caption-window.ytp-caption-window-bottom{
+				${ytVideoContainerWatchMode} .caption-window.ytp-caption-window-bottom {
 					margin-bottom: 0px !important;
 				}
 			`,
