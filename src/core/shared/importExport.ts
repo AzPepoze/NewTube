@@ -1,4 +1,4 @@
-import { jszipInstance as jszip, saveAndRefreshAll } from "@core/runtime/controller";
+import { loadJSZip, jszipInstance as jszip, saveAndRefreshAll } from "@core/runtime/controller";
 import { initializeRequiredStorageStructures as setNullSave } from "@core/storage/maintenance";
 import { ALLOWED_STORAGE_KEYS, cachedStorageData as savedData } from "@core/storage/manager";
 import type { Category, Setting } from "@settings/types/styleshiftTypes";
@@ -123,6 +123,7 @@ export function exportStyleShiftJsonText() {
  * const data = await parseStyleShiftZip(myZipBlob);
  */
 export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
+	await loadJSZip();
 	if (!jszip) {
 		throw new Error("JSZip not loaded!");
 	}

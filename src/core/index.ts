@@ -35,7 +35,6 @@ export { EXTENSION_BASE_URL, IS_FIREFOX, IS_IN_EXTENSION_SETTINGS_PAGE, currentC
 export const EXTENSION_VERSION = chrome.runtime.getManifest().version;
 export let isExtensionReady = false;
 
-// Global container for StyleShift elements that shouldn't be directly in the body
 export const styleshiftContainer: HTMLElement = document.createElement("div");
 styleshiftContainer.className = "StyleShift-Station";
 styleshiftContainer.style.display = "none";
@@ -46,9 +45,6 @@ styleshiftContainer.style.display = "none";
 -------------------------------------------------------
 */
 
-/**
- * Refreshes the internal state and updates all UI components.
- */
 export function refreshExtensionState(): void {
 	logger.info("lifecycle", "Refreshing extension state...");
 	synchronizeAvailableFunctions();
@@ -56,9 +52,33 @@ export function refreshExtensionState(): void {
 	updateAllUiComponents();
 }
 
-/**
- * Main entry point for the extension logic.
- */
+async function injectPageScripts(): Promise<void> {
+	if (IS_IN_EXTENSION_SETTINGS_PAGE) return;
+	const script = document.createElement("script");
+	script.src = chrome.runtime.getURL("build-in.js");
+	(await getDocumentHead()).appendChild(script);
+}
+
+async function initializeSettings(): Promise<void> {
+	const allSettings = await getAllStyleShiftSettings();
+	for (const setting of allSettings) {
+		if (setting.id !== "Themes") {
+			attachBehaviorToSetting(setting);
+		}
+	}
+	initializeAllActiveSettings();
+}
+
+function normalizeSelectors(): void {
+	const items = getAllStyleShiftItems();
+	for (const item of items) {
+		const category = item as Category;
+		if (category.selector) {
+			category.selector = rearrangeSelector(category.selector);
+		}
+	}
+}
+
 async function bootstrapExtension(): Promise<void> {
 	await initializeStorageConnection();
 	await initializeDefaultAddOnItems();
@@ -73,26 +93,21 @@ async function bootstrapExtension(): Promise<void> {
 
 	await getDocumentHead();
 
-	// Inject StyleShift container
+	// StyleShift container
 	setTimeout(async () => {
 		(await getDocumentBody()).append(styleshiftContainer);
 	}, 1);
 
-	// Inject buildIn functions into the page context (Main World)
-	if (!IS_IN_EXTENSION_SETTINGS_PAGE) {
-		const script = document.createElement("script");
-		script.src = chrome.runtime.getURL("build-in.js");
-		(await getDocumentHead()).appendChild(script);
-	}
+	await injectPageScripts();
 
-	// Initialize remaining components
+	// Components
 	await synchronizeAvailableFunctions();
 	await createStylesheetHolder();
 	await injectMaterialIconsStyles();
 	await updateStyleShiftItems();
 	await populateMissingDefaultSettings();
 
-	// Set up global theme listeners
+	// Theme listeners
 	registerSettingListener("EnableAppLightTheme", syncAllThemes, true);
 	registerSettingListener("EnableSettingsBackgroundBlur", syncAllThemes, true);
 	registerSettingListener(
@@ -108,29 +123,13 @@ async function bootstrapExtension(): Promise<void> {
 		false,
 	);
 
-	// Initialize individual setting behaviors
-	const allSettings = await getAllStyleShiftSettings();
-	for (const setting of allSettings) {
-		if (setting.id === "Themes") continue;
-		attachBehaviorToSetting(setting);
-	}
-
-	initializeAllActiveSettings();
+	await initializeSettings();
 	await performStorageGarbageCollection();
-
-	// Normalize CSS selectors for all items
-	const items = getAllStyleShiftItems();
-	for (const item of items) {
-		const category = item as Category;
-		if (category.selector) {
-			category.selector = rearrangeSelector(category.selector);
-		}
-	}
+	normalizeSelectors();
 
 	await persistCachedDataToStorage();
 
 	await extensionSettingsUiPromise;
-
 	if (IS_IN_EXTENSION_SETTINGS_PAGE) {
 		extensionSettingsUi.createUi();
 	}
@@ -167,68 +166,46 @@ try {
 	});
 }
 
-/**
- * Handle messages from the background script or popup.
- */
 chrome.runtime.onMessage.addListener(async (message) => {
 	try {
-		// Log errors at error level, others at info level
-		if (message.Command === "workerError" || message.error) {
-			logger.error("lifecycle", "Incoming message:", message);
-		} else {
-			logger.info("lifecycle", "Incoming message:", message);
-		}
+		const isError = message.Command === "workerError" || message.error;
+		logger[isError ? "error" : "info"]("lifecycle", "Incoming message:", message);
 
-		if (message === "toggle_enable") {
-			if (getRootValue("enableExtension")) {
-				disableExtension();
-			} else {
-				enableExtension();
-			}
-		}
-
-		if (message === "toggle_dev_mode") {
-			await toggleDeveloperMode();
-		}
-
-		if (IS_IN_EXTENSION_SETTINGS_PAGE) return;
-
-		if (message === "toggle_customize") {
-			toggleCustomize();
+		switch (message) {
+			case "toggle_enable":
+				if (await getRootValue("enableExtension")) {
+					disableExtension();
+				} else {
+					enableExtension();
+				}
+				break;
+			case "toggle_dev_mode":
+				await toggleDeveloperMode();
+				break;
+			case "toggle_customize":
+				if (!IS_IN_EXTENSION_SETTINGS_PAGE) toggleCustomize();
+				break;
+			case "toggle_settings":
+				if (!isExtensionReady) {
+					const waitNotification = await createNotification({
+						icon: "hourglass_empty",
+						title: "StyleShift is initializing...",
+						timeout: -1,
+					});
+					while (!isExtensionReady) await sleep(100);
+					waitNotification.close();
+				}
+				await extensionSettingsUiPromise;
+				extensionSettingsUi.toggle();
+				break;
 		}
 
 		if (message.Command === "themeDataUpdated") {
 			logger.info("lifecycle", "Theme update signal received, refreshing behaviors...");
 			await initializeStorageConnection();
 			await updateStyleShiftItems();
-
-			// Re-apply behaviors for all settings
-			const allSettings = await getAllStyleShiftSettings();
-			for (const setting of allSettings) {
-				if (setting.id === "Themes") continue;
-				await attachBehaviorToSetting(setting);
-			}
-
-			initializeAllActiveSettings();
+			await initializeSettings();
 			updateAllUiComponents();
-		}
-
-		if (message === "toggle_settings") {
-			if (!isExtensionReady) {
-				const waitNotification = await createNotification({
-					icon: "hourglass_empty",
-					title: "StyleShift is initializing...",
-					timeout: -1,
-				});
-
-				while (!isExtensionReady) {
-					await sleep(100);
-				}
-				waitNotification.close();
-			}
-
-			await extensionSettingsUiPromise;
-			extensionSettingsUi.toggle();
 		}
 	} catch (error) {
 		createError(error);

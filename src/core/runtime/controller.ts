@@ -7,18 +7,12 @@ import { logger } from "@shared/logger";
 import { IS_IN_EXTENSION_SETTINGS_PAGE, refreshExtensionState } from "../";
 import { isSafeCode } from "../utils/security";
 
-/**
- * Saves all cached data and triggers a global UI/state refresh.
- */
 export async function saveAndRefreshAll(): Promise<void> {
 	logger.info("STORAGE", "Saving structure and refreshing all...");
 	await saveItems();
 	refreshExtensionState();
 }
 
-/**
- * Saves add-on items and cached data to storage without a full UI refresh.
- */
 export async function saveItems(): Promise<void> {
 	const addOnItems = getAddOnItems();
 	if (addOnItems && addOnItems.length > 0) {
@@ -50,17 +44,18 @@ const FUNCTION_DISCOVERY_SCRIPT = `
 	);
 })();`;
 
-/**
- * Synchronizes the list of available StyleShift functions from the page context.
- */
 export async function synchronizeAvailableFunctions(): Promise<void> {
 	if (IS_IN_EXTENSION_SETTINGS_PAGE) {
-		while (window["StyleShift"] == null) {
+		let attempts = 0;
+		while (window["StyleShift"] == null && attempts < 5000) {
 			await sleep(1);
+			attempts++;
 		}
 
-		for (const [scope, methods] of Object.entries(window["StyleShift"])) {
-			activeStyleShiftFunctions[scope] = Object.keys(methods as object);
+		if (window["StyleShift"]) {
+			for (const [scope, methods] of Object.entries(window["StyleShift"])) {
+				activeStyleShiftFunctions[scope] = Object.keys(methods as object);
+			}
 		}
 		return;
 	}
@@ -83,15 +78,13 @@ export async function synchronizeAvailableFunctions(): Promise<void> {
 	});
 }
 
-/**
- * Retrieves a specific function from the StyleShift global object in the page context.
- */
 export async function fetchGlobalFunction(scope: "buildIn" | "custom", functionName: string): Promise<any> {
-	if (!window["StyleShift"] || !window["StyleShift"][scope] || !window["StyleShift"][scope][functionName]) {
+	for (let i = 0; i < 100; i++) {
+		const fn = window["StyleShift"]?.[scope]?.[functionName];
+		if (fn) return fn;
 		await sleep(10);
-		return await fetchGlobalFunction(scope, functionName);
 	}
-	return window["StyleShift"][scope][functionName];
+	return null;
 }
 
 interface ExecutionOptions {
@@ -101,9 +94,6 @@ interface ExecutionOptions {
 	executionArguments?: string;
 }
 
-/**
- * Executes a script in the page context, optionally sanitizing it.
- */
 export async function executeScriptString({
 	scriptContent,
 	shouldSanitize = true,
@@ -127,24 +117,20 @@ export async function executeScriptString({
 	logger.debug("runtime", "Original script content:", finalScript);
 
 	if (shouldSanitize) {
-		if (isSafeCode(finalScript, sourceIdentifier)) {
-			logger.debug("runtime", "Script passed safety check, applying shorthand replacements");
-			// Replace shorthand function calls with full global paths
-			for (const [scope, methods] of Object.entries(activeStyleShiftFunctions)) {
-				for (const methodName of methods) {
-					const pattern = new RegExp(`\\b${methodName}\\b`, "g");
-					if (pattern.test(finalScript)) {
-						logger.debug(
-							"runtime",
-							`Replacing shorthand ${methodName} with window["StyleShift"]["${scope}"]["${methodName}"]`,
-						);
-						finalScript = finalScript.replace(pattern, `window["StyleShift"]["${scope}"]["${methodName}"]`);
-					}
-				}
-			}
-		} else {
+		if (!isSafeCode(finalScript, sourceIdentifier)) {
 			logger.warn("runtime", "Script blocked by security policy:", sourceIdentifier);
 			return;
+		}
+
+		logger.debug("runtime", "Script passed safety check, applying shorthand replacements");
+		// Shorthand replacements
+		for (const [scope, methods] of Object.entries(activeStyleShiftFunctions)) {
+			for (const methodName of methods) {
+				const pattern = new RegExp(`\\b${methodName}\\b`, "g");
+				if (pattern.test(finalScript)) {
+					finalScript = finalScript.replace(pattern, `window["StyleShift"]["${scope}"]["${methodName}"]`);
+				}
+			}
 		}
 	}
 
@@ -162,9 +148,6 @@ export async function executeScriptString({
 	}
 }
 
-/**
- * Executes a script associated with a specific setting.
- */
 export function executeSettingScript(settingObject: any, functionProperty: string = "script"): void {
 	executeScriptString({
 		scriptContent: settingObject[functionProperty],
@@ -180,9 +163,43 @@ export let codemirrorInstance: any;
 
 export const globalMetadataCache: any[] = [];
 
-/**
- * Lazy-loads heavy developer modules like CodeMirror and JSZip.
- */
+export async function loadMetadata(): Promise<void> {
+	if (globalMetadataCache.length > 0) return;
+	try {
+		const metadataUrl = chrome.runtime.getURL("types/NewTube-Metadata.json");
+		logger.debug("runtime", "Fetching metadata from:", metadataUrl);
+		const response = await fetch(metadataUrl);
+		const data = await response.json();
+		globalMetadataCache.length = 0;
+		globalMetadataCache.push(...data);
+	} catch (error) {
+		logger.error("runtime", "Failed to load metadata", error);
+		throw error;
+	}
+}
+
+async function importModule(path: string, name: string): Promise<any> {
+	try {
+		const url = chrome.runtime.getURL(path);
+		logger.debug("runtime", `Importing ${name} from:`, url);
+		const module = await import(url);
+		return module.default?.default || module.default;
+	} catch (error) {
+		logger.error("runtime", `Failed to load ${name}`, error);
+		throw error;
+	}
+}
+
+export async function loadJSZip(): Promise<void> {
+	if (jszipInstance) return;
+	jszipInstance = await importModule("modules/jszip.js", "JSZip");
+}
+
+export async function loadCodeMirror(): Promise<void> {
+	if (codemirrorInstance) return;
+	codemirrorInstance = await importModule("modules/codemirror.js", "CodeMirror");
+}
+
 export async function initializeDeveloperEnvironment(): Promise<void> {
 	if (hasAttemptedDevModuleLoad || isDevModulesLoaded) return;
 
@@ -197,28 +214,15 @@ export async function initializeDeveloperEnvironment(): Promise<void> {
 
 	try {
 		logger.info("runtime", "Loading developer environment...");
-		loaderUi.setContent("Fetching Metadata...");
-		const metadataUrl = chrome.runtime.getURL("types/NewTube-Metadata.json");
-		logger.debug("runtime", "Fetching metadata from:", metadataUrl);
 
-		const metadataResponse = await fetch(metadataUrl);
-		const metadataData = await metadataResponse.json();
-		globalMetadataCache.length = 0;
-		globalMetadataCache.push(...metadataData);
+		loaderUi.setContent("Fetching Metadata...");
+		await loadMetadata();
 
 		loaderUi.setContent("Loading JSZip...");
-		const jszipUrl = chrome.runtime.getURL("modules/jszip.js");
-		logger.debug("runtime", "Importing JSZip from:", jszipUrl);
-
-		const jszipModule = await import(jszipUrl);
-		jszipInstance = jszipModule.default.default || jszipModule.default;
+		await loadJSZip();
 
 		loaderUi.setContent("Loading CodeMirror...");
-		const codemirrorUrl = chrome.runtime.getURL("modules/codemirror.js");
-		logger.debug("runtime", "Importing CodeMirror from:", codemirrorUrl);
-
-		const codemirrorModule = await import(codemirrorUrl);
-		codemirrorInstance = codemirrorModule.default.default || codemirrorModule.default;
+		await loadCodeMirror();
 
 		logger.info("runtime", "Developer environment loaded successfully.");
 		loaderUi.setIcon("check_circle");

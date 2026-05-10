@@ -31,43 +31,34 @@ export const EXTERNAL_STORAGE_KEYS = [...INTERNAL_STORAGE_KEYS, ...externalKeys]
 
 export const ALLOWED_STORAGE_KEYS = ["currentSettings", "addOnStyleShiftItems"];
 
-/**
- * Loads all data from Chrome local storage for the current domain context.
- */
 export async function initializeStorageConnection(): Promise<void> {
-	return new Promise((resolve) => {
-		chrome.storage.local.get(null, (allData) => {
-			logger.info("STORAGE", "RAW_STORAGE_DUMP", allData);
-		});
+	logger.info("STORAGE", "Attempting to load data for domain:", currentContextDomain);
 
-		logger.info("STORAGE", "Attempting to load data for domain:", currentContextDomain);
+	const result = await chrome.storage.local.get(currentContextDomain);
+	const domainData = result[currentContextDomain];
 
-		chrome.storage.local.get(currentContextDomain, (result: Record<string, any>) => {
-			if (result[currentContextDomain]) {
-				try {
-					cachedStorageData = result[currentContextDomain];
-					logger.info("STORAGE", "Data successfully loaded:", currentContextDomain);
-				} catch (_error) {
-					createError(`Failed to parse storage data for: <b>${currentContextDomain}</b>`);
-					cachedStorageData = {};
-				}
-			} else {
-				cachedStorageData = {};
-			}
-			isStorageInitialized = true;
-			resolve();
-		});
-	});
+	if (domainData) {
+		try {
+			cachedStorageData = domainData;
+			logger.info("STORAGE", "Data successfully loaded:", currentContextDomain);
+		} catch (_error) {
+			createError(`Failed to parse storage data for: <b>${currentContextDomain}</b>`);
+			cachedStorageData = {};
+		}
+	} else {
+		cachedStorageData = {};
+	}
+	isStorageInitialized = true;
 }
 
-/**
- * Persists a value to the root of the storage object.
- */
-export async function saveRootValue(key: string, value: any, delayPersistence = false): Promise<boolean> {
-	if (!isStorageInitialized) {
-		await sleep(100);
-		return saveRootValue(key, value, delayPersistence);
+async function ensureInitialized(): Promise<void> {
+	while (!isStorageInitialized) {
+		await sleep(50);
 	}
+}
+
+export async function saveRootValue(key: string, value: any, delayPersistence = false): Promise<boolean> {
+	await ensureInitialized();
 	cachedStorageData[key] = value;
 	logger.info("STORAGE", "Updating root key:", key, value);
 
@@ -77,10 +68,8 @@ export async function saveRootValue(key: string, value: any, delayPersistence = 
 	return true;
 }
 
-/**
- * Saves a setting into the 'currentSettings' nested object.
- */
 export async function saveUserSetting(settingId: string, value: any, delayPersistence = false): Promise<boolean> {
+	await ensureInitialized();
 	if (cachedStorageData["currentSettings"] == null) {
 		cachedStorageData["currentSettings"] = {};
 	}
@@ -94,9 +83,6 @@ export async function saveUserSetting(settingId: string, value: any, delayPersis
 	return true;
 }
 
-/**
- * Routes a saveRootValue request to either root storage or user settings based on the key.
- */
 export async function saveToStorage(key: string, value: any, delayPersistence = false): Promise<boolean> {
 	if (EXTERNAL_STORAGE_KEYS.includes(key)) {
 		return await saveRootValue(key, value, delayPersistence);
@@ -105,16 +91,10 @@ export async function saveToStorage(key: string, value: any, delayPersistence = 
 	}
 }
 
-/**
- * Specialized function to save add-on items to the root of storage.
- */
 export async function saveAddOnStyleShiftItems(items: any[], delayPersistence = false): Promise<boolean> {
 	return await saveRootValue("addOnStyleShiftItems", items, delayPersistence);
 }
 
-/**
- * Writes the entire cached data object to Chrome local storage.
- */
 export async function persistCachedDataToStorage(): Promise<boolean> {
 	if (!isStorageInitialized || isPersistenceSuppressed) return false;
 	logger.info("STORAGE", "Persisting data to disk:", currentContextDomain);
@@ -122,39 +102,21 @@ export async function persistCachedDataToStorage(): Promise<boolean> {
 	return true;
 }
 
-/**
- * Retrieves a value from the root of the storage object.
- */
 export async function getRootValue(key?: string): Promise<any> {
-	if (!isStorageInitialized) {
-		await sleep(100);
-		return await getRootValue(key);
-	}
+	await ensureInitialized();
 	return key == null ? cachedStorageData : cachedStorageData[key];
 }
 
-/**
- * Retrieves a setting from the 'currentSettings' nested object.
- */
 export async function getUserSetting(settingId: string): Promise<any> {
-	if (!isStorageInitialized) {
-		await sleep(100);
-		return await getUserSetting(settingId);
-	}
+	await ensureInitialized();
 	return cachedStorageData["currentSettings"]?.[settingId] ?? null;
 }
 
-/**
- * Attempts to retrieve a value from settings first, then from root storage.
- */
 export async function getFromStorage(key: string): Promise<any> {
 	const settingValue = await getUserSetting(key);
 	return settingValue !== null ? settingValue : await getRootValue(key);
 }
 
-/**
- * Completely clears the extension's local storage.
- */
 export async function wipeAllExtensionStorage(): Promise<void> {
 	await chrome.storage.local.clear();
 }

@@ -1,5 +1,5 @@
 import { deepClone, sleep } from "@/core/shared/utilities";
-import { initializeDeveloperEnvironment, jszipInstance } from "@core/runtime/controller";
+import { loadJSZip, jszipInstance } from "@core/runtime/controller";
 import { downloadFile } from "@core/shared/extensionHelpers";
 import { createError, createNotification } from "@core/shared/notifications";
 import { performStorageGarbageCollection } from "@core/storage/maintenance";
@@ -19,67 +19,40 @@ import { showUserConfirmation } from "@ui/window/windowFactory";
 
 import { convertToExportSetting } from "./exportConverter";
 
-/**
- * Resolves a stored color ID into a CSS-ready RGBA string.
- */
-export async function resolveRgbaFromStorage(colorBaseId: string): Promise<string> {
-	let hexValue = (await getRootValue(colorBaseId + "C")) as string;
-	if (!hexValue) return "rgba(0,0,0,1)";
+export async function resolveRgbaFromStorage(colorId: string): Promise<string> {
+	const hex = (await getRootValue(colorId + "C"))?.replace("#", "");
+	if (!hex || hex.length !== 6) return "rgba(0,0,0,1)";
 
-	hexValue = hexValue.replace("#", "");
-	const hexParts = hexValue.match(/.{1,2}/g);
-	if (!hexParts) return "rgba(0,0,0,1)";
+	const r = parseInt(hex.slice(0, 2), 16);
+	const g = parseInt(hex.slice(2, 4), 16);
+	const b = parseInt(hex.slice(4, 6), 16);
+	const a = Number(await getRootValue(colorId + "O")) / 100;
 
-	const red = parseInt(hexParts[0], 16);
-	const green = parseInt(hexParts[1], 16);
-	const blue = parseInt(hexParts[2], 16);
-	const alpha = Number(await getRootValue(colorBaseId + "O")) / 100;
-
-	return `rgba(${red},${green},${blue},${alpha})`;
+	return `rgba(${r},${g},${b},${a})`;
 }
 
-/**
- * Validates an array of add-on StyleShift items for potential JavaScript code.
- */
 export async function validateAddOnItemsForJs(items: any[]): Promise<boolean> {
-	let hasJs = false;
-	for (const item of items) {
-		const jsProperties = [
-			"clickFunction",
-			"setupFunction",
-			"updateFunction",
-			"enableFunction",
-			"disableFunction",
-			"constantCss",
-			"uiFunction",
-		];
-		for (const prop of jsProperties) {
-			if (
-				item[prop] &&
-				(typeof item[prop] === "function" || (typeof item[prop] === "string" && item[prop].trim() !== ""))
-			) {
-				hasJs = true;
-				break;
-			}
-		}
-		if (hasJs) break;
-	}
+	const JS_PROPS = [
+		"clickFunction",
+		"setupFunction",
+		"updateFunction",
+		"enableFunction",
+		"disableFunction",
+		"constantCss",
+		"uiFunction",
+	];
+	const hasJs = items.some((item) =>
+		JS_PROPS.some((prop) => item[prop] && (typeof item[prop] === "function" || item[prop].trim() !== "")),
+	);
 
 	if (hasJs) {
 		return await showUserConfirmation(
-			`⚠️*WARNING*⚠️
-These add-on items contain JS code.
-You could be compromised if you continue.
-
-Do you want to install these items?`,
+			"⚠️WARNING⚠️\nThese add-on items contain JS code.\nYou could be compromised if you continue.\n\nDo you want to install these items?",
 		);
 	}
 	return true;
 }
 
-/**
- * Imports preset data into the current user settings.
- */
 export async function importPresetToSettings(
 	presetData: any,
 	persist = true,
@@ -89,7 +62,7 @@ export async function importPresetToSettings(
 	let loaderUi: any = null;
 
 	if (themeName) {
-		const isReverting = themeName.toLowerCase().includes("setting") || themeName.toLowerCase().includes("previous");
+		const isReverting = /setting|previous/i.test(themeName);
 		loaderUi = await createNotification({
 			icon: "palette",
 			title: isReverting ? `Restoring: ${themeName}` : `Applying Theme: ${themeName}`,
@@ -98,64 +71,40 @@ export async function importPresetToSettings(
 		});
 	}
 
-	let changesDetected = false;
 	const changedKeys: string[] = [];
-
-	const processEntry = async (key: string, value: any) => {
-		if (key === "currentSettings" && typeof value === "object") {
-			for (const [subKey, subValue] of Object.entries(value)) {
-				await saveUserSetting(subKey, subValue, true);
-				changedKeys.push(subKey);
-			}
-			changesDetected = true;
-			return;
-		}
-
-		if (key === "addOnStyleShiftItems" && Array.isArray(value)) {
-			const approved = await validateAddOnItemsForJs(value);
-			if (approved) {
-				await saveAddOnStyleShiftItems(value, true);
-				changedKeys.push(key);
-				changesDetected = true;
-			}
-			return;
-		}
-
-		let processedValue = value;
-		if (typeof value === "string" && (value.startsWith("{") || value.startsWith("["))) {
-			try {
-				processedValue = JSON.parse(value);
-			} catch (_ignore) {}
-		}
-
-		await saveUserSetting(key, processedValue, true);
-
-		changedKeys.push(key);
-		changesDetected = true;
-	};
+	const entries = Array.isArray(presetData)
+		? presetData.reduce((acc, val, i, arr) => (i % 2 === 0 ? [...acc, [val, arr[i + 1]]] : acc), [])
+		: Object.entries(presetData);
 
 	if (loaderUi) loaderUi.setContent("Parsing theme data...");
 
-	if (Object.prototype.toString.call(presetData) === "[object Object]") {
-		for (const [key, value] of Object.entries(presetData)) {
-			await processEntry(key, value);
-		}
-	} else if (Array.isArray(presetData)) {
-		for (let i = 0; i < presetData.length; i += 2) {
-			await processEntry(presetData[i], presetData[i + 1]);
+	for (const [key, value] of entries) {
+		if (key === "currentSettings" && typeof value === "object") {
+			for (const [subKey, subValue] of Object.entries(value as object)) {
+				await saveUserSetting(subKey, subValue, true);
+				changedKeys.push(subKey);
+			}
+		} else if (key === "addOnStyleShiftItems" && Array.isArray(value)) {
+			if (await validateAddOnItemsForJs(value)) {
+				await saveAddOnStyleShiftItems(value, true);
+				changedKeys.push(key);
+			}
+		} else {
+			let processedValue = value;
+			if (typeof value === "string" && /^[{\[]/.test(value)) {
+				try {
+					processedValue = JSON.parse(value);
+				} catch {}
+			}
+			await saveUserSetting(key, processedValue, true);
+			changedKeys.push(key);
 		}
 	}
 
-	if (changesDetected) {
-		if (themeName !== undefined) {
-			await saveRootValue("activeTheme", themeName, !persist);
-		}
-
+	if (changedKeys.length > 0) {
+		if (themeName) await saveRootValue("activeTheme", themeName, !persist);
 		if (loaderUi) loaderUi.setContent("Applying visual changes...");
-
-		if (persist) {
-			await persistCachedDataToStorage();
-		}
+		if (persist) await persistCachedDataToStorage();
 		await triggerSettingsUpdateBatch(changedKeys);
 
 		if (loaderUi) {
@@ -171,9 +120,6 @@ export async function importPresetToSettings(
 	if (!persist) suppressStoragePersistence(false);
 }
 
-/**
- * Parses a string and imports it as a preset.
- */
 export async function importPresetFromString(presetString: string): Promise<void> {
 	try {
 		const presetData = JSON.parse(presetString);
@@ -184,9 +130,6 @@ export async function importPresetFromString(presetString: string): Promise<void
 	}
 }
 
-/**
- * Exports the current user settings as a data object.
- */
 export async function exportCurrentSettingsObject(includeMaintenance = true): Promise<any> {
 	await updateStyleShiftItems();
 	if (includeMaintenance) {
@@ -195,17 +138,11 @@ export async function exportCurrentSettingsObject(includeMaintenance = true): Pr
 	return await getRootValue("currentSettings");
 }
 
-/**
- * Exports the current user settings as a formatted JSON string.
- */
 export async function exportCurrentSettingsAsString(): Promise<string> {
 	const settingsObj = await exportCurrentSettingsObject();
 	return JSON.stringify(settingsObj, null, 2);
 }
 
-/**
- * Common utility for generating and downloading a ZIP file with a notification.
- */
 export async function downloadZip(zipName: string, folderName: string, files: Record<string, string | Blob>) {
 	const notification = await createNotification({
 		icon: "inventory_2",
@@ -215,7 +152,7 @@ export async function downloadZip(zipName: string, folderName: string, files: Re
 	});
 
 	try {
-		await initializeDeveloperEnvironment();
+		await loadJSZip();
 
 		if (!jszipInstance) {
 			throw new Error("JSZip failed to load.");
@@ -247,10 +184,7 @@ export async function downloadZip(zipName: string, folderName: string, files: Re
 	}
 }
 
-/**
- * Recursively adds StyleShift items (categories and settings) to a ZIP file structure.
- * Uses a manifest-based ordering system (order.json) for clean folder names.
- */
+// Add items to ZIP
 export async function addItemsToZip(items: any[], files: Record<string, string | Blob>, baseFolder: string = "") {
 	const prefix = baseFolder ? (baseFolder.endsWith("/") ? baseFolder : `${baseFolder}/`) : "";
 	const categoryOrder: string[] = [];
@@ -301,9 +235,6 @@ export async function addItemsToZip(items: any[], files: Record<string, string |
 	files[`${prefix}order.json`] = JSON.stringify(categoryOrder, null, 2);
 }
 
-/**
- * Packs multiple add-on StyleShift items into a ZIP file using the high-fidelity structure.
- */
 export async function exportStyleShiftZip(styleshiftData: any[], zipFileName: string) {
 	const files: Record<string, string | Blob> = {};
 	await addItemsToZip(styleshiftData, files);
