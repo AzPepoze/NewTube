@@ -168,11 +168,10 @@
 		font-size: 11px;
 
 		&:hover {
-			background: var(--theme-0);
-			border-color: var(--theme-0);
-			color: white;
-			transform: translateX(2px);
-			box-shadow: 0 2px 8px var(--theme-0-30);
+			background: var(--fg-opacity-15);
+			border-color: var(--fg-opacity-20);
+			filter: brightness(1.2);
+			box-shadow: 0 2px 8px var(--shadow-subtle);
 		}
 	}
 

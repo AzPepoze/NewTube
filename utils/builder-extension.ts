@@ -1,14 +1,14 @@
+import * as chokidar from "chokidar";
+import dotenv from "dotenv";
 import * as esbuild from "esbuild";
 import esbuildSvelte from "esbuild-svelte";
-import * as chokidar from "chokidar";
 import * as fs from "fs-extra";
 import * as path from "path";
-import dotenv from "dotenv";
 
-import { BUILD, TEMP, SRC, DIST_CHROMIUM, DIST_FIREFOX, ENTRYPOINTS, extensionConfig, ensureDir } from "./shared/paths";
-import { esbuildAliases, esbuildLoaders, esbuildExternals } from "./shared/aliases";
-import { log } from "./shared/logger";
+import { esbuildAliases, esbuildExternals, esbuildLoaders } from "./shared/aliases";
 import { processOutputDirectory } from "./shared/branding";
+import { log } from "./shared/logger";
+import { BUILD, DIST_CHROMIUM, DIST_FIREFOX, ensureDir, ENTRYPOINTS, extensionConfig, SRC, TEMP } from "./shared/paths";
 import { createSvelteCompilerOptions } from "./shared/svelte";
 
 dotenv.config();

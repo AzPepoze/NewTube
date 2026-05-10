@@ -69,7 +69,7 @@ function createEditorController(obj: any, key: string, onUpdate?: (val: string) 
 	let afterOnChange: ((value: string) => void) | null = null;
 	let rearrangeValue: ((value: string) => Promise<string> | string) | null = null;
 
-	const onChange = sequencedTask(async (value: string) => {
+	let onChange = sequencedTask(async (value: string) => {
 		obj[key] = value;
 		onUpdate?.(value);
 		afterOnChange?.(value);

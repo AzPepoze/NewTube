@@ -159,7 +159,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				id: "SettingsBackgroundBlurAmount",
 				name: "Glass Intensity",
 				description: "Adjusts the strength of the background blur for the settings menu.",
-				value: 30,
+				value: 40,
 				min: 0,
 				max: 50,
 				step: 1,

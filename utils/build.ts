@@ -1,8 +1,8 @@
 import { spawnSync } from "child_process";
-import { buildModules } from "./builder-modules";
-import { buildTemplates } from "./builder-template";
 import { buildExtension } from "./builder-extension";
+import { buildModules } from "./builder-modules";
 import { buildRelease } from "./builder-release";
+import { buildTemplates } from "./builder-template";
 import { log } from "./shared/logger";
 import { extensionConfig, ROOT } from "./shared/paths";
 
