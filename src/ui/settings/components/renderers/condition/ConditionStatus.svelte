@@ -70,9 +70,9 @@
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
 		&.is-all-met {
-			background: rgba(0, 255, 255, 0.05);
-			border-color: rgba(0, 255, 255, 0.15);
-			box-shadow: 0 4px 20px rgba(0, 255, 255, 0.08);
+			background: var(--theme-success-10);
+			border-color: var(--theme-success-20);
+			box-shadow: 0 4px 20px var(--theme-success-10);
 		}
 	}
 
@@ -146,10 +146,10 @@
 			}
 
 			&.is-met {
-				background: rgba(0, 255, 255, 0.08);
+				background: var(--theme-success-10);
 				
 				.item-name {
-					background: rgba(0, 255, 255, 0.15);
+					background: var(--theme-success-20);
 				}
 
 				.item-target {
