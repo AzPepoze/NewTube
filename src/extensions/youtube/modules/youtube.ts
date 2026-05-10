@@ -32,41 +32,48 @@ export async function getYtdApp() {
 	return ytdApp;
 }
 
+function isMainVideo(video: HTMLVideoElement): boolean {
+	if (!video.isConnected || !isYoutubeVideoPage) return false;
+
+	const player = video.closest("ytd-player, .html5-video-player");
+	if (!player) return false;
+
+	const context = player.getAttribute("context") || "";
+	const className = player.className || "";
+
+	if (context.includes("TRAILER") || context.includes("PREVIEW")) return false;
+	if (className.includes("ytp-embed")) return false;
+
+	// On watch pages, the main video must be in the primary section
+	if (window.location.pathname === "/watch" && !video.closest("#primary")) return false;
+
+	// Ensure the video is actually playable/loaded
+	if (isNaN(video.duration) && video.readyState < 1) return false;
+
+	return typeof video.requestPictureInPicture === "function";
+}
+
 /**
- * Retrieves the YouTube video element.
- * Tries multiple selectors to find the actual HTML5 video element that supports PiP.
+ * Retrieves the main YouTube video element.
+ * Excludes mini-players, trailers, and previews to ensure only the main content is captured.
  */
 export async function getVideoElement(): Promise<HTMLVideoElement | null> {
-	if (!videoElement || !videoElement.isConnected) {
-		const candidates = [
-			document.querySelector("#movie_player video") as HTMLVideoElement,
-			document.querySelector(".html5-video-container video") as HTMLVideoElement,
-			document.querySelector(".html5-video-player video") as HTMLVideoElement,
-		];
+	if (videoElement?.isConnected) return videoElement;
 
-		videoElement =
-			candidates.find((v) => v && v.isConnected && typeof v.requestPictureInPicture === "function") || null;
+	const allVideos = Array.from(document.querySelectorAll("video"));
+	const candidates = allVideos.filter(isMainVideo);
 
-		if (!videoElement) {
-			videoElement = candidates.find((v) => v && v.isConnected) || null;
-		}
+	// Prefer the movie_player if available
+	videoElement =
+		(document.querySelector("#movie_player video") as HTMLVideoElement) ||
+		candidates.find((v) => v.closest("#movie_player")) ||
+		candidates[0] ||
+		null;
 
-		if (!videoElement) {
-			const allVideos = document.querySelectorAll("video");
-			for (const video of Array.from(allVideos)) {
-				if (video.isConnected) {
-					videoElement = video as HTMLVideoElement;
-					break;
-				}
-			}
-		}
-
-		if (videoElement && videoElement.isConnected) {
-			logger.info("youtube", "Found/Updated video element");
-		} else {
-			videoElement = null;
-		}
+	if (videoElement) {
+		logger.info("youtube", "Found/Updated main video element");
 	}
+
 	return videoElement;
 }
 
@@ -157,19 +164,22 @@ window.addEventListener("yt-navigate-finish", () => {
 	logger.info("youtube", `Navigation finished: ${videoId || "Not a video page"}`);
 
 	isYoutubeVideoPage = !!videoId;
-	videoElement = null; // Reset cached video element on navigation
-	playerElement = null; // Reset cached player element on navigation
-	navigateListeners.forEach((callback) => {
-		try {
-			callback();
-		} catch (error) {
-			console.error("Error in YouTube navigate listener:", error);
-		}
-	});
+	videoElement = null;
+	playerElement = null;
 
-	// Re-attach observer to the new player element if it changed
+	notifyListeners(navigateListeners, undefined, "navigate");
 	setupPlayerObserver();
 });
+
+function notifyListeners<T>(listeners: ((value: T) => void)[], value: T, label: string) {
+	listeners.forEach((callback) => {
+		try {
+			callback(value);
+		} catch (error) {
+			console.error(`Error in YouTube ${label} listener:`, error);
+		}
+	});
+}
 
 async function setupPlayerObserver() {
 	if (playerObserver) {
@@ -177,52 +187,36 @@ async function setupPlayerObserver() {
 	}
 
 	const player = await getPlayerElement();
+	if (!player) {
+		logger.warn("youtube", "Could not find player element for player observer");
+		return;
+	}
+
 	logger.info("youtube", "Setting up player observer on:", player);
 
-	if (player) {
-		const checkPlayerState = () => {
-			const fullscreen = player.classList.contains("ytp-fullscreen");
-			const smallMode =
-				Array.from(player.classList).some((cls) => cls.includes("small")) ||
-				player.classList.contains("ytp-player-minimized");
+	const checkPlayerState = () => {
+		const fullscreen = player.classList.contains("ytp-fullscreen");
+		const smallMode =
+			Array.from(player.classList).some((cls) => cls.includes("small")) ||
+			player.classList.contains("ytp-player-minimized");
 
-			if (fullscreen !== isYoutubeFullscreen) {
-				isYoutubeFullscreen = fullscreen;
-				logger.info("youtube", `Fullscreen state changed: ${isYoutubeFullscreen}`);
-				fullscreenListeners.forEach((callback) => {
-					try {
-						callback(isYoutubeFullscreen);
-					} catch (error) {
-						console.error("Error in YouTube fullscreen listener:", error);
-					}
-				});
-			}
+		if (fullscreen !== isYoutubeFullscreen) {
+			isYoutubeFullscreen = fullscreen;
+			logger.info("youtube", `Fullscreen state changed: ${isYoutubeFullscreen}`);
+			notifyListeners(fullscreenListeners, isYoutubeFullscreen, "fullscreen");
+		}
 
-			if (smallMode !== isYoutubeSmallMode) {
-				isYoutubeSmallMode = smallMode;
-				logger.info("youtube", `Small mode state changed: ${isYoutubeSmallMode}`);
-				smallModeListeners.forEach((callback) => {
-					try {
-						callback(isYoutubeSmallMode);
-					} catch (error) {
-						console.error("Error in YouTube small mode listener:", error);
-					}
-				});
-			}
-		};
+		if (smallMode !== isYoutubeSmallMode) {
+			isYoutubeSmallMode = smallMode;
+			logger.info("youtube", `Small mode state changed: ${isYoutubeSmallMode}`);
+			notifyListeners(smallModeListeners, isYoutubeSmallMode, "small mode");
+		}
+	};
 
-		playerObserver = new MutationObserver(checkPlayerState);
+	playerObserver = new MutationObserver(checkPlayerState);
+	playerObserver.observe(player, { attributes: true, attributeFilter: ["class"] });
 
-		playerObserver.observe(player, {
-			attributes: true,
-			attributeFilter: ["class"],
-		});
-
-		// Initial check
-		checkPlayerState();
-	} else {
-		logger.warn("youtube", "Could not find player element for player observer");
-	}
+	checkPlayerState();
 }
 
 // Initial setup

@@ -19,22 +19,18 @@ class BackgroundModeDispatcher {
 	private activeMode: BackgroundMode | null = null;
 	private hiddenByVideo = false;
 
+	private get activeHandler() {
+		return this.activeMode ? this.modes[this.activeMode] : null;
+	}
+
 	async switchMode(newMode: BackgroundMode): Promise<void> {
 		if (this.activeMode === newMode) return;
 
-		// Disable old mode
-		if (this.activeMode) {
-			await this.modes[this.activeMode].disable();
-		}
-
-		// Enable new mode
+		await this.activeHandler?.disable();
 		this.activeMode = newMode;
-		await this.modes[newMode].enable();
+		await this.activeHandler?.enable();
 
-		// Respect hidden state
-		if (this.hiddenByVideo) {
-			await this.hide();
-		}
+		if (this.hiddenByVideo) await this.hide();
 
 		logger.info("Background mode switched to:", newMode);
 	}
@@ -45,34 +41,22 @@ class BackgroundModeDispatcher {
 	}
 
 	async disable(): Promise<void> {
-		if (this.activeMode) {
-			await this.modes[this.activeMode].disable();
-			this.activeMode = null;
-		}
+		await this.activeHandler?.disable();
+		this.activeMode = null;
 	}
 
 	async show(): Promise<void> {
 		this.hiddenByVideo = false;
-		if (this.activeMode) {
-			await this.modes[this.activeMode].show();
-		}
+		await this.activeHandler?.show();
 	}
 
 	async hide(): Promise<void> {
 		this.hiddenByVideo = true;
-		if (this.activeMode) {
-			await this.modes[this.activeMode].hide();
-		}
+		await this.activeHandler?.hide();
 	}
 
 	registerListeners(): void {
-		registerSettingListener(
-			"BackgroundMode",
-			async (value) => {
-				await this.switchMode(value as BackgroundMode);
-			},
-			true,
-		);
+		registerSettingListener("BackgroundMode", (value) => this.switchMode(value as BackgroundMode), true);
 
 		registerSettingListener("EnableBackground", async (value) => {
 			if (value) {
@@ -88,27 +72,7 @@ class BackgroundModeDispatcher {
 const dispatcher = new BackgroundModeDispatcher();
 dispatcher.registerListeners();
 
-export async function enableBg(): Promise<void> {
-	await dispatcher.enable();
-}
-
-export async function disableBg(): Promise<void> {
-	await dispatcher.disable();
-}
-
-export async function showBg(): Promise<void> {
-	await dispatcher.show();
-}
-
-export async function hideBg(): Promise<void> {
-	await dispatcher.hide();
-}
-
-// Legacy function names for backward compatibility
-export async function updateBgImg(): Promise<void> {
-	// This is handled by image mode listeners
-}
-
-export async function updateBgImgPosition(): Promise<void> {
-	// This is handled by image mode listeners
-}
+export const enableBg = () => dispatcher.enable();
+export const disableBg = () => dispatcher.disable();
+export const showBg = () => dispatcher.show();
+export const hideBg = () => dispatcher.hide();

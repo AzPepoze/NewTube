@@ -16,7 +16,6 @@
 		showHelpIcon?: boolean;
 	} = $props();
 
-	// Derived values that rely on the setting object
 	const name = $derived(setting.name);
 	const description = $derived(setting.description);
 	const icon = $derived(setting.icon);
@@ -31,9 +30,7 @@
 	let isHelpVisible = $state(false);
 
 	const buttonStyles = $derived.by(() => {
-		const isHex = color.startsWith("#");
-
-		if (!isHex) {
+		if (!color.startsWith("#")) {
 			return {
 				background: color,
 				border: "1px solid var(--border-color)",
@@ -43,20 +40,13 @@
 
 		const { r, g, b } = hexToRgb(color);
 
-		// Calculate background shades
 		const bgHsv = rgbToHsv({ r, g, b });
-		bgHsv.s /= 2;
-		bgHsv.v /= 3;
-		const bgColor = hsvToRgb(bgHsv);
-
-		const bgtHsv = rgbToHsv({ r, g, b });
-		bgtHsv.s /= 1.5;
-		bgtHsv.v /= 2;
-		const bgtColor = hsvToRgb(bgtHsv);
+		const bgColor = hsvToRgb({ ...bgHsv, s: bgHsv.s / 2, v: bgHsv.v / 3 });
+		const bgtColor = hsvToRgb({ ...bgHsv, s: bgHsv.s / 1.5, v: bgHsv.v / 2 });
 
 		const top = `rgb(${bgtColor.r}, ${bgtColor.g}, ${bgtColor.b})`;
 		const bottom = `rgb(${bgColor.r}, ${bgColor.g}, ${bgColor.b}, 0.5)`;
-		const border = `rgb(${r + 150}, ${g + 150}, ${b + 150})`;
+		const border = `rgb(${Math.min(255, r + 150)}, ${Math.min(255, g + 150)}, ${Math.min(255, b + 150)})`;
 
 		return {
 			background: `radial-gradient(at center top, ${top}, ${bottom})`,
@@ -85,14 +75,17 @@
 		}
 	}
 
-	function toggleHelp(e: MouseEvent) {
-		e.stopPropagation();
-		isHelpVisible = !isHelpVisible;
+	function showHelp() {
+		isHelpVisible = true;
+	}
+
+	function hideHelp() {
+		isHelpVisible = false;
 	}
 
 	function handleHelpKeyDown(e: KeyboardEvent) {
 		if (e.key === "Enter") {
-			toggleHelp(e as any);
+			isHelpVisible = !isHelpVisible;
 		}
 	}
 </script>
@@ -117,14 +110,26 @@
 
 	<Description
 		{name}
-		description={showHelpIcon ? (isHelpVisible ? description : "") : description}
+		description={showHelpIcon ? "" : description}
 		{align}
 		style="display: flex; color: inherit; font-size: {fontSize}px;"
 	/>
 
 	{#if showHelpIcon && description}
-		<div class="help-trigger" onclick={toggleHelp} onkeydown={handleHelpKeyDown} role="button" tabindex="0">
+		<div
+			class="help-trigger"
+			onmouseenter={showHelp}
+			onmouseleave={hideHelp}
+			onkeydown={handleHelpKeyDown}
+			role="button"
+			tabindex="0"
+		>
 			<Icon name="help_outline" size={20} />
+			{#if isHelpVisible}
+				<div class="styleshift-tooltip">
+					{description}
+				</div>
+			{/if}
 		</div>
 	{/if}
 </div>
@@ -145,7 +150,7 @@
 	}
 
 	.styleshift-button:hover {
-		filter: brightness(1.5) drop-shadow(2px 2px 3px black) drop-shadow(-2px -2px 3px rgba(255, 255, 255, 0.37));
+		filter: drop-shadow(2px 2px 3px black);
 
 		:global(.styleshift-main-description .setting-name) {
 			font-weight: 400;
@@ -166,10 +171,51 @@
 		justify-content: center;
 		padding: 5px;
 		border-radius: 50%;
+		position: relative;
 
 		&:hover {
 			opacity: 1;
-			background: rgba(255, 255, 255, 0.1);
+			background: var(--surface-hover);
+		}
+	}
+
+	.styleshift-tooltip {
+		position: absolute;
+		bottom: 125%;
+		right: 0;
+		background: var(--bg-main);
+		border: 1px solid var(--border-subtle);
+		padding: 8px 12px;
+		border-radius: 8px;
+		font-size: 12px;
+		color: var(--text-primary);
+		width: 200px;
+		box-shadow: 0 4px 15px var(--shadow-strong);
+		z-index: 100;
+		pointer-events: none;
+		animation: fadeIn 0.2s ease-out;
+		white-space: break-spaces;
+		line-height: 1.4;
+		text-align: left;
+
+		&::after {
+			content: "";
+			position: absolute;
+			top: 100%;
+			right: 12px;
+			border: 6px solid transparent;
+			border-top-color: var(--bg-main);
+		}
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(5px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
 		}
 	}
 </style>

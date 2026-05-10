@@ -3,6 +3,7 @@ import { logger } from "@/shared/logger";
 import { localStorageUtil } from "@core/shared/localStorage";
 import {
 	getPlayerElement,
+	getVideoElement,
 	onYoutubeFullscreen,
 	onYoutubeNavigate,
 	onYoutubeSmallMode,
@@ -17,9 +18,7 @@ let isFlyoutMounted = false;
 let flyoutInstance: any = null;
 let flyoutMountPoint: HTMLElement | null = null;
 let globalObserver: IntersectionObserver | null = null;
-let navigateCleanup: (() => void) | null = null;
-let fullscreenCleanup: (() => void) | null = null;
-let smallModeCleanup: (() => void) | null = null;
+let cleanups: (() => void)[] = [];
 let targetMountedState: boolean = false;
 
 export function enableFlyout() {
@@ -27,28 +26,39 @@ export function enableFlyout() {
 
 	globalObserver = new IntersectionObserver(
 		async (entries) => {
-			for (const entry of entries) {
-				const moviePlayer = await getPlayerElement();
-				if (!moviePlayer) return;
+			const moviePlayer = await getPlayerElement();
+			if (!moviePlayer) return;
 
+			for (const entry of entries) {
 				if (entry.isIntersecting) {
 					isFlyoutEnabled = true;
-					if (targetMountedState === false) return;
+					if (targetMountedState === false) continue;
+
 					targetMountedState = false;
-					logger.debug("flyout", "Player is intersecting, queuing hide");
+					logger.debug("flyout", "Player is intersecting, hiding flyout");
 					hideFlyout();
 				} else if (entry.boundingClientRect.top < 0 && isFlyoutEnabled) {
-					if (
-						moviePlayer.classList.contains("ytp-fullscreen") ||
-						moviePlayer.classList.contains("ytp-player-minimized")
-					) {
-						logger.debug("flyout", "Player is hidden but in fullscreen/mini mode, skipping flyout");
+					const videoId = new URLSearchParams(window.location.search).get("v");
+					if (!videoId && !window.location.pathname.startsWith("/shorts/")) {
 						return;
 					}
 
-					if (targetMountedState === true) return;
+					const video = await getVideoElement();
+					const isRestricted =
+						moviePlayer.classList.contains("ytp-fullscreen") || moviePlayer.classList.contains("ytp-player-minimized");
+
+					if (!video || isRestricted) {
+						if (targetMountedState) {
+							targetMountedState = false;
+							hideFlyout();
+						}
+						return;
+					}
+
+					if (targetMountedState === true) continue;
+
 					targetMountedState = true;
-					logger.debug("flyout", "Player scrolled out of view, queuing show");
+					logger.debug("flyout", "Player scrolled out of view, showing flyout");
 					showFlyout();
 				}
 			}
@@ -66,21 +76,23 @@ export function enableFlyout() {
 
 	startObserving();
 
-	navigateCleanup = onYoutubeNavigate(() => {
+	const handleNavigate = () => {
 		isFlyoutEnabled = true;
 		targetMountedState = false;
 		hideFlyout();
 		setTimeout(startObserving, 1000);
-	});
+	};
 
-	const handleStateChange = async () => {
-		targetMountedState = false;
+	const handleStateChange = () => {
 		targetMountedState = false;
 		hideFlyout();
 	};
 
-	fullscreenCleanup = onYoutubeFullscreen(handleStateChange);
-	smallModeCleanup = onYoutubeSmallMode(handleStateChange);
+	cleanups = [
+		onYoutubeNavigate(handleNavigate),
+		onYoutubeFullscreen(handleStateChange),
+		onYoutubeSmallMode(handleStateChange),
+	];
 }
 
 async function showFlyout() {
@@ -89,7 +101,6 @@ async function showFlyout() {
 
 	logger.info("flyout", "Mounting Flyout Player");
 	const savedPos = localStorageUtil.get<any>("flyoutPosition");
-	logger.debug("flyout", "Retrieved saved position:", savedPos);
 
 	flyoutMountPoint = document.createElement("div");
 	document.body.appendChild(flyoutMountPoint);
@@ -112,8 +123,6 @@ async function showFlyout() {
 	if (windowContainer) {
 		triggerWindowShowAnimation(windowContainer);
 	}
-
-	isFlyoutMounted = true;
 }
 
 async function hideFlyout() {
@@ -121,19 +130,19 @@ async function hideFlyout() {
 	isFlyoutMounted = false;
 
 	logger.info("flyout", "Unmounting Flyout Player");
-	const oldFlyoutInstance = flyoutInstance;
-	const oldFlyoutMountPoint = flyoutMountPoint;
+	const oldInstance = flyoutInstance;
+	const oldMountPoint = flyoutMountPoint;
 	flyoutInstance = null;
 	flyoutMountPoint = null;
 
-	if (oldFlyoutInstance && oldFlyoutMountPoint) {
-		const windowContainer = oldFlyoutMountPoint.querySelector(".styleshift-window-container") as HTMLElement;
+	if (oldInstance && oldMountPoint) {
+		const windowContainer = oldMountPoint.querySelector(".styleshift-window-container") as HTMLElement;
 		if (windowContainer) {
 			await triggerWindowHideAnimation(windowContainer);
 			await sleep(300);
 		}
-		unmount(oldFlyoutInstance);
-		oldFlyoutMountPoint.remove();
+		unmount(oldInstance);
+		oldMountPoint.remove();
 	}
 }
 
@@ -143,20 +152,8 @@ export function disableFlyout() {
 		globalObserver = null;
 	}
 
-	if (navigateCleanup) {
-		navigateCleanup();
-		navigateCleanup = null;
-	}
-
-	if (fullscreenCleanup) {
-		fullscreenCleanup();
-		fullscreenCleanup = null;
-	}
-
-	if (smallModeCleanup) {
-		smallModeCleanup();
-		smallModeCleanup = null;
-	}
+	cleanups.forEach((cleanup) => cleanup());
+	cleanups = [];
 
 	hideFlyout();
 }
