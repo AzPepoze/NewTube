@@ -128,8 +128,8 @@ export async function createMainSettingsUi({
 	}
 
 	function getScrollPositions() {
-		const sidebar = settingsWindow?.contentElement.querySelector(".STYLESHIFT-Sidebar");
-		const content = settingsWindow?.contentElement.querySelector(".STYLESHIFT-Settings-List");
+		const sidebar = settingsWindow?.contentElement.querySelector(".styleshift-sidebar");
+		const content = settingsWindow?.contentElement.querySelector(".styleshift-settings-list");
 		return {
 			sidebar: sidebar?.scrollTop || 0,
 			content: content?.scrollTop || 0,
@@ -137,8 +137,8 @@ export async function createMainSettingsUi({
 	}
 
 	function restoreScrollPositions(positions: { sidebar: number; content: number }) {
-		const sidebar = settingsWindow?.contentElement.querySelector(".STYLESHIFT-Sidebar");
-		const content = settingsWindow?.contentElement.querySelector(".STYLESHIFT-Settings-List");
+		const sidebar = settingsWindow?.contentElement.querySelector(".styleshift-sidebar");
+		const content = settingsWindow?.contentElement.querySelector(".styleshift-settings-list");
 		if (sidebar) sidebar.scrollTop = positions.sidebar;
 		if (content) content.scrollTop = positions.content;
 	}

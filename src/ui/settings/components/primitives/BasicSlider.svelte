@@ -30,12 +30,12 @@
 	{step}
 	{value}
 	oninput={handleInput}
-	class="STYLESHIFT-Number-Slide"
+	class="styleshift-number-slide"
 	style:--progress="{progress}%"
 />
 
 <style lang="scss">
-	.STYLESHIFT-Number-Slide {
+	.styleshift-number-slide {
 		-webkit-appearance: none;
 		appearance: none;
 		width: 100%;

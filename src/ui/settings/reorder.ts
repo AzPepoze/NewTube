@@ -24,7 +24,7 @@ function clearCurrentPlaceholder() {
 
 function createPlaceholder(size: number) {
 	const space = document.createElement("div");
-	space.className = "STYLESHIFT-drag-Hint";
+	space.className = "styleshift-drag-hint";
 	space.style.height = "0px";
 	space.style.opacity = "0";
 
@@ -160,9 +160,9 @@ export async function addDrag(dragHandle: HTMLElement, frame: HTMLElement | null
 	dragHandle.addEventListener("mousedown", (event) => {
 		event.preventDefault();
 
-		const targetFrame = frame || (dragHandle.closest(".STYLESHIFT-Setting-Frame") as HTMLElement);
+		const targetFrame = frame || (dragHandle.closest(".styleshift-setting-frame") as HTMLElement);
 		const currentParent = targetFrame?.parentElement;
-		const scroller = currentParent?.closest(".STYLESHIFT-Scrollable") as HTMLElement;
+		const scroller = currentParent?.closest(".styleshift-scrollable") as HTMLElement;
 		if (!targetFrame || !currentParent || !scroller) return;
 
 		const frameBound = targetFrame.getBoundingClientRect();

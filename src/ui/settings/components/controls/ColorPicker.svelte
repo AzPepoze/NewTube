@@ -69,16 +69,16 @@
 	}
 </script>
 
-<div class="STYLESHIFT-Color-Top-Section">
+<div class="styleshift-color-top-section">
 	<Description {name} {description} />
-	<div class="STYLESHIFT-Color-Preview-Wrapper">
+	<div class="styleshift-color-preview-wrapper">
 		<div
-			class="STYLESHIFT-Color-Preview"
+			class="styleshift-color-preview"
 			style="background-color: {hex}; opacity: {alpha / 100}"
 		></div>
 		<input
 			type="color"
-			class="STYLESHIFT-Color-Input"
+			class="styleshift-color-input"
 			bind:value={hex}
 			oninput={handleInput}
 			onchange={handleChange}
@@ -86,7 +86,7 @@
 	</div>
 </div>
 
-<div class="STYLESHIFT-Color-Alpha-Section">
+<div class="styleshift-color-alpha-section">
 	<Slider
 		setting={{
 			type: "numberSlide",
@@ -102,14 +102,14 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Color-Top-Section {
+	.styleshift-color-top-section {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
 		width: 100%;
 	}
 
-	.STYLESHIFT-Color-Preview-Wrapper {
+	.styleshift-color-preview-wrapper {
 		position: relative;
 		min-width: 50px;
 		width: 50px;
@@ -130,12 +130,12 @@
 		}
 	}
 
-	.STYLESHIFT-Color-Preview {
+	.styleshift-color-preview {
 		width: 100%;
 		height: 100%;
 	}
 
-	.STYLESHIFT-Color-Input {
+	.styleshift-color-input {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -147,10 +147,10 @@
 		appearance: none;
 	}
 
-	.STYLESHIFT-Color-Alpha-Section {
+	.styleshift-color-alpha-section {
 		width: 100%;
 
-		:global(.STYLESHIFT-Setting-Frame) {
+		:global(.styleshift-setting-frame) {
 			background: transparent !important;
 			border: none !important;
 			padding: 0 !important;

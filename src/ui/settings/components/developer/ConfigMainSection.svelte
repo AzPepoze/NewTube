@@ -27,7 +27,7 @@
 			const res = await settingsUi[type](config, updateFunction);
 			const frame = res.frame || res.button || res;
 			if (frame instanceof HTMLElement) {
-				frame.classList.add("STYLESHIFT-Config-Sub-Frame");
+				frame.classList.add("styleshift-config-sub-frame");
 				node.replaceWith(frame);
 			}
 		})();
@@ -213,7 +213,7 @@
 	}
 </script>
 
-<div class="STYLESHIFT-Config-Main-Section">
+<div class="styleshift-config-main-section">
 	{#each Object.entries(props) as [title, propertyValueEntry] (`${title}:${settingSnapshot}`)}
 		{@const property = Array.isArray(propertyValueEntry)
 			? propertyValueEntry[0]
@@ -235,7 +235,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Config-Main-Section {
+	.styleshift-config-main-section {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 		gap: 16px;
@@ -245,7 +245,7 @@
 			grid-column: 1 / -1;
 		}
 
-		:global(.STYLESHIFT-Config-Sub-Frame) {
+		:global(.styleshift-config-sub-frame) {
 			margin-bottom: 0 !important;
 			background: var(--bg-surface) !important;
 			border: 1px solid var(--border-color) !important;

@@ -14,19 +14,19 @@
 </script>
 
 <div
-	class="STYLESHIFT-Dev-Card {collapsed ? 'collapsed' : ''}"
+	class="styleshift-dev-card {collapsed ? 'collapsed' : ''}"
 	style:--card-color={color}
 >
-	<button class="STYLESHIFT-Dev-Card-Header" onclick={handleToggle}>
-		<span class="STYLESHIFT-Dev-Card-Title">{title}</span>
-		<div class="STYLESHIFT-Dev-Card-Chevrons">
-			<span class="STYLESHIFT-Dev-Card-Chevron"
+	<button class="styleshift-dev-card-header" onclick={handleToggle}>
+		<span class="styleshift-dev-card-title">{title}</span>
+		<div class="styleshift-dev-card-chevrons">
+			<span class="styleshift-dev-card-chevron"
 				>{collapsed ? "▼" : "▲"}</span
 			>
 		</div>
 	</button>
 
-	<div class="STYLESHIFT-Dev-Card-Content">
+	<div class="styleshift-dev-card-content">
 		{#if children}
 			{@render children()}
 		{/if}
@@ -34,7 +34,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Dev-Card {
+	.styleshift-dev-card {
 		width: 100%;
 		border-radius: 12px;
 		margin-bottom: 16px;
@@ -44,7 +44,7 @@
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
 		&.collapsed {
-			.STYLESHIFT-Dev-Card-Content {
+			.styleshift-dev-card-content {
 				max-height: 0;
 				padding: 0;
 				opacity: 0;
@@ -59,7 +59,7 @@
 		}
 	}
 
-	.STYLESHIFT-Dev-Card-Header {
+	.styleshift-dev-card-header {
 		width: 100%;
 		display: flex;
 		justify-content: space-between;
@@ -80,13 +80,13 @@
 		}
 	}
 
-	.STYLESHIFT-Dev-Card-Title {
+	.styleshift-dev-card-title {
 		border-left: 3px solid var(--card-color);
 		padding-left: 12px;
 		color: var(--fg-opacity-90);
 	}
 
-	.STYLESHIFT-Dev-Card-Content {
+	.styleshift-dev-card-content {
 		padding: 16px;
 		transition: all 0.3s ease;
 		display: flex;
@@ -95,7 +95,7 @@
 		background: rgba(0, 0, 0, 0.15);
 	}
 
-	.STYLESHIFT-Dev-Card-Chevron {
+	.styleshift-dev-card-chevron {
 		font-size: 10px;
 		opacity: 0.5;
 		transition: transform 0.3s;

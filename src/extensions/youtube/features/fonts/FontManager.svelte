@@ -227,7 +227,7 @@
 		width: 100%;
 		box-sizing: border-box;
 
-		:global(.STYLESHIFT-Input-Wrapper) {
+		:global(.styleshift-input-wrapper) {
 			max-width: none !important;
 		}
 	}
@@ -240,7 +240,7 @@
 
 	.add-button-container {
 		margin-top: 5px;
-		:global(.STYLESHIFT-Button) {
+		:global(.styleshift-button) {
 			padding: 12px !important;
 		}
 	}
@@ -327,7 +327,7 @@
 		font-style: italic;
 	}
 
-	:global(.STYLESHIFT-Text-Editor) {
+	:global(.styleshift-text-editor) {
 		min-height: 100px !important;
 	}
 </style>

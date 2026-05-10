@@ -14,10 +14,10 @@ export async function applyThemeToElement(element: HTMLElement) {
 }
 
 /**
- * Synchronizes theme and transparency attributes across all active .STYLESHIFT-Main elements.
+ * Synchronizes theme and transparency attributes across all active .styleshift-main elements.
  */
 export async function syncAllThemes() {
-	const elements = document.querySelectorAll<HTMLElement>(".STYLESHIFT-Main");
+	const elements = document.querySelectorAll<HTMLElement>(".styleshift-main");
 
 	const isLightTheme = await getFromStorage("EnableAppLightTheme");
 	const isTransparent = await getFromStorage("EnableSettingsBackgroundBlur");

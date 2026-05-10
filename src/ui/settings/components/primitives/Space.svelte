@@ -2,10 +2,10 @@
 	let { size = 20 } = $props();
 </script>
 
-<div class="STYLESHIFT-Space" style:min-height="{size}px"></div>
+<div class="styleshift-space" style:min-height="{size}px"></div>
 
 <style lang="scss">
-	.STYLESHIFT-Space {
+	.styleshift-space {
 		width: 100%;
 	}
 </style>

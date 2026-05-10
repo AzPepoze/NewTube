@@ -68,10 +68,10 @@ export async function createStyleShiftWindow({
 		mountPoint,
 	);
 
-	const windowContainer = mountPoint.querySelector(".STYLESHIFT-Window-Container") as HTMLElement;
+	const windowContainer = mountPoint.querySelector(".styleshift-window-container") as HTMLElement;
 	await applyThemeToElement(windowContainer);
-	const contentElement = windowContainer.querySelector(".STYLESHIFT-Window-Content") as HTMLElement;
-	const topbar = windowContainer.querySelector(".STYLESHIFT-Window-Topbar") as HTMLElement | null;
+	const contentElement = windowContainer.querySelector(".styleshift-window-content") as HTMLElement;
+	const topbar = windowContainer.querySelector(".styleshift-window-topbar") as HTMLElement | null;
 	const closeButton = windowContainer.querySelector(".control-btn.close") as HTMLElement | null;
 
 	requestAnimationFrame(async () => {
@@ -103,7 +103,7 @@ export let globalNotificationContainer: HTMLElement;
 (async () => {
 	await getDocumentHead();
 	const notificationOverlay = settingsUi.fillScreen(false);
-	notificationOverlay.classList.add("STYLESHIFT-Main");
+	notificationOverlay.classList.add("styleshift-main");
 	notificationOverlay.style.zIndex = "20000";
 	await applyThemeToElement(notificationOverlay);
 
@@ -112,7 +112,7 @@ export let globalNotificationContainer: HTMLElement;
 	}, 1);
 
 	globalNotificationContainer = document.createElement("div");
-	globalNotificationContainer.className = "STYLESHIFT-Notification-Container";
+	globalNotificationContainer.className = "styleshift-notification-container";
 	notificationOverlay.append(globalNotificationContainer);
 
 	const taskbarMountPoint = document.createElement("div");

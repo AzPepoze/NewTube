@@ -101,7 +101,7 @@ async function showFlyout() {
 	);
 
 	const windowContainer = flyoutMountPoint.querySelector(
-		".STYLESHIFT-Window-Container",
+		".styleshift-window-container",
 	) as HTMLElement;
 	if (windowContainer) {
 		triggerWindowShowAnimation(windowContainer);
@@ -122,7 +122,7 @@ async function hideFlyout() {
 
 	if (oldFlyoutInstance && oldFlyoutMountPoint) {
 		const windowContainer = oldFlyoutMountPoint.querySelector(
-			".STYLESHIFT-Window-Container",
+			".styleshift-window-container",
 		) as HTMLElement;
 		if (windowContainer) {
 			await triggerWindowHideAnimation(windowContainer);

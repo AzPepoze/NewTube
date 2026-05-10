@@ -14,32 +14,32 @@
 	} = $props();
 </script>
 
-<div class="STYLESHIFT-Window-Controls">
+<div class="styleshift-window-controls">
 	<button
 		class="control-btn minimize"
 		onclick={(e) => onMinimize(e)}
 		title="Minimize"
 	>
-		<Icon name="minimize" size={14} />
+		<Icon name="remove" size={18} />
 	</button>
 	<button
 		class="control-btn maximize"
 		onclick={(e) => onMaximize(e)}
 		title={isMaximized ? "Restore" : "Maximize"}
 	>
-		<Icon name={isMaximized ? "restore" : "maximize"} size={14} />
+		<Icon name={isMaximized ? "filter_none" : "crop_square"} size={14} />
 	</button>
 	<button
 		class="control-btn close"
 		onclick={(e) => onClose(e)}
 		title="Close"
 	>
-		<Icon name="close" size={16} />
+		<Icon name="close" size={18} />
 	</button>
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Window-Controls {
+	.styleshift-window-controls {
 		display: flex;
 		gap: 5px;
 		flex-shrink: 0;

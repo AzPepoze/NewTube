@@ -22,16 +22,16 @@
 </script>
 
 <div
-	class="STYLESHIFT-Window-Topbar"
+	class="styleshift-window-topbar"
 	onmousedown={onDragStart}
 	ondblclick={onMaximize}
 	role="presentation"
 >
-	<div class="STYLESHIFT-Window-Title">
+	<div class="styleshift-window-title">
 		<img src={getAssetUrl("icon/32.png")} alt="" class="title-icon" />
 		<span>{title}</span>
 	</div>
-	<div class="STYLESHIFT-Window-Topbar-Right">
+	<div class="styleshift-window-topbar-right">
 		{#if topbarChildren}
 			<div class="topbar-extra">
 				{@render topbarChildren()}
@@ -42,7 +42,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Window-Topbar {
+	.styleshift-window-topbar {
 		height: 40px;
 		background: var(--bg-overlay-20);
 		display: flex;
@@ -61,7 +61,7 @@
 			opacity 0.3s;
 	}
 
-	.STYLESHIFT-Window-Topbar-Right {
+	.styleshift-window-topbar-right {
 		display: flex;
 		align-items: center;
 		gap: 15px;
@@ -73,7 +73,7 @@
 		gap: 10px;
 	}
 
-	.STYLESHIFT-Window-Title {
+	.styleshift-window-title {
 		display: flex;
 		align-items: center;
 		gap: 10px;
@@ -96,14 +96,14 @@
 		}
 	}
 
-	:global(.mini) .STYLESHIFT-Window-Topbar {
+	:global(.mini) .styleshift-window-topbar {
 		height: 32px;
 		padding: 0 8px;
 		border-top-left-radius: 8px;
 		border-top-right-radius: 8px;
 	}
 
-	:global(.mini) .STYLESHIFT-Window-Title {
+	:global(.mini) .styleshift-window-title {
 		font-size: 11px;
 		gap: 6px;
 		.title-icon {
@@ -112,15 +112,15 @@
 		}
 	}
 
-	:global(.auto-hide-topbar) .STYLESHIFT-Window-Topbar {
+	:global(.auto-hide-topbar) .styleshift-window-topbar {
 		position: absolute;
 		top: 0;
 		left: 0;
 		right: 0;
 		background: linear-gradient(
 			to bottom,
-			rgba(0, 0, 0, 0.8),
-			rgba(0, 0, 0, 0.4),
+			var(--bg-overlay-60),
+			var(--bg-overlay-30),
 			transparent
 		);
 		border-bottom: none;

@@ -47,15 +47,15 @@
 	});
 </script>
 
-<div class="STYLESHIFT-Search-Wrapper" class:is-focused={isFocused}>
-	<div class="STYLESHIFT-Search-Prefix">
-		<Icon name="search" size={18} className="STYLESHIFT-Search-Icon" />
+<div class="styleshift-search-wrapper" class:is-focused={isFocused}>
+	<div class="styleshift-search-prefix">
+		<Icon name="search" size={18} className="styleshift-search-icon" />
 	</div>
 
 	<input
 		bind:this={inputEl}
 		type="text"
-		class="STYLESHIFT-Search-Input"
+		class="styleshift-search-input"
 		{placeholder}
 		bind:value
 		oninput={handleInput}
@@ -66,7 +66,7 @@
 
 	{#if value}
 		<button
-			class="STYLESHIFT-Search-Clear-Button"
+			class="styleshift-search-clear-button"
 			onclick={clearSearch}
 			title="Clear search"
 		>
@@ -76,7 +76,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Search-Wrapper {
+	.styleshift-search-wrapper {
 		position: relative;
 		width: 100%;
 		display: flex;
@@ -101,7 +101,7 @@
 		}
 	}
 
-	.STYLESHIFT-Search-Prefix {
+	.styleshift-search-prefix {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -110,7 +110,7 @@
 		transition: color 0.2s ease;
 	}
 
-	.STYLESHIFT-Search-Input {
+	.styleshift-search-input {
 		background: transparent;
 		border: none;
 		outline: none;
@@ -126,7 +126,7 @@
 		}
 	}
 
-	.STYLESHIFT-Search-Clear-Button {
+	.styleshift-search-clear-button {
 		background: transparent;
 		border: none;
 		cursor: pointer;

@@ -48,13 +48,13 @@
 {/if}
 <input
 	type="checkbox"
-	class="STYLESHIFT-Checkbox"
+	class="styleshift-checkbox"
 	bind:checked={value}
 	onchange={handleChange}
 />
 
 <style lang="scss">
-	.STYLESHIFT-Checkbox {
+	.styleshift-checkbox {
 		font-size: 20px;
 		appearance: none;
 		width: 3.6em;
@@ -65,11 +65,11 @@
 		cursor: pointer;
 		outline: none;
 		transition: all 0.2s;
-		box-shadow: 0px 0px 3px 0px white;
+		box-shadow: 0px 0px 3px var(--shadow-color);
 		margin: 0px;
 
 		&:hover {
-			filter: brightness(1.5);
+			filter: brightness(1.2);
 			scale: 1.05;
 		}
 
@@ -79,7 +79,7 @@
 			&:after {
 				left: calc(100% - 1.5em - 0.15em) !important;
 				transform: rotate(180deg) !important;
-				filter: drop-shadow(0px 0px 5px black);
+				filter: drop-shadow(0px 0px 2px var(--shadow-color));
 			}
 		}
 
@@ -92,7 +92,7 @@
 			height: 1.5em;
 			border-radius: 50%;
 			background: white !important;
-			box-shadow: 0 0 0.25em var(--bg-overlay-30);
+			box-shadow: 0 0 0.25em var(--shadow-color);
 			left: 0.15em;
 			top: 50%;
 			translate: 0 -50%;

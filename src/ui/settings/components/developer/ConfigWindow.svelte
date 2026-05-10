@@ -18,17 +18,17 @@
 	});
 </script>
 
-<div class="STYLESHIFT-Config-Window-Wrapper">
-	<div class="STYLESHIFT-Config-Window-Content STYLESHIFT-Scrollable">
+<div class="styleshift-config-window-wrapper">
+	<div class="styleshift-config-window-content styleshift-scrollable">
 		<div
 			bind:this={container}
-			class="STYLESHIFT-Config-Container-Inner"
+			class="styleshift-config-container-inner"
 		></div>
 	</div>
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Config-Window-Wrapper {
+	.styleshift-config-window-wrapper {
 		display: flex;
 		flex-direction: column;
 		height: 100%;
@@ -36,7 +36,7 @@
 		overflow: hidden;
 	}
 
-	.STYLESHIFT-Config-Window-Content {
+	.styleshift-config-window-content {
 		flex: 1;
 		width: 100%;
 		box-sizing: border-box;
@@ -57,7 +57,7 @@
 		}
 	}
 
-	.STYLESHIFT-Config-Container-Inner {
+	.styleshift-config-container-inner {
 		height: 100%;
 	}
 </style>

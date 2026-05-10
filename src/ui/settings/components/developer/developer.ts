@@ -14,7 +14,7 @@ export async function settingDeveloperTextEditor(
 	thisProperty,
 	updateUi = function (_value) { },
 ) {
-	const mainUi = settingsUi.settingFrame(true, true, { x: false, y: false }, false, "STYLESHIFT-Config-Sub-Frame");
+	const mainUi = settingsUi.settingFrame(true, true, { x: false, y: false }, false, "styleshift-config-sub-frame");
 
 	const textEditors = {};
 
@@ -77,7 +77,7 @@ export async function configSubSection(parent, thisSetting, props) {
 
 export async function selectorTextEditor(parent, thisCategory) {
 	const selectorTextEditor = await settingsUi.textEditor(thisCategory, "Selector");
-	selectorTextEditor.textEditor.className += " STYLESHIFT-Selector-Text-Editor";
+	selectorTextEditor.textEditor.className += " styleshift-selector-text-editor";
 	selectorTextEditor.rearrangeValue(function (value: string) {
 		return rearrangeSelector(value);
 	});

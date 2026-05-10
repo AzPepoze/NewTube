@@ -4,6 +4,7 @@
 	import { onDestroy, onMount } from "svelte";
 	import { fly } from "svelte/transition";
 	import { generateSelectors } from "./selectorUtils";
+	import { applyThemeToElement } from "@ui/themes/theme";
 
 	let { onSelect, onClose } = $props<{
 		onSelect: (selector: string) => void;
@@ -21,6 +22,7 @@
 
 	function teleport(node: HTMLElement) {
 		document.body.appendChild(node);
+		applyThemeToElement(node);
 		return {
 			destroy() {
 				node.remove();
@@ -37,10 +39,10 @@
 		for (const el of elements) {
 			const htmlEl = el as HTMLElement;
 			const isInternal =
-				htmlEl.closest(".STYLESHIFT-Main") ||
-				htmlEl.closest(".STYLESHIFT-Window-Container") ||
+				htmlEl.closest(".styleshift-main") ||
+				htmlEl.closest(".styleshift-window-container") ||
 				htmlEl.classList.contains("selection-overlay") ||
-				htmlEl.classList.contains("STYLESHIFT-Highlight");
+				htmlEl.classList.contains("styleshift-highlight");
 
 			if (!isInternal) {
 				target = htmlEl;
@@ -129,7 +131,7 @@
 	function exit() {
 		picking = false;
 		window.dispatchEvent(
-			new CustomEvent("STYLESHIFT-Picker-State", {
+			new CustomEvent("styleshift-picker-state", {
 				detail: { picking: false },
 			}),
 		);
@@ -161,7 +163,7 @@
 	onMount(() => {
 		logger.debug("Picker", "SelectorPicker mounted");
 		window.dispatchEvent(
-			new CustomEvent("STYLESHIFT-Picker-State", {
+			new CustomEvent("styleshift-picker-state", {
 				detail: { picking: true },
 			}),
 		);
@@ -176,7 +178,7 @@
 		window.removeEventListener("mousedown", handleClick, true);
 		window.removeEventListener("keydown", handleKeyDown);
 		window.dispatchEvent(
-			new CustomEvent("STYLESHIFT-Picker-State", {
+			new CustomEvent("styleshift-picker-state", {
 				detail: { picking: false },
 			}),
 		);
@@ -236,13 +238,13 @@
 
 <style lang="scss">
 	.suggestions-list {
-		background: #252525;
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: var(--bg-main);
+		border: 1px solid var(--border-subtle);
 		border-radius: 8px;
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+		box-shadow: 0 10px 30px var(--shadow-color);
 		z-index: 2147483647;
 
 		&.context-menu {
@@ -269,9 +271,9 @@
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 		font-weight: bold;
-		color: rgba(255, 255, 255, 0.5);
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		background: rgba(255, 255, 255, 0.03);
+		color: var(--text-muted);
+		border-bottom: 1px solid var(--border-subtle);
+		background: var(--bg-surface);
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -280,7 +282,7 @@
 	.close-suggestions {
 		background: transparent;
 		border: none;
-		color: white;
+		color: var(--text-primary);
 		cursor: pointer;
 		padding: 2px 5px;
 		opacity: 0.5;
@@ -299,7 +301,7 @@
 
 	.suggestion-item {
 		background: transparent;
-		color: #bbb;
+		color: var(--text-secondary);
 		border: none;
 		padding: 8px 12px;
 		text-align: left;
@@ -313,15 +315,16 @@
 		white-space: nowrap;
 
 		&:hover {
-			background: #7f5db7;
-			color: white;
+			background: var(--theme-0, #7f5db7);
+			color: white; // Theme color is dark enough for white text
+			transform: translateX(5px);
 		}
 	}
 
 	.selection-overlay {
 		position: fixed;
 		pointer-events: none;
-		border: 2px solid #7f5db7;
+		border: 2px solid var(--theme-0, #7f5db7);
 		background: rgba(127, 93, 183, 0.1);
 		z-index: 2147483646;
 		box-sizing: border-box;
@@ -329,7 +332,7 @@
 		transition: all 0.05s ease-out;
 		box-shadow:
 			0 0 15px rgba(127, 93, 183, 0.3),
-			0 0 0 9999px rgba(0, 0, 0, 0.4);
+			0 0 0 9999px var(--shadow-strong);
 
 		&.preview {
 			border-style: dashed;
@@ -343,14 +346,14 @@
 		position: absolute;
 		bottom: calc(100% + 10px);
 		left: 0;
-		background: #7f5db7;
+		background: var(--theme-0, #7f5db7);
 		color: white;
 		padding: 6px 12px;
 		font-size: 12px;
 		border-radius: 6px;
 		white-space: nowrap;
 		font-family: "Fira Code", monospace;
-		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+		box-shadow: 0 4px 15px var(--shadow-color);
 		font-weight: 600;
 		animation: tooltipFadeIn 0.1s ease-out;
 
@@ -360,7 +363,7 @@
 			top: 100%;
 			left: 10px;
 			border: 6px solid transparent;
-			border-top-color: #7f5db7;
+			border-top-color: var(--theme-0, #7f5db7);
 		}
 	}
 
@@ -369,16 +372,16 @@
 		bottom: 30px;
 		left: 50%;
 		transform: translateX(-50%);
-		color: rgba(255, 255, 255, 0.6);
+		color: var(--text-muted);
 		font-size: 13px;
 		font-weight: 500;
 		z-index: 2147483647;
 		pointer-events: auto;
 		user-select: none;
-		text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+		text-shadow: 0 1px 4px var(--shadow-color);
 
 		b {
-			color: white;
+			color: var(--text-primary);
 			font-weight: 800;
 			margin: 0 2px;
 		}

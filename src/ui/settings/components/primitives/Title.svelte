@@ -38,11 +38,11 @@
 
 {#if subtitle}
 	<div
-		class="STYLESHIFT-Sub-Title {className}"
-		class:STYLESHIFT-Left-Separator={leftSeparator}
+		class="styleshift-sub-title {className}"
+		class:styleshift-left-separator={leftSeparator}
 	>
 		{#if editable}
-			<div class="STYLESHIFT-Group-Drag drag-handle">
+			<div class="styleshift-group-drag drag-handle">
 				<Icon name="drag" size={14} />
 			</div>
 		{/if}
@@ -50,19 +50,19 @@
 	</div>
 {:else}
 	<div
-		class="STYLESHIFT-Category-Title {rainbow
-			? 'STYLESHIFT-Category-title-Rainbow'
+		class="styleshift-category-title {rainbow
+			? 'styleshift-category-title-rainbow'
 			: ''} {className}"
 	>
 		{#if icon}
-			<span class="STYLESHIFT-Category-Title-Icon">
+			<span class="styleshift-category-title-icon">
 				<Icon name={icon} size={24} color="black" />
 			</span>
 		{/if}
 		{text}
 
 		{#if isDeveloperMode && editable}
-			<button class="STYLESHIFT-Category-Edit-Btn" onclick={handleEditCategory} title="Edit Category">
+			<button class="styleshift-category-edit-btn" onclick={handleEditCategory} title="Edit Category">
 				<Icon name="edit" size={16} color="black" />
 			</button>
 		{/if}
@@ -70,7 +70,7 @@
 {/if}
 
 <style lang="scss">
-	.STYLESHIFT-Category-Title {
+	.styleshift-category-title {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -91,13 +91,13 @@
 		box-shadow: 0 4px 15px var(--bg-overlay-10);
 
 		&:hover {
-			.STYLESHIFT-Category-Edit-Btn {
+			.styleshift-category-edit-btn {
 				opacity: 1;
 			}
 		}
 	}
 
-	.STYLESHIFT-Category-Edit-Btn {
+	.styleshift-category-edit-btn {
 		position: absolute;
 		right: 15px;
 		background: rgba(255, 255, 255, 0.3);
@@ -118,13 +118,13 @@
 		}
 	}
 
-	.STYLESHIFT-Category-Title-Icon {
+	.styleshift-category-title-icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 	}
 
-	.STYLESHIFT-Sub-Title {
+	.styleshift-sub-title {
 		display: flex;
 		align-items: center;
 		gap: 10px;
@@ -137,7 +137,7 @@
 		opacity: 0.9;
 		position: relative;
 
-		&.STYLESHIFT-Left-Separator {
+		&.styleshift-left-separator {
 			padding-left: 12px;
 			&::before {
 				content: "";
@@ -153,7 +153,7 @@
 		}
 	}
 
-	.STYLESHIFT-Group-Drag {
+	.styleshift-group-drag {
 		cursor: grab;
 		opacity: 0;
 		transition: opacity 0.2s;
@@ -163,12 +163,12 @@
 			color: var(--fg-opacity-100);
 		}
 
-		:global(.STYLESHIFT-Sub-Title:hover) & {
+		:global(.styleshift-sub-title:hover) & {
 			opacity: 1;
 		}
 	}
 
-	.STYLESHIFT-Category-title-Rainbow {
+	.styleshift-category-title-rainbow {
 		&::before {
 			z-index: -1;
 			width: 100%;
@@ -193,11 +193,11 @@
 					rgb(255, 0, 0)
 				)
 				0% 0% / 400%;
-			animation: 20s STYLESHIFT-slide-rainbow linear infinite;
+			animation: 20s styleshift-slide-rainbow linear infinite;
 		}
 	}
 
-	@keyframes STYLESHIFT-slide-rainbow {
+	@keyframes styleshift-slide-rainbow {
 		0% {
 			background-position: 0% 50%;
 		}

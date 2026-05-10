@@ -19,11 +19,11 @@
 	type="number"
 	{value}
 	oninput={handleInput}
-	class="STYLESHIFT-Number-Input"
+	class="styleshift-number-input"
 />
 
 <style lang="scss">
-	.STYLESHIFT-Number-Input {
+	.styleshift-number-input {
 		width: 60px;
 		height: 24px;
 		background: var(--fg-opacity-10);

@@ -132,11 +132,11 @@
 		const handlePickerState = (e: any) => {
 			isPicking = e.detail.picking;
 		};
-		window.addEventListener("STYLESHIFT-Picker-State", handlePickerState);
+		window.addEventListener("styleshift-picker-state", handlePickerState);
 
 		return () => {
 			window.removeEventListener(
-				"STYLESHIFT-Picker-State",
+				"styleshift-picker-state",
 				handlePickerState,
 			);
 		};
@@ -203,7 +203,7 @@
 </script>
 
 <div
-	class="STYLESHIFT-Window-Container STYLESHIFT-Window STYLESHIFT-Main"
+	class="styleshift-window-container styleshift-window styleshift-main"
 	class:maximized={logic.isMaximized || fullscreen}
 	class:fullscreen
 	class:dragging={logic.isDragging}
@@ -244,7 +244,7 @@
 		/>
 	{/if}
 
-	<div class="STYLESHIFT-Window-Clipper">
+	<div class="styleshift-window-clipper">
 		{#if !fullscreen}
 			<WindowTitlebar
 				{title}
@@ -258,7 +258,7 @@
 		{/if}
 
 		<div
-			class="STYLESHIFT-Window-Content"
+			class="styleshift-window-content"
 			class:no-padding={noPadding}
 			bind:this={contentEl}
 		>
@@ -270,7 +270,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Window-Container {
+	.styleshift-window-container {
 		position: fixed;
 		background: var(--window-bg, #1e1e1e);
 		backdrop-filter: var(--window-blur) var(--window-saturate);
@@ -285,7 +285,7 @@
 		border-radius: 12px;
 		display: flex;
 		flex-direction: column;
-		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+		box-shadow: 0 20px 50px var(--shadow-color);
 		z-index: 10000;
 		overflow: visible;
 		top: 0;
@@ -332,7 +332,7 @@
 		}
 
 		&.hide-topbar {
-			:global(.STYLESHIFT-Window-Topbar) {
+			:global(.styleshift-window-topbar) {
 				transform: translateY(-100%);
 				opacity: 0;
 				pointer-events: none;
@@ -340,7 +340,7 @@
 		}
 
 		&.auto-hide-topbar {
-			.STYLESHIFT-Window-Content {
+			.styleshift-window-content {
 				height: 100%;
 				padding-top: 0;
 			}
@@ -348,10 +348,10 @@
 
 		&.mini {
 			border-radius: 8px;
-			.STYLESHIFT-Window-Clipper {
-				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+			.styleshift-window-clipper {
+				box-shadow: 0 10px 30px var(--shadow-color);
 
-				.STYLESHIFT-Window-Content {
+				.styleshift-window-content {
 					padding: 0;
 					border-bottom-left-radius: 8px;
 					border-bottom-right-radius: 8px;
@@ -360,7 +360,7 @@
 		}
 	}
 
-	.STYLESHIFT-Window-Clipper {
+	.styleshift-window-clipper {
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
@@ -368,10 +368,10 @@
 		display: flex;
 		flex-direction: column;
 		position: relative;
-		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+		box-shadow: 0 20px 50px var(--shadow-color);
 	}
 
-	.STYLESHIFT-Window-Content {
+	.styleshift-window-content {
 		flex: 1;
 		display: flex;
 		flex-direction: column;

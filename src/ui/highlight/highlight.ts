@@ -39,7 +39,7 @@ function addHighlight(targetElement: HTMLElement, selectorValue: Category) {
 	const color = `rgba(${selectorValue.Highlight_color}`;
 
 	const highlighter = document.createElement("div");
-	highlighter.className = "STYLESHIFT-Highlight";
+	highlighter.className = "styleshift-highlight";
 	highlighter.setAttribute("Selector", selectorValue.Selector);
 
 	highlighter.style.background = `${color},0.3)`;

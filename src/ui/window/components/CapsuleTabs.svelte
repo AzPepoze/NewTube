@@ -22,7 +22,7 @@
 </script>
 
 <div
-	class="STYLESHIFT-Capsule-Toggle {className}"
+	class="styleshift-capsule-toggle {className}"
 	style:--options-count={options.length}
 	{style}
 >
@@ -47,7 +47,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Capsule-Toggle {
+	.styleshift-capsule-toggle {
 		display: grid;
 		grid-template-columns: repeat(var(--options-count), 1fr);
 		background: var(--bg-surface);

@@ -57,12 +57,12 @@
 	}
 </script>
 
-<div class="STYLESHIFT-Text-Input-Container">
+<div class="styleshift-text-input-container">
 	<Description {name} {description} />
-	<div class="STYLESHIFT-Input-Wrapper">
+	<div class="styleshift-input-wrapper">
 		<input
 			type="text"
-			class="STYLESHIFT-Input"
+			class="styleshift-input"
 			{placeholder}
 			bind:value
 			oninput={handleInput}
@@ -72,7 +72,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Text-Input-Container {
+	.styleshift-text-input-container {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
@@ -80,12 +80,12 @@
 		width: 100%;
 	}
 
-	.STYLESHIFT-Input-Wrapper {
+	.styleshift-input-wrapper {
 		flex: 1;
 		min-width: 200px;
 	}
 
-	.STYLESHIFT-Input {
+	.styleshift-input {
 		width: -webkit-fill-available;
 		background: var(--text-editor-bg, var(--bg-overlay-30));
 		color: white;

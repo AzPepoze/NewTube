@@ -26,12 +26,12 @@
 
 {#each items as item, i (i)}
 	{#if isHeaderItem(item)}
-		<div class="STYLESHIFT-Category-Separator"></div>
+		<div class="styleshift-category-separator"></div>
 	{:else}
 		{@const category = item}
 		{@const parts = getCategoryParts(category.category)}
 		<div
-			class="STYLESHIFT-Category-Frame STYLESHIFT-Settings-Group"
+			class="styleshift-category-frame styleshift-settings-group"
 			data-category={parts.text}
 		>
 			<Title
@@ -49,13 +49,13 @@
 {/each}
 
 <style lang="scss">
-	.STYLESHIFT-Category-Separator {
+	.styleshift-category-separator {
 		height: 1px;
 		background: var(--fg-opacity-10);
 		margin: 20px 0 10px;
 	}
 
-	.STYLESHIFT-Settings-Group {
+	.styleshift-settings-group {
 		display: flex;
 		flex-direction: column;
 		gap: 10px;

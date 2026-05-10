@@ -25,7 +25,7 @@
 	}
 </script>
 
-<button class="STYLESHIFT-File-Button" onclick={triggerClick}>
+<button class="styleshift-file-button" onclick={triggerClick}>
 	{#if children}
 		{@render children()}
 	{:else}
@@ -41,7 +41,7 @@
 />
 
 <style lang="scss">
-	.STYLESHIFT-File-Button {
+	.styleshift-file-button {
 		background: var(--fg-opacity-10);
 		border: 1px solid var(--fg-opacity-20);
 		border-radius: 8px;

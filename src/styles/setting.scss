@@ -20,7 +20,7 @@
 	font-feature-settings: "liga";
 }
 
-.STYLESHIFT-Main {
+.styleshift-main {
 	@property --angle {
 		syntax: "<angle>";
 		initial-value: 0deg;
@@ -49,7 +49,7 @@
 		}
 	}
 
-	.STYLESHIFT-Scrollable {
+	.styleshift-scrollable {
 		overflow-y: auto;
 		overflow-x: hidden;
 		height: 100%;
@@ -74,11 +74,11 @@
 		}
 	}
 
-	.STYLESHIFT-All-Transition {
+	.styleshift-all-transition {
 		transition: all 0.3s;
 	}
 
-	.STYLESHIFT-Config-Sub-Frame {
+	.styleshift-config-sub-frame {
 		border: 1px solid var(--border-color);
 		background: var(--bg-surface);
 		border-radius: 12px;
@@ -100,7 +100,7 @@
 			background: var(--bg-surface-hover);
 		}
 
-		.STYLESHIFT-Main-Description {
+		.styleshift-main-description {
 			text-align: left !important;
 			margin-bottom: 8px;
 
@@ -115,7 +115,7 @@
 		}
 
 		textarea,
-		.STYLESHIFT-Code-Editor-Container {
+		.styleshift-code-editor-container {
 			border-color: var(--border-color);
 			background: var(--bg-input);
 			border-radius: 8px;
@@ -123,15 +123,15 @@
 		}
 	}
 
-	.STYLESHIFT-Collapse {
+	.styleshift-collapse {
 		width: -webkit-fill-available;
 	}
 
-	> .STYLESHIFT-Setting-Frame {
+	> .styleshift-setting-frame {
 		background: var(--setting-frame-bg);
 	}
 
-	.STYLESHIFT-Number-Input {
+	.styleshift-number-input {
 		width: 50px;
 		height: 15px;
 		background: var(--bg-input);
@@ -140,7 +140,7 @@
 		padding-inline: 10px;
 		padding-block: 5px;
 		text-align: center;
-		-moz-appearance: textfield;
+		appearance: textfield;
 
 		&::-webkit-inner-spin-button,
 		&::-webkit-outer-spin-button {
@@ -153,21 +153,21 @@
 				-webkit-appearance: meter;
 			}
 
-			-moz-appearance: unset;
+			appearance: unset;
 		}
 	}
 
-	.STYLESHIFT-Dropdown {
+	.styleshift-dropdown {
 		width: 100px;
 		justify-content: center;
 	}
 
-	.STYLESHIFT-Dropdown-Frame {
+	.styleshift-dropdown-frame {
 		align-items: center;
 		gap: 10px;
 	}
 
-	.STYLESHIFT-Setting-Frame[settingtype="color"] {
+	.styleshift-setting-frame[settingtype="color"] {
 		width: 95%;
 	}
 }

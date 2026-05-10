@@ -83,30 +83,30 @@
 	});
 </script>
 
-<div class="STYLESHIFT-Preview-Image-Container" bind:this={container}>
+<div class="styleshift-preview-image-container" bind:this={container}>
 	{#if src}
 		{#if !isVisible || isLoading}
-			<div class="STYLESHIFT-Loading">Loading preview...</div>
+			<div class="styleshift-loading">Loading preview...</div>
 		{/if}
 
 		{#if hasError}
-			<div class="STYLESHIFT-No-Image">Failed to load preview</div>
+			<div class="styleshift-no-image">Failed to load preview</div>
 		{/if}
 
 		<canvas
 			bind:this={canvas}
-			class="STYLESHIFT-Preview-Canvas"
+			class="styleshift-preview-canvas"
 			style:display={isVisible && !isLoading && !hasError
 				? "block"
 				: "none"}
 		></canvas>
 	{:else}
-		<div class="STYLESHIFT-No-Image">No image selected</div>
+		<div class="styleshift-no-image">No image selected</div>
 	{/if}
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Preview-Image-Container {
+	.styleshift-preview-image-container {
 		width: fit-content;
 		min-width: 200px;
 		max-width: 100%;
@@ -129,15 +129,15 @@
 		}
 	}
 
-	.STYLESHIFT-Preview-Canvas {
+	.styleshift-preview-canvas {
 		max-width: 100%;
 		max-height: 600px;
 		object-fit: contain;
 		display: block;
 	}
 
-	.STYLESHIFT-No-Image,
-	.STYLESHIFT-Loading {
+	.styleshift-no-image,
+	.styleshift-loading {
 		font-size: 13px;
 		opacity: 0.5;
 		padding: 20px;

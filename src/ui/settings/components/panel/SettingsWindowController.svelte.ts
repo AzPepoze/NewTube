@@ -156,7 +156,7 @@ export class SettingsWindowController {
 	handleScroll = () => {
 		if (!this.scrollContainer) return;
 		const containerRect = this.scrollContainer.getBoundingClientRect();
-		const activeFrame = Array.from(this.scrollContainer.querySelectorAll(".STYLESHIFT-Category-Frame")).find((frame) => {
+		const activeFrame = Array.from(this.scrollContainer.querySelectorAll(".styleshift-category-frame")).find((frame) => {
 			const rect = frame.getBoundingClientRect();
 			return rect.top <= containerRect.top + 100 && rect.bottom > containerRect.top + 100;
 		}) as HTMLElement;
@@ -196,7 +196,7 @@ export class SettingsWindowController {
 
 	scrollToCategory = (parts: { text: string }) => {
 		const target = this.scrollContainer?.querySelector(
-			`.STYLESHIFT-Category-Frame[data-category="${parts.text}"]`,
+			`.styleshift-category-frame[data-category="${parts.text}"]`,
 		);
 		if (target) {
 			target.scrollIntoView({ behavior: "smooth" });

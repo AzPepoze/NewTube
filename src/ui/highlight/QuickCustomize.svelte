@@ -55,7 +55,7 @@
 	});
 </script>
 
-<div class="STYLESHIFT-Quick-Customize-Container">
+<div class="styleshift-quick-customize-container">
 	<div class="setting-name-header">
 		<TextInput 
 			setting={{
@@ -125,7 +125,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Quick-Customize-Container {
+	.styleshift-quick-customize-container {
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -211,7 +211,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 12px;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-overlay-20);
 		border-radius: 12px;
 		color: var(--fg-opacity-60);
 		
@@ -244,7 +244,7 @@
 			background: var(--theme-0);
 			color: white;
 			border: none;
-			box-shadow: 0 4px 12px rgba(127, 93, 183, 0.3);
+			box-shadow: 0 4px 12px var(--shadow-color);
 			&:hover { filter: brightness(1.1); transform: translateY(-1px); }
 		}
 
@@ -252,7 +252,7 @@
 			background: transparent;
 			color: var(--fg-opacity-60);
 			border: 1px solid var(--fg-opacity-20);
-			&:hover { color: white; background: var(--fg-opacity-05); }
+			&:hover { color: var(--text-primary); background: var(--fg-opacity-05); }
 		}
 	}
 </style>

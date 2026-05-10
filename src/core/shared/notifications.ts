@@ -26,12 +26,12 @@ export async function createNotification({ icon = null, iconColor = "", title = 
 	logger.info("extension", title, content);
 
 	const notificationFrame = await settingsUi.settingFrame(true, false, { x: false, y: true });
-	notificationFrame.classList.add("STYLESHIFT-Notification");
+	notificationFrame.classList.add("styleshift-notification");
 	setTimeout(() => globalNotificationContainer.append(notificationFrame), 1);
 
 	let iconUi: any = null;
 	const iconTarget = document.createElement("div");
-	iconTarget.classList.add("STYLESHIFT-Notification-Icon");
+	iconTarget.classList.add("styleshift-notification-icon");
 	iconTarget.style.display = "none";
 	notificationFrame.append(iconTarget);
 
@@ -48,16 +48,16 @@ export async function createNotification({ icon = null, iconColor = "", title = 
 	if (icon) updateIcon(icon);
 
 	const contentFrame = await settingsUi.settingFrame(false, true);
-	contentFrame.classList.add("STYLESHIFT-Notification-Content-Frame");
+	contentFrame.classList.add("styleshift-notification-content-frame");
 	notificationFrame.append(contentFrame);
 
 	const titleUi = await settingsUi.settingFrame(true, false, { x: false, y: true });
-	titleUi.classList.add("STYLESHIFT-Notification-Title");
+	titleUi.classList.add("styleshift-notification-title");
 	titleUi.textContent = title;
 	contentFrame.append(titleUi);
 
 	const contentUi = await settingsUi.settingFrame(true, false);
-	contentUi.classList.add("STYLESHIFT-Notification-Content");
+	contentUi.classList.add("styleshift-notification-content");
 	contentUi.style.display = "block";
 	contentFrame.append(contentUi);
 
@@ -74,7 +74,7 @@ export async function createNotification({ icon = null, iconColor = "", title = 
 
 	if (timeout === 0) {
 		const closeUi = await settingsUi.settingFrame(true, false, { x: true, y: true });
-		closeUi.className += " STYLESHIFT-Notification-Close";
+		closeUi.className += " styleshift-notification-close";
 		closeUi.textContent = "X";
 		closeUi.onclick = close;
 		notificationFrame.append(closeUi);

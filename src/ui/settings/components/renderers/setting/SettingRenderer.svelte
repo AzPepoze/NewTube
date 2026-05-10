@@ -75,9 +75,9 @@
 	id={setting.id}
 	type={setting.type}
 	className="{controller.isDeveloperMode ? 'developer-mode' : ''} {isLocked
-		? 'STYLESHIFT-Setting-Hard-Locked'
+		? 'styleshift-setting-hard-locked'
 		: ''} {!controller.requirementsMet
-		? 'STYLESHIFT-Setting-Requirement-Warning'
+		? 'styleshift-setting-requirement-warning'
 		: ''}"
 	style="{controller.isDeveloperMode &&
 	setting.type !== 'subText' &&
@@ -100,12 +100,12 @@
 	vertical={isVerticalSetting}
 >
 	<div
-		class="STYLESHIFT-Setting-Row-Content"
+		class="styleshift-setting-row-content"
 		class:is-vertical={isVerticalSetting}
 	>
 		{#if controller.isDeveloperMode}
 			<button
-				class="STYLESHIFT-Config-Button drag-handle"
+				class="styleshift-config-button drag-handle"
 				use:dragAction
 			>
 				<Icon name="drag" size={16} />
@@ -136,7 +136,7 @@
 				fontSize={setting.fontSize}
 				color={setting.color}
 				{textAlign}
-				className="STYLESHIFT-Setting-Sub-Title"
+				className="styleshift-setting-sub-title"
 			/>
 		{:else if setting.type === "imageInput"}
 			<ImageInput {setting} />
@@ -170,10 +170,10 @@
 		{/if}
 
 		{#if controller.isDeveloperMode || setting.quickCustomize}
-			<div class="STYLESHIFT-Config-Actions-Overlay">
+			<div class="styleshift-config-actions-overlay">
 				{#if setting.quickCustomize}
 					<button
-						class="STYLESHIFT-Config-Button quick-edit"
+						class="styleshift-config-button quick-edit"
 						title="Edit in Quick Customize"
 						onclick={() => controller.handleQuickEdit()}
 					>
@@ -187,13 +187,13 @@
 
 				{#if controller.isDeveloperMode}
 					<button
-						class="STYLESHIFT-Config-Button edit"
+						class="styleshift-config-button edit"
 						onclick={() => controller.handleEdit()}
 					>
 						<Icon name="edit" size={16} />
 					</button>
 					<button
-						class="STYLESHIFT-Config-Button delete"
+						class="styleshift-config-button delete"
 						onclick={() => controller.handleDelete()}
 					>
 						<Icon name="delete" size={16} />
@@ -213,7 +213,7 @@
 </SettingFrame>
 
 <style lang="scss">
-	.STYLESHIFT-Setting-Row-Content {
+	.styleshift-setting-row-content {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -228,18 +228,18 @@
 	}
 
 	:global(
-			.STYLESHIFT-Setting-Frame.STYLESHIFT-Setting-Hard-Locked
-				.STYLESHIFT-Setting-Row-Content
+			.styleshift-setting-frame.styleshift-setting-hard-locked
+				.styleshift-setting-row-content
 		) {
 		pointer-events: none !important;
 		opacity: 0.6 !important;
 	}
 
 	:global(
-			.STYLESHIFT-Setting-Frame.STYLESHIFT-Setting-Requirement-Warning:not(
-					.STYLESHIFT-Setting-Hard-Locked
+			.styleshift-setting-frame.styleshift-setting-requirement-warning:not(
+					.styleshift-setting-hard-locked
 				)
-				.STYLESHIFT-Setting-Row-Content
+				.styleshift-setting-row-content
 		) {
 		pointer-events: all;
 		opacity: 1;

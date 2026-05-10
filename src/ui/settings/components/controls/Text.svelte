@@ -16,7 +16,7 @@
 
 <div
 	{id}
-	class="STYLESHIFT-Text {className}"
+	class="styleshift-text {className}"
 	style:font-size="{fontSize}px"
 	style:text-align={textAlign}
 	style:justify-content={justifyContent}
@@ -30,7 +30,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Text {
+	.styleshift-text {
 		width: 100%;
 		transition: all 0.2s ease;
 		line-height: 1.5;

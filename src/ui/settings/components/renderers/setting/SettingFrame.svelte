@@ -59,7 +59,7 @@
 <svelte:element
 	this={isButton ? "button" : "div"}
 	type={isButton ? "button" : undefined}
-	class="STYLESHIFT-Setting-Frame {className}"
+	class="styleshift-setting-frame {className}"
 	class:vertical
 	class:clickable
 	class:no-padding={!padding}
@@ -77,7 +77,7 @@
 </svelte:element>
 
 <style lang="scss">
-	.STYLESHIFT-Setting-Frame {
+	.styleshift-setting-frame {
 		display: flex;
 		flex-direction: row;
 		align-items: center;

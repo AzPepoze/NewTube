@@ -17,7 +17,7 @@
 </script>
 
 <button
-	class="STYLESHIFT-Icon-Button STYLESHIFT-Glow-Hover {className}"
+	class="styleshift-icon-button styleshift-glow-hover {className}"
 	onclick={onClick}
 	style={style +
 		`min-width: ${size}px; min-height: ${size}px; padding: 10px;`}
@@ -31,7 +31,7 @@
 </button>
 
 <style lang="scss">
-	.STYLESHIFT-Icon-Button {
+	.styleshift-icon-button {
 		display: flex;
 		align-items: center;
 		justify-content: center;

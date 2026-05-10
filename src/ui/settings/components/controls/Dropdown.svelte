@@ -8,6 +8,7 @@
 	import { getFromStorage } from "@core/storage/manager";
 	import { triggerSettingUpdate } from "@settings/engine/functions";
 	import { setAndSave } from "@ui/settings/settingsApi";
+	import { applyThemeToElement } from "@ui/themes/theme";
 
 	let {
 		setting,
@@ -130,7 +131,7 @@
 
 		if (!scrollParent) {
 			scrollParent = triggerEl.closest(
-				".STYLESHIFT-Scrollable",
+				".styleshift-scrollable",
 			) as HTMLElement;
 		}
 
@@ -186,6 +187,7 @@
 		menuEl = node;
 		requestAnimationFrame(() => {
 			updatePosition();
+			applyThemeToElement(node);
 		});
 
 		window.addEventListener("scroll", updatePosition, true);
@@ -209,14 +211,14 @@
 
 {#if !justMenu}
 	<Description {name} {description} />
-	<div class="STYLESHIFT-Dropdown-Wrapper">
+	<div class="styleshift-dropdown-wrapper">
 		<button
 			bind:this={triggerEl}
-			class="STYLESHIFT-Dropdown-Trigger"
+			class="styleshift-dropdown-trigger"
 			class:open={isOpen}
 			onclick={toggleDropdown}
 		>
-			<div class="STYLESHIFT-Dropdown-Display">
+			<div class="styleshift-dropdown-display">
 				{#each optionsList as option (option.value)}
 					<span class="tester-item" aria-hidden="true">
 						{option.label}
@@ -241,7 +243,7 @@
 	<div
 		use:portal
 		use:menuAction
-		class="STYLESHIFT-Dropdown-Menu STYLESHIFT-Main"
+		class="styleshift-dropdown-menu styleshift-main"
 		style:top="{menuTop}px"
 		style:left="{menuLeft}px"
 		style:width="{menuWidth}px"
@@ -257,7 +259,7 @@
 	>
 		{#each optionsList as option, i (option.value)}
 			<button
-				class="STYLESHIFT-Dropdown-Item"
+				class="styleshift-dropdown-item"
 				class:selected={option.value === value}
 				onclick={(e) => handleSelect(e, option.value)}
 				style="animation-delay: {i * 50}ms"
@@ -269,12 +271,12 @@
 {/snippet}
 
 <style lang="scss">
-	.STYLESHIFT-Dropdown-Wrapper {
+	.styleshift-dropdown-wrapper {
 		position: relative;
 		min-width: 120px;
 	}
 
-	.STYLESHIFT-Dropdown-Trigger {
+	.styleshift-dropdown-trigger {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -315,7 +317,7 @@
 		}
 	}
 
-	.STYLESHIFT-Dropdown-Display {
+	.styleshift-dropdown-display {
 		display: grid;
 		grid-template-areas: "stack";
 		flex: 1;
@@ -341,7 +343,7 @@
 		width: 100%;
 	}
 
-	.STYLESHIFT-Dropdown-Menu {
+	.styleshift-dropdown-menu {
 		position: absolute;
 		z-index: 10000;
 		background: var(--bg-main);
@@ -362,7 +364,7 @@
 		}
 	}
 
-	.STYLESHIFT-Dropdown-Item {
+	.styleshift-dropdown-item {
 		background: transparent;
 		border: none;
 		color: var(--fg-opacity-80);
@@ -380,13 +382,13 @@
 
 		&:hover {
 			background: var(--fg-opacity-10);
-			color: white;
+			color: var(--text-primary);
 			transform: translateX(5px);
 		}
 
 		&.selected {
 			background: var(--theme-0, #7f5db7);
-			color: white;
+			color: var(--bg-main);
 		}
 	}
 

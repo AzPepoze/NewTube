@@ -136,7 +136,7 @@
 </script>
 
 {#if isWorkspace}
-	<div class="STYLESHIFT-Dev-Section" style:--section-color={color}>
+	<div class="styleshift-dev-section" style:--section-color={color}>
 		<header class="section-header">
 			<div class="section-title-group">
 				<span class="section-title">{title}</span>
@@ -189,7 +189,7 @@
 {/if}
 
 <style lang="scss">
-	.STYLESHIFT-Dev-Section {
+	.styleshift-dev-section {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
@@ -276,7 +276,7 @@
 		display: flex;
 		flex-direction: column;
 
-		:global(.STYLESHIFT-Code-Editor-Container) {
+		:global(.styleshift-code-editor-container) {
 			flex: 1;
 			display: flex;
 			flex-direction: column;

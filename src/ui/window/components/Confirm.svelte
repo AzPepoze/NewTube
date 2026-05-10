@@ -109,7 +109,7 @@
 			gap: 10px;
 		}
 
-		:global(.STYLESHIFT-Button) {
+		:global(.styleshift-button) {
 			flex: 1;
 		}
 	}

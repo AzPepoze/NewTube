@@ -22,7 +22,7 @@
 	}));
 </script>
 
-<div class="STYLESHIFT-Condition-Status-Container" class:is-all-met={conditionsMet}>
+<div class="styleshift-condition-status-container" class:is-all-met={conditionsMet}>
 	<div class="status-header">
 		<div class="icon-wrapper">
 			<Icon 
@@ -58,7 +58,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Condition-Status-Container {
+	.styleshift-condition-status-container {
 		margin-top: 8px;
 		padding: 12px;
 		background: var(--fg-opacity-05);

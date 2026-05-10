@@ -31,7 +31,7 @@
 	}
 </script>
 
-<div bind:this={triggerEl} class="STYLESHIFT-Add-Setting-Button-Wrapper">
+<div bind:this={triggerEl} class="styleshift-add-setting-button-wrapper">
 	<Button
 		setting={{
 			type: "button",
@@ -57,7 +57,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Add-Setting-Button-Wrapper {
+	.styleshift-add-setting-button-wrapper {
 		width: 100%;
 		display: flex;
 		justify-content: center;

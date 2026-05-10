@@ -30,7 +30,7 @@
 </script>
 
 {#if isLocked || !requirementsMet}
-	<div class="STYLESHIFT-Warning-Section-Container" class:is-locked={isLocked}>
+	<div class="styleshift-warning-section-container" class:is-locked={isLocked}>
 		<div class="warning-content">
 			{#if isLocked}
 				<div class="warning-item lock">
@@ -64,7 +64,7 @@
 {/if}
 
 <style lang="scss">
-	.STYLESHIFT-Warning-Section-Container {
+	.styleshift-warning-section-container {
 		margin-top: 12px;
 		padding: 12px 16px;
 		background: var(--theme-Warning-10);

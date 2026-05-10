@@ -55,7 +55,7 @@
 </script>
 
 <div
-	class="STYLESHIFT-Resize-Handle pos-{position}"
+	class="styleshift-resize-handle pos-{position}"
 	onmousedown={handleMouseDown}
 	role="button"
 	tabindex="-1"
@@ -63,7 +63,7 @@
 ></div>
 
 <style lang="scss">
-	.STYLESHIFT-Resize-Handle {
+	.styleshift-resize-handle {
 		background: transparent;
 		transition: background 0.2s;
 		z-index: 10;

@@ -59,18 +59,18 @@
 	});
 </script>
 
-<div class="STYLESHIFT-Settings-Main" class:skip-animation={skipAnimation}>
+<div class="styleshift-settings-main" class:skip-animation={skipAnimation}>
 	{#if showCategoryList}
 		<div
 			bind:this={controller.leftSidebar}
-			class="STYLESHIFT-Sidebar STYLESHIFT-Scrollable"
+			class="styleshift-sidebar styleshift-scrollable"
 			data-left="true"
 			style:width={`${controller.sidebarWidth}px`}
 		>
 			{#each controller.sidebarData as item, i (i)}
 				{#if controller.isHeaderItem(item)}
 					<div
-						class="STYLESHIFT-Sidebar-Header"
+						class="styleshift-sidebar-header"
 						class:centered={item.label === "BUILD-IN" ||
 							item.label === "ADD-ON"}
 						style="animation-delay: {skipAnimation
@@ -83,7 +83,7 @@
 					{@const category = item}
 					{@const parts = getCategoryParts(category.category)}
 					<button
-						class="STYLESHIFT-Sidebar-Item-Wrapper"
+						class="styleshift-sidebar-item-wrapper"
 						use:controller.setupDragAndDrop={category}
 						style="animation-delay: {skipAnimation
 							? '0ms'
@@ -105,7 +105,7 @@
 
 			{#if isDeveloperMode && isDevModulesLoaded}
 				<button
-					class="STYLESHIFT-Add-Category-button"
+					class="styleshift-add-category-button"
 					onclick={controller.handleAddCategory}
 				>
 					+
@@ -113,7 +113,7 @@
 			{/if}
 		</div>
 		<div
-			class="STYLESHIFT-Resize-Handle"
+			class="styleshift-resize-handle"
 			role="button"
 			tabindex="0"
 			aria-label="Resize sidebar"
@@ -122,16 +122,16 @@
 		></div>
 	{/if}
 
-	<div class="STYLESHIFT-Content">
+	<div class="styleshift-content">
 		<Search bind:value={controller.searchQuery} />
 
 		<div
 			bind:this={controller.scrollContainer}
-			class="STYLESHIFT-Scrollable STYLESHIFT-Settings-List"
+			class="styleshift-scrollable styleshift-settings-list"
 			onscroll={controller.handleScroll}
 		>
 			{#if controller.buildInItemsData.length > 0}
-				<div class="STYLESHIFT-Section-Header">BUILD-IN</div>
+				<div class="styleshift-section-header">BUILD-IN</div>
 				<SettingsListRenderer
 					items={controller.buildInItemsData}
 					searchQuery={controller.searchQuery}
@@ -140,7 +140,7 @@
 			{/if}
 
 			{#if controller.addOnItemsData.length > 0}
-				<div class="STYLESHIFT-Section-Header">ADD-ON</div>
+				<div class="styleshift-section-header">ADD-ON</div>
 				<SettingsListRenderer
 					items={controller.addOnItemsData}
 					searchQuery={controller.searchQuery}
@@ -163,7 +163,7 @@
 		}
 	}
 
-	.STYLESHIFT-Settings-Main {
+	.styleshift-settings-main {
 		display: flex;
 		flex-direction: row;
 		gap: 5px;
@@ -172,7 +172,7 @@
 		overflow: hidden;
 	}
 
-	.STYLESHIFT-Resize-Handle {
+	.styleshift-resize-handle {
 		width: 5px;
 		cursor: col-resize;
 		background: var(--border-color);
@@ -185,7 +185,7 @@
 		}
 	}
 
-	.STYLESHIFT-Sidebar {
+	.styleshift-sidebar {
 		min-width: 150px;
 		width: 250px;
 		background: var(--category-left-bg);
@@ -194,7 +194,7 @@
 		gap: 5px;
 	}
 
-	.STYLESHIFT-Sidebar-Item-Wrapper {
+	.styleshift-sidebar-item-wrapper {
 		background: transparent;
 		border: none;
 		padding: 0;
@@ -209,10 +209,10 @@
 		}
 	}
 
-	.STYLESHIFT-Add-Category-button {
-		background: var(--category-left-bg-hover, rgba(255, 255, 255, 0.1));
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		color: #ffffff;
+	.styleshift-add-category-button {
+		background: var(--fg-opacity-05);
+		border: 1px solid var(--fg-opacity-10);
+		color: var(--text-primary);
 		padding: 8px 5px;
 		margin: 3px 10px;
 		border-radius: 4px;
@@ -222,24 +222,28 @@
 		transition: background-color 0.2s;
 	}
 
-	.STYLESHIFT-Add-Category-button:hover {
-		background: rgba(255, 255, 255, 0.2);
+	.styleshift-add-category-button:hover {
+		background: var(--fg-opacity-10);
 	}
 
-	.STYLESHIFT-Sidebar-Header {
+	.styleshift-sidebar-header {
 		padding: 12px 10px 8px;
 		font-size: 14px;
-		color: rgba(255, 255, 255, 0.5);
+		color: var(--text-muted);
 		text-transform: uppercase;
 		letter-spacing: 1px;
 		font-weight: 700;
 		margin-bottom: 4px;
-		border-top: 2px solid rgba(255, 255, 255, 0.1);
+		border-top: 2px solid var(--fg-opacity-10);
 		animation: sidebar-animation 1s both;
+
+		:global(.styleshift-main[data-theme="light"]) & {
+			color: var(--text-primary);
+		}
 
 		&.centered {
 			font-size: 12px;
-			color: rgba(255, 255, 255, 0.4);
+			color: var(--text-muted);
 			letter-spacing: 2px;
 			font-weight: 800;
 			display: flex;
@@ -257,7 +261,7 @@
 				height: 1px;
 				background: linear-gradient(
 					to var(--direction, right),
-					rgba(255, 255, 255, 0.1),
+					var(--fg-opacity-10),
 					transparent
 				);
 			}
@@ -276,12 +280,12 @@
 		}
 	}
 
-	.STYLESHIFT-Sidebar-Header:first-child {
+	.styleshift-sidebar-header:first-child {
 		border-top: none;
 		margin-top: 0;
 	}
 
-	.STYLESHIFT-Section-Header {
+	.styleshift-section-header {
 		font-size: 28px;
 		font-weight: 900;
 		color: var(--fg-opacity-60);
@@ -315,7 +319,7 @@
 		}
 	}
 
-	.STYLESHIFT-Content {
+	.styleshift-content {
 		flex: 1;
 		display: flex;
 		flex-direction: column;
@@ -325,7 +329,7 @@
 		min-width: 300px;
 	}
 
-	.STYLESHIFT-Settings-List {
+	.styleshift-settings-list {
 		flex: 1;
 		display: flex;
 		flex-direction: column;

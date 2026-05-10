@@ -25,7 +25,7 @@
 </script>
 
 <div
-	class="STYLESHIFT-Main-Description"
+	class="styleshift-main-description"
 	class:no-description={!description && !children && !text}
 	style:text-align={textAlign}
 	style:align-items={flexAlign}
@@ -37,7 +37,7 @@
 				<Icon
 					name={getAssetUrl(name)}
 					size={20}
-					className="STYLESHIFT-Description-Icon"
+					className="styleshift-description-icon"
 					applyFilter={true}
 				/>
 			{:else}
@@ -59,7 +59,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Main-Description {
+	.styleshift-main-description {
 		flex: 1;
 		display: flex;
 		flex-direction: column;
@@ -80,7 +80,7 @@
 		display: flex;
 		align-items: center;
 
-		:global(.STYLESHIFT-Description-Icon) {
+		:global(.styleshift-description-icon) {
 			filter: brightness(0) invert(1);
 		}
 	}

@@ -1,15 +1,15 @@
 @use "variables";
 @use "animation";
 
-.STYLESHIFT-Main {
-	.STYLESHIFT-Code-Editor {
+.styleshift-main {
+	.styleshift-code-editor {
 		resize: vertical;
 		overflow: hidden;
 		padding: 5px;
 		background: var(--fg-opacity-52);
 	}
 
-	.STYLESHIFT-Close {
+	.styleshift-close {
 		width: 27px;
 		height: 27px;
 		display: flex;
@@ -23,7 +23,7 @@
 		user-select: none;
 	}
 
-	.STYLESHIFT-Search {
+	.styleshift-search {
 		background: var(--fg-opacity-38);
 		border-radius: 20px;
 		border: transparent;
@@ -36,10 +36,10 @@
 		}
 	}
 
-	.STYLESHIFT-Category-Frame {
+	.styleshift-category-frame {
 		gap: 10px;
 
-		.STYLESHIFT-Add-Setting-Button {
+		.styleshift-add-setting-button {
 			margin-top: -56px;
 			transform: scaleY(0);
 			opacity: 0;
@@ -52,11 +52,11 @@
 		}
 	}
 
-	.STYLESHIFT-Glow-Hover:hover {
+	.styleshift-glow-hover:hover {
 		filter: brightness(1.4);
 	}
 
-	.STYLESHIFT-Topbar {
+	.styleshift-topbar {
 		width: 100%;
 		display: flex;
 		flex-direction: row;
@@ -64,7 +64,7 @@
 		user-select: none;
 	}
 
-	.STYLESHIFT-Drag-Top {
+	.styleshift-drag-top {
 		width: 100%;
 		height: 12px;
 		padding-block: 10px;
@@ -77,7 +77,7 @@
 		font-size: 12px;
 		border-radius: 100px;
 
-		.STYLESHIFT-Icon {
+		.styleshift-icon {
 			height: 10px;
 			width: auto;
 		}
@@ -88,7 +88,7 @@
 		}
 	}
 
-	.STYLESHIFT-Scrollable {
+	.styleshift-scrollable {
 		position: relative;
 		overflow-y: auto;
 		overflow-x: visible;
@@ -107,7 +107,7 @@
 			padding-inline: 0;
 		}
 
-		.STYLESHIFT-Resize-Handle {
+		.styleshift-resize-handle {
 			width: 6px;
 			cursor: col-resize;
 			height: 100%;
@@ -138,18 +138,18 @@
 		scrollbar-color: var(--bg-element-muted) transparent;
 		scrollbar-width: thin;
 
-		.STYLESHIFT-Category-Frame {
+		.styleshift-category-frame {
 			background: var(--setting-frame-bg);
 			padding: 10px;
 			overflow: visible;
 		}
 
-		.STYLESHIFT-Setting-Frame {
+		.styleshift-setting-frame {
 			border-radius: 20px;
 		}
 
-		.STYLESHIFT-Category-Frame .STYLESHIFT-Setting-Frame,
-		.STYLESHIFT-Main-Setting-Frame:has(.STYLESHIFT-Setting-Frame) {
+		.styleshift-category-frame .styleshift-setting-frame,
+		.styleshift-main-setting-frame:has(.styleshift-setting-frame) {
 			background: radial-gradient(
 				at center top,
 				var(--fg-opacity-20),
@@ -158,8 +158,8 @@
 			overflow: visible;
 
 			&:hover {
-				.STYLESHIFT-Config-Button,
-				.STYLESHIFT-Config-Actions-Overlay {
+				.styleshift-config-button,
+				.styleshift-config-actions-overlay {
 					opacity: 1;
 					pointer-events: all;
 				}
@@ -168,14 +168,14 @@
 
 		// Hide buttons while dragging
 		&[draging] {
-			.STYLESHIFT-Config-Button,
-			.STYLESHIFT-Config-Actions-Overlay {
+			.styleshift-config-button,
+			.styleshift-config-actions-overlay {
 				opacity: 0 !important;
 				pointer-events: none !important;
 			}
 		}
 
-		.STYLESHIFT-Config-Actions-Overlay {
+		.styleshift-config-actions-overlay {
 			position: absolute;
 			right: -16px;
 			top: 50%;
@@ -189,7 +189,7 @@
 			z-index: 10;
 		}
 
-		.STYLESHIFT-Config-Button {
+		.styleshift-config-button {
 			transition: all 0.2s;
 			opacity: 0;
 			width: 32px;
@@ -203,7 +203,7 @@
 			justify-content: center;
 			cursor: pointer;
 			pointer-events: none;
-			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+			box-shadow: 0 2px 5px var(--shadow-color);
 			transform-origin: center;
 
 			&.drag-handle {
@@ -223,7 +223,7 @@
 				}
 			}
 
-			.STYLESHIFT-Icon {
+			.styleshift-icon {
 				width: 18px;
 				height: 18px;
 			}
@@ -235,20 +235,20 @@
 			}
 
 			&.delete:hover {
-				background: #ff4d4d;
-				border-color: #ff9999;
+				background: var(--theme-error);
+				border-color: var(--theme-error-50);
 			}
 		}
 
-		.STYLESHIFT-Add-Category-Button {
+		.styleshift-add-category-button {
 			opacity: 0;
 		}
 
-		&:hover .STYLESHIFT-Add-Category-Button {
+		&:hover .styleshift-add-category-button {
 			opacity: 1;
 		}
 
-		.STYLESHIFT-drag-Hint {
+		.styleshift-drag-hint {
 			width: 100%;
 			height: 0;
 			opacity: 0;
@@ -269,7 +269,7 @@
 		}
 
 		&:not([draging]) {
-			.STYLESHIFT-Category-Frame:hover .STYLESHIFT-Add-Setting-Button {
+			.styleshift-category-frame:hover .styleshift-add-setting-button {
 				margin-top: 0;
 				transform: scaleY(1);
 				opacity: 1;
@@ -277,7 +277,7 @@
 		}
 	}
 
-	.STYLESHIFT-Setting-Sub-Title {
+	.styleshift-setting-sub-title {
 		padding: 10px;
 		padding-top: 20px;
 		padding-bottom: 8px;
@@ -289,7 +289,7 @@
 		color: var(--text-disabled);
 	}
 
-	.STYLESHIFT-preview_image {
+	.styleshift-preview_image {
 		width: 100%;
 		max-height: 400px;
 		object-fit: contain;
@@ -303,7 +303,7 @@
 	}
 }
 
-.STYLESHIFT-Highlight {
+.styleshift-highlight {
 	transition:
 		background 0.2s,
 		border-color 0.2s;
@@ -315,12 +315,12 @@
 	top: 0;
 
 	&:hover {
-		background: #7cff7c4b !important;
-		border-color: rgba(144, 255, 129, 0.8) !important;
+		background: var(--theme-success-20) !important;
+		border-color: var(--theme-success) !important;
 	}
 }
 
-.STYLESHIFT-Window {
+.styleshift-window {
 	height: -webkit-fill-available;
 	position: fixed;
 	border: 1px var(--border-color) solid;
@@ -339,11 +339,11 @@
 		backdrop-filter 0.3s;
 }
 
-textarea.STYLESHIFT-Selector-Text-Editor {
+textarea.styleshift-selector-text-editor {
 	height: 50px;
 }
 
-.STYLESHIFT-FillScreen {
+.styleshift-fillscreen {
 	width: 100%;
 	height: 100%;
 	position: fixed;
@@ -356,7 +356,7 @@ textarea.STYLESHIFT-Selector-Text-Editor {
 	left: 0;
 }
 
-.STYLESHIFT-DropDown-Container {
+.styleshift-dropdown-container {
 	position: fixed;
 	padding: 0;
 	height: auto;
@@ -366,7 +366,7 @@ textarea.STYLESHIFT-Selector-Text-Editor {
 	padding-block: 5px !important;
 }
 
-.STYLESHIFT-DropDown-Items {
+.styleshift-dropdown-items {
 	width: calc(100% - 10px);
 	height: 30px;
 	font-size: 13px;
@@ -375,10 +375,10 @@ textarea.STYLESHIFT-Selector-Text-Editor {
 	justify-content: center;
 	background: radial-gradient(
 		at center top,
-		rgb(99, 99, 99),
-		rgba(66, 66, 66, 0.5)
+		var(--fg-opacity-20),
+		var(--fg-opacity-10)
 	);
-	color: white;
+	color: var(--text-primary);
 	border: var(--fg-opacity-10) solid 1px;
 	transition: all 0.2s;
 }

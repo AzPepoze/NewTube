@@ -35,7 +35,7 @@
 {#if isOpen && mounted}
 	<div
 		bind:this={overlayEl}
-		class="STYLESHIFT-Modal-Overlay STYLESHIFT-Main"
+		class="styleshift-modal-overlay styleshift-main"
 		transition:fade={{ duration: 200 }}
 		onclick={onClose}
 		onkeydown={handleKeyDown}
@@ -43,7 +43,7 @@
 		tabindex="-1"
 	>
 		<div
-			class="STYLESHIFT-Modal-Content"
+			class="styleshift-modal-content"
 			style="width: {width};"
 			transition:scale={{ duration: 300, start: 0.9, easing: backOut }}
 			onclick={(e) => e.stopPropagation()}
@@ -56,13 +56,13 @@
 {/if}
 
 <style lang="scss">
-	.STYLESHIFT-Modal-Overlay {
+	.styleshift-modal-overlay {
 		position: fixed;
 		top: 0;
 		left: 0;
 		width: 100vw;
 		height: 100vh;
-		background: rgba(0, 0, 0, 0.7);
+		background: var(--shadow-strong);
 		backdrop-filter: blur(5px);
 		display: flex;
 		justify-content: center;
@@ -70,7 +70,7 @@
 		z-index: 20000;
 	}
 
-	.STYLESHIFT-Modal-Content {
+	.styleshift-modal-content {
 		background: var(--window-bg, var(--bg-main));
 		backdrop-filter: var(--window-blur) var(--window-saturate);
 		-webkit-backdrop-filter: var(--window-blur) var(--window-saturate);
@@ -80,6 +80,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 20px;
-		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+		box-shadow: 0 20px 50px var(--shadow-color);
 	}
 </style>

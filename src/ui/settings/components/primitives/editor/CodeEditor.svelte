@@ -53,7 +53,7 @@
 
 <div
 	bind:this={container}
-	class="STYLESHIFT-Code-Editor-Container"
+	class="styleshift-code-editor-container"
 	style:height={normalizedHeight}
 >
 	{#if !controller.fallbackMode}
@@ -64,7 +64,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Code-Editor-Container {
+	.styleshift-code-editor-container {
 		width: 100%;
 		box-sizing: border-box;
 		border: 1px solid var(--border-color);

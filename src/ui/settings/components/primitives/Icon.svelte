@@ -20,13 +20,9 @@
 		delete: del,
 		drag,
 		add,
-		close,
 		code,
 		arrowUp,
 		arrowDown,
-		minimize,
-		maximize,
-		restore,
 		export: exportIcon,
 		openInNew: openInNew,
 	};
@@ -69,7 +65,7 @@
 	<img
 		{src}
 		alt={name}
-		class="STYLESHIFT-Icon {className}"
+		class="styleshift-icon {className}"
 		class:with-filter={applyFilter && !color}
 		style="transform: scale({Math.min(
 			scale,
@@ -81,7 +77,7 @@
 	/>
 {:else if isMaterialIcon}
 	<i
-		class="material-icons STYLESHIFT-Icon STYLESHIFT-Material-Icon {className}"
+		class="material-icons styleshift-icon styleshift-material-icon {className}"
 		style="font-size: {size}px; line-height: {size}px; width: {size}px; height: {size}px; {style}"
 		style:color={color || undefined}
 	>
@@ -89,7 +85,7 @@
 	</i>
 {:else if isEmoji}
 	<span
-		class="STYLESHIFT-Icon STYLESHIFT-Text-Icon {className}"
+		class="styleshift-icon styleshift-text-icon {className}"
 		style="font-size: {size}px; line-height: {size}px; width: {size}px; height: {size}px; {style}"
 	>
 		{name}
@@ -97,7 +93,7 @@
 {/if}
 
 <style lang="scss">
-	.STYLESHIFT-Icon {
+	.styleshift-icon {
 		display: inline-block;
 		vertical-align: middle;
 		pointer-events: none;
@@ -109,14 +105,14 @@
 		}
 	}
 
-	.STYLESHIFT-Text-Icon {
+	.styleshift-text-icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		font-style: normal;
 	}
 
-	.STYLESHIFT-Material-Icon {
+	.styleshift-material-icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;

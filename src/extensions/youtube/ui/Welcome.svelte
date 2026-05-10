@@ -53,7 +53,7 @@
 
 {#if visible}
 	<div
-		class="Welcome-Overlay STYLESHIFT-Main"
+		class="Welcome-Overlay styleshift-main"
 		transition:fade={{ duration: 1000 }}
 	>
 		<div class="Glow-Effect"></div>

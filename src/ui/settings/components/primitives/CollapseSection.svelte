@@ -19,7 +19,7 @@
 	}
 </script>
 
-<div class="STYLESHIFT-Collapse-Wrapper">
+<div class="styleshift-collapse-wrapper">
 	<Button
 		setting={{
 			type: "button",
@@ -30,13 +30,13 @@
 	/>
 	<div
 		use:mountContent
-		class="STYLESHIFT-Collapse STYLESHIFT-Collapse-Content STYLESHIFT-All-Transition"
+		class="styleshift-collapse styleshift-collapse-content styleshift-all-transition"
 		class:collapsed
 	></div>
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Collapse-Content {
+	.styleshift-collapse-content {
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		overflow: hidden;
 		max-height: 2000px;

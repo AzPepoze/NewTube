@@ -81,13 +81,13 @@
 	}
 </script>
 
-<div class="STYLESHIFT-Selector-Input-Container">
+<div class="styleshift-selector-input-container">
 	<Description {name} {description} />
-	<div class="STYLESHIFT-Input-Group">
-		<div class="STYLESHIFT-Input-Wrapper">
+	<div class="styleshift-input-group">
+		<div class="styleshift-input-wrapper">
 			<input
 				type="text"
-				class="STYLESHIFT-Input"
+				class="styleshift-input"
 				{placeholder}
 				bind:value
 				oninput={handleInput}
@@ -95,7 +95,7 @@
 			/>
 		</div>
 		<button
-			class="STYLESHIFT-Pick-Button"
+			class="styleshift-pick-button"
 			class:is-picking={isPicking}
 			onclick={togglePicking}
 			type="button"
@@ -107,7 +107,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Selector-Input-Container {
+	.styleshift-selector-input-container {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
@@ -115,7 +115,7 @@
 		width: 100%;
 	}
 
-	.STYLESHIFT-Input-Group {
+	.styleshift-input-group {
 		display: flex;
 		flex-direction: column;
 		flex: 1;
@@ -124,11 +124,11 @@
 		align-items: stretch;
 	}
 
-	.STYLESHIFT-Input-Wrapper {
+	.styleshift-input-wrapper {
 		flex: 1;
 	}
 
-	.STYLESHIFT-Input {
+	.styleshift-input {
 		width: -webkit-fill-available;
 		background: var(--text-editor-bg, var(--bg-overlay-30));
 		color: white;
@@ -150,7 +150,7 @@
 		}
 	}
 
-	.STYLESHIFT-Pick-Button {
+	.styleshift-pick-button {
 		display: flex;
 		align-items: center;
 		justify-content: center;

@@ -46,7 +46,7 @@
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
-		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+		box-shadow: 0 4px 10px var(--shadow-color);
 		border: 1px solid var(--fg-opacity-10);
 
 		.preview-nav {
@@ -96,7 +96,7 @@
 					display: flex;
 					align-items: center;
 					justify-content: center;
-					box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+					box-shadow: 0 0 5px var(--shadow-color);
 					overflow: hidden;
 
 					.preview-newtube-icon {

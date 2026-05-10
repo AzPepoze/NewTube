@@ -151,7 +151,7 @@
 
 		&:hover {
 			border-color: var(--fg-opacity-20);
-			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+			box-shadow: 0 10px 25px var(--shadow-color);
 
 			.preview-area {
 				transform: scale(1.05);
@@ -173,7 +173,7 @@
 				font-size: 10px;
 				font-weight: 800;
 				z-index: 10;
-				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+				box-shadow: 0 2px 8px var(--shadow-color);
 			}
 		}
 
@@ -189,7 +189,7 @@
 	.loading-overlay {
 		position: absolute;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.3);
+		background: var(--bg-overlay-30);
 		z-index: 20;
 		display: flex;
 		align-items: center;
@@ -203,7 +203,7 @@
 		border-top-color: var(--theme-0);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
-		box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+		box-shadow: 0 0 15px var(--shadow-color);
 	}
 
 	@keyframes spin {
@@ -240,8 +240,8 @@
 			z-index: 1;
 			background: linear-gradient(
 				to bottom,
-				rgba(0, 0, 0, 0.1) 0%,
-				rgba(0, 0, 0, 0.3) 100%
+				var(--bg-overlay-10) 0%,
+				var(--bg-overlay-30) 100%
 			);
 		}
 
@@ -261,7 +261,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		background: rgba(0, 0, 0, 0.5);
+		background: var(--bg-overlay-50);
 		border-top: 1px solid var(--fg-opacity-05);
 		pointer-events: auto;
 	}
@@ -282,7 +282,7 @@
 		gap: 8px;
 
 		:global(.apply-btn) {
-			background: rgba(255, 255, 255, 0.1) !important;
+			background: var(--fg-opacity-10) !important;
 			border-radius: 8px !important;
 
 			&:hover {
@@ -312,11 +312,11 @@
 		}
 
 		:global(.delete-btn) {
-			background: var(--red-10, rgba(255, 0, 0, 0.1)) !important;
+			background: var(--theme-error-10) !important;
 			border-radius: 8px !important;
 
 			&:hover {
-				background: var(--red-40, rgba(255, 0, 0, 0.4)) !important;
+				background: var(--theme-error-50) !important;
 			}
 		}
 	}
@@ -325,13 +325,13 @@
 		display: flex;
 		align-items: center;
 		gap: 6px;
-		color: #4caf50;
+		color: var(--theme-success);
 		font-size: 13px;
 		font-weight: 600;
 		padding: 0 8px;
 		opacity: 0.9;
 
-		:global(.STYLESHIFT-Icon) {
+		:global(.styleshift-icon) {
 			margin: 0;
 		}
 	}

@@ -170,7 +170,7 @@
 		gap: 15px;
 		margin-top: 5px;
 
-		:global(.STYLESHIFT-Button) {
+		:global(.styleshift-button) {
 			flex: 1;
 		}
 	}

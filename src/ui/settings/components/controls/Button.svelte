@@ -102,7 +102,7 @@
 </script>
  
 <div
-	class="STYLESHIFT-Button"
+	class="styleshift-button"
 	class:has-icon={!!icon}
 	style:justify-content={justifyContent}
 	style:background={buttonStyles.background}
@@ -120,7 +120,7 @@
 			name={icon}
 			size={iconSize}
 			scale={iconScale}
-			className="STYLESHIFT-Button-Icon"
+			className="styleshift-button-icon"
 			applyFilter={false}
 		/>
 	{/if}
@@ -146,7 +146,7 @@
 </div>
  
 <style lang="scss">
-	.STYLESHIFT-Button {
+	.styleshift-button {
 		display: flex;
 		align-items: center;
 		font-size: 15px;
@@ -160,16 +160,16 @@
 		position: relative;
 	}
  
-	.STYLESHIFT-Button:hover {
+	.styleshift-button:hover {
 		filter: brightness(1.5) drop-shadow(2px 2px 3px black)
 			drop-shadow(-2px -2px 3px rgba(255, 255, 255, 0.37));
  
-		:global(.STYLESHIFT-Main-Description .setting-name) {
+		:global(.styleshift-main-description .setting-name) {
 			font-weight: 400;
 		}
 	}
  
-	:global(.STYLESHIFT-Icon.STYLESHIFT-Button-Icon) {
+	:global(.styleshift-icon.styleshift-button-icon) {
 		margin-right: 20px !important;
 		object-fit: contain;
 	}

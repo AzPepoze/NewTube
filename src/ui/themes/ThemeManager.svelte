@@ -283,7 +283,7 @@
 	});
 </script>
 
-<div class="NEWTUBE-ThemeManager STYLESHIFT-Main">
+<div class="NEWTUBE-ThemeManager styleshift-main">
 	<div class="manager-topbar">
 		<CapsuleTabs options={tabOptions} bind:activeId={currentView} />
 		<div class="search-flex-filler">
@@ -630,7 +630,7 @@
 				}
 			}
 
-			:global(.STYLESHIFT-Icon) {
+			:global(.styleshift-icon) {
 				margin: 0;
 				opacity: 0.9;
 			}

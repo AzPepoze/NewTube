@@ -60,13 +60,13 @@
 	}
 </script>
 
-<div class="STYLESHIFT-Slider-Container">
-	<div class="STYLESHIFT-Slider-Header">
+<div class="styleshift-slider-container">
+	<div class="styleshift-slider-header">
 		<Description {name} {description} />
-		<div class="STYLESHIFT-Slider-Value-Wrapper">
+		<div class="styleshift-slider-value-wrapper">
 			<input
 				type="number"
-				class="STYLESHIFT-Slider-Number-Input"
+				class="styleshift-slider-number-input"
 				bind:value
 				oninput={handleInput}
 				onchange={handleChange}
@@ -75,14 +75,14 @@
 				{step}
 			/>
 			{#if unit}
-				<span class="STYLESHIFT-Slider-Unit">{unit}</span>
+				<span class="styleshift-slider-unit">{unit}</span>
 			{/if}
 		</div>
 	</div>
 
 	<input
 		type="range"
-		class="STYLESHIFT-Slider-Range"
+		class="styleshift-slider-range"
 		{min}
 		{max}
 		{step}
@@ -93,11 +93,11 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Slider-Container {
+	.styleshift-slider-container {
 		width: 100%;
 	}
 
-	.STYLESHIFT-Slider-Header {
+	.styleshift-slider-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
@@ -105,13 +105,13 @@
 		gap: 10px;
 	}
 
-	.STYLESHIFT-Slider-Value-Wrapper {
+	.styleshift-slider-value-wrapper {
 		display: flex;
 		align-items: center;
 		gap: 5px;
 	}
 
-	.STYLESHIFT-Slider-Number-Input {
+	.styleshift-slider-number-input {
 		width: 50px;
 		height: 18px;
 		background: var(--bg-input);
@@ -136,14 +136,14 @@
 		}
 	}
 
-	.STYLESHIFT-Slider-Unit {
+	.styleshift-slider-unit {
 		font-size: 12px;
 		opacity: 0.6;
 		font-weight: bold;
 		color: white;
 	}
 
-	.STYLESHIFT-Slider-Range {
+	.styleshift-slider-range {
 		appearance: none;
 		-webkit-appearance: none;
 		width: 100%;

@@ -166,7 +166,7 @@
 	}
 </script>
 
-<div class="STYLESHIFT-Window-Resizer" role="presentation">
+<div class="styleshift-window-resizer" role="presentation">
 	<!-- Edge handles -->
 	<div
 		class="handle n"
@@ -221,7 +221,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Window-Resizer {
+	.styleshift-window-resizer {
 		--handle-thickness: 4px;
 		--corner-size: 16px;
 		--glow-color: var(--theme-0, #7f5db7);

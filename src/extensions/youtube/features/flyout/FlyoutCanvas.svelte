@@ -428,6 +428,6 @@
 		min-width: 40px;
 		text-align: center;
 		font-family: "DM Mono", monospace;
-		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+		text-shadow: 0 1px 2px var(--shadow-color);
 	}
 </style>

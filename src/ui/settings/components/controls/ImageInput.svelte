@@ -204,14 +204,14 @@
 	});
 </script>
 
-<div class="STYLESHIFT-Image-Input-Container">
-	<div class="STYLESHIFT-Image-Input-Header">
+<div class="styleshift-image-input-container">
+	<div class="styleshift-image-input-header">
 		<Description name={setting.name} description={setting.description} />
 	</div>
 
-	<div class="STYLESHIFT-Image-Input-Controls">
+	<div class="styleshift-image-input-controls">
 		<div
-			class="STYLESHIFT-Upload-Zone"
+			class="styleshift-upload-zone"
 			class:dragging={isDragging}
 			onclick={() => fileInput?.click()}
 			ondragover={handleDragOver}
@@ -223,11 +223,11 @@
 			title="Click or Drag & Drop image to upload"
 		>
 			<img
-				class="STYLESHIFT-Upload-Icon"
+				class="styleshift-upload-icon"
 				src={getAssetUrl(uploadIcon)}
 				alt="Upload"
 			/>
-			<span class="STYLESHIFT-Upload-Text">Upload</span>
+			<span class="styleshift-upload-text">Upload</span>
 		</div>
 
 		<input
@@ -238,26 +238,26 @@
 			style="display: none;"
 		/>
 
-		<div class="STYLESHIFT-Url-Input-Wrapper">
+		<div class="styleshift-url-input-wrapper">
 			<input
 				type="text"
 				value={inputValue}
 				placeholder={inputPlaceholder}
 				oninput={handleUrlInput}
-				class="STYLESHIFT-Url-Input"
+				class="styleshift-url-input"
 			/>
 		</div>
 	</div>
 
 	{#if value}
-		<div class="STYLESHIFT-Image-Preview-Wrapper">
+		<div class="styleshift-image-preview-wrapper">
 			<PreviewImage src={value} />
 			{#if fileName}
-				<span class="STYLESHIFT-File-Name" title={fileName}
+				<span class="styleshift-file-name" title={fileName}
 					>{fileName}</span
 				>
 			{/if}
-			<div class="STYLESHIFT-Button-Center-Wrapper">
+			<div class="styleshift-button-center-wrapper">
 				<Button
 					setting={{
 						type: "button",
@@ -284,14 +284,14 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Button-Center-Wrapper {
+	.styleshift-button-center-wrapper {
 		display: flex;
 		justify-content: center;
 		gap: 10px;
 		width: 100%;
 		margin-top: 5px;
 	}
-	.STYLESHIFT-Image-Input-Header {
+	.styleshift-image-input-header {
 		display: flex;
 		padding-left: 10px;
 		justify-content: space-between;
@@ -300,7 +300,7 @@
 		margin-bottom: 10px;
 	}
 
-	.STYLESHIFT-File-Name {
+	.styleshift-file-name {
 		font-size: 13px;
 		font-weight: 600;
 		color: white;
@@ -316,7 +316,7 @@
 		box-shadow: 0 4px 15px var(--bg-overlay-30);
 	}
 
-	.STYLESHIFT-Image-Input-Controls {
+	.styleshift-image-input-controls {
 		display: flex;
 		gap: 15px;
 		align-items: center;
@@ -324,7 +324,7 @@
 		box-sizing: border-box;
 	}
 
-	.STYLESHIFT-Upload-Zone {
+	.styleshift-upload-zone {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -354,31 +354,31 @@
 		}
 	}
 
-	.STYLESHIFT-Upload-Icon {
+	.styleshift-upload-icon {
 		width: 28px;
 		height: 28px;
 		opacity: 0.7;
 		filter: drop-shadow(0 2px 4px var(--bg-overlay-20));
 		transition: all 0.2s;
 
-		.STYLESHIFT-Upload-Zone:hover & {
+		.styleshift-upload-zone:hover & {
 			opacity: 1;
 			transform: translateY(-2px);
 		}
 	}
 
-	.STYLESHIFT-Upload-Text {
+	.styleshift-upload-text {
 		font-size: 11px;
 		font-weight: 500;
 		opacity: 0.6;
 	}
 
-	.STYLESHIFT-Url-Input-Wrapper {
+	.styleshift-url-input-wrapper {
 		flex: 1;
 		min-width: 0;
 	}
 
-	.STYLESHIFT-Url-Input {
+	.styleshift-url-input {
 		width: 100%;
 		padding: 8px 15px;
 		background: var(--bg-overlay-30);
@@ -402,7 +402,7 @@
 		}
 	}
 
-	.STYLESHIFT-Image-Preview-Wrapper {
+	.styleshift-image-preview-wrapper {
 		margin-top: 15px;
 		width: 100%;
 		display: flex;

@@ -37,7 +37,7 @@ export function resizeHandle(target: HTMLElement, position: "top" | "right" | "b
 
 export function fillScreen(fillBg: boolean = true) {
 	return settingsUi.renderComponent(FrameComponent, {
-		className: "STYLESHIFT-FillScreen",
+		className: "styleshift-fillscreen",
 		transparent: !fillBg,
 		style: fillBg ? "" : "pointer-events: none;",
 	}) as HTMLDivElement;
@@ -181,7 +181,7 @@ export function settingName(text: string, position: "left" | "center" | "right" 
 export function drag(target: HTMLElement) {
 	const drag = settingsUi.renderComponent(IconButtonComponent, {
 		icon: dragIcon,
-		className: "STYLESHIFT-Drag-Top",
+		className: "styleshift-drag-top",
 		size: 20,
 		onClick: () => { },
 	}) as HTMLDivElement;
@@ -193,7 +193,7 @@ export function drag(target: HTMLElement) {
 export function close() {
 	return settingsUi.renderComponent(IconButtonComponent, {
 		icon: closeIcon,
-		className: "STYLESHIFT-Close",
+		className: "styleshift-close",
 		size: 20,
 		onClick: () => { },
 	}) as HTMLDivElement;
@@ -296,7 +296,7 @@ export function showDropdown(options: unknown, target: HTMLElement) {
 	});
 
 	const container = document.createElement("div");
-	const mainWindow = document.querySelector(".STYLESHIFT-Main.STYLESHIFT-Window");
+	const mainWindow = document.querySelector(".styleshift-main.styleshift-window");
 	(mainWindow || document.body).appendChild(container);
 
 	const dropdown = mount(DropdownComponent as any, {

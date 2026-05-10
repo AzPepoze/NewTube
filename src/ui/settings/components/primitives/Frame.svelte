@@ -12,7 +12,7 @@
 </script>
 
 <div
-	class="STYLESHIFT-Setting-Frame {className}"
+	class="styleshift-setting-frame {className}"
 	style:padding={padding ? "" : "0px"}
 	style:flex-direction={vertical ? "column" : "row"}
 	style:justify-content={centerX ? "center" : ""}
@@ -24,7 +24,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Setting-Frame {
+	.styleshift-setting-frame {
 		display: flex;
 		transition: all 0.3s;
 	}

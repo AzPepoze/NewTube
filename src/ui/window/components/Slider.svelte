@@ -101,7 +101,7 @@
 
 	.slider-track {
 		position: absolute;
-		background: rgba(255, 255, 255, 0.15);
+		background: var(--fg-opacity-15);
 		border-radius: 2px;
 		overflow: hidden;
 
@@ -140,7 +140,7 @@
 		height: 12px;
 		background: white;
 		border-radius: 50%;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 2px 4px var(--shadow-color);
 		transition: transform 0.1s;
 		z-index: 2;
 

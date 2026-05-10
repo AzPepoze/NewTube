@@ -28,7 +28,7 @@
 
 <div
 	bind:this={titleEl}
-	class="STYLESHIFT-Left-Category-Title"
+	class="styleshift-left-category-title"
 	class:is-header={isHeader}
 	class:is-new={isNew}
 	class:has-separator={separator}
@@ -38,15 +38,15 @@
 	data-is-new={isNew}
 >
 	{#if isDeveloperMode && !isHeader && editable}
-		<div class="STYLESHIFT-Sidebar-Controls">
-			<button class="STYLESHIFT-Sidebar-Control-Btn drag-handle" title="Drag to reorder">
+		<div class="styleshift-sidebar-controls">
+			<button class="styleshift-sidebar-control-btn drag-handle" title="Drag to reorder">
 				<Icon name="drag" size={14} />
 			</button>
-			<div class="STYLESHIFT-Sidebar-Arrows">
-				<button class="STYLESHIFT-Sidebar-Control-Btn arrow" onclick={(e) => { e.stopPropagation(); onMove?.('up'); }} title="Move Up">
+			<div class="styleshift-sidebar-arrows">
+				<button class="styleshift-sidebar-control-btn arrow" onclick={(e) => { e.stopPropagation(); onMove?.('up'); }} title="Move Up">
 					<Icon name="arrowUp" size={12} />
 				</button>
-				<button class="STYLESHIFT-Sidebar-Control-Btn arrow" onclick={(e) => { e.stopPropagation(); onMove?.('down'); }} title="Move Down">
+				<button class="styleshift-sidebar-control-btn arrow" onclick={(e) => { e.stopPropagation(); onMove?.('down'); }} title="Move Down">
 					<Icon name="arrowDown" size={12} />
 				</button>
 			</div>
@@ -54,23 +54,23 @@
 	{/if}
 
 	{#if isHeader}
-		<div class="STYLESHIFT-Left-Header-Text">
+		<div class="styleshift-left-header-text">
 			{parts.text}
 		</div>
 	{:else}
 		{#if parts.icon}
-			<span class="STYLESHIFT-Left-Category-Icon">
+			<span class="styleshift-left-category-icon">
 				<Icon name={parts.icon} size={18} />
 			</span>
 		{/if}
-		<div class="STYLESHIFT-Left-Category-Text">
+		<div class="styleshift-left-category-text">
 			{parts.text}
 		</div>
 	{/if}
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Left-Category-Title {
+	.styleshift-left-category-title {
 		display: flex;
 		align-items: center;
 		padding: 12px 15px;
@@ -112,7 +112,7 @@
 			pointer-events: none;
 			background: transparent !important;
 
-			.STYLESHIFT-Left-Header-Text {
+			.styleshift-left-header-text {
 				padding-left: 10px;
 			}
 		}
@@ -123,18 +123,18 @@
 			color: black;
 			box-shadow: 0 4px 15px var(--bg-overlay-20);
 
-			.STYLESHIFT-Left-Category-Icon {
+			.styleshift-left-category-icon {
 				transform: scale(1.3) rotate(10deg);
 				filter: drop-shadow(0 0 5px var(--bg-overlay-40));
 				color: black !important;
 				opacity: 1;
 
-				:global(.STYLESHIFT-Icon) {
+				:global(.styleshift-icon) {
 					filter: none !important;
 				}
 			}
 
-			.STYLESHIFT-Left-Category-Text {
+			.styleshift-left-category-text {
 				font-weight: 700;
 				color: black;
 			}
@@ -151,18 +151,18 @@
 		}
 
 		&.is-new {
-			animation: STYLESHIFT-new-category-pop 1s
+			animation: styleshift-new-category-pop 1s
 				cubic-bezier(0.175, 0.885, 0.32, 1.275);
 		}
 
 		&:hover {
-			.STYLESHIFT-Sidebar-Controls {
+			.styleshift-sidebar-controls {
 				opacity: 1;
 			}
 		}
 	}
 
-	.STYLESHIFT-Sidebar-Controls {
+	.styleshift-sidebar-controls {
 		display: flex;
 		align-items: center;
 		gap: 4px;
@@ -177,13 +177,13 @@
 		z-index: 10;
 	}
 
-	.STYLESHIFT-Sidebar-Arrows {
+	.styleshift-sidebar-arrows {
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
 	}
 
-	.STYLESHIFT-Sidebar-Control-Btn {
+	.styleshift-sidebar-control-btn {
 		background: transparent;
 		border: none;
 		color: var(--fg-opacity-60);
@@ -208,7 +208,7 @@
 		}
 	}
 
-	@keyframes STYLESHIFT-new-category-pop {
+	@keyframes styleshift-new-category-pop {
 		0% {
 			transform: scale(0.8);
 			background: var(--theme-0);
@@ -224,7 +224,7 @@
 		}
 	}
 
-	.STYLESHIFT-Left-Category-Icon {
+	.styleshift-left-category-icon {
 		font-size: 18px;
 		transition: transform 0.3s ease;
 		display: inline-flex;
@@ -235,7 +235,7 @@
 		filter: drop-shadow(0 0 5px var(--bg-overlay-20));
 	}
 
-	.STYLESHIFT-Left-Category-Text {
+	.styleshift-left-category-text {
 		font-weight: 500;
 		font-size: 14px;
 		white-space: nowrap;

@@ -15,14 +15,14 @@
 </script>
 
 <textarea
-	class="STYLESHIFT-Text-Editor {className}"
+	class="styleshift-text-editor {className}"
 	bind:value
 	oninput={() => onInput?.(value)}
 	onblur={() => onBlur?.(value)}
 ></textarea>
 
 <style lang="scss">
-	.STYLESHIFT-Text-Editor {
+	.styleshift-text-editor {
 		width: 100%;
 		box-sizing: border-box;
 		min-height: 100px;

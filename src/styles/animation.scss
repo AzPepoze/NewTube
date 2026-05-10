@@ -1,4 +1,4 @@
-@keyframes STYLESHIFT-Show-Pop-Animation {
+@keyframes styleshift-show-pop-animation {
 	0% {
 		transform: scale(0.95);
 		opacity: 0;
@@ -9,7 +9,7 @@
 	}
 }
 
-@keyframes STYLESHIFT-Hide-Pop-Animation {
+@keyframes styleshift-hide-pop-animation {
 	0% {
 		transform: scale(1);
 		opacity: 1;
@@ -32,7 +32,7 @@
 	}
 }
 
-@keyframes STYLESHIFT-spin-rainbow {
+@keyframes styleshift-spin-rainbow {
 	from {
 		--angle: 0deg;
 	}
@@ -41,7 +41,7 @@
 	}
 }
 
-@keyframes STYLESHIFT-slide-rainbow {
+@keyframes styleshift-slide-rainbow {
 	0% {
 		background-position: 0px 0px;
 	}

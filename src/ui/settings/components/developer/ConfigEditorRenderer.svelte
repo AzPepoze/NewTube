@@ -179,13 +179,13 @@
 	});
 </script>
 
-<div class="STYLESHIFT-Config-Editor-Layout">
-	<header class="STYLESHIFT-Config-Header">
-		<div class="STYLESHIFT-Config-Setting-Info">
-			<div class="STYLESHIFT-Config-Type-Badge">
+<div class="styleshift-config-editor-layout">
+	<header class="styleshift-config-header">
+		<div class="styleshift-config-setting-info">
+			<div class="styleshift-config-type-badge">
 				{(setting.type || "category").replace("_", " ")}
 			</div>
-			<h2 class="STYLESHIFT-Config-Title">
+			<h2 class="styleshift-config-title">
 				{displayName}
 				{#if setting.id}
 					<span class="setting-id">- {setting.id}</span>
@@ -193,15 +193,15 @@
 			</h2>
 		</div>
 
-		<nav class="STYLESHIFT-Config-Tabs">
+		<nav class="styleshift-config-tabs">
 			<CapsuleTabs options={tabs} bind:activeId={activeTab} />
 		</nav>
 	</header>
 
-	<main class="STYLESHIFT-Config-Main-Content">
+	<main class="styleshift-config-main-content">
 		{#if activeTab === "general"}
 			<div
-				class="STYLESHIFT-Config-Tab-Content"
+				class="styleshift-config-tab-content"
 				in:fly={{ y: 10, duration: 300, delay: 150 }}
 				out:fade={{ duration: 150 }}
 			>
@@ -213,7 +213,7 @@
 			</div>
 		{:else if activeTab === "logic"}
 			<div
-				class="STYLESHIFT-Config-Tab-Content logic-tab"
+				class="styleshift-config-tab-content logic-tab"
 				in:fly={{ y: 10, duration: 300, delay: 150 }}
 				out:fade={{ duration: 150 }}
 			>
@@ -226,7 +226,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Config-Editor-Layout {
+	.styleshift-config-editor-layout {
 		display: flex;
 		flex-direction: column;
 		height: 100%;
@@ -235,7 +235,7 @@
 		color: var(--font-color);
 	}
 
-	.STYLESHIFT-Config-Header {
+	.styleshift-config-header {
 		padding: 20px 25px;
 		background: var(--bg-surface);
 		border-bottom: 1px solid var(--border-color);
@@ -245,13 +245,13 @@
 		border-radius: 10px;
 	}
 
-	.STYLESHIFT-Config-Setting-Info {
+	.styleshift-config-setting-info {
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
 	}
 
-	.STYLESHIFT-Config-Type-Badge {
+	.styleshift-config-type-badge {
 		font-size: 15px;
 		text-transform: uppercase;
 		background: var(--theme-0);
@@ -263,7 +263,7 @@
 		letter-spacing: 0.5px;
 	}
 
-	.STYLESHIFT-Config-Title {
+	.styleshift-config-title {
 		margin: 0;
 		font-size: 20px;
 		font-weight: 700;
@@ -279,20 +279,20 @@
 		}
 	}
 
-	.STYLESHIFT-Config-Tabs {
+	.styleshift-config-tabs {
 		display: flex;
 		flex-direction: row;
 		align-items: center; // Center in Y
 		gap: 10px;
 	}
 
-	.STYLESHIFT-Config-Main-Content {
+	.styleshift-config-main-content {
 		flex: 1;
 		height: 100%;
 		overflow: hidden;
 	}
 
-	.STYLESHIFT-Config-Tab-Content {
+	.styleshift-config-tab-content {
 		height: 100%;
 		padding: 30px;
 		box-sizing: border-box;
@@ -308,7 +308,7 @@
 		height: 100%;
 	}
 
-	.STYLESHIFT-Config-Main-Content {
+	.styleshift-config-main-content {
 		&::-webkit-scrollbar {
 			width: 6px;
 		}

@@ -53,7 +53,7 @@
 	};
 </script>
 
-<div class="STYLESHIFT-Config-Sub-Section">
+<div class="styleshift-config-sub-section">
 	<aside class="logic-sidebar">
 		{#each sections as [title, _property] (title)}
 			<button
@@ -96,7 +96,7 @@
 </div>
 
 <style lang="scss">
-	.STYLESHIFT-Config-Sub-Section {
+	.styleshift-config-sub-section {
 		display: flex;
 		flex-direction: row;
 		height: 100%;

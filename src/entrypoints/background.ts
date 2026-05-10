@@ -148,7 +148,7 @@ async function handleMessage(
 				if (args) {
 					const settingId = args["settingId"];
 					if (settingId) {
-						preCode += `let thisSettingFrame = document.querySelector(".STYLESHIFT-Window #${settingId}");\n`;
+						preCode += `let thisSettingFrame = document.querySelector(".styleshift-window #${settingId}");\n`;
 						preCode += `
                             if (window.trustedTypes && thisSettingFrame) {
                                 if (!window.__styleshift_html_policy) {
