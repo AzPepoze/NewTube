@@ -279,9 +279,9 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 10px;
-		background: var(--Black-30);
+		background: var(--bg-overlay-30);
 		border: 1px gray solid;
-		color: var(--White-100);
+		color: var(--fg-opacity-100);
 		border-radius: 20px;
 		padding: 8px 15px;
 		width: 100%;
@@ -293,14 +293,14 @@
 		outline: none;
 
 		&:hover {
-			border-color: var(--Theme-0, #7f5db7);
+			border-color: var(--theme-0, #7f5db7);
 			transform: translateY(-1px);
-			box-shadow: 0 4px 12px var(--Black-20);
+			box-shadow: 0 4px 12px var(--bg-overlay-20);
 			filter: brightness(1.5);
 		}
 
 		&.open {
-			border-color: var(--Theme-0, #7f5db7);
+			border-color: var(--theme-0, #7f5db7);
 			filter: brightness(1.5);
 
 			.arrow {
@@ -344,14 +344,14 @@
 	.STYLESHIFT-Dropdown-Menu {
 		position: absolute;
 		z-index: 10000;
-		background: var(--BG-Dark);
-		border: 1px solid var(--White-10);
+		background: var(--bg-main);
+		border: 1px solid var(--fg-opacity-10);
 		border-radius: 15px;
 		padding: 6px;
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
-		box-shadow: 0 10px 30px var(--Black-50);
+		box-shadow: 0 10px 30px var(--bg-overlay-50);
 		overflow: hidden;
 		transform-origin: top center;
 		box-sizing: border-box;
@@ -365,7 +365,7 @@
 	.STYLESHIFT-Dropdown-Item {
 		background: transparent;
 		border: none;
-		color: var(--White-80);
+		color: var(--fg-opacity-80);
 		padding: 10px 14px;
 		text-align: left;
 		cursor: pointer;
@@ -379,13 +379,13 @@
 			forwards;
 
 		&:hover {
-			background: var(--White-10);
+			background: var(--fg-opacity-10);
 			color: white;
 			transform: translateX(5px);
 		}
 
 		&.selected {
-			background: var(--Theme-0, #7f5db7);
+			background: var(--theme-0, #7f5db7);
 			color: white;
 		}
 	}

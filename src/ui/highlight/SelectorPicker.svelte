@@ -113,7 +113,7 @@
 			"Confirm Selector",
 			{
 				confirmLabel: "Use Selector",
-				confirmColor: "var(--Theme-0)",
+				confirmColor: "var(--theme-0)",
 			},
 		);
 

@@ -46,7 +46,7 @@
 		font: inherit;
 
 		&:hover {
-			background: var(--White-10);
+			background: var(--fg-opacity-10);
 			transform: scale(1.1);
 		}
 

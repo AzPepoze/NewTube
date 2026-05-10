@@ -71,7 +71,7 @@
 
 	<div class="selector-info">
 		<div class="icon-box">
-			<Icon name="code" size={14} color="var(--White-100)" />
+			<Icon name="code" size={14} color="var(--fg-opacity-100)" />
 		</div>
 		<div class="info-text">
 			<span class="label">Targeting:</span>
@@ -104,7 +104,7 @@
 			<div class="advanced-editor">
 				{#if controller.isEditorLoading}
 					<div class="editor-loading">
-						<Icon name="sync" size={24} color="var(--White-60)" />
+						<Icon name="sync" size={24} color="var(--fg-opacity-60)" />
 						<span>Loading Code Editor...</span>
 					</div>
 				{/if}
@@ -140,17 +140,17 @@
 		margin: 10px 20px 5px;
 		padding: 14px 18px;
 		border-radius: 15px;
-		background: var(--White-03);
+		background: var(--fg-opacity-03);
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		border: 1px solid var(--White-05);
+		border: 1px solid var(--fg-opacity-05);
 
 		.icon-box {
 			width: 32px;
 			height: 32px;
 			border-radius: 10px;
-			background: var(--White-05);
+			background: var(--fg-opacity-05);
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -167,13 +167,13 @@
 				font-weight: 600;
 				text-transform: uppercase;
 				letter-spacing: 0.5px;
-				color: var(--White-40);
+				color: var(--fg-opacity-40);
 			}
 
 			.selector-name {
 				font-family: 'Fira Code', 'JetBrains Mono', monospace;
 				font-size: 13px;
-				color: var(--Theme-0);
+				color: var(--theme-0);
 				font-weight: 500;
 			}
 		}
@@ -213,7 +213,7 @@
 		gap: 12px;
 		background: rgba(0, 0, 0, 0.2);
 		border-radius: 12px;
-		color: var(--White-60);
+		color: var(--fg-opacity-60);
 		
 		:global(svg) { animation: spin 1.5s linear infinite; }
 	}
@@ -228,8 +228,8 @@
 		display: flex;
 		justify-content: flex-end;
 		gap: 12px;
-		background: var(--White-02);
-		border-top: 1px solid var(--White-05);
+		background: var(--fg-opacity-02);
+		border-top: 1px solid var(--fg-opacity-05);
 	}
 
 	button {
@@ -241,7 +241,7 @@
 		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
 		&.btn-primary {
-			background: var(--Theme-0);
+			background: var(--theme-0);
 			color: white;
 			border: none;
 			box-shadow: 0 4px 12px rgba(127, 93, 183, 0.3);
@@ -250,9 +250,9 @@
 
 		&.btn-secondary {
 			background: transparent;
-			color: var(--White-60);
-			border: 1px solid var(--White-20);
-			&:hover { color: white; background: var(--White-05); }
+			color: var(--fg-opacity-60);
+			border: 1px solid var(--fg-opacity-20);
+			&:hover { color: white; background: var(--fg-opacity-05); }
 		}
 	}
 </style>

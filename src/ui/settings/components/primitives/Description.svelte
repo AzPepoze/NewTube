@@ -67,7 +67,7 @@
 		text-wrap: wrap;
 		font-size: 17px;
 		white-space: break-spaces;
-		color: var(--Font-Color);
+		color: var(--font-color);
 
 		&.no-description {
 			justify-content: center;

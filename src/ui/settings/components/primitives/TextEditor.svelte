@@ -26,8 +26,8 @@
 		width: 100%;
 		box-sizing: border-box;
 		min-height: 100px;
-		background: var(--White-05);
-		border: 1px solid var(--White-10);
+		background: var(--fg-opacity-05);
+		border: 1px solid var(--fg-opacity-10);
 		color: white;
 		border-radius: 8px;
 		padding: 10px;
@@ -37,7 +37,7 @@
 		transition: border-color 0.2s;
 
 		&:focus {
-			border-color: var(--theme-color, var(--Theme-0));
+			border-color: var(--theme-color, var(--theme-0));
 		}
 	}
 </style>

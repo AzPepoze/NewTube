@@ -80,7 +80,7 @@
 	.shortcuts-title {
 		font-size: 14px;
 		font-weight: 600;
-		color: var(--White-90);
+		color: var(--fg-opacity-90);
 		text-transform: uppercase;
 		letter-spacing: 1px;
 	}
@@ -97,23 +97,23 @@
 		align-items: center;
 		gap: 12px;
 		padding: 12px;
-		background: var(--White-05);
-		border: 1px solid var(--White-06);
+		background: var(--fg-opacity-05);
+		border: 1px solid var(--fg-opacity-06);
 		border-radius: 10px;
 		transition: all 0.2s ease;
 		overflow: hidden;
 		box-sizing: border-box;
 
 		&:hover {
-			background: var(--White-08);
-			border-color: var(--Theme-0-30);
+			background: var(--fg-opacity-08);
+			border-color: var(--theme-0-30);
 		}
 	}
 
 	.shortcut-desc {
 		font-size: 15px;
 		font-weight: 700;
-		color: var(--Font-Color);
+		color: var(--font-color);
 		flex: 1;
 		min-width: 0;
 		overflow: hidden;
@@ -126,9 +126,9 @@
 			"Roboto Mono", "Courier New", monospace;
 		font-size: 12px;
 		font-weight: 700;
-		background: var(--Theme-0-20);
-		border: 1px solid var(--Theme-1);
-		color: var(--Theme-1);
+		background: var(--theme-0-20);
+		border: 1px solid var(--theme-1);
+		color: var(--theme-1);
 		padding: 4px 8px;
 		border-radius: 10px;
 		white-space: nowrap;
@@ -137,7 +137,7 @@
 
 	.shortcuts-empty {
 		font-size: 13px;
-		color: var(--White-40);
+		color: var(--fg-opacity-40);
 		text-align: center;
 		padding: 20px;
 	}

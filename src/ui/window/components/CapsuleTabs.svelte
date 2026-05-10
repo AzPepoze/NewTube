@@ -50,11 +50,11 @@
 	.STYLESHIFT-Capsule-Toggle {
 		display: grid;
 		grid-template-columns: repeat(var(--options-count), 1fr);
-		background: var(--BG-Surface);
+		background: var(--bg-surface);
 		padding: 3px;
 		border-radius: 100px;
 		position: relative;
-		border: 1px solid var(--Border-Color);
+		border: 1px solid var(--border-color);
 		width: fit-content;
 		min-width: 180px;
 	}
@@ -64,12 +64,12 @@
 		top: 3px;
 		left: 3px;
 		height: calc(100% - 6px);
-		background: var(--Theme-0);
+		background: var(--theme-0);
 		border-radius: 100px;
 		transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		z-index: 1;
-		border: 1px solid var(--Border-Color);
-		box-shadow: 0 2px 8px var(--Shadow-Color);
+		border: 1px solid var(--border-color);
+		box-shadow: 0 2px 8px var(--shadow-color);
 		width: calc((100% - 6px) / var(--options-count)) !important;
 	}
 
@@ -78,7 +78,7 @@
 		z-index: 2;
 		background: transparent;
 		border: none;
-		color: var(--Font-Color-Dim);
+		color: var(--font-color-dim);
 		font-size: 12px;
 		font-weight: 700;
 		padding: 8px 16px;
@@ -93,8 +93,8 @@
 		white-space: nowrap;
 
 		&:hover:not(.active) {
-			color: var(--Font-Color);
-			background: var(--White-05);
+			color: var(--font-color);
+			background: var(--fg-opacity-05);
 		}
 
 		&.active {

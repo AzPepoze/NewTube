@@ -40,8 +40,8 @@
 		if (!isHex) {
 			return {
 				background: color,
-				border: "1px solid var(--Border-Color)",
-				color: "var(--Font-Color)",
+				border: "1px solid var(--border-color)",
+				color: "var(--font-color)",
 			};
 		}
  

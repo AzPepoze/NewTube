@@ -81,7 +81,7 @@
 		position: relative;
 		margin-block: -10px;
 		margin-left: 10px;
-		color: var(--White-80);
+		color: var(--fg-opacity-80);
 
 		&.is-editable {
 			padding-right: 45px; // Reserve space for hover controls
@@ -96,7 +96,7 @@
 				left: 10px;
 				right: 10px;
 				height: 1px;
-				background: var(--White-10);
+				background: var(--fg-opacity-10);
 			}
 		}
 
@@ -104,7 +104,7 @@
 			cursor: default;
 			margin-left: 0;
 			padding-block: 10px;
-			color: var(--White-40);
+			color: var(--fg-opacity-40);
 			font-size: 11px;
 			font-weight: 800;
 			text-transform: uppercase;
@@ -121,11 +121,11 @@
 			background: white;
 			margin-left: 0px;
 			color: black;
-			box-shadow: 0 4px 15px var(--Black-20);
+			box-shadow: 0 4px 15px var(--bg-overlay-20);
 
 			.STYLESHIFT-Left-Category-Icon {
 				transform: scale(1.3) rotate(10deg);
-				filter: drop-shadow(0 0 5px var(--Black-40));
+				filter: drop-shadow(0 0 5px var(--bg-overlay-40));
 				color: black !important;
 				opacity: 1;
 
@@ -141,7 +141,7 @@
 		}
 
 		&:hover:not(.selected):not(.is-header) {
-			background: var(--White-10);
+			background: var(--fg-opacity-10);
 			margin-left: 5px;
 			color: white;
 		}
@@ -170,7 +170,7 @@
 		transition: opacity 0.2s;
 		position: absolute;
 		right: 10px;
-		background: var(--White-10);
+		background: var(--fg-opacity-10);
 		padding: 2px 4px;
 		border-radius: 8px;
 		backdrop-filter: blur(5px);
@@ -186,7 +186,7 @@
 	.STYLESHIFT-Sidebar-Control-Btn {
 		background: transparent;
 		border: none;
-		color: var(--White-60);
+		color: var(--fg-opacity-60);
 		cursor: pointer;
 		padding: 2px;
 		display: flex;
@@ -195,8 +195,8 @@
 		border-radius: 4px;
 
 		&:hover {
-			background: var(--White-20);
-			color: var(--White-100);
+			background: var(--fg-opacity-20);
+			color: var(--fg-opacity-100);
 		}
 
 		&.drag-handle {
@@ -211,12 +211,12 @@
 	@keyframes STYLESHIFT-new-category-pop {
 		0% {
 			transform: scale(0.8);
-			background: var(--Theme-0);
+			background: var(--theme-0);
 			color: white;
 		}
 		50% {
 			transform: scale(1.1);
-			background: var(--Theme-0);
+			background: var(--theme-0);
 			color: white;
 		}
 		100% {
@@ -232,7 +232,7 @@
 		justify-content: center;
 		width: 24px;
 		height: 24px;
-		filter: drop-shadow(0 0 5px var(--Black-20));
+		filter: drop-shadow(0 0 5px var(--bg-overlay-20));
 	}
 
 	.STYLESHIFT-Left-Category-Text {

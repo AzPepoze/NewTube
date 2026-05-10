@@ -272,16 +272,16 @@
 <style lang="scss">
 	.STYLESHIFT-Window-Container {
 		position: fixed;
-		background: var(--Window-BG, #1e1e1e);
-		backdrop-filter: var(--Window-Blur) var(--Window-Saturate);
-		-webkit-backdrop-filter: var(--Window-Blur) var(--Window-Saturate);
+		background: var(--window-bg, #1e1e1e);
+		backdrop-filter: var(--window-blur) var(--window-saturate);
+		-webkit-backdrop-filter: var(--window-blur) var(--window-saturate);
 
 		&.disable-backdrop-filter {
 			backdrop-filter: none !important;
 			-webkit-backdrop-filter: none !important;
 		}
 
-		border: 1px solid var(--White-10);
+		border: 1px solid var(--fg-opacity-10);
 		border-radius: 12px;
 		display: flex;
 		flex-direction: column;

@@ -51,7 +51,7 @@
 <style lang="scss">
 	.STYLESHIFT-Category-Separator {
 		height: 1px;
-		background: var(--White-10);
+		background: var(--fg-opacity-10);
 		margin: 20px 0 10px;
 	}
 
@@ -60,7 +60,7 @@
 		flex-direction: column;
 		gap: 10px;
 		padding: 10px;
-		background: var(--White-05);
+		background: var(--fg-opacity-05);
 		border-radius: 20px;
 	}
 </style>

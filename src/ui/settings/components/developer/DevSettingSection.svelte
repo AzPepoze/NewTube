@@ -213,15 +213,15 @@
 	.section-title {
 		font-size: 18px;
 		font-weight: 700;
-		color: var(--Font-Color);
+		color: var(--font-color);
 		letter-spacing: -0.5px;
 	}
 
 	.run-script-btn {
 		margin-left: 10px;
-		background: var(--Theme-0-20);
-		border: 1px solid var(--Theme-0);
-		color: var(--Theme-1);
+		background: var(--theme-0-20);
+		border: 1px solid var(--theme-0);
+		color: var(--theme-1);
 		padding: 4px 12px;
 		border-radius: 6px;
 		font-size: 12px;
@@ -233,9 +233,9 @@
 		transition: all 0.2s;
 
 		&:hover {
-			background: var(--Theme-0);
+			background: var(--theme-0);
 			color: white;
-			box-shadow: 0 0 10px var(--Theme-0);
+			box-shadow: 0 0 10px var(--theme-0);
 		}
 
 		&:active {
@@ -254,10 +254,10 @@
 	.section-lang-hint {
 		font-size: 11px;
 		font-weight: 700;
-		color: var(--Font-Color-Dim);
+		color: var(--font-color-dim);
 		text-transform: uppercase;
 		letter-spacing: 1px;
-		background: var(--BG-Surface);
+		background: var(--bg-surface);
 		padding: 4px 10px;
 		border-radius: 6px;
 	}
@@ -280,16 +280,16 @@
 			flex: 1;
 			display: flex;
 			flex-direction: column;
-			border: 1px solid var(--Border-Color) !important;
-			background: var(--BG-Input) !important;
+			border: 1px solid var(--border-color) !important;
+			background: var(--bg-input) !important;
 			border-radius: 16px !important;
 			margin-top: 0 !important;
-			box-shadow: 0 4px 20px var(--Shadow-Color);
+			box-shadow: 0 4px 20px var(--shadow-color);
 
 			&:focus-within {
 				border-color: var(--section-color) !important;
-				background: var(--BG-Input) !important;
-				box-shadow: 0 8px 40px var(--Shadow-Color);
+				background: var(--bg-input) !important;
+				box-shadow: 0 8px 40px var(--shadow-color);
 			}
 		}
 	}

@@ -37,7 +37,7 @@
 		height: 50px;
 		background: rgba(0, 0, 0, 0.8);
 		backdrop-filter: blur(10px);
-		border: 1px solid var(--White-10);
+		border: 1px solid var(--fg-opacity-10);
 		border-radius: 15px;
 		padding: 5px;
 		display: flex;
@@ -64,7 +64,7 @@
 		white-space: nowrap;
 
 		&:hover {
-			background: var(--White-10);
+			background: var(--fg-opacity-10);
 		}
 
 		img {

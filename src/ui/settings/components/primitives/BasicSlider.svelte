@@ -40,14 +40,14 @@
 		appearance: none;
 		width: 100%;
 		height: 6px;
-		background: var(--White-10);
+		background: var(--fg-opacity-10);
 		border-radius: 10px;
 		outline: none;
 		cursor: pointer;
-		border: 1px solid var(--White-10);
+		border: 1px solid var(--fg-opacity-10);
 		background-image: linear-gradient(
-			var(--Theme-0, #7f5db7),
-			var(--Theme-0, #7f5db7)
+			var(--theme-0, #7f5db7),
+			var(--theme-0, #7f5db7)
 		);
 		background-size: var(--progress) 100%;
 		background-repeat: no-repeat;
@@ -58,11 +58,11 @@
 			appearance: none;
 			width: 16px;
 			height: 16px;
-			background: var(--Font-Color, white);
-			border: 2px solid var(--Theme-0, #7f5db7);
+			background: var(--font-color, white);
+			border: 2px solid var(--theme-0, #7f5db7);
 			border-radius: 50%;
 			cursor: pointer;
-			box-shadow: 0 0 10px var(--Black-30);
+			box-shadow: 0 0 10px var(--bg-overlay-30);
 			transition: transform 0.1s ease;
 		}
 

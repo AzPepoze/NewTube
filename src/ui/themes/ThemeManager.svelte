@@ -251,7 +251,7 @@
 		let bgColor =
 			theme.currentSettings?.["MainThemeColor"] ||
 			theme.currentSettings?.["MainThemeColorC"] ||
-			"var(--Theme-0)";
+			"var(--theme-0)";
 		const bgImg = theme.currentSettings?.["BackgroundImageUrl"] || "";
 		const themeId = theme.themeId || null;
 
@@ -465,7 +465,7 @@
 		}
 
 		&::-webkit-scrollbar-thumb {
-			background: var(--White-10);
+			background: var(--fg-opacity-10);
 			border-radius: 10px;
 		}
 
@@ -481,14 +481,14 @@
 		align-items: center;
 		justify-content: center;
 		padding: 60px 0;
-		color: var(--Font-Color-Dim);
+		color: var(--font-color-dim);
 		gap: 15px;
 
 		.spinner {
 			width: 40px;
 			height: 40px;
-			border: 3px solid var(--White-10);
-			border-top-color: var(--Theme-0);
+			border: 3px solid var(--fg-opacity-10);
+			border-top-color: var(--theme-0);
 			border-radius: 50%;
 			animation: spin 1s linear infinite;
 		}
@@ -509,9 +509,9 @@
 		grid-column: 1 / -1;
 		padding: 60px 20px;
 		text-align: center;
-		color: var(--White-40);
-		background: var(--White-02);
-		border: 2px dashed var(--White-10);
+		color: var(--fg-opacity-40);
+		background: var(--fg-opacity-02);
+		border: 2px dashed var(--fg-opacity-10);
 		border-radius: 20px;
 
 		.empty-icon {
@@ -538,12 +538,12 @@
 		transform: translateX(-50%);
 		display: flex;
 		align-items: center;
-		background: var(--BG-Dark);
-		backdrop-filter: var(--Window-Blur);
+		background: var(--bg-main);
+		backdrop-filter: var(--window-blur);
 		padding: 4px;
 		border-radius: 40px;
-		border: 1px solid var(--Border-Color);
-		box-shadow: 0 15px 45px var(--Shadow-Color);
+		border: 1px solid var(--border-color);
+		box-shadow: 0 15px 45px var(--shadow-color);
 		z-index: 1000;
 		width: fit-content;
 		gap: 2px;
@@ -557,7 +557,7 @@
 		.footer-divider {
 			width: 1px;
 			height: 20px;
-			background: var(--Border-Color);
+			background: var(--border-color);
 			margin: 0 6px;
 		}
 
@@ -571,7 +571,7 @@
 			border-radius: 30px;
 			border: none;
 			background: transparent;
-			color: var(--Font-Color-Dim);
+			color: var(--font-color-dim);
 			font-family: inherit;
 			font-size: 16px;
 			font-weight: 500;
@@ -580,8 +580,8 @@
 			white-space: nowrap;
 
 			&:hover {
-				background: var(--White-08);
-				color: var(--Font-Color);
+				background: var(--fg-opacity-08);
+				color: var(--font-color);
 				transform: translateY(-1px);
 			}
 
@@ -597,9 +597,9 @@
 			}
 
 			&.save {
-				color: var(--Theme-0-Light);
+				color: var(--theme-0-Light);
 				&:hover {
-					background: var(--Theme-0-15);
+					background: var(--theme-0-15);
 				}
 			}
 
@@ -611,22 +611,22 @@
 			}
 
 			&.ok {
-				background: var(--Theme-0);
+				background: var(--theme-0);
 				color: white;
 				padding: 0 18px;
 				font-weight: 600;
 
 				&:hover {
 					filter: brightness(1.2);
-					box-shadow: 0 4px 15px var(--Theme-0-30);
+					box-shadow: 0 4px 15px var(--theme-0-30);
 				}
 			}
 
 			&.cancel {
 				padding: 0 12px;
-				color: var(--Font-Color-Dim);
+				color: var(--font-color-dim);
 				&:hover {
-					color: var(--Font-Color);
+					color: var(--font-color);
 				}
 			}
 

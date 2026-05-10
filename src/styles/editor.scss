@@ -6,7 +6,7 @@
 		resize: vertical;
 		overflow: hidden;
 		padding: 5px;
-		background: var(--White-52);
+		background: var(--fg-opacity-52);
 	}
 
 	.STYLESHIFT-Close {
@@ -15,7 +15,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: var(--Drag-Top-BG);
+		background: var(--drag-top-bg);
 		border-radius: 1000px;
 		margin-left: 5px;
 		font-size: 12px;
@@ -24,7 +24,7 @@
 	}
 
 	.STYLESHIFT-Search {
-		background: var(--White-38);
+		background: var(--fg-opacity-38);
 		border-radius: 20px;
 		border: transparent;
 		padding: 10px;
@@ -32,7 +32,7 @@
 		margin-top: 3px;
 
 		&::placeholder {
-			color: var(--Grey-Light);
+			color: var(--text-disabled);
 		}
 	}
 
@@ -69,7 +69,7 @@
 		height: 12px;
 		padding-block: 10px;
 		text-align: center;
-		background: var(--Drag-Top-BG);
+		background: var(--drag-top-bg);
 		transition: 0.2s all;
 		display: flex;
 		justify-content: center;
@@ -94,7 +94,7 @@
 		overflow-x: visible;
 		width: 100%;
 		height: 100%;
-		border-radius: var(--Border-Radius);
+		border-radius: var(--border-radius);
 		transform: translateZ(0);
 		display: flex;
 		flex-direction: column;
@@ -102,7 +102,7 @@
 		box-sizing: border-box;
 
 		&[Left] {
-			background: var(--Category-Left-BG);
+			background: var(--category-left-bg);
 			overflow-x: hidden;
 			padding-inline: 0;
 		}
@@ -119,7 +119,7 @@
 
 			&:hover,
 			&:active {
-				background: var(--White-20);
+				background: var(--fg-opacity-20);
 			}
 		}
 
@@ -132,14 +132,14 @@
 		}
 
 		&::-webkit-scrollbar-thumb {
-			background: var(--Grey);
+			background: var(--bg-element-muted);
 		}
 
-		scrollbar-color: var(--Grey) transparent;
+		scrollbar-color: var(--bg-element-muted) transparent;
 		scrollbar-width: thin;
 
 		.STYLESHIFT-Category-Frame {
-			background: var(--Setting-Frame-BG);
+			background: var(--setting-frame-bg);
 			padding: 10px;
 			overflow: visible;
 		}
@@ -152,8 +152,8 @@
 		.STYLESHIFT-Main-Setting-Frame:has(.STYLESHIFT-Setting-Frame) {
 			background: radial-gradient(
 				at center top,
-				var(--White-20),
-				var(--White-10)
+				var(--fg-opacity-20),
+				var(--fg-opacity-10)
 			);
 			overflow: visible;
 
@@ -195,8 +195,8 @@
 			width: 32px;
 			height: 32px;
 			padding: 0;
-			border: 1px solid var(--White-30);
-			background: var(--BG-Dark);
+			border: 1px solid var(--fg-opacity-30);
+			background: var(--bg-main);
 			border-radius: 8px;
 			display: flex;
 			align-items: center;
@@ -229,8 +229,8 @@
 			}
 
 			&:hover {
-				background: var(--Theme-0);
-				border-color: var(--Theme-1);
+				background: var(--theme-0);
+				border-color: var(--theme-1);
 				transform: scale(1.1);
 			}
 
@@ -261,8 +261,8 @@
 			transition: all 0.3s ease-out;
 
 			&.show {
-				border: 2px dashed var(--White-40);
-				background: var(--White-05);
+				border: 2px dashed var(--fg-opacity-40);
+				background: var(--fg-opacity-05);
 				opacity: 1;
 				margin-block: 0px;
 			}
@@ -284,9 +284,9 @@
 		width: -webkit-fill-available;
 		font-weight: bold;
 		font-size: 15px;
-		border-bottom: 1px solid var(--White-10);
+		border-bottom: 1px solid var(--fg-opacity-10);
 		margin-bottom: 10px;
-		color: var(--Grey-Light);
+		color: var(--text-disabled);
 	}
 
 	.STYLESHIFT-preview_image {
@@ -296,7 +296,7 @@
 	}
 
 	mark {
-		background: var(--Theme-0);
+		background: var(--theme-0);
 		color: white;
 		border-radius: 2px;
 		padding-inline: 2px;
@@ -323,17 +323,17 @@
 .STYLESHIFT-Window {
 	height: -webkit-fill-available;
 	position: fixed;
-	border: 1px var(--Border-Color) solid;
-	border-radius: var(--Border-Radius);
-	background-color: var(--Window-BG);
-	backdrop-filter: var(--Window-Blur) var(--Window-Saturate);
+	border: 1px var(--border-color) solid;
+	border-radius: var(--border-radius);
+	background-color: var(--window-bg);
+	backdrop-filter: var(--window-blur) var(--window-saturate);
 	z-index: 10000;
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
 	gap: 10px;
-	box-shadow: 0 10px 50px var(--Shadow-Color);
-	color: var(--Font-Color);
+	box-shadow: 0 10px 50px var(--shadow-color);
+	color: var(--font-color);
 	transition:
 		background-color 0.3s,
 		backdrop-filter 0.3s;
@@ -351,7 +351,7 @@ textarea.STYLESHIFT-Selector-Text-Editor {
 	justify-content: center;
 	align-items: center;
 	z-index: 10000;
-	background: var(--Black-60);
+	background: var(--bg-overlay-60);
 	top: 0;
 	left: 0;
 }
@@ -379,6 +379,6 @@ textarea.STYLESHIFT-Selector-Text-Editor {
 		rgba(66, 66, 66, 0.5)
 	);
 	color: white;
-	border: var(--White-10) solid 1px;
+	border: var(--fg-opacity-10) solid 1px;
 	transition: all 0.2s;
 }

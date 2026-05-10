@@ -51,7 +51,7 @@
 		border-radius: 6px;
 		border: none;
 		background: transparent;
-		color: var(--White-60);
+		color: var(--fg-opacity-60);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -59,7 +59,7 @@
 		transition: all 0.2s;
 
 		&:hover {
-			background: var(--White-10);
+			background: var(--fg-opacity-10);
 			color: white;
 		}
 

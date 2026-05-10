@@ -180,7 +180,7 @@
 						<Icon
 							name="brush"
 							size={16}
-							color="var(--White-100)"
+							color="var(--fg-opacity-100)"
 						/>
 					</button>
 				{/if}

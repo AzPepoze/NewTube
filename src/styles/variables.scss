@@ -1,136 +1,151 @@
 .STYLESHIFT-Main {
 	/* --- Theme Core --- */
-	--Theme-0: #7f5db7;
-	--Theme-0-10: rgba(127, 93, 183, 0.1);
-	--Theme-0-12: rgba(127, 93, 183, 0.12);
-	--Theme-0-15: rgba(127, 93, 183, 0.15);
-	--Theme-0-20: rgba(127, 93, 183, 0.2);
-	--Theme-0-30: rgba(127, 93, 183, 0.3);
-	--Theme-0-40: rgba(127, 93, 183, 0.4);
-	--Theme-0-50: rgba(127, 93, 183, 0.5);
-	--Theme-0-Light: #9374c9;
-	--Theme-0-Text: #b39dd9;
-	--Theme-1: rgb(246, 196, 255);
+	--theme-0: #7f5db7;
+	--theme-0-10: rgba(127, 93, 183, 0.1);
+	--theme-0-12: rgba(127, 93, 183, 0.12);
+	--theme-0-15: rgba(127, 93, 183, 0.15);
+	--theme-0-20: rgba(127, 93, 183, 0.2);
+	--theme-0-30: rgba(127, 93, 183, 0.3);
+	--theme-0-40: rgba(127, 93, 183, 0.4);
+	--theme-0-50: rgba(127, 93, 183, 0.5);
+	--theme-0-light: #9374c9;
+	--theme-0-text: #b39dd9;
+	--theme-1: rgb(246, 196, 255);
 
-	--Theme-Warning: #ffbb33;
-	--Theme-Warning-10: rgba(255, 187, 51, 0.1);
-	--Theme-Warning-20: rgba(255, 187, 51, 0.2);
-	--Theme-Warning-50: rgba(255, 187, 51, 0.5);
+	--theme-warning: #ffbb33;
+	--theme-warning-10: rgba(255, 187, 51, 0.1);
+	--theme-warning-20: rgba(255, 187, 51, 0.2);
+	--theme-warning-50: rgba(255, 187, 51, 0.5);
 
-	--Theme-Error: #ff4444;
-	--Theme-Error-10: rgba(255, 68, 68, 0.1);
-	--Theme-Error-20: rgba(255, 68, 68, 0.2);
-	--Theme-Error-50: rgba(255, 68, 68, 0.5);
+	--theme-error: #ff4444;
+	--theme-error-10: rgba(255, 68, 68, 0.1);
+	--theme-error-20: rgba(255, 68, 68, 0.2);
+	--theme-error-50: rgba(255, 68, 68, 0.5);
 
-	--Theme-Success: #00c851;
-	--Theme-Success-10: rgba(0, 200, 81, 0.1);
-	--Theme-Success-20: rgba(0, 200, 81, 0.2);
-	--Theme-Success-50: rgba(0, 200, 81, 0.5);
+	--theme-success: #00c851;
+	--theme-success-10: rgba(0, 200, 81, 0.1);
+	--theme-success-20: rgba(0, 200, 81, 0.2);
+	--theme-success-50: rgba(0, 200, 81, 0.5);
 
 	/* --- Default Dark Theme --- */
-	--BG-Dark: rgba(43, 43, 43, 1);
-	--BG-Dark-Welcome: #111111;
-	--BG-Surface: rgba(255, 255, 255, 0.03);
-	--BG-Surface-Hover: rgba(255, 255, 255, 0.06);
-	--BG-Input: rgba(43, 43, 43, 0.8);
-	--Font-Color: #ffffff;
-	--Font-Color-Dim: rgba(255, 255, 255, 0.5);
-	--Border-Color: rgba(255, 255, 255, 0.08);
-	--Shadow-Color: rgba(0, 0, 0, 0.5);
+	--bg-main: rgba(43, 43, 43, 1);
+	--bg-welcome: #111111;
+	--bg-surface: rgba(255, 255, 255, 0.03);
+	--bg-surface-hover: rgba(255, 255, 255, 0.06);
+	--bg-input: rgba(43, 43, 43, 0.8);
+	--font-color: #ffffff;
+	--font-color-dim: rgba(255, 255, 255, 0.5);
+	--border-color: rgba(255, 255, 255, 0.08);
+	--shadow-color: rgba(0, 0, 0, 0.5);
 
-	/* --- Colors & Opacity --- */
-	--White-02: rgba(255, 255, 255, 0.02);
-	--White-03: rgba(255, 255, 255, 0.03);
-	--White-05: rgba(255, 255, 255, 0.05);
-	--White-06: rgba(255, 255, 255, 0.06);
-	--White-08: rgba(255, 255, 255, 0.08);
-	--White-10: rgba(255, 255, 255, 0.1);
-	--White-15: rgba(255, 255, 255, 0.15);
-	--White-17: rgba(255, 255, 255, 0.17);
-	--White-20: rgba(255, 255, 255, 0.2);
-	--White-30: rgba(255, 255, 255, 0.3);
-	--White-38: rgba(255, 255, 255, 0.38);
-	--White-40: rgba(255, 255, 255, 0.4);
-	--White-50: rgba(255, 255, 255, 0.5);
-	--White-52: rgba(255, 255, 255, 0.32);
-	--White-60: rgba(255, 255, 255, 0.6);
-	--White-70: rgba(255, 255, 255, 0.7);
-	--White-80: rgba(255, 255, 255, 0.8);
-	--White-87: rgba(255, 255, 255, 0.53);
-	--White-90: rgba(255, 255, 255, 0.9);
-	--White-95: rgba(255, 255, 255, 0.95);
-	--White-100: rgba(255, 255, 255, 1);
+	/* --- Content / Foreground Opacity Scale --- */
+	--fg-opacity-02: rgba(255, 255, 255, 0.02);
+	--fg-opacity-03: rgba(255, 255, 255, 0.03);
+	--fg-opacity-05: rgba(255, 255, 255, 0.05);
+	--fg-opacity-06: rgba(255, 255, 255, 0.06);
+	--fg-opacity-08: rgba(255, 255, 255, 0.08);
+	--fg-opacity-10: rgba(255, 255, 255, 0.1);
+	--fg-opacity-15: rgba(255, 255, 255, 0.15);
+	--fg-opacity-17: rgba(255, 255, 255, 0.17);
+	--fg-opacity-20: rgba(255, 255, 255, 0.2);
+	--fg-opacity-30: rgba(255, 255, 255, 0.3);
+	--fg-opacity-38: rgba(255, 255, 255, 0.38);
+	--fg-opacity-40: rgba(255, 255, 255, 0.4);
+	--fg-opacity-50: rgba(255, 255, 255, 0.5);
+	--fg-opacity-52: rgba(255, 255, 255, 0.32);
+	--fg-opacity-60: rgba(255, 255, 255, 0.6);
+	--fg-opacity-70: rgba(255, 255, 255, 0.7);
+	--fg-opacity-80: rgba(255, 255, 255, 0.8);
+	--fg-opacity-87: rgba(255, 255, 255, 0.53);
+	--fg-opacity-90: rgba(255, 255, 255, 0.9);
+	--fg-opacity-95: rgba(255, 255, 255, 0.95);
+	--fg-opacity-100: rgba(255, 255, 255, 1);
 
-	--Black-10: rgba(0, 0, 0, 0.1);
-	--Black-20: rgba(0, 0, 0, 0.2);
-	--Black-30: rgba(0, 0, 0, 0.3);
-	--Black-40: rgba(0, 0, 0, 0.4);
-	--Black-50: rgba(0, 0, 0, 0.5);
-	--Black-60: rgba(0, 0, 0, 0.6);
+	/* --- Background Overlay / Shadow Scale --- */
+	--bg-overlay-10: rgba(0, 0, 0, 0.1);
+	--bg-overlay-20: rgba(0, 0, 0, 0.2);
+	--bg-overlay-30: rgba(0, 0, 0, 0.3);
+	--bg-overlay-40: rgba(0, 0, 0, 0.4);
+	--bg-overlay-50: rgba(0, 0, 0, 0.5);
+	--bg-overlay-60: rgba(0, 0, 0, 0.6);
 
-	--Grey: #888;
-	--Grey-Light: #b8b8b8;
-	--Grey-Dark: #646464;
+	/* --- Semantic Aliases (Explain themselves) --- */
+	--text-primary: var(--fg-opacity-100);
+	--text-secondary: var(--fg-opacity-80);
+	--text-muted: var(--fg-opacity-50);
+	--text-disabled: #b8b8b8; /* formerly Grey-Light */
+	
+	--border-subtle: var(--fg-opacity-10);
+	--border-strong: var(--fg-opacity-20);
+	
+	--surface-highlight: var(--fg-opacity-10);
+	--surface-hover: var(--fg-opacity-20);
 
-	--Border-Radius: 12px;
-	--Drag-Top-BG: rgba(128, 128, 128, 0.2);
+	--bg-element-muted: #888; /* formerly Grey */
+	--bg-element-muted-strong: #646464; /* formerly Grey-Dark */
 
-	--Category-Title-BG: radial-gradient(
+	--shadow-subtle: var(--bg-overlay-30);
+	--shadow-strong: var(--bg-overlay-50);
+
+	--border-radius: 12px;
+	--drag-top-bg: rgba(128, 128, 128, 0.2);
+
+	--category-title-bg: radial-gradient(
 		at center top,
 		rgb(255, 255, 255),
-		var(--White-50)
+		var(--fg-opacity-50)
 	);
-	--Category-Title-Text-Color: black;
+	--category-title-text-color: black;
 
-	--Category-Left-BG: linear-gradient(90deg, transparent, var(--White-10));
-	--Category-Left-Title-BG-Hover: rgb(125, 80, 133);
-	--Category-Left-Title-BG-Selected: var(--White-90);
-	--Category-Left-Title-Text-Color: rgb(255, 255, 255);
-	--Category-Left-Title-Text-Color-Hover: var(--Theme-1);
-	--Category-Left-Title-Text-Color-Selected: black;
+	--category-left-bg: linear-gradient(90deg, transparent, var(--fg-opacity-10));
+	--category-left-title-bg-hover: rgb(125, 80, 133);
+	--category-left-title-bg-selected: var(--fg-opacity-90);
+	--category-left-title-text-color: rgb(255, 255, 255);
+	--category-left-title-text-color-hover: var(--theme-1);
+	--category-left-title-text-color-selected: black;
 
-	--Text-Editor-BG: var(--BG-Dark);
-	--Setting-Frame-BG: var(--White-10);
-	--Checkbox-BG: #979797;
-	--Slider-Track: #969696;
+	--text-editor-bg: var(--bg-main);
+	--setting-frame-bg: var(--fg-opacity-10);
+	--checkbox-bg: #979797;
+	--slider-track: #969696;
 
 	/* --- Dynamic --- */
-	--Window-BG: var(--BG-Dark);
-	--Window-Blur: none;
-	--Window-Saturate: 100%;
+	--window-bg: var(--bg-main);
+	--window-blur: none;
+	--window-saturate: 100%;
 }
 
 .STYLESHIFT-Main[data-transparent="true"] {
-	--Window-BG: rgba(43, 43, 43, 0.8);
-	--Window-Blur: blur(var(--setting-bg-blur-amount, 10px));
-	--Window-Saturate: saturate(180%);
+	--window-bg: rgba(43, 43, 43, 0.8);
+	--window-blur: blur(var(--setting-bg-blur-amount, 10px));
+	--window-saturate: saturate(180%);
 
-	--BG-Surface: rgba(255, 255, 255, 0.05);
+	--bg-surface: rgba(255, 255, 255, 0.05);
 }
 
 .STYLESHIFT-Main[data-theme="light"][data-transparent="true"] {
-	--Window-BG: rgba(248, 248, 250, 0.8);
-	--BG-Surface: rgba(0, 0, 0, 0.05);
+	--window-bg: rgba(248, 248, 250, 0.8);
+	--bg-surface: rgba(0, 0, 0, 0.05);
 }
 
 .STYLESHIFT-Main[data-theme="light"] {
-	--BG-Dark: rgb(248, 248, 250);
-	--BG-Surface: rgba(0, 0, 0, 0.03);
-	--BG-Surface-Hover: rgba(0, 0, 0, 0.06);
-	--BG-Input: rgb(255, 255, 255);
-	--Font-Color: #1a1a1a;
-	--Font-Color-Dim: rgba(0, 0, 0, 0.5);
-	--Border-Color: rgba(0, 0, 0, 0.08);
-	--Shadow-Color: rgba(0, 0, 0, 0.1);
+	--bg-main: rgb(248, 248, 250);
+	--bg-surface: rgba(0, 0, 0, 0.03);
+	--bg-surface-hover: rgba(0, 0, 0, 0.06);
+	--bg-input: rgb(255, 255, 255);
+	--font-color: #1a1a1a;
+	--font-color-dim: rgba(0, 0, 0, 0.5);
+	--border-color: rgba(0, 0, 0, 0.08);
+	--shadow-color: rgba(0, 0, 0, 0.1);
 
-	--White-10: rgba(0, 0, 0, 0.05);
-	--White-20: rgba(0, 0, 0, 0.1);
-	--White-40: rgba(0, 0, 0, 0.3);
-	--White-50: rgba(0, 0, 0, 0.4);
-	--White-90: rgba(0, 0, 0, 0.8);
+	--fg-opacity-10: rgba(0, 0, 0, 0.05);
+	--fg-opacity-20: rgba(0, 0, 0, 0.1);
+	--fg-opacity-40: rgba(0, 0, 0, 0.3);
+	--fg-opacity-50: rgba(0, 0, 0, 0.4);
+	--fg-opacity-90: rgba(0, 0, 0, 0.8);
 
-	--Black-10: rgba(255, 255, 255, 0.1);
-	--Black-30: rgba(255, 255, 255, 0.5);
+	--bg-overlay-10: rgba(255, 255, 255, 0.1);
+	--bg-overlay-30: rgba(255, 255, 255, 0.5);
 
-	--Drag-Top-BG: rgba(0, 0, 0, 0.05);
+	--drag-top-bg: rgba(0, 0, 0, 0.05);
 }

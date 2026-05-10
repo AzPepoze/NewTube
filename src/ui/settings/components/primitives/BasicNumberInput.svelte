@@ -26,9 +26,9 @@
 	.STYLESHIFT-Number-Input {
 		width: 60px;
 		height: 24px;
-		background: var(--White-10);
-		color: var(--Font-Color, white);
-		border: 1px solid var(--White-20);
+		background: var(--fg-opacity-10);
+		color: var(--font-color, white);
+		border: 1px solid var(--fg-opacity-20);
 		border-radius: 5px;
 		padding: 0 8px;
 		text-align: center;
@@ -38,8 +38,8 @@
 		outline: none;
 
 		&:focus {
-			border-color: var(--Theme-0, #7f5db7);
-			box-shadow: 0 0 5px var(--Theme-0, #7f5db7);
+			border-color: var(--theme-0, #7f5db7);
+			box-shadow: 0 0 5px var(--theme-0, #7f5db7);
 		}
 
 		&::-webkit-inner-spin-button,

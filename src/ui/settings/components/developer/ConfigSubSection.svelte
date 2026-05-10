@@ -120,7 +120,7 @@
 		padding: 10px 15px;
 		background: transparent;
 		border: none;
-		color: var(--Font-Color-Dim);
+		color: var(--font-color-dim);
 		border-radius: 10px;
 		cursor: pointer;
 		text-align: left;
@@ -141,8 +141,8 @@
 		}
 
 		&:hover {
-			background: var(--BG-Surface-Hover);
-			color: var(--Font-Color);
+			background: var(--bg-surface-hover);
+			color: var(--font-color);
 			.nav-indicator {
 				opacity: 0.8;
 				transform: scale(1.2);
@@ -150,8 +150,8 @@
 		}
 
 		&.active {
-			background: var(--BG-Surface-Hover);
-			color: var(--Theme-1);
+			background: var(--bg-surface-hover);
+			color: var(--theme-1);
 			.nav-indicator {
 				opacity: 1;
 				transform: scale(1.3);
@@ -171,7 +171,7 @@
 			width: 6px;
 		}
 		&::-webkit-scrollbar-thumb {
-			background: var(--Border-Color);
+			background: var(--border-color);
 			border-radius: 10px;
 		}
 	}

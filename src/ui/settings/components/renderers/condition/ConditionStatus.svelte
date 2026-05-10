@@ -28,7 +28,7 @@
 			<Icon 
 				name={conditionsMet ? "check_circle" : "rule"} 
 				size={16} 
-				color={conditionsMet ? "var(--White-100)" : "var(--White-80)"} 
+				color={conditionsMet ? "var(--fg-opacity-100)" : "var(--fg-opacity-80)"} 
 			/>
 		</div>
 		<span class="status-title">
@@ -42,7 +42,7 @@
 				<li class:is-met={item.met}>
 					<div class="item-icon">
 						{#if item.met}
-							<Icon name="check" size={12} color="var(--White-100)" />
+							<Icon name="check" size={12} color="var(--fg-opacity-100)" />
 						{:else}
 							<div class="dot"></div>
 						{/if}
@@ -61,8 +61,8 @@
 	.STYLESHIFT-Condition-Status-Container {
 		margin-top: 8px;
 		padding: 12px;
-		background: var(--White-05);
-		border: 1px solid var(--White-10);
+		background: var(--fg-opacity-05);
+		border: 1px solid var(--fg-opacity-10);
 		border-radius: 12px;
 		display: flex;
 		flex-direction: column;
@@ -90,7 +90,7 @@
 		.status-title {
 			font-size: 13px;
 			font-weight: 600;
-			color: var(--White-100);
+			color: var(--fg-opacity-100);
 			letter-spacing: 0.2px;
 		}
 	}
@@ -121,7 +121,7 @@
 				.dot {
 					width: 4px;
 					height: 4px;
-					background: var(--White-30);
+					background: var(--fg-opacity-30);
 					border-radius: 50%;
 				}
 			}
@@ -134,15 +134,15 @@
 			}
 
 			.item-name {
-				color: var(--White-100);
+				color: var(--fg-opacity-100);
 				font-weight: 500;
-				background: var(--White-05);
+				background: var(--fg-opacity-05);
 				padding: 1px 6px;
 				border-radius: 4px;
 			}
 
 			.item-target {
-				color: var(--White-60);
+				color: var(--fg-opacity-60);
 			}
 
 			&.is-met {
@@ -153,7 +153,7 @@
 				}
 
 				.item-target {
-					color: var(--White-80);
+					color: var(--fg-opacity-80);
 				}
 			}
 		}

@@ -256,9 +256,9 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 15px 20px;
-		background: var(--White-05);
+		background: var(--fg-opacity-05);
 		border-radius: 15px;
-		border: 1px solid var(--White-10);
+		border: 1px solid var(--fg-opacity-10);
 		transition: all 0.2s;
 		gap: 15px;
 	}
@@ -288,15 +288,15 @@
 			padding: 4px !important;
 			height: 24px !important;
 			width: 32px !important;
-			background: var(--White-05);
-			border: 1px solid var(--White-10);
+			background: var(--fg-opacity-05);
+			border: 1px solid var(--fg-opacity-10);
 			border-radius: 6px;
 			opacity: 0.8;
 
 			&:hover {
 				opacity: 1;
-				background: var(--White-10);
-				border-color: var(--White-20);
+				background: var(--fg-opacity-10);
+				border-color: var(--fg-opacity-20);
 			}
 		}
 	}
@@ -320,9 +320,9 @@
 	.empty-state {
 		padding: 20px;
 		text-align: center;
-		color: var(--White-20);
-		background: var(--White-02);
-		border: 1px dashed var(--White-10);
+		color: var(--fg-opacity-20);
+		background: var(--fg-opacity-02);
+		border: 1px dashed var(--fg-opacity-10);
 		border-radius: 15px;
 		font-style: italic;
 	}

@@ -232,13 +232,13 @@
 		height: 100%;
 		width: 100%;
 		overflow: hidden;
-		color: var(--Font-Color);
+		color: var(--font-color);
 	}
 
 	.STYLESHIFT-Config-Header {
 		padding: 20px 25px;
-		background: var(--BG-Surface);
-		border-bottom: 1px solid var(--Border-Color);
+		background: var(--bg-surface);
+		border-bottom: 1px solid var(--border-color);
 		display: flex;
 		flex-direction: column;
 		gap: 20px;
@@ -254,7 +254,7 @@
 	.STYLESHIFT-Config-Type-Badge {
 		font-size: 15px;
 		text-transform: uppercase;
-		background: var(--Theme-0);
+		background: var(--theme-0);
 		color: white;
 		padding: 2px 8px;
 		border-radius: 10px;
@@ -267,7 +267,7 @@
 		margin: 0;
 		font-size: 20px;
 		font-weight: 700;
-		color: var(--Font-Color);
+		color: var(--font-color);
 		display: flex;
 		align-items: center;
 		gap: 10px;
@@ -275,7 +275,7 @@
 		.setting-id {
 			font-size: 14px;
 			font-weight: 400;
-			color: var(--Font-Color-Dim);
+			color: var(--font-color-dim);
 		}
 	}
 
@@ -313,7 +313,7 @@
 			width: 6px;
 		}
 		&::-webkit-scrollbar-thumb {
-			background: var(--Border-Color);
+			background: var(--border-color);
 			border-radius: 10px;
 		}
 	}

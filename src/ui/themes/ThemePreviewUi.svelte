@@ -41,13 +41,13 @@
 		z-index: 2;
 		width: 85%;
 		height: 85%;
-		background: var(--Black-10, rgba(0, 0, 0, 0.8));
+		background: var(--bg-overlay-10, rgba(0, 0, 0, 0.8));
 		border-radius: 6px;
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
 		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-		border: 1px solid var(--White-10);
+		border: 1px solid var(--fg-opacity-10);
 
 		.preview-nav {
 			height: 14px;
@@ -55,25 +55,25 @@
 			align-items: center;
 			justify-content: space-between;
 			padding: 0 6px;
-			border-bottom: 1px solid var(--White-05);
+			border-bottom: 1px solid var(--fg-opacity-05);
 
 			.preview-logo {
 				width: 16px;
 				height: 6px;
-				background: var(--White-20);
+				background: var(--fg-opacity-20);
 				border-radius: 2px;
 			}
 			.preview-search {
 				width: 40px;
 				height: 6px;
-				background: var(--White-10);
+				background: var(--fg-opacity-10);
 				border-radius: 3px;
 			}
 			.preview-avatar {
 				width: 6px;
 				height: 6px;
 				border-radius: 50%;
-				background: var(--Theme-0, #fff);
+				background: var(--theme-0, #fff);
 			}
 		}
 
@@ -110,7 +110,7 @@
 				.preview-title {
 					height: 6px;
 					width: 90%;
-					background: var(--White-40);
+					background: var(--fg-opacity-40);
 					border-radius: 2px;
 					margin-top: 2px;
 				}
@@ -125,7 +125,7 @@
 						width: 10px;
 						height: 10px;
 						border-radius: 50%;
-						background: var(--White-20);
+						background: var(--fg-opacity-20);
 					}
 
 					.preview-channel-info {
@@ -138,13 +138,13 @@
 						.preview-channel-name {
 							height: 3px;
 							width: 60%;
-							background: var(--White-40);
+							background: var(--fg-opacity-40);
 							border-radius: 1px;
 						}
 						.preview-channel-sub {
 							height: 2px;
 							width: 40%;
-							background: var(--White-20);
+							background: var(--fg-opacity-20);
 							border-radius: 1px;
 						}
 					}
@@ -152,7 +152,7 @@
 					.preview-subscribe {
 						width: 20px;
 						height: 8px;
-						background: var(--White-80);
+						background: var(--fg-opacity-80);
 						border-radius: 4px;
 					}
 				}
@@ -167,7 +167,7 @@
 
 				.preview-thumb {
 					height: 22px;
-					background: var(--White-10);
+					background: var(--fg-opacity-10);
 					border-radius: 3px;
 				}
 			}

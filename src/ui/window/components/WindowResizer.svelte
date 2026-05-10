@@ -224,7 +224,7 @@
 	.STYLESHIFT-Window-Resizer {
 		--handle-thickness: 4px;
 		--corner-size: 16px;
-		--glow-color: var(--Theme-0, #7f5db7);
+		--glow-color: var(--theme-0, #7f5db7);
 
 		position: absolute;
 		top: 0;

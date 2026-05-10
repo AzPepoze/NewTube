@@ -71,10 +71,10 @@
 	}
 
 	.STYLESHIFT-Modal-Content {
-		background: var(--Window-BG, var(--BG-Dark));
-		backdrop-filter: var(--Window-Blur) var(--Window-Saturate);
-		-webkit-backdrop-filter: var(--Window-Blur) var(--Window-Saturate);
-		border: 1px solid var(--White-10);
+		background: var(--window-bg, var(--bg-main));
+		backdrop-filter: var(--window-blur) var(--window-saturate);
+		-webkit-backdrop-filter: var(--window-blur) var(--window-saturate);
+		border: 1px solid var(--fg-opacity-10);
 		border-radius: 25px;
 		padding: 30px;
 		display: flex;

@@ -35,7 +35,7 @@
 			{#if isLocked}
 				<div class="warning-item lock">
 					<div class="icon-wrapper">
-						<Icon name="lock" size={16} color="var(--Theme-Error-50)" />
+						<Icon name="lock" size={16} color="var(--theme-Error-50)" />
 					</div>
 					<span class="message">{lockMessage || "This setting is currently locked."}</span>
 				</div>
@@ -44,7 +44,7 @@
 			{#if !requirementsMet && controller.unmetRequirements.length > 0}
 				<div class="warning-item requirement">
 					<div class="icon-wrapper">
-						<Icon name="warning" size={18} color="var(--Theme-Warning-50)" />
+						<Icon name="warning" size={18} color="var(--theme-Warning-50)" />
 					</div>
 					<div class="requirement-details">
 						<span class="title">Missing Requirements:</span>
@@ -67,16 +67,16 @@
 	.STYLESHIFT-Warning-Section-Container {
 		margin-top: 12px;
 		padding: 12px 16px;
-		background: var(--Theme-Warning-10);
-		border: 1px solid var(--Theme-Warning-20);
+		background: var(--theme-Warning-10);
+		border: 1px solid var(--theme-Warning-20);
 		border-radius: 12px;
 		position: relative;
 		overflow: hidden;
 		animation: slideIn 0.3s ease-out;
 
 		&.is-locked {
-			background: var(--Theme-Error-10);
-			border-color: var(--Theme-Error-20);
+			background: var(--theme-Error-10);
+			border-color: var(--theme-Error-20);
 
 			.icon-wrapper {
 				background: transparent;
@@ -90,11 +90,11 @@
 			top: 0;
 			bottom: 0;
 			width: 4px;
-			background: var(--Theme-Warning-50);
+			background: var(--theme-Warning-50);
 		}
 
 		&.is-locked::before {
-			background: var(--Theme-Error-50);
+			background: var(--theme-Error-50);
 		}
 	}
 
@@ -126,7 +126,7 @@
 
 		.message {
 			font-size: 13px;
-			color: var(--White-90);
+			color: var(--fg-opacity-90);
 			line-height: 1.5;
 			padding-top: 2px;
 		}
@@ -141,7 +141,7 @@
 		.title {
 			font-size: 13px;
 			font-weight: 600;
-			color: var(--White-100);
+			color: var(--fg-opacity-100);
 		}
 	}
 
@@ -155,26 +155,26 @@
 
 		li {
 			font-size: 12px;
-			color: var(--White-70);
+			color: var(--fg-opacity-70);
 			display: flex;
 			align-items: center;
 			gap: 6px;
 
 			&::before {
 				content: '•';
-				color: var(--White-30);
+				color: var(--fg-opacity-30);
 			}
 
 			.req-name {
-				color: var(--White-100);
+				color: var(--fg-opacity-100);
 				font-weight: 500;
-				background: var(--White-05);
+				background: var(--fg-opacity-05);
 				padding: 1px 6px;
 				border-radius: 4px;
 			}
 
 			.req-action {
-				color: var(--White-60);
+				color: var(--fg-opacity-60);
 			}
 		}
 	}

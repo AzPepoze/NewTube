@@ -44,14 +44,14 @@
 <style lang="scss">
 	.STYLESHIFT-Window-Topbar {
 		height: 40px;
-		background: var(--Black-20);
+		background: var(--bg-overlay-20);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		padding: 0 10px;
 		cursor: move;
 		user-select: none;
-		border-bottom: 1px solid var(--White-05);
+		border-bottom: 1px solid var(--fg-opacity-05);
 		flex-shrink: 0;
 		border-top-left-radius: 12px;
 		border-top-right-radius: 12px;
@@ -79,7 +79,7 @@
 		gap: 10px;
 		font-size: 13px;
 		font-weight: 600;
-		color: var(--White-80);
+		color: var(--fg-opacity-80);
 		flex: 1;
 		min-width: 0;
 

@@ -49,10 +49,10 @@
 			background: transparent;
 		}
 		&::-webkit-scrollbar-thumb {
-			background: var(--White-10);
+			background: var(--fg-opacity-10);
 			border-radius: 10px;
 			&:hover {
-				background: var(--White-20);
+				background: var(--fg-opacity-20);
 			}
 		}
 	}

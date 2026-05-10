@@ -75,7 +75,7 @@
 				setting={{
 					type: "button",
 					name: "Confirm",
-					color: "var(--Theme-0)",
+					color: "var(--theme-0)",
 					clickFunction: () => handleAction(onConfirm),
 				}}
 			/>
@@ -83,7 +83,7 @@
 				setting={{
 					type: "button",
 					name: "Cancel",
-					color: "var(--White-20, #646464)",
+					color: "var(--fg-opacity-20, #646464)",
 					clickFunction: () => handleAction(onCancel),
 				}}
 			/>
@@ -96,7 +96,7 @@
 		font-size: 24px;
 		font-weight: 900;
 		text-align: center;
-		color: var(--Font-Color);
+		color: var(--font-color);
 	}
 
 	.footer {

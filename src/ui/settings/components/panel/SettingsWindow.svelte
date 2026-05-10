@@ -175,20 +175,20 @@
 	.STYLESHIFT-Resize-Handle {
 		width: 5px;
 		cursor: col-resize;
-		background: var(--Border-Color);
+		background: var(--border-color);
 		user-select: none;
 		border-radius: 10px;
 		transition: all 0.2s;
 
 		&:hover {
-			background: var(--White-90);
+			background: var(--fg-opacity-90);
 		}
 	}
 
 	.STYLESHIFT-Sidebar {
 		min-width: 150px;
 		width: 250px;
-		background: var(--Category-Left-BG);
+		background: var(--category-left-bg);
 		display: flex;
 		flex-direction: column;
 		gap: 5px;
@@ -284,7 +284,7 @@
 	.STYLESHIFT-Section-Header {
 		font-size: 28px;
 		font-weight: 900;
-		color: var(--White-60);
+		color: var(--fg-opacity-60);
 		letter-spacing: 6px;
 		margin-top: 40px;
 		margin-bottom: 25px;
@@ -301,7 +301,7 @@
 			height: 1px;
 			background: linear-gradient(
 				to var(--direction, right),
-				var(--White-10),
+				var(--fg-opacity-10),
 				transparent
 			);
 		}

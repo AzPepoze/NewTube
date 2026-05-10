@@ -304,7 +304,7 @@
 		font-size: 13px;
 		font-weight: 600;
 		color: white;
-		background: var(--White-05);
+		background: var(--fg-opacity-05);
 		padding: 8px 20px;
 		border-radius: 20px;
 		max-width: 92%;
@@ -312,8 +312,8 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		margin-top: 10px;
-		border: 1px solid var(--White-10);
-		box-shadow: 0 4px 15px var(--Black-30);
+		border: 1px solid var(--fg-opacity-10);
+		box-shadow: 0 4px 15px var(--bg-overlay-30);
 	}
 
 	.STYLESHIFT-Image-Input-Controls {
@@ -332,8 +332,8 @@
 		gap: 4px;
 		width: 80px;
 		height: 80px;
-		background: var(--White-05);
-		border: 1px dashed var(--White-20);
+		background: var(--fg-opacity-05);
+		border: 1px dashed var(--fg-opacity-20);
 		border-radius: 15px;
 		cursor: pointer;
 		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -343,14 +343,14 @@
 
 		&:hover,
 		&.dragging {
-			border-color: var(--Theme-0, #7f5db7);
-			background: var(--Theme-0-10);
+			border-color: var(--theme-0, #7f5db7);
+			background: var(--theme-0-10);
 			transform: translateY(-2px);
 		}
 
 		&.dragging {
 			transform: scale(1.05);
-			box-shadow: 0 0 20px var(--Theme-0-30);
+			box-shadow: 0 0 20px var(--theme-0-30);
 		}
 	}
 
@@ -358,7 +358,7 @@
 		width: 28px;
 		height: 28px;
 		opacity: 0.7;
-		filter: drop-shadow(0 2px 4px var(--Black-20));
+		filter: drop-shadow(0 2px 4px var(--bg-overlay-20));
 		transition: all 0.2s;
 
 		.STYLESHIFT-Upload-Zone:hover & {
@@ -381,7 +381,7 @@
 	.STYLESHIFT-Url-Input {
 		width: 100%;
 		padding: 8px 15px;
-		background: var(--Black-30);
+		background: var(--bg-overlay-30);
 		border: 1px grey solid;
 		border-radius: 20px;
 		color: white;
@@ -393,12 +393,12 @@
 		box-sizing: border-box;
 
 		&:focus {
-			border-color: var(--Theme-0, #7f5db7);
-			background: var(--Black-50);
+			border-color: var(--theme-0, #7f5db7);
+			background: var(--bg-overlay-50);
 		}
 
 		&::placeholder {
-			color: var(--White-30);
+			color: var(--fg-opacity-30);
 		}
 	}
 

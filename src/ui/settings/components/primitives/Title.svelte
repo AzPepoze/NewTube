@@ -80,7 +80,7 @@
 		font-size: 20px;
 		padding-block: 10px;
 		font-weight: 600;
-		background: var(--Category-Title-BG);
+		background: var(--category-title-bg);
 		color: black;
 		text-align: center;
 		border-radius: 20px;
@@ -88,7 +88,7 @@
 		margin-bottom: 10px;
 		user-select: text;
 		transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-		box-shadow: 0 4px 15px var(--Black-10);
+		box-shadow: 0 4px 15px var(--bg-overlay-10);
 
 		&:hover {
 			.STYLESHIFT-Category-Edit-Btn {
@@ -133,7 +133,7 @@
 		margin-inline: 10px;
 		font-size: 16px;
 		font-weight: 600;
-		color: var(--White-80);
+		color: var(--fg-opacity-80);
 		opacity: 0.9;
 		position: relative;
 
@@ -146,9 +146,9 @@
 				top: 2px;
 				bottom: 2px;
 				width: 4px;
-				background: var(--Theme-0);
+				background: var(--theme-0);
 				border-radius: 4px;
-				box-shadow: 0 0 10px var(--Theme-0);
+				box-shadow: 0 0 10px var(--theme-0);
 			}
 		}
 	}
@@ -157,10 +157,10 @@
 		cursor: grab;
 		opacity: 0;
 		transition: opacity 0.2s;
-		color: var(--White-40);
+		color: var(--fg-opacity-40);
 
 		&:hover {
-			color: var(--White-100);
+			color: var(--fg-opacity-100);
 		}
 
 		:global(.STYLESHIFT-Sub-Title:hover) & {

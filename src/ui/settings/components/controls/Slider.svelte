@@ -114,13 +114,13 @@
 	.STYLESHIFT-Slider-Number-Input {
 		width: 50px;
 		height: 18px;
-		background: var(--BG-Input);
+		background: var(--bg-input);
 		border: none;
 		box-shadow: 0px 0px 3px white;
 		padding-inline: 8px;
 		padding-block: 4px;
 		text-align: center;
-		color: var(--White-100);
+		color: var(--fg-opacity-100);
 		font-family: inherit;
 		font-size: 14px;
 		font-weight: bold;
@@ -149,20 +149,20 @@
 		width: 100%;
 		height: 15px;
 		border-radius: 20px;
-		background: var(--Slider-Track);
+		background: var(--slider-track);
 		outline: none;
 		overflow: hidden;
 		transition: all 0.2s;
-		filter: brightness(1) drop-shadow(1px 1px 4px var(--Black-40));
+		filter: brightness(1) drop-shadow(1px 1px 4px var(--bg-overlay-40));
 		margin-top: 10px;
 
 		&:hover {
-			filter: brightness(1.3) drop-shadow(1px 1px 4px var(--Black-40));
+			filter: brightness(1.3) drop-shadow(1px 1px 4px var(--bg-overlay-40));
 		}
 
 		&::-webkit-slider-runnable-track {
 			height: 15px;
-			background: var(--Slider-Track);
+			background: var(--slider-track);
 			border-radius: 20px;
 		}
 
@@ -173,9 +173,9 @@
 			height: 15px;
 			background-color: white;
 			border-radius: 50%;
-			border: 2px solid var(--Theme-0);
+			border: 2px solid var(--theme-0);
 			cursor: pointer;
-			box-shadow: -1907px 0 0 1900px var(--Theme-0);
+			box-shadow: -1907px 0 0 1900px var(--theme-0);
 		}
 	}
 </style>

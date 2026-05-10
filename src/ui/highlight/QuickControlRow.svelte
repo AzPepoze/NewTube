@@ -55,7 +55,7 @@
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		background: var(--White-03);
+		background: var(--fg-opacity-03);
 		padding: 10px 12px;
 		border-radius: 15px;
 		transition: all 0.2s ease;
@@ -71,8 +71,8 @@
 		}
 
 		&:hover:not(.disabled) {
-			background: var(--White-05);
-			border-color: var(--White-10);
+			background: var(--fg-opacity-05);
+			border-color: var(--fg-opacity-10);
 		}
 
 		.toggle-side {

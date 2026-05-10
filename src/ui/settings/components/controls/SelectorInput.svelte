@@ -130,7 +130,7 @@
 
 	.STYLESHIFT-Input {
 		width: -webkit-fill-available;
-		background: var(--Text-Editor-BG, var(--Black-30));
+		background: var(--text-editor-bg, var(--bg-overlay-30));
 		color: white;
 		border-radius: 20px;
 		padding: 12px 20px;
@@ -141,12 +141,12 @@
 		border: 1px gray solid;
 
 		&:focus {
-			border-color: var(--Theme-0, #7f5db7);
+			border-color: var(--theme-0, #7f5db7);
 			box-shadow: 0 0 15px rgba(127, 93, 183, 0.2);
 		}
 
 		&::placeholder {
-			color: var(--White-20);
+			color: var(--fg-opacity-20);
 		}
 	}
 
@@ -155,7 +155,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 10px;
-		background: var(--Theme-0, #7f5db7);
+		background: var(--theme-0, #7f5db7);
 		color: white;
 		border: none;
 		border-radius: 20px;

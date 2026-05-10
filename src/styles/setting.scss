@@ -40,11 +40,11 @@
 		}
 
 		&::-webkit-scrollbar-thumb {
-			background: var(--White-20) !important;
+			background: var(--fg-opacity-20) !important;
 			border-radius: 10px !important;
 
 			&:hover {
-				background: var(--White-30) !important;
+				background: var(--fg-opacity-30) !important;
 			}
 		}
 	}
@@ -65,11 +65,11 @@
 		}
 
 		&::-webkit-scrollbar-thumb {
-			background: var(--White-20) !important;
+			background: var(--fg-opacity-20) !important;
 			border-radius: 10px !important;
 
 			&:hover {
-				background: var(--White-30) !important;
+				background: var(--fg-opacity-30) !important;
 			}
 		}
 	}
@@ -79,8 +79,8 @@
 	}
 
 	.STYLESHIFT-Config-Sub-Frame {
-		border: 1px solid var(--Border-Color);
-		background: var(--BG-Surface);
+		border: 1px solid var(--border-color);
+		background: var(--bg-surface);
 		border-radius: 12px;
 		padding: 16px;
 		margin-bottom: 16px;
@@ -96,8 +96,8 @@
 			background 0.2s;
 
 		&:focus-within {
-			border-color: var(--Theme-0);
-			background: var(--BG-Surface-Hover);
+			border-color: var(--theme-0);
+			background: var(--bg-surface-hover);
 		}
 
 		.STYLESHIFT-Main-Description {
@@ -107,7 +107,7 @@
 			.setting-name {
 				font-size: 14px;
 				font-weight: 700;
-				color: var(--Theme-1);
+				color: var(--theme-1);
 				text-transform: uppercase;
 				letter-spacing: 0.5px;
 				opacity: 0.9;
@@ -116,8 +116,8 @@
 
 		textarea,
 		.STYLESHIFT-Code-Editor-Container {
-			border-color: var(--Border-Color);
-			background: var(--BG-Input);
+			border-color: var(--border-color);
+			background: var(--bg-input);
 			border-radius: 8px;
 			font-size: 13px;
 		}
@@ -128,13 +128,13 @@
 	}
 
 	> .STYLESHIFT-Setting-Frame {
-		background: var(--Setting-Frame-BG);
+		background: var(--setting-frame-bg);
 	}
 
 	.STYLESHIFT-Number-Input {
 		width: 50px;
 		height: 15px;
-		background: var(--BG-Input);
+		background: var(--bg-input);
 		border: none;
 		box-shadow: 0px 0px 3px white;
 		padding-inline: 10px;

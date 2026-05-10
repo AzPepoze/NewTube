@@ -40,7 +40,7 @@
 		margin-bottom: 16px;
 		overflow: hidden;
 		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid var(--White-10);
+		border: 1px solid var(--fg-opacity-10);
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
 		&.collapsed {
@@ -55,7 +55,7 @@
 		&:not(.collapsed) {
 			background: rgba(255, 255, 255, 0.04);
 			border-color: var(--card-color);
-			box-shadow: 0 8px 30px var(--Black-40);
+			box-shadow: 0 8px 30px var(--bg-overlay-40);
 		}
 	}
 
@@ -76,14 +76,14 @@
 		transition: background 0.2s;
 
 		&:hover {
-			background: var(--White-05);
+			background: var(--fg-opacity-05);
 		}
 	}
 
 	.STYLESHIFT-Dev-Card-Title {
 		border-left: 3px solid var(--card-color);
 		padding-left: 12px;
-		color: var(--White-90);
+		color: var(--fg-opacity-90);
 	}
 
 	.STYLESHIFT-Dev-Card-Content {

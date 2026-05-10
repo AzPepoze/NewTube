@@ -301,7 +301,7 @@ export async function showAlert(
 				buttons: [
 					{
 						label: options.okLabel || "OK",
-						color: options.okColor || "var(--Theme-0)",
+						color: options.okColor || "var(--theme-0)",
 						onClick: () => resolve(),
 					},
 				],

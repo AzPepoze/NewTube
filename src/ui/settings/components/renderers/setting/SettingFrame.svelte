@@ -114,7 +114,7 @@
 
 			&:hover {
 				filter: brightness(1.5) drop-shadow(2px 2px 3px black)
-					drop-shadow(-2px -2px 3px var(--White-40));
+					drop-shadow(-2px -2px 3px var(--fg-opacity-40));
 			}
 
 			&:active {

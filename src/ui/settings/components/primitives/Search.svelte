@@ -81,23 +81,23 @@
 		width: 100%;
 		display: flex;
 		align-items: center;
-		background: var(--White-08);
+		background: var(--fg-opacity-08);
 		border-radius: 12px;
 		padding: 2px 12px;
 		box-sizing: border-box;
 		margin-top: 3px;
 		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-		border: 1px solid var(--Border-Color);
+		border: 1px solid var(--border-color);
 
 		&:hover {
-			background: var(--White-10);
-			border-color: var(--White-20);
+			background: var(--fg-opacity-10);
+			border-color: var(--fg-opacity-20);
 		}
 
 		&.is-focused {
-			background: var(--White-15);
-			border-color: var(--Theme-0);
-			box-shadow: 0 0 0 3px var(--Theme-0-20);
+			background: var(--fg-opacity-15);
+			border-color: var(--theme-0);
+			box-shadow: 0 0 0 3px var(--theme-0-20);
 		}
 	}
 
@@ -114,14 +114,14 @@
 		background: transparent;
 		border: none;
 		outline: none;
-		color: var(--Font-Color);
+		color: var(--font-color);
 		font-size: 15px;
 		width: 100%;
 		padding: 8px 0;
 		font-family: inherit;
 
 		&::placeholder {
-			color: var(--Font-Color-Dim);
+			color: var(--font-color-dim);
 			opacity: 0.5;
 		}
 	}
@@ -135,13 +135,13 @@
 		justify-content: center;
 		padding: 4px;
 		border-radius: 50%;
-		color: var(--Font-Color-Dim);
+		color: var(--font-color-dim);
 		transition: all 0.2s ease;
 		margin-left: 8px;
 
 		&:hover {
-			background: var(--White-10);
-			color: var(--Font-Color);
+			background: var(--fg-opacity-10);
+			color: var(--font-color);
 		}
 	}
 </style>

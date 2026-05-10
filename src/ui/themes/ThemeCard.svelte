@@ -140,9 +140,9 @@
 <style lang="scss">
 	.theme-card {
 		position: relative;
-		background: var(--White-05);
+		background: var(--fg-opacity-05);
 		border-radius: 16px;
-		border: 1px solid var(--White-10);
+		border: 1px solid var(--fg-opacity-10);
 		overflow: hidden;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		display: flex;
@@ -150,7 +150,7 @@
 		animation: card-entry 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 
 		&:hover {
-			border-color: var(--White-20);
+			border-color: var(--fg-opacity-20);
 			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 
 			.preview-area {
@@ -159,15 +159,15 @@
 		}
 
 		&.active {
-			border: 2px solid var(--Theme-0);
-			box-shadow: 0 0 15px var(--Theme-0);
+			border: 2px solid var(--theme-0);
+			box-shadow: 0 0 15px var(--theme-0);
 
 			.active-badge {
 				position: absolute;
 				top: 10px;
 				right: 10px;
-				background: var(--Theme-0);
-				color: var(--White-100);
+				background: var(--theme-0);
+				color: var(--fg-opacity-100);
 				padding: 4px 8px;
 				border-radius: 6px;
 				font-size: 10px;
@@ -199,8 +199,8 @@
 	.spinner {
 		width: 32px;
 		height: 32px;
-		border: 3px solid var(--White-10);
-		border-top-color: var(--Theme-0);
+		border: 3px solid var(--fg-opacity-10);
+		border-top-color: var(--theme-0);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 		box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
@@ -262,13 +262,13 @@
 		justify-content: space-between;
 		align-items: center;
 		background: rgba(0, 0, 0, 0.5);
-		border-top: 1px solid var(--White-05);
+		border-top: 1px solid var(--fg-opacity-05);
 		pointer-events: auto;
 	}
 
 	.theme-name {
 		font-weight: 600;
-		color: var(--White-100, white);
+		color: var(--fg-opacity-100, white);
 		font-size: 14px;
 		white-space: nowrap;
 		overflow: hidden;
@@ -286,37 +286,37 @@
 			border-radius: 8px !important;
 
 			&:hover {
-				background: var(--Theme-0) !important;
+				background: var(--theme-0) !important;
 				opacity: 0.8;
 			}
 		}
 
 		:global(.save-btn) {
-			background: var(--White-10) !important;
+			background: var(--fg-opacity-10) !important;
 			border-radius: 8px !important;
 
 			&:hover {
-				background: var(--Theme-0) !important;
+				background: var(--theme-0) !important;
 				opacity: 0.8;
 			}
 		}
 
 		:global(.export-btn) {
-			background: var(--White-10) !important;
+			background: var(--fg-opacity-10) !important;
 			border-radius: 8px !important;
 
 			&:hover {
-				background: var(--Theme-0) !important;
+				background: var(--theme-0) !important;
 				opacity: 0.8;
 			}
 		}
 
 		:global(.delete-btn) {
-			background: var(--Red-10, rgba(255, 0, 0, 0.1)) !important;
+			background: var(--red-10, rgba(255, 0, 0, 0.1)) !important;
 			border-radius: 8px !important;
 
 			&:hover {
-				background: var(--Red-40, rgba(255, 0, 0, 0.4)) !important;
+				background: var(--red-40, rgba(255, 0, 0, 0.4)) !important;
 			}
 		}
 	}

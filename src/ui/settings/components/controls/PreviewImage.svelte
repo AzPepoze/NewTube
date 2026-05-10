@@ -112,20 +112,20 @@
 		max-width: 100%;
 		min-height: 100px;
 		max-height: 600px;
-		background: var(--Black-40);
+		background: var(--bg-overlay-40);
 		border-radius: 12px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		overflow: hidden;
-		border: 2px solid var(--White-10);
+		border: 2px solid var(--fg-opacity-10);
 		box-shadow:
-			0 10px 30px var(--Black-50),
-			0 0 0 1px var(--White-05);
+			0 10px 30px var(--bg-overlay-50),
+			0 0 0 1px var(--fg-opacity-05);
 		transition: transform 0.3s;
 
 		&:hover {
-			border-color: var(--Theme-0, #7f5db7);
+			border-color: var(--theme-0, #7f5db7);
 		}
 	}
 

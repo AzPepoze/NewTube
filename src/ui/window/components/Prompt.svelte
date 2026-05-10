@@ -98,7 +98,7 @@
 			setting={{
 				type: "button",
 				name: "OK",
-				color: "var(--Theme-0)",
+				color: "var(--theme-0)",
 				clickFunction: () => handleAction(onConfirm, inputValue),
 			}}
 		/>
@@ -106,7 +106,7 @@
 			setting={{
 				type: "button",
 				name: "Cancel",
-				color: "var(--White-20, #646464)",
+				color: "var(--fg-opacity-20, #646464)",
 				clickFunction: () => handleAction(onCancel),
 			}}
 		/>
@@ -118,13 +118,13 @@
 		font-size: 24px;
 		font-weight: 900;
 		text-align: center;
-		color: var(--Font-Color);
+		color: var(--font-color);
 		margin-bottom: 5px;
 	}
 
 	.content-desc {
 		font-size: 14px;
-		color: var(--White-60);
+		color: var(--fg-opacity-60);
 		text-align: center;
 		margin-bottom: 10px;
 		line-height: 1.4;
@@ -139,22 +139,22 @@
 	.prompt-input {
 		width: 100%;
 		padding: 15px 20px;
-		background: var(--White-05);
-		border: 1px solid var(--White-10);
+		background: var(--fg-opacity-05);
+		border: 1px solid var(--fg-opacity-10);
 		border-radius: 15px;
-		color: var(--Font-Color);
+		color: var(--font-color);
 		font-size: 16px;
 		outline: none;
 		transition: all 0.2s;
 		box-sizing: border-box;
 
 		&:focus {
-			border-color: var(--Theme-0);
-			background: var(--White-10);
+			border-color: var(--theme-0);
+			background: var(--fg-opacity-10);
 		}
 
 		&::placeholder {
-			color: var(--White-40);
+			color: var(--fg-opacity-40);
 		}
 
 		&.multiline {

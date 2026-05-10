@@ -71,7 +71,7 @@
 
 		&:hover,
 		&:active {
-			background: var(--White-20);
+			background: var(--fg-opacity-20);
 		}
 
 		&.pos-right,

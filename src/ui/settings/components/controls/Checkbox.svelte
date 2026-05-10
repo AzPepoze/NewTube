@@ -59,7 +59,7 @@
 		appearance: none;
 		width: 3.6em;
 		height: 1.8em;
-		background: var(--BG-Input);
+		background: var(--bg-input);
 		border-radius: 99px;
 		position: relative;
 		cursor: pointer;
@@ -74,7 +74,7 @@
 		}
 
 		&:checked {
-			background: var(--Theme-0, #7f5db7);
+			background: var(--theme-0, #7f5db7);
 
 			&:after {
 				left: calc(100% - 1.5em - 0.15em) !important;
@@ -92,7 +92,7 @@
 			height: 1.5em;
 			border-radius: 50%;
 			background: white !important;
-			box-shadow: 0 0 0.25em var(--Black-30);
+			box-shadow: 0 0 0.25em var(--bg-overlay-30);
 			left: 0.15em;
 			top: 50%;
 			translate: 0 -50%;

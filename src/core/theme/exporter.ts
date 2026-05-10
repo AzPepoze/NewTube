@@ -18,17 +18,17 @@ export async function exportThemeWithSelection(themeId: string, themeName: strin
 		buttons: [
 			{
 				label: "Build-in settings only",
-				color: "var(--Theme-0)",
+				color: "var(--theme-0)",
 				description: "Exports only the settings that come by default with NewTube.",
 			},
 			{
 				label: "Add-ons settings only",
-				color: "var(--Theme-0)",
+				color: "var(--theme-0)",
 				description: "Exports only the add-ons settings.",
 			},
 			{
 				label: "Both",
-				color: "var(--Theme-0)",
+				color: "var(--theme-0)",
 				description: "Exports both default and add-ons settings.",
 			},
 		],
@@ -41,8 +41,8 @@ export async function exportThemeWithSelection(themeId: string, themeName: strin
 		title: `Export "${displayName}"`,
 		message: "How would you like to export this theme?\n(Click outside to cancel)",
 		buttons: [
-			{ label: "Clipboard", color: "var(--Theme-0)" },
-			{ label: "ZIP File", color: "var(--Theme-0)" },
+			{ label: "Clipboard", color: "var(--theme-0)" },
+			{ label: "ZIP File", color: "var(--theme-0)" },
 		],
 	});
 

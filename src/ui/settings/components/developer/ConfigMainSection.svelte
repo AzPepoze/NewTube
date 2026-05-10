@@ -247,13 +247,13 @@
 
 		:global(.STYLESHIFT-Config-Sub-Frame) {
 			margin-bottom: 0 !important;
-			background: var(--BG-Surface) !important;
-			border: 1px solid var(--Border-Color) !important;
+			background: var(--bg-surface) !important;
+			border: 1px solid var(--border-color) !important;
 			box-shadow: none !important;
 
 			&:focus-within {
-				border-color: var(--Theme-0) !important;
-				background: var(--BG-Surface-Hover) !important;
+				border-color: var(--theme-0) !important;
+				background: var(--bg-surface-hover) !important;
 			}
 		}
 	}

@@ -42,19 +42,19 @@
 
 <style lang="scss">
 	.STYLESHIFT-File-Button {
-		background: var(--White-10);
-		border: 1px solid var(--White-20);
+		background: var(--fg-opacity-10);
+		border: 1px solid var(--fg-opacity-20);
 		border-radius: 8px;
 		padding: 6px 12px;
-		color: var(--Font-Color, white);
+		color: var(--font-color, white);
 		cursor: pointer;
 		transition: all 0.2s;
 		font-size: 14px;
 		margin: 5px 0;
 
 		&:hover {
-			background: var(--White-20);
-			border-color: var(--Theme-0, #7f5db7);
+			background: var(--fg-opacity-20);
+			border-color: var(--theme-0, #7f5db7);
 		}
 
 		&:active {

@@ -351,19 +351,19 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background-color: var(--BG-Dark-Welcome);
+		background-color: var(--bg-welcome);
 		background-image: linear-gradient(
 				to right,
-				var(--White-03) 1px,
+				var(--fg-opacity-03) 1px,
 				transparent 1px
 			),
-			linear-gradient(to bottom, var(--White-03) 1px, transparent 1px);
+			linear-gradient(to bottom, var(--fg-opacity-03) 1px, transparent 1px);
 		background-size: 40px 40px;
 		z-index: 999999;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--Font-Color);
+		color: var(--font-color);
 		font-family: "Inter", system-ui, sans-serif;
 		overflow: hidden;
 	}
@@ -374,7 +374,7 @@
 		height: 150%;
 		background: radial-gradient(
 			circle at center,
-			var(--Theme-0-12) 0%,
+			var(--theme-0-12) 0%,
 			transparent 60%
 		);
 		animation: pulseGlow 8s infinite alternate ease-in-out;
@@ -448,7 +448,7 @@
 
 	.Text-Sub {
 		font-size: 24px;
-		color: var(--White-30);
+		color: var(--fg-opacity-30);
 		margin-top: 20px;
 		letter-spacing: 2px;
 		font-weight: 500;
@@ -480,7 +480,7 @@
 		width: 100px;
 		height: 100px;
 		object-fit: contain;
-		filter: drop-shadow(0 0 10px var(--Theme-0-30));
+		filter: drop-shadow(0 0 10px var(--theme-0-30));
 
 		&.left {
 			transform: scaleX(-1);
@@ -492,7 +492,7 @@
 		font-weight: 900;
 		display: flex;
 		justify-content: center;
-		color: var(--Font-Color);
+		color: var(--font-color);
 		margin-bottom: 10px;
 	}
 
@@ -509,12 +509,12 @@
 		0%,
 		100% {
 			transform: translateY(0);
-			text-shadow: 0 0 10px var(--Theme-0-30);
+			text-shadow: 0 0 10px var(--theme-0-30);
 		}
 		50% {
 			transform: translateY(-15px);
-			color: var(--Theme-0);
-			text-shadow: 0 0 20px var(--Theme-0-50);
+			color: var(--theme-0);
+			text-shadow: 0 0 20px var(--theme-0-50);
 		}
 	}
 
@@ -522,11 +522,11 @@
 		0%,
 		100% {
 			transform: translateY(0);
-			text-shadow: 0 0 10px var(--White-30);
+			text-shadow: 0 0 10px var(--fg-opacity-30);
 		}
 		50% {
 			transform: translateY(-15px);
-			text-shadow: 0 0 20px var(--White-80);
+			text-shadow: 0 0 20px var(--fg-opacity-80);
 		}
 	}
 
@@ -544,7 +544,7 @@
 
 	.Start-Button {
 		position: relative;
-		background: var(--White-95);
+		background: var(--fg-opacity-95);
 		color: black;
 		border: none;
 		padding: 22px 70px;
@@ -553,22 +553,22 @@
 		font-weight: 800;
 		cursor: pointer;
 		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-		box-shadow: 0 10px 30px var(--Black-50);
+		box-shadow: 0 10px 30px var(--bg-overlay-50);
 
 		&.highlight {
-			background: var(--Theme-0);
+			background: var(--theme-0);
 			color: white;
-			box-shadow: 0 15px 40px var(--Theme-0-40);
+			box-shadow: 0 15px 40px var(--theme-0-40);
 		}
 
 		&:hover {
 			transform: scale(1.08) translateY(-5px);
-			box-shadow: 0 20px 50px var(--White-15);
+			box-shadow: 0 20px 50px var(--fg-opacity-15);
 			background: white;
 
 			&.highlight {
-				background: var(--Theme-0-Light);
-				box-shadow: 0 20px 50px var(--Theme-0-50);
+				background: var(--theme-0-Light);
+				box-shadow: 0 20px 50px var(--theme-0-50);
 			}
 		}
 
@@ -583,15 +583,15 @@
 		gap: 12px;
 		margin: 20px 0;
 		padding: 16px;
-		background: var(--White-02);
+		background: var(--fg-opacity-02);
 		border-radius: 8px;
-		border: 1px solid var(--White-05);
+		border: 1px solid var(--fg-opacity-05);
 		max-width: 600px;
 	}
 
 	.shortcuts-subtitle {
 		font-size: 12px;
-		color: var(--White-40);
+		color: var(--fg-opacity-40);
 		margin: 0 0 12px 0;
 		font-style: italic;
 	}
@@ -607,14 +607,14 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 8px 12px;
-		background: var(--White-03);
+		background: var(--fg-opacity-03);
 		border-radius: 5px;
 		gap: 12px;
 	}
 
 	.shortcut-desc {
 		font-size: 12px;
-		color: var(--White-50);
+		color: var(--fg-opacity-50);
 		flex: 1;
 	}
 
@@ -623,9 +623,9 @@
 			"Roboto Mono", "Courier New", monospace;
 		font-size: 11px;
 		font-weight: 700;
-		background: var(--Theme-0-15);
-		border: 1px solid var(--Theme-0-30);
-		color: var(--Theme-0-Text);
+		background: var(--theme-0-15);
+		border: 1px solid var(--theme-0-30);
+		color: var(--theme-0-Text);
 		padding: 3px 6px;
 		border-radius: 3px;
 		white-space: nowrap;
@@ -641,7 +641,7 @@
 
 	.shortcuts-empty-text {
 		font-size: 16px;
-		color: var(--White-40);
+		color: var(--fg-opacity-40);
 		font-style: italic;
 	}
 </style>
