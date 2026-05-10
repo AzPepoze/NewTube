@@ -216,7 +216,12 @@
 >
 	<canvas bind:this={canvasEl} width="640" height="360"></canvas>
 
-	<div class="controls-overlay" class:visible={showControls || !isPlaying}>
+	<div
+		class="controls-overlay"
+		class:visible={showControls || !isPlaying}
+		onclick={(e) => e.stopPropagation()}
+		role="presentation"
+	>
 		<div class="side-controls">
 			<div class="volume-vertical">
 				<Slider
