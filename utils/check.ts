@@ -1,8 +1,8 @@
 import { spawn, spawnSync } from "child_process";
-import * as path from "path";
 import * as fs from "fs";
-import { ROOT, extensionConfig } from "./shared/paths";
+import * as path from "path";
 import { log } from "./shared/logger";
+import { ROOT, extensionConfig } from "./shared/paths";
 
 interface TaskResult {
 	description: string;
@@ -104,7 +104,6 @@ async function runCheck() {
 	// Step 1: Sequential auto-fix
 	if (shouldRunFix) {
 		runTaskSync("eslint", ["--fix", "src", "utils"], "ESLint - Auto-fixing issues");
-		runTaskSync("prettier", ["--write", "."], "Prettier - Formatting codebase");
 	}
 
 	// Step 2: Parallel checks
