@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { onMount, onDestroy } from "svelte";
-	import CapsuleTabs from "../window/components/CapsuleTabs.svelte";
-	import Icon from "@primitives/Icon.svelte";
 	import TextInput from "@controls/TextInput.svelte";
 	import CodeEditor from "@editor/CodeEditor.svelte";
+	import Icon from "@primitives/Icon.svelte";
 	import { logger } from "@shared/logger";
+	import { onDestroy, onMount } from "svelte";
+	import CapsuleTabs from "../window/components/CapsuleTabs.svelte";
 	import QuickControlRow from "./QuickControlRow.svelte";
 	import { QuickCustomizeController } from "./QuickCustomizeController.svelte";
 
@@ -93,7 +93,7 @@
 
 	<div class="selector-info">
 		<div class="icon-box">
-			<Icon name="code" size={14} color="var(--fg-opacity-100)" />
+			<Icon name="code" size={16} color="var(--theme-0)" />
 		</div>
 		<div class="info-text">
 			<span class="label">Targeting:</span>
@@ -130,12 +130,7 @@
 						<span>Loading Code Editor...</span>
 					</div>
 				{/if}
-				<CodeEditor
-					value={controller.rawCss}
-					language="css"
-					onInput={(val) => (controller.rawCss = val)}
-					onBlur={() => {}}
-				/>
+				<CodeEditor value={controller.rawCss} language="css" onInput={(val) => (controller.rawCss = val)} />
 			</div>
 		{/if}
 	</div>
@@ -169,34 +164,36 @@
 		border: 1px solid var(--fg-opacity-05);
 
 		.icon-box {
-			width: 32px;
-			height: 32px;
-			border-radius: 10px;
-			background: var(--fg-opacity-05);
+			width: 36px;
+			height: 36px;
+			border-radius: 12px;
+			background: var(--theme-0-10);
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			flex-shrink: 0;
+			border: 1px solid var(--theme-0-20);
 		}
 
 		.info-text {
 			display: flex;
 			flex-direction: column;
-			gap: 2px;
+			gap: 4px;
 
 			.label {
-				font-size: 11px;
-				font-weight: 600;
+				font-size: 10px;
+				font-weight: 700;
 				text-transform: uppercase;
-				letter-spacing: 0.5px;
-				color: var(--fg-opacity-40);
+				letter-spacing: 1px;
+				color: var(--text-muted);
 			}
 
 			.selector-name {
 				font-family: "Fira Code", "JetBrains Mono", monospace;
 				font-size: 13px;
 				color: var(--theme-0);
-				font-weight: 500;
+				font-weight: 600;
+				filter: brightness(1.2);
 			}
 		}
 	}

@@ -30,32 +30,26 @@ let resizeObserver: ResizeObserver | null = null;
 				const targetBoundingRect = currentTargetElement.getBoundingClientRect();
 				const viewportPadding = 20;
 
-				let calculatedPositionX: number;
-				let calculatedPositionY: number;
-
 				// Determine horizontal position: place to the right of target if it's in the left half of the screen
-				if (targetElementCenterPosition.x < window.innerWidth / 2) {
-					calculatedPositionX = targetBoundingRect.right + 10;
-				} else {
-					calculatedPositionX = targetBoundingRect.left - currentEditorWidth - 10;
-				}
+				let calculatedPositionX =
+					targetElementCenterPosition.x < window.innerWidth / 2
+						? targetBoundingRect.right + 10
+						: targetBoundingRect.left - currentEditorWidth - 10;
 
 				// Center vertically relative to the target element
-				calculatedPositionY = targetElementCenterPosition.y - currentEditorHeight / 2;
+				let calculatedPositionY = targetElementCenterPosition.y - currentEditorHeight / 2;
 
 				// Clamp horizontal position within viewport boundaries
-				if (calculatedPositionX < viewportPadding) {
-					calculatedPositionX = viewportPadding;
-				} else if (calculatedPositionX + currentEditorWidth > window.innerWidth - viewportPadding) {
-					calculatedPositionX = window.innerWidth - currentEditorWidth - viewportPadding;
-				}
+				calculatedPositionX = Math.max(
+					viewportPadding,
+					Math.min(calculatedPositionX, window.innerWidth - currentEditorWidth - viewportPadding),
+				);
 
 				// Clamp vertical position within viewport boundaries
-				if (calculatedPositionY < viewportPadding) {
-					calculatedPositionY = viewportPadding;
-				} else if (calculatedPositionY + currentEditorHeight > window.innerHeight - viewportPadding) {
-					calculatedPositionY = window.innerHeight - currentEditorHeight - viewportPadding;
-				}
+				calculatedPositionY = Math.max(
+					viewportPadding,
+					Math.min(calculatedPositionY, window.innerHeight - currentEditorHeight - viewportPadding),
+				);
 
 				windowElement.style.translate = `${calculatedPositionX}px ${calculatedPositionY}px`;
 
@@ -65,13 +59,7 @@ let resizeObserver: ResizeObserver | null = null;
 
 			updatePosition();
 
-			resizeObserver = new ResizeObserver(() => {
-				const currentTargetElement = currentEditObj["target"];
-				if (currentTargetElement) {
-					// We could use this to trigger updates, but requestAnimationFrame already handles it.
-					// For now, we just ensure it doesn't crash.
-				}
-			});
+			resizeObserver = new ResizeObserver(() => {});
 
 			const initialTarget = currentEditObj["target"];
 			if (initialTarget) {
@@ -100,7 +88,7 @@ let resizeObserver: ResizeObserver | null = null;
 	});
 })();
 
-export async function createEditorUi(targetElement, categories: Category[]) {
+export async function createEditorUi(targetElement: HTMLElement, categories: Category[]) {
 	currentEditObj["target"] = targetElement;
 	currentEditObj["Categories"] = categories;
 	editorUi.setGetCategory(() => categories);

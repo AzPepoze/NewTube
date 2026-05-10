@@ -3,7 +3,19 @@
 	import TextEditor from "../TextEditor.svelte";
 	import { CodeEditorController } from "./CodeEditorController.svelte";
 
-	let { value = $bindable(""), language = "javascript", height = 400 as string | number, onBlur, onInput } = $props();
+	let {
+		value = $bindable(""),
+		language = "javascript",
+		height = 400 as string | number,
+		onBlur,
+		onInput,
+	}: {
+		value: string;
+		language?: string;
+		height?: string | number;
+		onBlur?: (value: string) => void;
+		onInput?: (value: string) => void;
+	} = $props();
 
 	const normalizedHeight = $derived(typeof height === "number" ? `${height}px` : height);
 

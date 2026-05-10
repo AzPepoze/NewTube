@@ -24,7 +24,7 @@
 	});
 </script>
 
-<div class="control-row" class:disabled={!enabled}>
+<div class="control-row">
 	<div class="toggle-side">
 		<Checkbox
 			hideLabel={true}
@@ -61,16 +61,7 @@
 		transition: all 0.2s ease;
 		border: 1px solid transparent;
 
-		&.disabled {
-			opacity: 0.5;
-			filter: grayscale(0.5);
-			pointer-events: none;
-			.toggle-side {
-				pointer-events: all;
-			}
-		}
-
-		&:hover:not(.disabled) {
+		&:hover {
 			background: var(--fg-opacity-05);
 			border-color: var(--fg-opacity-10);
 		}

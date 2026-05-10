@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { logger } from "@shared/logger";
+	import { applyThemeToElement } from "@ui/themes/theme";
 	import { showUserConfirmation } from "@ui/window/windowFactory";
 	import { onDestroy, onMount } from "svelte";
 	import { fly } from "svelte/transition";
 	import { generateSelectors } from "./selectorUtils";
-	import { applyThemeToElement } from "@ui/themes/theme";
 
 	let { onSelect, onClose } = $props<{
 		onSelect: (selector: string) => void;
@@ -21,6 +21,7 @@
 	let hintHovered = $state(false);
 
 	function teleport(node: HTMLElement) {
+		node.classList.add("styleshift-main");
 		document.body.appendChild(node);
 		applyThemeToElement(node);
 		return {
@@ -69,6 +70,13 @@
 		overlay.style.left = `${rect.left}px`;
 		overlay.style.width = `${rect.width}px`;
 		overlay.style.height = `${rect.height}px`;
+
+		if (rect.top < 60) {
+			logger.debug("Picker", "Tooltip flipped to bottom", { top: rect.top });
+			overlay.classList.add("tooltip-bottom");
+		} else {
+			overlay.classList.remove("tooltip-bottom");
+		}
 	}
 
 	function handleClick(e: MouseEvent) {
@@ -306,18 +314,18 @@
 		}
 	}
 
-	.selection-overlay {
+	:global(.selection-overlay) {
 		position: fixed;
 		pointer-events: none;
 		border: 2px solid var(--theme-0, #7f5db7);
-		background: rgba(127, 93, 183, 0.1);
+		background: transparent;
 		z-index: 2147483646;
 		box-sizing: border-box;
 		border-radius: 4px;
 		transition: all 0.05s ease-out;
 		box-shadow:
 			0 0 15px rgba(127, 93, 183, 0.3),
-			0 0 0 9999px var(--shadow-strong);
+			0 0 0 9999px rgba(0, 0, 0, 0.4);
 
 		&.preview {
 			border-style: dashed;
@@ -327,7 +335,19 @@
 		}
 	}
 
-	.selector-tooltip {
+	:global(.selection-overlay.tooltip-bottom .selector-tooltip) {
+		bottom: auto !important;
+		top: calc(100% + 10px) !important;
+	}
+
+	:global(.selection-overlay.tooltip-bottom .selector-tooltip::after) {
+		top: auto !important;
+		bottom: 100% !important;
+		border-top-color: transparent !important;
+		border-bottom-color: var(--theme-0, #7f5db7) !important;
+	}
+
+	:global(.selector-tooltip) {
 		position: absolute;
 		bottom: calc(100% + 10px);
 		left: 0;
@@ -357,16 +377,15 @@
 		bottom: 30px;
 		left: 50%;
 		transform: translateX(-50%);
-		color: var(--text-muted);
-		font-size: 13px;
-		font-weight: 500;
+		color: rgba(255, 255, 255, 0.9);
+		font-size: 14px;
 		z-index: 2147483647;
 		pointer-events: auto;
 		user-select: none;
-		text-shadow: 0 1px 4px var(--shadow-color);
+		text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 
 		b {
-			color: var(--text-primary);
+			color: #ffffff;
 			font-weight: 800;
 			margin: 0 2px;
 		}
