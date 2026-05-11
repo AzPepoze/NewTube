@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Checkbox from "../settings/components/controls/Checkbox.svelte";
 	import ColorPicker from "../settings/components/controls/ColorPicker.svelte";
+	import Dropdown from "../settings/components/controls/Dropdown.svelte";
 	import Slider from "../settings/components/controls/Slider.svelte";
 	import TextInput from "../settings/components/controls/TextInput.svelte";
-	import Dropdown from "../settings/components/controls/Dropdown.svelte";
 
 	let {
 		ctrl,
@@ -73,6 +73,9 @@
 		.input-side {
 			flex: 1;
 			min-width: 0;
+			gap: 10px;
+			display: flex;
+			flex-direction: column;
 		}
 	}
 </style>

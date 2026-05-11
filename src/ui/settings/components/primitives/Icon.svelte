@@ -3,7 +3,6 @@
 	const del = "assets/icons/delete.svg";
 	const drag = "assets/icons/drag.svg";
 	const add = "assets/icons/add.svg";
-	const code = "assets/icons/code.svg";
 	const arrowUp = "assets/icons/arrowUp.svg";
 	const arrowDown = "assets/icons/arrowDown.svg";
 	const exportIcon = "assets/icons/export.svg";
@@ -16,7 +15,6 @@
 		delete: del,
 		drag,
 		add,
-		code,
 		arrowUp,
 		arrowDown,
 		export: exportIcon,

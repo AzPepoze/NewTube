@@ -93,7 +93,7 @@
 
 	<div class="selector-info">
 		<div class="icon-box">
-			<Icon name="code" size={16} color="var(--theme-0)" />
+			<Icon name="code" size={20} color="var(--theme-0)" />
 		</div>
 		<div class="info-text">
 			<span class="label">Targeting:</span>
@@ -173,6 +173,7 @@
 			justify-content: center;
 			flex-shrink: 0;
 			border: 1px solid var(--theme-0-20);
+			color: var(--theme-0);
 		}
 
 		.info-text {
@@ -205,14 +206,10 @@
 	}
 
 	.modal-content {
-		padding: 20px;
-		margin: 0 20px 20px;
 		flex: 1;
 		min-height: 250px;
 		overflow-y: auto;
-		background: var(--window-bg, var(--bg-main));
-		backdrop-filter: var(--window-blur) var(--window-saturate);
-		-webkit-backdrop-filter: var(--window-blur) var(--window-saturate);
+		padding: 20px;
 		border-radius: 12px;
 		border: 1px solid var(--border-subtle);
 	}
@@ -259,10 +256,6 @@
 		display: flex;
 		justify-content: flex-end;
 		gap: 12px;
-		background: var(--window-bg, var(--fg-opacity-02));
-		backdrop-filter: var(--window-blur) var(--window-saturate);
-		-webkit-backdrop-filter: var(--window-blur) var(--window-saturate);
-		border-top: 1px solid var(--fg-opacity-05);
 	}
 
 	button {
