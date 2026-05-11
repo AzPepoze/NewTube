@@ -122,7 +122,7 @@ export const defaultSetting = {
 		ScrollbarWidthStandard: "thin",
 		SearchSuggestionHoverColor: "#ffffffff",
 		SecondaryTextColor: "#c4c4c4ff",
-		SettingsBackgroundBlurAmount: 10,
+		SettingsBackgroundBlurAmount: 40,
 		SidebarBackgroundColor: "#00000000",
 		SidebarRound: 10,
 		SpaceBelowVideoPlayer: 0,

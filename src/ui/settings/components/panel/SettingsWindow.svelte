@@ -227,16 +227,16 @@
 		}
 
 		&.centered {
-			font-size: 12px;
+			font-size: 18px;
 			color: var(--text-muted);
-			letter-spacing: 2px;
-			font-weight: 800;
+			letter-spacing: 3px;
+			font-weight: 900;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			gap: 10px;
-			margin-top: 20px;
-			margin-bottom: 10px;
+			gap: 15px;
+			margin-top: 30px;
+			margin-bottom: 15px;
 			border-top: none;
 
 			&::before,

@@ -3,7 +3,7 @@ import { shouldFeatureShow } from "../helpers";
 import { calculateVdoHeight, detectBlackBars } from "./helpers";
 import { settings } from "./settings";
 import { state } from "./state";
-import { applyCrop, checkUltraWide, createDebugCanvas, disableUltraWide, hideDebugCanvas, updateDebugUI } from "./ui";
+import { applyCrop, checkUltraWide, createDebugCanvas, hideDebugCanvas, updateDebugUI } from "./ui";
 
 async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number, mySession: number) {
 	if (state.sessionId !== mySession) return;
@@ -11,7 +11,11 @@ async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number
 
 	updateDebugUI(finalDetectedHeight, vHeight);
 
-	if (Math.abs(finalDetectedHeight - state.lastHeight) > 5 || (finalDetectedHeight > 10 && state.lastHeight === 0)) {
+	if (settings.ultrawide) {
+		checkUltraWide();
+	}
+
+	if (finalDetectedHeight > 0 || state.lastHeight > 0) {
 		applyCrop(finalDetectedHeight, vHeight);
 	}
 
@@ -24,12 +28,6 @@ async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number
 		state.ctx.fillStyle = "green";
 		state.ctx.fillRect(0, state.lastHeight, 5, 1);
 		state.ctx.fillRect(0, vHeight - state.lastHeight, 5, 1);
-	}
-
-	if (settings.ultrawide) {
-		checkUltraWide();
-	} else {
-		disableUltraWide();
 	}
 }
 

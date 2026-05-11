@@ -128,6 +128,7 @@
 		} else {
 			picking = wasPicking;
 			showSuggestions = false;
+			previewElements = [];
 		}
 	}
 
@@ -231,7 +232,9 @@
 
 <style lang="scss">
 	.suggestions-list {
-		background: var(--bg-main);
+		background: var(--window-bg);
+		backdrop-filter: var(--window-blur) var(--window-saturate);
+		-webkit-backdrop-filter: var(--window-blur) var(--window-saturate);
 		border: 1px solid var(--border-subtle);
 		border-radius: 8px;
 		overflow: hidden;

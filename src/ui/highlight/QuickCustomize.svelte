@@ -205,10 +205,16 @@
 	}
 
 	.modal-content {
-		padding: 0 20px 20px;
+		padding: 20px;
+		margin: 0 20px 20px;
 		flex: 1;
 		min-height: 250px;
 		overflow-y: auto;
+		background: var(--window-bg, var(--bg-main));
+		backdrop-filter: var(--window-blur) var(--window-saturate);
+		-webkit-backdrop-filter: var(--window-blur) var(--window-saturate);
+		border-radius: 12px;
+		border: 1px solid var(--border-subtle);
 	}
 
 	.basic-controls-list {
@@ -253,7 +259,9 @@
 		display: flex;
 		justify-content: flex-end;
 		gap: 12px;
-		background: var(--fg-opacity-02);
+		background: var(--window-bg, var(--fg-opacity-02));
+		backdrop-filter: var(--window-blur) var(--window-saturate);
+		-webkit-backdrop-filter: var(--window-blur) var(--window-saturate);
 		border-top: 1px solid var(--fg-opacity-05);
 	}
 

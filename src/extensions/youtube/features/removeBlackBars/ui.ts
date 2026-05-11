@@ -1,4 +1,5 @@
 import { getVideoElement, isYoutubeFullscreen } from "@extensions/youtube/modules/youtube";
+import { logger } from "@shared/logger";
 import { settings } from "./settings";
 import { state } from "./state";
 
@@ -104,7 +105,6 @@ export async function createDebugCanvas() {
 		state.canvas.height = vHeight;
 	}
 
-	const videoRect = video.getBoundingClientRect();
 	if (!state.canvas.parentElement) {
 		const container = video.parentElement;
 		container.appendChild(state.canvas);
@@ -117,8 +117,8 @@ export async function createDebugCanvas() {
 		state.canvas.style.pointerEvents = "none";
 	}
 
-	if (state.canvas.style.height !== `${videoRect.height}px`) {
-		state.canvas.style.height = `${videoRect.height}px`;
+	if (state.canvas.style.height !== "100%") {
+		state.canvas.style.height = "100%";
 	}
 	state.canvas.style.display = "block";
 }
@@ -144,21 +144,31 @@ export async function enableUltraWide(ratio: number) {
 	if (state.isUltraWideMode && container.style.aspectRatio) return;
 
 	state.isUltraWideMode = true;
-	const mainContainer = container.parentElement;
-	if (!mainContainer) return;
 
-	const mainRect = mainContainer.getBoundingClientRect();
-	const imagineWidth = ratio * mainRect.height;
-
-	if (imagineWidth > mainRect.width) {
-		container.style.width = "100%";
-		container.style.height = "auto";
-	} else {
-		container.style.width = "auto";
-		container.style.height = "100%";
+	const newAspectRatio = `${ratio} / 1`;
+	if (container.style.aspectRatio !== newAspectRatio) {
+		container.style.setProperty("display", "flex", "important");
+		container.style.setProperty("align-items", "center", "important");
+		container.style.setProperty("justify-content", "center", "important");
+		container.style.setProperty("align-self", "center", "important");
+		container.style.setProperty("width", "100%", "important");
+		container.style.setProperty("height", "100%", "important");
+		container.style.setProperty("aspect-ratio", newAspectRatio, "important");
+		container.style.setProperty("overflow", "hidden", "important");
 	}
-	container.style.aspectRatio = `${ratio} / 1`;
-	video.style.width = "100%";
+
+	if (video.style.objectFit !== "cover") {
+		video.style.setProperty("width", "100%", "important");
+		video.style.setProperty("height", "100%", "important");
+		video.style.setProperty("top", "0", "important");
+		video.style.setProperty("left", "0", "important");
+		video.style.setProperty("margin", "0", "important");
+		video.style.setProperty("object-fit", "cover", "important");
+	}
+
+	if (settings.debugInfo) {
+		logger.debug("RemoveBlackBars", `enableUltraWide: ratio=${ratio.toFixed(2)}`);
+	}
 }
 
 export async function disableUltraWide() {
@@ -173,21 +183,31 @@ export async function disableUltraWide() {
 	if (!video || !container) return;
 
 	container.style.width = "";
+	container.style.height = "";
 	container.style.aspectRatio = "";
+	container.style.overflow = "";
 	video.style.width = "";
-	state.lastHeight = 0;
+	video.style.height = "";
+	video.style.objectFit = "";
+	if (settings.debugInfo) {
+		logger.debug("RemoveBlackBars", "disableUltraWide");
+	}
 }
 
 export async function checkUltraWide() {
 	const video = await getVideoElement();
-	if (!video || !video.parentElement) return;
-	const parent = video.parentElement;
-	const rect = parent.getBoundingClientRect();
+	if (!video || !video.parentElement || !video.parentElement.parentElement) return;
+	const player = video.parentElement.parentElement;
+	const rect = player.getBoundingClientRect();
 	const currentRatio = rect.width / rect.height;
+
+	if (settings.debugInfo) {
+		logger.debug("RemoveBlackBars", `checkUltraWide: playerRatio=${currentRatio.toFixed(2)}`);
+	}
 
 	if (Math.abs(parseFloat(ultraWideRatio) - currentRatio) < 0.15) {
 		enableUltraWide(currentRatio);
-	} else {
+	} else if (state.isUltraWideMode) {
 		disableUltraWide();
 	}
 }
@@ -200,23 +220,50 @@ export async function applyCrop(barHeight: number, totalHeight: number) {
 	// Bar bigger than before, snap immediately to avoid showing bars during transition
 	if (barHeight > state.lastHeight) {
 		videoContainer.style.transition = "none";
+		video.style.transition = "none";
 	} else {
-		videoContainer.style.transition = "all 0.5s ease-out";
+		const transition = "all 0.5s ease-out";
+		videoContainer.style.transition = transition;
+		video.style.transition = transition;
 	}
 
 	if (barHeight <= 10) {
-		videoContainer.style.height = "100%";
+		videoContainer.style.setProperty("height", "100%", "important");
+		videoContainer.style.setProperty("width", "100%", "important");
+		videoContainer.style.aspectRatio = "";
+		video.style.transform = "";
+		video.style.objectFit = "";
 		if (!settings.ultrawide) {
 			disableUltraWide();
 		}
 	} else {
 		const contentHeight = totalHeight - barHeight * 2;
-		const scale = contentHeight / totalHeight;
-		videoContainer.style.height = `${scale * 100}%`;
+		const contentWidth = video.videoWidth || (totalHeight * (16 / 9));
+		const ratio = contentWidth / contentHeight;
+		const newAspectRatio = `${ratio} / 1`;
+
+		// Apply consistent sizing regardless of monitor type.
+		// Aspect-ratio and align-self:center will handle the rest.
+		videoContainer.style.setProperty("display", "flex", "important");
+		videoContainer.style.setProperty("align-items", "center", "important");
+		videoContainer.style.setProperty("justify-content", "center", "important");
+		videoContainer.style.setProperty("align-self", "center", "important");
+		videoContainer.style.setProperty("width", "100%", "important");
+		videoContainer.style.setProperty("height", "auto", "important");
+		videoContainer.style.setProperty("min-height", "0", "important");
+		videoContainer.style.setProperty("max-height", "100%", "important");
+		videoContainer.style.setProperty("aspect-ratio", newAspectRatio, "important");
+		videoContainer.style.setProperty("overflow", "hidden", "important");
+
+		// Force video to fill container and crop bars via object-fit
+		video.style.setProperty("width", "100%", "important");
+		video.style.setProperty("height", "100%", "important");
+		video.style.setProperty("top", "0", "important");
+		video.style.setProperty("left", "0", "important");
+		video.style.setProperty("margin", "0", "important");
+		video.style.setProperty("object-fit", "cover", "important");
+		video.style.transform = "";
 	}
 
-	if (!state.isUltraWideMode) {
-		videoContainer.style.aspectRatio = "";
-	}
 	state.lastHeight = barHeight;
 }

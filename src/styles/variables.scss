@@ -108,7 +108,7 @@
 	/* --- Dynamic --- */
 	--window-bg: var(--bg-main);
 	--window-blur: none;
-	--window-saturate: 100%;
+	--window-saturate: saturate(100%);
 }
 
 .styleshift-main[data-transparent="true"] {

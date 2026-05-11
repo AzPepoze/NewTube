@@ -17,7 +17,7 @@ const smallModeListeners: ((isSmallMode: boolean) => void)[] = [];
 export const playerWatchModeSelector =
 	"#movie_player.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)";
 export const ytVideoContainerWatchMode = playerWatchModeSelector;
-export const ytPlayerWatchMode = `ytd-watch-flexy:has(${playerWatchModeSelector}), #player:has(${playerWatchModeSelector})`;
+export const ytPlayerWatchMode = `#player:has(${playerWatchModeSelector})`;
 export const ytdPlayerWatchMode = `ytd-watch-flexy ytd-player:has(${playerWatchModeSelector})`;
 export const ytTheaterModeContainer = `ytd-watch-flexy[theater] #full-bleed-container`;
 
