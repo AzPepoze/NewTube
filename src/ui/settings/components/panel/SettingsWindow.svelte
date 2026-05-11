@@ -116,7 +116,6 @@
 			onscroll={controller.handleScroll}
 		>
 			{#if controller.buildInItemsData.length > 0}
-				<div class="styleshift-section-header">BUILD-IN</div>
 				<SettingsListRenderer
 					items={controller.buildInItemsData}
 					searchQuery={controller.searchQuery}

@@ -51,7 +51,7 @@ export class SettingsWindowController {
 	sidebarData = $derived.by(() => {
 		const result: (Category | SeparateCategory)[] = [];
 		if (this.buildInItemsData.length > 0) {
-			result.push({ isHeader: true, label: "BUILD-IN" }, ...this.buildInItemsData);
+			result.push(...this.buildInItemsData);
 		}
 		if (this.addOnItemsData.length > 0) {
 			result.push({ isHeader: true, label: "ADD-ON" }, ...this.addOnItemsData);
