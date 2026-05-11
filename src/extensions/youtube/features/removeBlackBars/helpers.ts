@@ -22,44 +22,35 @@ export function checkPixelDiff(
 }
 
 export function calculateVdoHeight(heights: (number | "inf")[], currentLastHeight: number) {
-	let maxFrequency = 0;
-	let mostCommonHeight: number | "inf" = "inf";
+	const validHeights = heights.filter((h): h is number => typeof h === "number");
+	if (validHeights.length < 3) return currentLastHeight;
 
-	for (let i = 0; i < heights.length; i++) {
-		let frequency = 0;
-		const candidate = heights[i];
-		for (let j = i; j < heights.length; j++) {
-			const target = heights[j];
-			if (
-				candidate === target ||
-				(typeof candidate === "number" && typeof target === "number" && Math.abs(candidate - target) < 5)
-			) {
-				frequency++;
-			}
-		}
+	const frequencyMap = new Map<number, number>();
+	for (const height of validHeights) {
+		const rounded = Math.round(height / 5) * 5; // Group in 5px bins
+		frequencyMap.set(rounded, (frequencyMap.get(rounded) || 0) + 1);
+	}
 
-		if (
-			frequency > maxFrequency ||
-			(frequency === maxFrequency &&
-				typeof candidate === "number" &&
-				(typeof mostCommonHeight !== "number" || candidate > mostCommonHeight))
-		) {
-			maxFrequency = frequency;
-			mostCommonHeight = candidate;
+	let maxFreq = 0;
+	let bestHeight = currentLastHeight;
+
+	for (const [height, freq] of frequencyMap.entries()) {
+		if (freq > maxFreq || (freq === maxFreq && height > bestHeight)) {
+			maxFreq = freq;
+			bestHeight = height;
 		}
 	}
 
-	if (maxFrequency < 3 || mostCommonHeight === "inf") {
-		return currentLastHeight;
-	}
-
-	return mostCommonHeight;
+	return maxFreq >= 3 ? bestHeight : currentLastHeight;
 }
 
-export async function detectBlackBars(data: BarDetectionData, ctx?: any) {
+export async function detectBlackBars(data: BarDetectionData, ctx?: CanvasRenderingContext2D | null) {
 	const { imgData, vHeight, threshold, sR, sG, sB, pixelBudget } = data;
 	const heightsFound: (number | "inf")[] = [];
 	let pixelsChecked = 0;
+
+	const isDifferent = (base: number) =>
+		checkPixelDiff(imgData[base], imgData[base + 1], imgData[base + 2], sR, sG, sB, threshold);
 
 	if (ctx) ctx.fillStyle = "red";
 
@@ -67,34 +58,30 @@ export async function detectBlackBars(data: BarDetectionData, ctx?: any) {
 		let top = -1;
 		let bottom = -1;
 
-		// Top scan
+		// Top scan (skip first 5 pixels)
 		for (let i = 5; i < vHeight / 2; i++) {
 			pixelsChecked++;
-			const base = (i * 5 + x) * 4;
-			if (checkPixelDiff(imgData[base], imgData[base + 1], imgData[base + 2], sR, sG, sB, threshold)) {
+			if (isDifferent((i * 5 + x) * 4)) {
 				top = i;
 				break;
 			}
 			if (ctx) ctx.fillRect(x, i, 1, 1);
-
-			if (pixelBudget && pixelsChecked >= pixelBudget) {
-				await new Promise((resolve) => setTimeout(resolve, 1));
+			if (pixelBudget && ++pixelsChecked >= pixelBudget) {
+				await new Promise((r) => setTimeout(r, 1));
 				pixelsChecked = 0;
 			}
 		}
 
-		// Bottom scan
+		// Bottom scan (skip last 5 pixels)
 		for (let i = vHeight - 5; i > vHeight / 2; i--) {
 			pixelsChecked++;
-			const base = (i * 5 + x) * 4;
-			if (checkPixelDiff(imgData[base], imgData[base + 1], imgData[base + 2], sR, sG, sB, threshold)) {
+			if (isDifferent((i * 5 + x) * 4)) {
 				bottom = vHeight - i;
 				break;
 			}
 			if (ctx) ctx.fillRect(x, i, 1, 1);
-
-			if (pixelBudget && pixelsChecked >= pixelBudget) {
-				await new Promise((resolve) => setTimeout(resolve, 1));
+			if (pixelBudget && ++pixelsChecked >= pixelBudget) {
+				await new Promise((r) => setTimeout(r, 1));
 				pixelsChecked = 0;
 			}
 		}

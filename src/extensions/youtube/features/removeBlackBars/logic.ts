@@ -3,31 +3,24 @@ import { shouldFeatureShow } from "../helpers";
 import { calculateVdoHeight, detectBlackBars } from "./helpers";
 import { settings } from "./settings";
 import { state } from "./state";
-import { applyCrop, checkUltraWide, createDebugCanvas, hideDebugCanvas, updateDebugUI } from "./ui";
+import { applyCrop, createDebugCanvas, hideDebugCanvas, updateDebugUI } from "./ui";
 
 async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number, mySession: number) {
 	if (state.sessionId !== mySession) return;
 	state.processLatency = performance.now() - state.startTime;
-
 	updateDebugUI(finalDetectedHeight, vHeight);
 
-	if (settings.ultrawide) {
-		checkUltraWide();
-	}
-
-	if (finalDetectedHeight > 0 || state.lastHeight > 0) {
-		applyCrop(finalDetectedHeight, vHeight);
-	}
+	if (finalDetectedHeight > 0 || state.lastHeight > 0) applyCrop(finalDetectedHeight, vHeight);
 
 	if (settings.debugCanvas && state.ctx) {
-		state.ctx.fillStyle = "yellow";
-		state.ctx.fillRect(0, 10, 5, 1);
-		state.ctx.fillStyle = "green";
-		state.ctx.fillRect(0, finalDetectedHeight, 5, 1);
-		state.ctx.fillRect(0, vHeight - finalDetectedHeight, 5, 1);
-		state.ctx.fillStyle = "green";
-		state.ctx.fillRect(0, state.lastHeight, 5, 1);
-		state.ctx.fillRect(0, vHeight - state.lastHeight, 5, 1);
+		const ctx = state.ctx;
+		ctx.fillStyle = "yellow";
+		ctx.fillRect(0, 10, 5, 1);
+		ctx.fillStyle = "green";
+		ctx.fillRect(0, finalDetectedHeight, 5, 1);
+		ctx.fillRect(0, vHeight - finalDetectedHeight, 5, 1);
+		ctx.fillRect(0, state.lastHeight, 5, 1);
+		ctx.fillRect(0, vHeight - state.lastHeight, 5, 1);
 	}
 }
 
@@ -36,47 +29,29 @@ export async function checkBlackBars() {
 	if (!state.enabled || state.sessionId !== mySession) return;
 
 	const video = await getVideoElement();
-	if (!video) {
-		state.animationId = window.setTimeout(() => {
-			if (state.enabled && state.sessionId === mySession) checkBlackBars();
-		}, 33) as any;
-		return;
-	}
-
-	const scheduleNext = () => {
-		if (state.enabled && state.sessionId === mySession) {
-			if ("requestVideoFrameCallback" in video) {
-				state.videoFrameCallbackId = video.requestVideoFrameCallback(() => {
-					if (state.sessionId === mySession) checkBlackBars();
-				});
-			} else {
-				state.animationId = window.setTimeout(() => {
-					if (state.sessionId === mySession) checkBlackBars();
-				}, 33) as any;
-			}
+	const schedule = () => {
+		if (!state.enabled || state.sessionId !== mySession) return;
+		if ("requestVideoFrameCallback" in video!) {
+			state.videoFrameCallbackId = video.requestVideoFrameCallback(() => checkBlackBars());
+		} else {
+			state.animationId = window.setTimeout(() => checkBlackBars(), 33) as any;
 		}
 	};
 
+	if (!video) return schedule();
+
 	if (!shouldFeatureShow(settings.disableFullscreen)) {
-		if (settings.disableFullscreen && isYoutubeFullscreen && state.lastHeight !== 0) {
-			applyCrop(0, video.videoHeight);
-		}
-		scheduleNext();
-		return;
+		if (settings.disableFullscreen && isYoutubeFullscreen && state.lastHeight !== 0) applyCrop(0, video.videoHeight);
+		return schedule();
 	}
 
-	if (video.ended || video.paused) {
-		scheduleNext();
-		return;
-	}
+	if (video.ended || video.paused) return schedule();
 
 	const vHeight = video.videoHeight;
 	state.vHeight = vHeight;
 
 	const now = performance.now();
-	if (state.lastIntervalTime !== 0) {
-		state.currentInterval = Math.round(now - state.lastIntervalTime);
-	}
+	if (state.lastIntervalTime !== 0) state.currentInterval = Math.round(now - state.lastIntervalTime);
 	state.lastIntervalTime = now;
 
 	if (settings.debugCanvas) {
@@ -88,9 +63,7 @@ export async function checkBlackBars() {
 			state.canvas.width = 5;
 			state.ctx = state.canvas.getContext("2d", { alpha: false });
 		}
-		if (state.canvas.height !== vHeight) {
-			state.canvas.height = vHeight;
-		}
+		if (state.canvas.height !== vHeight) state.canvas.height = vHeight;
 	}
 
 	if (state.ctx) state.ctx.drawImage(video, 0, 0, 5, vHeight);
@@ -104,14 +77,10 @@ export async function checkBlackBars() {
 	if (state.isChecking) {
 		state.droppedFrames++;
 		updateDebugUI();
-		scheduleNext();
-		return;
+		return schedule();
 	}
 
 	state.startTime = performance.now();
-	const threshold = 20;
-	const pixelBudget = settings.lazyCheck ? settings.lazyAmount : 0; // 0 means no limit/sleep
-
 	state.isChecking = true;
 
 	if (settings.worker && !settings.debugCanvas && state.worker) {
@@ -121,40 +90,37 @@ export async function checkBlackBars() {
 				data: {
 					imgData,
 					vHeight,
-					threshold,
+					threshold: 20,
 					sR,
 					sG,
 					sB,
-					pixelBudget,
+					pixelBudget: settings.lazyCheck ? settings.lazyAmount : 0,
 					currentLastHeight: state.lastHeight,
 				},
 			},
 			[imgData.buffer],
 		);
-
-		scheduleNext();
-		return;
+		return schedule();
 	}
+
 	const heightsFound = await detectBlackBars(
 		{
 			imgData,
 			vHeight,
-			threshold,
+			threshold: 20,
 			sR,
 			sG,
 			sB,
-			pixelBudget,
+			pixelBudget: settings.lazyCheck ? settings.lazyAmount : 0,
 		},
 		settings.debugCanvas ? ctx : null,
 	);
 
-	if (state.sessionId !== mySession) {
+	if (state.sessionId === mySession) {
+		const result = calculateVdoHeight(heightsFound, state.lastHeight);
 		state.isChecking = false;
-		return;
+		handleDetectedHeight(result, vHeight, mySession);
 	}
-
-	const result = calculateVdoHeight(heightsFound, state.lastHeight);
 	state.isChecking = false;
-	handleDetectedHeight(result, vHeight, mySession);
-	scheduleNext();
+	schedule();
 }
