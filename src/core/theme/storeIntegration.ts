@@ -8,7 +8,7 @@ import {
 	checkAndUpdateTheme as themeManagerCheckAndUpdate,
 	validateOrigin,
 } from "@core/theme/manager";
-import { NEWTUBE_STORE_DISCOVER_URL } from "@extensions/youtube/constants";
+import { STYLESHIFT_STORE_DISCOVER_URL } from "@core/theme/config";
 import { logger } from "@shared/logger";
 
 export async function initWebsiteIntegration(): Promise<void> {
@@ -97,5 +97,5 @@ export async function checkAndUpdateTheme(manual: boolean = false, targetDomain?
 }
 
 export function openThemeStore() {
-	window.open(NEWTUBE_STORE_DISCOVER_URL, "_blank");
+	window.open(STYLESHIFT_STORE_DISCOVER_URL, "_blank");
 }

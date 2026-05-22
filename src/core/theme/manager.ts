@@ -108,11 +108,36 @@ export async function fetchThemeFromApi(themeId: string): Promise<Theme | null> 
 		const data = await res.json();
 		if (!data?.settings) return null;
 
+		const resolvedId = (data.themeId as string | undefined) ?? (data.id as string | undefined) ?? themeId;
+		const resolvedName = (data.themeName as string | undefined) ?? (data.name as string | undefined) ?? resolvedId;
+
+		const rawSettings = data.settings as Record<string, unknown> | undefined;
+		let currentSettings: Record<string, unknown> | undefined;
+		let addOnStyleShiftItems = data.addOnStyleShiftItems as Theme["addOnStyleShiftItems"];
+
+		if (rawSettings && typeof rawSettings === "object" && !Array.isArray(rawSettings)) {
+			if (
+				"currentSettings" in rawSettings &&
+				rawSettings.currentSettings &&
+				typeof rawSettings.currentSettings === "object" &&
+				!Array.isArray(rawSettings.currentSettings)
+			) {
+				currentSettings = rawSettings.currentSettings as Record<string, unknown>;
+				if (Array.isArray(rawSettings.addOnStyleShiftItems)) {
+					addOnStyleShiftItems = rawSettings.addOnStyleShiftItems;
+				}
+			} else {
+				currentSettings = rawSettings as Record<string, unknown>;
+			}
+		}
+
+		if (!currentSettings) return null;
+
 		const theme: Theme = {
-			themeId: data.id || themeId,
-			themeName: data.name,
-			currentSettings: data.settings,
-			addOnStyleShiftItems: data.addOnStyleShiftItems,
+			themeId: resolvedId,
+			themeName: resolvedName,
+			currentSettings: currentSettings as Theme["currentSettings"],
+			addOnStyleShiftItems,
 		};
 
 		return theme;

@@ -1,7 +1,8 @@
 {
 	"name": "NewTube",
 	"code_name": "NEWTUBE",
-	"store_origin": ["https://newtube.azpepoze", "https://newtube.azpepoze.com"],
+	"store_origin": ["https://newtube.azpepoze.com"],
 	"store_api": "https://api.newtube.azpepoze.com",
-	"store_url": "https://newtube.azpepoze.com/themes"
+	"store_url": "https://newtube.azpepoze.com/themes",
+	"store_discover": "https://newtube.azpepoze.com/discover"
 }

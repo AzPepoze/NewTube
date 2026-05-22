@@ -10,7 +10,7 @@ import {
 	saveTheme as saveThemeManager,
 	type Theme,
 } from "@core/theme/manager";
-import { NEWTUBE_STORE_API_URL } from "@extensions/youtube/constants";
+import { STYLESHIFT_STORE_API_URL } from "@core/theme/config";
 
 export class ThemeManagerController {
 	themes = $state<Theme[]>([]);
@@ -44,15 +44,33 @@ export class ThemeManagerController {
 	async fetchStoreThemes(query = "") {
 		this.isLoadingStore = true;
 		try {
-			const res = await fetch(`${NEWTUBE_STORE_API_URL}/themes?q=${encodeURIComponent(query)}&sort=popular`);
+			const res = await fetch(`${STYLESHIFT_STORE_API_URL}/themes?q=${encodeURIComponent(query)}&sort=popular`);
 			if (res.ok) {
 				const data = await res.json();
-				this.storeThemes = data.map((t: any) => ({
-					themeId: t.themeId,
-					themeName: t.themeName,
-					currentSettings: t.settings?.currentSettings,
-					addOnStyleShiftItems: t.settings?.addOnStyleShiftItems,
-				}));
+				this.storeThemes = data.map((t: any) => {
+					const s = t.settings;
+					let currentSettings: Record<string, unknown> | undefined;
+					let addOnStyleShiftItems: Theme["addOnStyleShiftItems"];
+					if (s && typeof s === "object" && !Array.isArray(s)) {
+						if (
+							"currentSettings" in s &&
+							s.currentSettings &&
+							typeof s.currentSettings === "object" &&
+							!Array.isArray(s.currentSettings)
+						) {
+							currentSettings = s.currentSettings as Record<string, unknown>;
+							addOnStyleShiftItems = Array.isArray(s.addOnStyleShiftItems) ? s.addOnStyleShiftItems : undefined;
+						} else {
+							currentSettings = s as Record<string, unknown>;
+						}
+					}
+					return {
+						themeId: t.themeId,
+						themeName: t.themeName,
+						currentSettings,
+						addOnStyleShiftItems,
+					};
+				});
 			}
 		} catch (e) {
 			console.error("Store fetch failed", e);

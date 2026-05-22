@@ -13,6 +13,67 @@ import { createSvelteCompilerOptions } from "./shared/svelte";
 
 dotenv.config();
 
+/** Merge theme store hosts from extension.config.json into the MV3 manifest (API + store site). */
+function augmentManifestForThemeStore(buildDir: string) {
+	const manifestPath = path.join(buildDir, "manifest.json");
+	if (!fs.existsSync(manifestPath)) return;
+
+	const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8")) as {
+		host_permissions?: string[];
+		content_scripts?: Array<{ matches: string[]; all_frames?: boolean; js: string[]; css: string[]; run_at?: string }>;
+		web_accessible_resources?: Array<{ resources: string[]; matches: string[] }>;
+	};
+
+	const hostPerms = new Set<string>(manifest.host_permissions ?? []);
+	const storeOrigins: string[] = Array.isArray(extensionConfig.store_origin) ? extensionConfig.store_origin : [];
+	const storeMatchPatterns: string[] = [];
+
+	for (const origin of storeOrigins) {
+		try {
+			const u = new URL(origin);
+			hostPerms.add(`${u.protocol}//${u.host}/*`);
+			const scheme = u.protocol.replace(":", "");
+			storeMatchPatterns.push(`${scheme}://${u.host}${u.port ? `:${u.port}` : ""}/*`);
+		} catch {
+			/* ignore invalid origin */
+		}
+	}
+
+	if (extensionConfig.store_api) {
+		try {
+			const u = new URL(extensionConfig.store_api as string);
+			hostPerms.add(`${u.protocol}//${u.host}/*`);
+		} catch {
+			/* ignore */
+		}
+	}
+
+	manifest.host_permissions = [...hostPerms];
+
+	const baseCs = manifest.content_scripts?.[0];
+	if (baseCs && storeMatchPatterns.length > 0) {
+		manifest.content_scripts = [
+			...(manifest.content_scripts ?? []),
+			{
+				matches: storeMatchPatterns,
+				all_frames: baseCs.all_frames,
+				js: [...baseCs.js],
+				css: [...baseCs.css],
+				run_at: baseCs.run_at,
+			},
+		];
+	}
+
+	const war = manifest.web_accessible_resources?.[0];
+	if (war && storeMatchPatterns.length > 0) {
+		const warMatches = new Set<string>(war.matches ?? []);
+		for (const p of storeMatchPatterns) warMatches.add(p);
+		war.matches = [...warMatches];
+	}
+
+	fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, "\t"), "utf8");
+}
+
 const isProduction = () => process.argv.includes("--production") || process.argv.includes("--release");
 const isOnce = () => process.argv.includes("--once") || process.argv.includes("--release");
 
@@ -134,6 +195,7 @@ export async function buildExtension() {
 		fs.copySync(ENTRYPOINTS, BUILD, {
 			filter: (src) => !path.relative(ENTRYPOINTS, src).startsWith("modules") && !src.endsWith(".ts"),
 		});
+		augmentManifestForThemeStore(BUILD);
 		if (fs.existsSync(path.join(SRC, "assets"))) {
 			fs.copySync(path.join(SRC, "assets"), path.join(BUILD, "assets"));
 		}

@@ -1,14 +1,12 @@
 /**
- * Allowed origins for the NewTube Theme Store.
+ * Theme store URLs and origins — single source of truth is extension.config.json via @core/theme/config.
  */
-export const NEWTUBE_STORE_ORIGINS = ["https://newtube.azpepoze", "https://newtube.azpepoze.com"];
-
-/**
- * Base URL for the NewTube Store API.
- */
-export const NEWTUBE_STORE_API_URL = "https://api.newtube.azpepoze.com";
-export const NEWTUBE_STORE_DISCOVER_URL = "https://newtube.azpepoze.com/discover";
-export const NEWTUBE_STORE_THEMES_URL = "https://newtube.azpepoze.com/themes";
+export {
+	STYLESHIFT_STORE_ORIGINS as NEWTUBE_STORE_ORIGINS,
+	STYLESHIFT_STORE_API_URL as NEWTUBE_STORE_API_URL,
+	STYLESHIFT_STORE_URL as NEWTUBE_STORE_THEMES_URL,
+	STYLESHIFT_STORE_DISCOVER_URL as NEWTUBE_STORE_DISCOVER_URL,
+} from "@core/theme/config";
 
 /**
  * Target sites for installing the themes.

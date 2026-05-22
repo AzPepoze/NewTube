@@ -33,8 +33,14 @@ export const STYLESHIFT_STORE_API_URL: string = config.store_api || "";
  */
 export const STYLESHIFT_STORE_URL: string = config.store_url || "";
 
+/**
+ * Discover / landing URL for the theme store (e.g. /discover).
+ */
+export const STYLESHIFT_STORE_DISCOVER_URL: string = config.store_discover || "";
+
 logger.info("themeConfig", "Theme store configuration loaded", {
 	origins: STYLESHIFT_STORE_ORIGINS,
 	apiUrl: STYLESHIFT_STORE_API_URL,
 	storeUrl: STYLESHIFT_STORE_URL,
+	discoverUrl: STYLESHIFT_STORE_DISCOVER_URL,
 });
