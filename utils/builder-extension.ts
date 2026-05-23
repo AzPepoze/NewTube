@@ -88,7 +88,22 @@ async function generateBuildInFunctions() {
 		const functionNames = [
 			...new Set([...functionsList.matchAll(/\bexport\s+(?:async\s+)?function\s+(\w+)\s*\(/g)].map((x) => x[1])),
 		];
-		const wrappableFunctions = functionNames.filter(
+
+		// Include functions from star re-exports (e.g. export * from "./dialogs")
+		const starExports = [...functionsList.matchAll(/\bexport\s+\*\s+from\s+["']\.\/([\w-]+)["']/g)].map((x) => x[1]);
+		for (const exportFile of starExports) {
+			const subFilePath = path.join(SRC, `core/shared/${exportFile}.ts`);
+			if (fs.existsSync(subFilePath)) {
+				const subContent = fs.readFileSync(subFilePath, "utf8");
+				const subFunctionNames = [...subContent.matchAll(/\bexport\s+(?:async\s+)?function\s+(\w+)\s*\(/g)].map(
+					(x) => x[1],
+				);
+				functionNames.push(...subFunctionNames);
+			}
+		}
+
+		const uniqueFunctionNames = [...new Set(functionNames)];
+		const wrappableFunctions = uniqueFunctionNames.filter(
 			(name) => !new Set(["_call_function", "fireFunctionEventWithReturn", "onFunctionEvent"]).has(name),
 		);
 
