@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from "@ui/settings/components/controls/Button.svelte";
 	import Icon from "@primitives/Icon.svelte";
 	import Search from "@ui/settings/components/primitives/Search.svelte";
 	import CapsuleTabs from "@ui/window/components/CapsuleTabs.svelte";
@@ -120,20 +121,64 @@
 
 	<div class="manager-footer">
 		<div class="actions-left">
-			<button class="footer-btn store" onclick={() => controller.openStore()} title="Explore Themes">
-				<Icon name="storefront" size={16} /><span>Store</span>
-			</button>
-			<button class="footer-btn save" onclick={() => controller.saveCurrentAsTheme()} title="Save Current Theme">
-				<Icon name="save" size={16} /><span>Save</span>
-			</button>
-			<button class="footer-btn import" onclick={() => controller.importTheme()} title="Import Theme ZIP">
-				<Icon name="publish" size={16} /><span>Import</span>
-			</button>
+			<Button
+				class="footer-btn"
+				iconSize={18}
+				fontSize={13.5}
+				setting={{
+					type: "button",
+					name: "Store",
+					icon: "storefront",
+					color: "var(--theme-info, #a7ffff)",
+					clickFunction: () => controller.openStore(),
+				}}
+			/>
+			<Button
+				class="footer-btn"
+				iconSize={18}
+				fontSize={13.5}
+				setting={{
+					type: "button",
+					name: "Save",
+					icon: "save",
+					color: "var(--theme-0)",
+					clickFunction: () => controller.saveCurrentAsTheme(),
+				}}
+			/>
+			<Button
+				class="footer-btn"
+				iconSize={18}
+				fontSize={13.5}
+				setting={{
+					type: "button",
+					name: "Import",
+					icon: "publish",
+					color: "var(--theme-success)",
+					clickFunction: () => controller.importTheme(),
+				}}
+			/>
 		</div>
-		<div class="divider"></div>
 		<div class="actions-right">
-			<button class="footer-btn ok" onclick={() => controller.handleOk()}>OK</button>
-			<button class="footer-btn cancel" onclick={() => controller.handleCancel()}>Cancel</button>
+			<Button
+				class="footer-btn"
+				fontSize={13.5}
+				setting={{
+					type: "button",
+					name: "OK",
+					color: "var(--theme-0)",
+					clickFunction: () => controller.handleOk(),
+				}}
+			/>
+			<Button
+				class="footer-btn"
+				fontSize={13.5}
+				setting={{
+					type: "button",
+					name: "Cancel",
+					color: "var(--fg-opacity-20)",
+					clickFunction: () => controller.handleCancel(),
+				}}
+			/>
 		</div>
 	</div>
 </div>
@@ -144,7 +189,7 @@
 		flex-direction: column;
 		width: 100%;
 		height: 100%;
-		min-height: 480px;
+		min-height: 520px;
 		position: relative;
 		overflow: hidden;
 	}
@@ -170,7 +215,7 @@
 	}
 
 	.theme-grid {
-		padding-bottom: 90px;
+		padding-bottom: 20px;
 		overflow-y: auto;
 		padding-right: 5px;
 		flex: 1;
@@ -238,101 +283,27 @@
 	}
 
 	.manager-footer {
-		position: absolute;
-		bottom: 25px;
-		left: 50%;
-		transform: translateX(-50%);
 		display: flex;
 		align-items: center;
-		background: var(--bg-main);
-		backdrop-filter: var(--window-blur);
-		padding: 4px;
-		border-radius: 40px;
-		border: 1px solid var(--border-color);
-		box-shadow: 0 15px 45px var(--shadow-color);
-		z-index: 1000;
-		gap: 2px;
+		justify-content: space-between;
+		padding: 0 5px;
+		margin-top: 20px;
+		z-index: 100;
 
 		.actions-left,
 		.actions-right {
 			display: flex;
-			gap: 2px;
-		}
-		.divider {
-			width: 1px;
-			height: 20px;
-			background: var(--border-color);
-			margin: 0 6px;
-		}
-
-		.footer-btn {
-			display: flex;
+			gap: 10px;
 			align-items: center;
-			gap: 8px;
-			height: 32px;
-			padding: 0 14px;
-			margin: 3px;
-			border-radius: 30px;
-			border: none;
-			background: transparent;
-			color: var(--font-color-dim);
+		}
+
+		:global(.footer-btn) {
+			height: 38px;
+			padding: 0 16px !important;
+			border-radius: 10px !important;
 			font: inherit;
-			font-size: 16px;
 			font-weight: 500;
-			cursor: pointer;
-			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-			white-space: nowrap;
-
-			&:hover {
-				background: var(--fg-opacity-08);
-				color: var(--font-color);
-				transform: translateY(-1px);
-			}
-
-			&:active {
-				transform: scale(0.96);
-			}
-
-			&.store {
-				color: var(--theme-info, #a7ffff);
-				&:hover {
-					background: rgba(109, 245, 255, 0.15);
-				}
-			}
-
-			&.save {
-				color: var(--theme-0-light);
-				&:hover {
-					background: var(--theme-0-15);
-				}
-			}
-
-			&.import {
-				color: var(--theme-success-text, #a7ffbe);
-				&:hover {
-					background: rgba(167, 255, 190, 0.15);
-				}
-			}
-
-			&.ok {
-				background: var(--theme-0);
-				color: white;
-				padding: 0 18px;
-				font-weight: 600;
-				&:hover {
-					filter: brightness(1.2);
-					box-shadow: 0 4px 15px var(--theme-0-30);
-				}
-			}
-
-			&.cancel {
-				padding: 0 12px;
-			}
-
-			:global(.styleshift-icon) {
-				margin: 0;
-				opacity: 0.9;
-			}
+			width: auto !important;
 		}
 	}
 </style>

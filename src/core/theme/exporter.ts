@@ -1,10 +1,7 @@
 import { chooseSelection } from "@core/shared/dialogs";
 import { copyToClipboard } from "@core/shared/extensionHelpers";
-import { parseStyleShiftZip } from "@core/shared/importExport";
 import { createNotification } from "@core/shared/notifications";
 import { addItemsToZip, downloadZip } from "@core/theme/importer";
-import { saveTheme } from "@core/theme/manager";
-import { logger } from "@shared/logger";
 
 /**
  * Handles the theme export process with user selection for content and format.
@@ -110,60 +107,4 @@ export async function exportThemeAsZip(name: string, data: any) {
 	}
 
 	await downloadZip(`${name}.zip`, "", files);
-}
-
-/**
- * Triggers a file picker to import a ZIP file as a theme.
- */
-export async function importThemeZipWithWorkflow() {
-	const input = document.createElement("input");
-	input.type = "file";
-	input.accept = ".zip";
-
-	input.onchange = async (event: any) => {
-		const file = event.target.files?.[0];
-		if (!file) return;
-
-		const notification = await createNotification({
-			icon: "file_download",
-			title: "Importing Theme",
-			content: `Reading "${file.name}"...`,
-			timeout: -1,
-		});
-
-		try {
-			const data = await parseStyleShiftZip(file);
-
-			// Default theme name to filename without extension
-			const defaultName = file.name.replace(".zip", "");
-			const rawName = prompt("Enter a name for this theme:", defaultName);
-
-			if (!rawName) {
-				notification.close();
-				return;
-			}
-
-			const themeName = rawName.trim();
-
-			notification.setContent(`Saving "${themeName}" to Theme Manager...`);
-
-			// Save as theme (using "EXTENSION" as the domain for global themes)
-			const success = await saveTheme(themeName, data, "EXTENSION");
-
-			if (success) {
-				notification.setIcon("check_circle");
-				notification.setTitle("Import Successful");
-				notification.setContent(`Theme "${themeName}" is now available in your themes.`);
-				setTimeout(() => notification.close(), 3000);
-			} else {
-				throw new Error("Failed to save theme to storage.");
-			}
-		} catch (error) {
-			notification.close();
-			logger.error("import", "Theme Import Failed", error);
-			alert(`Failed to import theme: ${error instanceof Error ? error.message : String(error)}`);
-		}
-	};
-
-	input.click();
 }

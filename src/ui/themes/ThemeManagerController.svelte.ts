@@ -2,8 +2,8 @@ import { SvelteSet } from "svelte/reactivity";
 import { enterPrompt } from "@core/shared/dialogs";
 import { createNotification } from "@core/shared/notifications";
 import { getRootValue, persistCachedDataToStorage } from "@core/storage/manager";
-import { exportThemeWithSelection, importThemeZipWithWorkflow } from "@core/theme/exporter";
-import { exportCurrentSettingsObject, importPresetToSettings } from "@core/theme/importer";
+import { exportThemeWithSelection } from "@core/theme/exporter";
+import { exportCurrentSettingsObject, importPresetToSettings, importThemeWorkflow } from "@core/theme/importer";
 import {
 	applyTheme as applyThemeManager,
 	deleteTheme as deleteThemeManager,
@@ -99,14 +99,17 @@ export class ThemeManagerController {
 		this.loadingThemeId = id;
 
 		if (currentView === "store") {
-			if (await saveThemeManager(displayName, $state.snapshot(theme), "EXTENSION", id)) {
-				await this.loadThemes();
-				createNotification({
-					icon: "download_done",
-					title: "Theme Installed",
-					content: `"${displayName}" added to collection.`,
-				});
+			const saved = await saveThemeManager(displayName, $state.snapshot(theme), "EXTENSION", id);
+			if (!saved) {
+				this.loadingThemeId = null;
+				return false;
 			}
+			await this.loadThemes();
+			createNotification({
+				icon: "download_done",
+				title: "Theme Installed",
+				content: `"${displayName}" added to collection.`,
+			});
 		}
 
 		if (await applyThemeManager(id, displayName, "EXTENSION")) {
@@ -152,7 +155,7 @@ export class ThemeManagerController {
 	}
 
 	async importTheme() {
-		await importThemeZipWithWorkflow();
+		await importThemeWorkflow();
 		await this.loadThemes();
 	}
 

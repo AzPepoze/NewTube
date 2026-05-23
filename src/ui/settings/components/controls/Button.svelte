@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { hexToRgb, hsvToRgb, rgbToHsv } from "@/core/shared/colorConversion";
 	import { executeSettingScript } from "@core/runtime/controller";
 	import type { Setting } from "@settings/types/styleshiftTypes";
 	import { getJustifyContent } from "../../utils";
@@ -9,51 +8,31 @@
 	let {
 		setting,
 		style = "",
+		class: className = "",
 		showHelpIcon = false,
+		iconSize = undefined,
+		fontSize = undefined,
 	}: {
 		setting: Extract<Setting, { type: "button" }>;
 		style?: string;
+		class?: string;
 		showHelpIcon?: boolean;
+		iconSize?: number;
+		fontSize?: number;
 	} = $props();
 
 	const name = $derived(setting.name);
 	const description = $derived(setting.description);
 	const icon = $derived(setting.icon);
-	const iconSize = $derived(setting.iconSize || 50);
+	const finalIconSize = $derived(iconSize !== undefined ? iconSize : setting.iconSize || 50);
 	const iconScale = $derived(setting.iconScale || 1);
 	const color = $derived(setting.color || "#ffffff");
 	const align = $derived(setting.align || "center");
-	const fontSize = $derived(setting.fontSize || 15);
+	const finalFontSize = $derived(fontSize !== undefined ? fontSize : setting.fontSize || 15);
 	const justifyContent = $derived(getJustifyContent(align));
 
 	let scale = $state(1);
 	let isHelpVisible = $state(false);
-
-	const buttonStyles = $derived.by(() => {
-		if (!color.startsWith("#")) {
-			return {
-				background: color,
-				border: "1px solid var(--border-color)",
-				color: "var(--font-color)",
-			};
-		}
-
-		const { r, g, b } = hexToRgb(color);
-
-		const bgHsv = rgbToHsv({ r, g, b });
-		const bgColor = hsvToRgb({ ...bgHsv, s: bgHsv.s / 2, v: bgHsv.v / 3 });
-		const bgtColor = hsvToRgb({ ...bgHsv, s: bgHsv.s / 1.5, v: bgHsv.v / 2 });
-
-		const top = `rgb(${bgtColor.r}, ${bgtColor.g}, ${bgtColor.b})`;
-		const bottom = `rgb(${bgColor.r}, ${bgColor.g}, ${bgColor.b}, 0.5)`;
-		const border = `rgb(${Math.min(255, r + 150)}, ${Math.min(255, g + 150)}, ${Math.min(255, b + 150)})`;
-
-		return {
-			background: `radial-gradient(at center top, ${top}, ${bottom})`,
-			border: `1px solid ${border}`,
-			color: border,
-		};
-	});
 
 	function handleClick(_e: MouseEvent | KeyboardEvent) {
 		scale = 0.95;
@@ -91,13 +70,11 @@
 </script>
 
 <div
-	class="styleshift-button"
+	class="styleshift-button {className}"
 	class:has-icon={!!icon}
 	style:justify-content={justifyContent}
-	style:background={buttonStyles.background}
-	style:border={buttonStyles.border}
-	style:color={buttonStyles.color}
 	style:transform="scale({scale})"
+	style:--btn-color={color}
 	{style}
 	onclick={handleClick}
 	onkeydown={handleKeyDown}
@@ -105,14 +82,14 @@
 	tabindex="0"
 >
 	{#if icon}
-		<Icon name={icon} size={iconSize} scale={iconScale} className="styleshift-button-icon" applyFilter={false} />
+		<Icon name={icon} size={finalIconSize} scale={iconScale} className="styleshift-button-icon" applyFilter={false} />
 	{/if}
 
 	<Description
 		{name}
 		description={showHelpIcon ? "" : description}
 		{align}
-		style="display: flex; color: inherit; font-size: {fontSize}px;"
+		style="display: flex; color: inherit; font-size: {finalFontSize}px;"
 	/>
 
 	{#if showHelpIcon && description}
@@ -147,19 +124,32 @@
 		border-radius: 20px;
 		cursor: pointer;
 		position: relative;
+		box-sizing: border-box;
+
+		--btn-color-bottom: color-mix(in srgb, var(--btn-color, #ffffff) 20%, transparent 80%);
+		--btn-color-top: color-mix(in srgb, var(--btn-color, #ffffff) 30%, transparent 70%);
+		--btn-border-color: color-mix(in srgb, var(--btn-color, #ffffff) 40%, white 60%);
+
+		background-color: var(--bg-main, #2b2b2b);
+		border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+		color: var(--font-color, #ffffff);
+
+		background-image: radial-gradient(at center top, var(--btn-color-top), var(--btn-color-bottom));
+		border-color: var(--btn-border-color);
+		color: var(--btn-border-color);
+	}
+
+	:global(.styleshift-icon.styleshift-button-icon) {
+		margin-right: 12px;
+		object-fit: contain;
 	}
 
 	.styleshift-button:hover {
-		filter: drop-shadow(2px 2px 3px black);
+		filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.5));
 
 		:global(.styleshift-main-description .setting-name) {
 			font-weight: 400;
 		}
-	}
-
-	:global(.styleshift-icon.styleshift-button-icon) {
-		margin-right: 20px !important;
-		object-fit: contain;
 	}
 
 	.help-trigger {

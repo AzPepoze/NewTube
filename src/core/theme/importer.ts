@@ -1,6 +1,6 @@
 import { deepClone, sleep } from "@/core/shared/utilities";
 import { loadJSZip, jszipInstance } from "@core/runtime/controller";
-import { downloadFile } from "@core/shared/extensionHelpers";
+import { downloadFile, getFile } from "@core/shared/extensionHelpers";
 import { createError, createNotification } from "@core/shared/notifications";
 import { performStorageGarbageCollection } from "@core/storage/maintenance";
 import {
@@ -16,6 +16,9 @@ import { styleshiftCategoryList } from "@settings/registry/defaultItems";
 import { updateStyleShiftItems } from "@settings/registry/items";
 import { logger } from "@shared/logger";
 import { showUserConfirmation } from "@ui/window/windowFactory";
+import { alertPrompt, chooseSelection, enterPrompt, enterTextPrompt } from "@core/shared/dialogs";
+import { parseStyleShiftZip } from "@core/shared/importExport";
+import { saveTheme } from "@core/theme/manager";
 
 import { convertToExportSetting } from "./exportConverter";
 
@@ -239,4 +242,115 @@ export async function exportStyleShiftZip(styleshiftData: any[], zipFileName: st
 	const files: Record<string, string | Blob> = {};
 	await addItemsToZip(styleshiftData, files);
 	await downloadZip(zipFileName, "", files);
+}
+
+export async function importThemeZipWithWorkflow() {
+	try {
+		const file = await getFile(".zip");
+		const notification = await createNotification({
+			icon: "file_download",
+			title: "Importing Theme",
+			content: `Reading "${file.name}"...`,
+			timeout: -1,
+		});
+		try {
+			const data = await parseStyleShiftZip(file);
+			const defaultName = file.name.replace(".zip", "");
+			const rawName = await enterPrompt({
+				title: "Theme Name",
+				placeholder: "Enter a name for this theme...",
+				value: defaultName,
+			});
+			if (!rawName?.trim()) {
+				notification.close();
+				return;
+			}
+			const themeName = rawName.trim();
+			notification.setContent(`Saving "${themeName}" to Theme Manager...`);
+			const success = await saveTheme(themeName, data, "EXTENSION");
+			if (success) {
+				notification.setIcon("check_circle");
+				notification.setTitle("Import Successful");
+				notification.setContent(`Theme "${themeName}" is now available in your themes.`);
+				setTimeout(() => notification.close(), 3000);
+			} else {
+				notification.close();
+			}
+		} catch (error) {
+			notification.close();
+			logger.error("import", "Theme Import Failed", error);
+			alertPrompt({
+				message: `Failed to import theme: ${error instanceof Error ? error.message : String(error)}`,
+				title: "Import Error",
+			});
+		}
+	} catch (error) {}
+}
+
+export async function importThemeFromTextWorkflow() {
+	try {
+		const rawText = await enterTextPrompt({
+			title: "Import Theme JSON",
+			placeholder: "Paste theme JSON string here...",
+		});
+		if (!rawText?.trim()) return;
+		const notification = await createNotification({
+			icon: "sync",
+			title: "Importing Theme",
+			content: "Parsing theme data...",
+			timeout: -1,
+		});
+		try {
+			const data = JSON.parse(rawText);
+			if (!data || typeof data !== "object" || (!data.currentSettings && !data.addOnStyleShiftItems)) {
+				throw new Error("Invalid theme format. Must contain currentSettings or addOnStyleShiftItems.");
+			}
+			const defaultName = data.themeName || "Imported Theme";
+			const rawName = await enterPrompt({
+				title: "Theme Name",
+				placeholder: "Enter a name for this theme...",
+				value: defaultName,
+			});
+			if (!rawName?.trim()) {
+				notification.close();
+				return;
+			}
+			const themeName = rawName.trim();
+			notification.setContent(`Saving "${themeName}" to Theme Manager...`);
+			const success = await saveTheme(themeName, data, "EXTENSION");
+			if (success) {
+				notification.setIcon("check_circle");
+				notification.setTitle("Import Successful");
+				notification.setContent(`Theme "${themeName}" is now available in your themes.`);
+				setTimeout(() => notification.close(), 3000);
+			} else {
+				notification.close();
+			}
+		} catch (error) {
+			notification.close();
+			logger.error("import", "Theme Import Failed", error);
+			alertPrompt({
+				message: `Failed to parse or save theme: ${error instanceof Error ? error.message : String(error)}`,
+				title: "Import Error",
+			});
+		}
+	} catch (error) {}
+}
+
+export async function importThemeWorkflow() {
+	const choice = await chooseSelection({
+		title: "Import Theme",
+		message: "How would you like to import this theme?",
+		buttons: [
+			{ label: "ZIP File", color: "var(--theme-0)" },
+			{ label: "Text / Clipboard", color: "var(--theme-0)" },
+		],
+		vertical: true,
+	});
+	if (choice === null) return;
+	if (choice === "ZIP File") {
+		await importThemeZipWithWorkflow();
+	} else if (choice === "Text / Clipboard") {
+		await importThemeFromTextWorkflow();
+	}
 }

@@ -1,10 +1,7 @@
-import { sleep } from "@/core/shared/utilities";
-import { getFile } from "@core/shared/extensionHelpers";
-import { exportStyleShiftJsonText, importStyleShiftZip } from "@core/shared/importExport";
-import { createError, createNotification } from "@core/shared/notifications";
-import { exportStyleShiftZip } from "@core/theme/importer";
+import { exportThemeWithSelection } from "@core/theme/exporter";
+import { importThemeZipWithWorkflow } from "@core/theme/importer";
+import { getRootValue } from "@core/storage/manager";
 import { type Category } from "@settings/types/styleshiftTypes";
-import { logger } from "@shared/logger";
 
 const devOnlyItems: Category[] = [
 	{
@@ -19,73 +16,37 @@ const devOnlyItems: Category[] = [
 			{
 				type: "button",
 				id: "ExportZipFileButton",
-				name: "Export file",
-				description:
-					"Packages your entire NewTube configuration, including all Add-On categories and settings, into a compressed .zip file for easy backup or sharing.",
+				name: "Export active theme",
+				description: "Exports your currently active theme configuration to clipboard or ZIP file.",
 				color: "#1a34ffff",
 				fontSize: 15,
 				clickFunction: async function () {
-					const notification = await createNotification({
-						icon: "🔄️",
-						title: "NewTube - Exporting file",
-						content: "Please wait...",
-						timeout: -1,
-					});
-
-					try {
-						await exportStyleShiftZip(
-							JSON.parse(await exportStyleShiftJsonText()).addOnStyleShiftItems,
-							"Test.NewTube.zip",
-						);
-
-						notification.setIcon("✅");
-						notification.setTitle("NewTube - Exported file");
-						notification.setContent("Exported successfully!");
-
-						await sleep(3000);
-
-						notification.close();
-					} catch (error) {
-						notification.close();
-						createError(`Error exporting file: ${error}`);
+					const activeThemeId = await getRootValue("activeTheme");
+					const themes = (await getRootValue("themes")) || [];
+					const theme = themes.find((t: any) => t.themeId === activeThemeId);
+					if (theme) {
+						await exportThemeWithSelection(activeThemeId, theme.themeName, theme);
+					} else {
+						const currentSettings = await getRootValue("currentSettings");
+						const addOnStyleShiftItems = await getRootValue("addOnStyleShiftItems");
+						await exportThemeWithSelection("current", "Current Theme", { currentSettings, addOnStyleShiftItems });
 					}
 				},
 				align: "center",
-				icon: "",
+				icon: "publish",
 			},
 			{
 				type: "button",
 				id: "ImportZipFileButton",
-				name: "Import file",
-				description: "Instantly restores your NewTube configuration from a previously exported .zip backup file.",
+				name: "Import theme file",
+				description: "Imports a theme configuration from a ZIP file into your Theme Manager.",
 				color: "#1a34ffff",
 				fontSize: 15,
 				clickFunction: async function () {
-					const notification = await createNotification({
-						icon: "🔄️",
-						title: "NewTube - Choosing file",
-						content: "Please choose file...",
-						timeout: -1,
-					});
-					try {
-						const file = await getFile(".NewTube.zip");
-						logger.info("extension", "file:", file);
-						await importStyleShiftZip(file);
-
-						notification.setIcon("✅");
-						notification.setTitle("NewTube - Imported file");
-						notification.setContent("Imported successfully!");
-
-						await sleep(3000);
-
-						notification.close();
-					} catch (error) {
-						notification.close();
-						createError(`Error importing file: ${error}`);
-					}
+					await importThemeZipWithWorkflow();
 				},
 				align: "center",
-				icon: "",
+				icon: "download",
 			},
 			{
 				type: "button",
