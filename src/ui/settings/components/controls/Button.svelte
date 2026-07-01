@@ -113,6 +113,10 @@
 
 <style lang="scss">
 	.styleshift-button {
+		--btn-color-top: color-mix(in srgb, color-mix(in srgb, var(--btn-color, #ffffff) 85%, white) 50%, transparent);
+		--btn-color-bottom: color-mix(in srgb, color-mix(in srgb, var(--btn-color, #ffffff) 90%, white) 10%, transparent);
+		--btn-border-color: color-mix(in srgb, var(--btn-color, #ffffff) 40%, white);
+
 		display: flex;
 		align-items: center;
 		font-size: 15px;
@@ -126,16 +130,9 @@
 		position: relative;
 		box-sizing: border-box;
 
-		--btn-color-bottom: color-mix(in srgb, var(--btn-color, #ffffff) 20%, transparent 80%);
-		--btn-color-top: color-mix(in srgb, var(--btn-color, #ffffff) 30%, transparent 70%);
-		--btn-border-color: color-mix(in srgb, var(--btn-color, #ffffff) 40%, white 60%);
-
-		background-color: var(--bg-main, #2b2b2b);
-		border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
-		color: var(--font-color, #ffffff);
-
 		background-image: radial-gradient(at center top, var(--btn-color-top), var(--btn-color-bottom));
-		border-color: var(--btn-border-color);
+
+		border: 1px solid var(--btn-border-color);
 		color: var(--btn-border-color);
 	}
 

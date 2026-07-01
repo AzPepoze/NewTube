@@ -93,10 +93,9 @@
 
 	<div class="selector-info">
 		<div class="icon-box">
-			<Icon name="code" size={20} color="var(--theme-0)" />
+			<Icon name="code" size={20} color="var(--text-primary)" />
 		</div>
 		<div class="info-text">
-			<span class="label">Targeting:</span>
 			<span class="selector-name">{selector}</span>
 		</div>
 	</div>
@@ -130,7 +129,7 @@
 						<span>Loading Code Editor...</span>
 					</div>
 				{/if}
-				<CodeEditor value={controller.rawCss} language="css" onInput={(val) => (controller.rawCss = val)} />
+				<CodeEditor value={controller.rawCss} language="css" height="100%" onInput={(val) => (controller.rawCss = val)} />
 			</div>
 		{/if}
 	</div>
@@ -167,13 +166,13 @@
 			width: 36px;
 			height: 36px;
 			border-radius: 12px;
-			background: var(--theme-0-10);
+			background: var(--fg-opacity-05);
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			flex-shrink: 0;
-			border: 1px solid var(--theme-0-20);
-			color: var(--theme-0);
+			border: 1px solid var(--fg-opacity-10);
+			color: var(--text-primary);
 		}
 
 		.info-text {
@@ -181,20 +180,11 @@
 			flex-direction: column;
 			gap: 4px;
 
-			.label {
-				font-size: 10px;
-				font-weight: 700;
-				text-transform: uppercase;
-				letter-spacing: 1px;
-				color: var(--text-muted);
-			}
-
 			.selector-name {
 				font-family: "Fira Code", "JetBrains Mono", monospace;
 				font-size: 13px;
-				color: var(--theme-0);
-				font-weight: 600;
-				filter: brightness(1.2);
+				color: var(--text-primary);
+				font-weight: 500;
 			}
 		}
 	}
@@ -209,20 +199,24 @@
 		flex: 1;
 		min-height: 250px;
 		overflow-y: auto;
-		padding: 20px;
 		border-radius: 12px;
 		border: 1px solid var(--border-subtle);
+		display: flex;
+		flex-direction: column;
 	}
 
 	.basic-controls-list {
+		padding: 20px;
 		display: flex;
 		flex-direction: column;
 		gap: 15px;
 	}
 
 	.advanced-editor {
-		height: 300px;
+		flex: 1;
 		position: relative;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.editor-loading {

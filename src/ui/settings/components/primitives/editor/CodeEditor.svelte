@@ -70,7 +70,6 @@
 		border: 1px solid var(--border-color);
 		border-radius: 8px;
 		overflow: hidden;
-		margin-top: 10px;
 		transition: border-color 0.2s;
 
 		&:focus-within {
