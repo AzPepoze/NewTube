@@ -82,8 +82,8 @@ function autoAddHightlight(array: (Category | { isHeader: boolean; label: string
 	}
 }
 
-function saveAddOnItemsAndRefreshExtensionState(addOnItems) {
-	saveToStorage("addOnStyleShiftItems", addOnItems);
+async function saveAddOnItemsAndRefreshExtensionState(addOnItems) {
+	await saveToStorage("addOnStyleShiftItems", addOnItems);
 	refreshExtensionState();
 }
 
@@ -177,16 +177,25 @@ export async function addSetting(categorySettings: Setting[], thisSetting) {
 	saveAndRefreshAll();
 }
 
-export async function removeSetting(thisSetting) {
+export async function removeSetting(thisSetting: Setting): Promise<boolean> {
+	let wasRemoved = false;
+
 	for (const thisCategory of getAddOnItems()) {
-		const index = (thisCategory.settings || []).findIndex((checkSetting) => checkSetting === thisSetting);
+		const index = (thisCategory.settings || []).findIndex(
+			(checkSetting) =>
+				checkSetting === thisSetting ||
+				(!!thisSetting.id && "id" in checkSetting && checkSetting.id === thisSetting.id),
+		);
 
 		if (index > -1) {
 			thisCategory.settings.splice(index, 1);
+			wasRemoved = true;
+			break;
 		}
 	}
 
-	saveAndRefreshAll();
+	if (wasRemoved) await saveAndRefreshAll();
+	return wasRemoved;
 }
 
 //--------------------------------------------------
@@ -221,19 +230,24 @@ export async function addCategory(categoryName: string) {
 	const categoryId = typeof thisCategory.category === "string" ? thisCategory.category : thisCategory.category.label;
 	await saveToStorage("lastAddedCategory", categoryId);
 
-	saveAddOnItemsAndRefreshExtensionState(addOnItems);
+	await saveAddOnItemsAndRefreshExtensionState(addOnItems);
 }
 
-export async function removeCategory(thisCategory) {
+export async function removeCategory(thisCategory: Category): Promise<boolean> {
 	const addOnItems = getAddOnItems();
+	const categoryLabel = typeof thisCategory.category === "string" ? thisCategory.category : thisCategory.category.label;
 
-	const index = addOnItems.findIndex((checkCategory) => checkCategory === thisCategory);
+	const index = addOnItems.findIndex((checkCategory) => {
+		const checkLabel =
+			typeof checkCategory.category === "string" ? checkCategory.category : checkCategory.category.label;
+		return checkCategory === thisCategory || checkLabel === categoryLabel;
+	});
 
-	if (index > -1) {
-		addOnItems.splice(index, 1);
-	}
+	if (index === -1) return false;
 
-	saveAddOnItemsAndRefreshExtensionState(addOnItems);
+	addOnItems.splice(index, 1);
+	await saveAddOnItemsAndRefreshExtensionState(addOnItems);
+	return true;
 }
 
 //-------------------------------------------------

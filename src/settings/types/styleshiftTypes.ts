@@ -1,6 +1,7 @@
 export type Category = {
 	category: string | CategoryNameWithIcon;
 	rainbow?: boolean;
+	layout?: "list" | "grid";
 	selector?: string;
 
 	editable?: boolean;

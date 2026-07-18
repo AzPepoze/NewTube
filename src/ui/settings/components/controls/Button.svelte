@@ -13,6 +13,7 @@
 		iconSize = undefined,
 		fontSize = undefined,
 		variant = "default",
+		layout = "list",
 	}: {
 		setting: Extract<Setting, { type: "button" }>;
 		style?: string;
@@ -21,6 +22,7 @@
 		iconSize?: number;
 		fontSize?: number;
 		variant?: "default" | "subtle" | "ghost";
+		layout?: "list" | "grid";
 	} = $props();
 
 	const name = $derived(setting.name);
@@ -72,7 +74,7 @@
 </script>
 
 <div
-	class="styleshift-button variant-{variant} {className}"
+	class="styleshift-button variant-{variant} layout-{layout} {className}"
 	class:has-icon={!!icon}
 	style:justify-content={justifyContent}
 	style:transform="scale({scale})"
@@ -148,6 +150,35 @@
 
 		:global(.styleshift-main-description .setting-name) {
 			font-weight: 400;
+		}
+	}
+
+	@container settings-group (min-width: 520px) {
+		.layout-grid {
+			flex-direction: column;
+			justify-content: center !important;
+			gap: 12px;
+			min-height: 140px;
+			height: 100%;
+			padding: 20px 12px;
+
+			:global(.styleshift-icon.styleshift-button-icon) {
+				margin-right: 0;
+			}
+
+			:global(.styleshift-main-description) {
+				align-items: center !important;
+				text-align: center !important;
+				flex: 0;
+			}
+
+			:global(.styleshift-main-description .setting-name) {
+				justify-content: center !important;
+			}
+
+			:global(.styleshift-main-description .setting-description) {
+				display: none;
+			}
 		}
 	}
 

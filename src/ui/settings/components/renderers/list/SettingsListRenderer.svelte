@@ -33,9 +33,11 @@
 				{isDeveloperMode}
 				editable={category.editable}
 			/>
-			{#each category.settings as setting, j (j)}
-				<SettingRenderer {setting} highlight={searchQuery} />
-			{/each}
+			<div class="styleshift-settings-items" class:grid={category.layout === "grid"}>
+				{#each category.settings as setting, j (j)}
+					<SettingRenderer {setting} highlight={searchQuery} layout={category.layout} />
+				{/each}
+			</div>
 		</div>
 	{/if}
 {/each}
@@ -54,5 +56,20 @@
 		padding: 10px;
 		background: var(--fg-opacity-05);
 		border-radius: 20px;
+		container: settings-group / inline-size;
+	}
+
+	.styleshift-settings-items {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	@container settings-group (min-width: 520px) {
+		.styleshift-settings-items.grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+			align-items: stretch;
+		}
 	}
 </style>

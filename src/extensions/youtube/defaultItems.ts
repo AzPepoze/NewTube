@@ -48,6 +48,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 	{
 		category: { icon: "settings_input_component", label: "Quick Palette" },
 		rainbow: true,
+		layout: "grid",
 		settings: [
 			{
 				clickFunction: showThemeManager,

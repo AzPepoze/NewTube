@@ -1,8 +1,11 @@
 <script lang="ts">
 	import Icon from "@ui/settings/components/primitives/Icon.svelte";
-	import { getAddOnItems } from "@settings/registry/items";
+	import { getAddOnItems, removeCategory } from "@settings/registry/items";
 	import { settingsUi } from "../../settingsApi";
 	import { removeConfigUi, showConfigUi } from "@ui/window/config";
+	import { showUserConfirmation } from "@ui/window/windowFactory";
+	import { deactivateSetting } from "@settings/engine/functions";
+	import { saveToStorage } from "@core/storage/manager";
 
 	let {
 		text,
@@ -34,6 +37,34 @@
 			});
 		}
 	}
+
+	async function handleRemoveCategory() {
+		const addOnItems = getAddOnItems();
+		const category = addOnItems.find((item) => {
+			const label = typeof item.category === "string" ? item.category : item.category.label;
+			return label === text;
+		});
+		if (!category) return;
+
+		const confirmed = await showUserConfirmation(
+			`Remove the category "${text}" and its ${category.settings.length} setting${category.settings.length === 1 ? "" : "s"}? This cannot be undone.`,
+			"Remove Category",
+			{
+				confirmLabel: "Remove",
+				confirmColor: "#f44336",
+			},
+		);
+		if (!confirmed) return;
+
+		for (const setting of category.settings) {
+			if (setting.id) {
+				await saveToStorage(setting.id, false, true);
+				await deactivateSetting(setting.id);
+			}
+		}
+
+		await removeCategory(category);
+	}
 </script>
 
 {#if subtitle}
@@ -54,10 +85,17 @@
 		{/if}
 		{text}
 
-		{#if isDeveloperMode && editable}
-			<button class="styleshift-category-edit-btn" onclick={handleEditCategory} title="Edit Category">
-				<Icon name="edit" size={16} color="black" />
-			</button>
+		{#if editable}
+			<div class="styleshift-category-actions">
+				{#if isDeveloperMode}
+					<button onclick={handleEditCategory} title="Edit Category">
+						<Icon name="edit" size={16} color="black" />
+					</button>
+				{/if}
+				<button onclick={handleRemoveCategory} title="Remove Category">
+					<Icon name="delete" size={16} color="black" />
+				</button>
+			</div>
 		{/if}
 	</div>
 {/if}
@@ -83,31 +121,44 @@
 		transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 		box-shadow: 0 4px 15px var(--bg-overlay-10);
 
-		&:hover {
-			.styleshift-category-edit-btn {
+		&:hover,
+		&:focus-within {
+			.styleshift-category-actions {
 				opacity: 1;
 			}
 		}
 	}
 
-	.styleshift-category-edit-btn {
+	.styleshift-category-actions {
 		position: absolute;
 		right: 15px;
-		background: rgba(255, 255, 255, 0.3);
-		border: none;
-		border-radius: 50%;
-		width: 30px;
-		height: 30px;
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
+		gap: 5px;
 		opacity: 0;
 		transition: all 0.2s;
 
-		&:hover {
-			background: rgba(255, 255, 255, 0.5);
-			transform: scale(1.1);
+		button {
+			background: rgba(255, 255, 255, 0.3);
+			border: none;
+			border-radius: 50%;
+			width: 30px;
+			height: 30px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			transition: all 0.2s;
+
+			&:hover {
+				background: rgba(255, 255, 255, 0.5);
+				transform: scale(1.1);
+			}
+		}
+	}
+
+	@media (hover: none) {
+		.styleshift-category-actions {
+			opacity: 1;
 		}
 	}
 

@@ -197,7 +197,7 @@ export async function showUserConfirmation(
 					},
 					{
 						label: options.cancelLabel || "Cancel",
-						color: options.cancelColor || "#f44336",
+						color: options.cancelColor || "var(--fg-opacity-20, #646464)",
 						onClick: () => resolve(false),
 					},
 				],

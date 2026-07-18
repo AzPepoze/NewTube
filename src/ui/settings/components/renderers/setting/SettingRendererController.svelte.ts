@@ -1,5 +1,4 @@
 import { createUniqueId } from "@/core/shared/utilities";
-import { refreshExtensionState } from "@core/index";
 import { executeScriptString } from "@core/runtime/controller";
 import { createError } from "@core/shared/notifications";
 import { logger } from "@core/shared/webPageLogger";
@@ -16,6 +15,7 @@ import { startQuickCustomize } from "@ui/highlight/quickCustomizeService";
 import KeyboardShortcuts from "@ui/settings/components/developer/KeyboardShortcuts.svelte";
 import { settingsUi } from "@ui/settings/settingsApi";
 import { removeConfigUi, showConfigUi } from "@ui/window/config";
+import { showUserConfirmation } from "@ui/window/windowFactory";
 import { SvelteMap } from "svelte/reactivity";
 
 export class SettingRendererController {
@@ -140,10 +140,17 @@ export class SettingRendererController {
 
 	async handleDelete() {
 		if (this.setting?.id) {
-			await saveToStorage(this.setting.id, false);
+			const settingLabel = "name" in this.setting && this.setting.name ? this.setting.name : this.setting.id;
+			const dialogTitle = this.setting.quickCustomize ? "Remove Quick Customization" : "Remove Setting";
+			const confirmed = await showUserConfirmation(`Remove "${settingLabel}"? This cannot be undone.`, dialogTitle, {
+				confirmLabel: "Remove",
+				confirmColor: "#f44336",
+			});
+			if (!confirmed) return;
+
+			await saveToStorage(this.setting.id, false, true);
 			await deactivateSetting(this.setting.id);
-			refreshExtensionState();
-			removeSetting(this.setting);
+			await removeSetting(this.setting);
 		}
 	}
 

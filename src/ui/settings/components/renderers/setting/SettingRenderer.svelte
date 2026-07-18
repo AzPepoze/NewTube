@@ -25,9 +25,11 @@
 	let {
 		setting,
 		highlight = "",
+		layout = "list",
 	}: {
 		setting: Setting;
 		highlight?: string;
+		layout?: "list" | "grid";
 	} = $props();
 
 	const controller = $derived(new SettingRendererController(setting));
@@ -93,7 +95,7 @@
 		{#if setting.type === "checkbox"}
 			<Checkbox {setting} />
 		{:else if setting.type === "button"}
-			<Button {setting} />
+			<Button {setting} {layout} />
 		{:else if setting.type === "numberSlide"}
 			<Slider {setting} />
 		{:else if setting.type === "textInput"}
@@ -151,7 +153,14 @@
 					<button class="styleshift-config-button edit" onclick={() => controller.handleEdit()}>
 						<Icon name="edit" size={16} />
 					</button>
-					<button class="styleshift-config-button delete" onclick={() => controller.handleDelete()}>
+				{/if}
+
+				{#if controller.isDeveloperMode || setting.quickCustomize}
+					<button
+						class="styleshift-config-button delete"
+						title="Remove setting"
+						onclick={() => controller.handleDelete()}
+					>
 						<Icon name="delete" size={16} />
 					</button>
 				{/if}
