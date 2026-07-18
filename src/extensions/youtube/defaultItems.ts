@@ -110,6 +110,12 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 		category: { icon: "settings", label: "Extention's settings" },
 		settings: [
 			{
+				type: "subText",
+				text: `Extension version: ${chrome.runtime.getManifest().version}`,
+				fontSize: 14,
+				align: "left",
+			},
+			{
 				id: "enableExtension",
 				name: "Enable Extension",
 				type: "checkbox",
