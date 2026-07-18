@@ -10,6 +10,15 @@ let highlightElements = {};
 let debounceTimer: NodeJS.Timeout;
 const debounceDelay = 150;
 
+function getHighlightLabel(categories: Category[]) {
+	return categories
+		.map((category) => {
+			const categoryName = typeof category.category === "string" ? category.category : category.category.label;
+			return `${categoryName} — ${category.selector ?? category.Selector ?? ""}`;
+		})
+		.join(", ");
+}
+
 function debounce(callback: Function) {
 	if (debounceTimer) {
 		clearTimeout(debounceTimer);
@@ -28,6 +37,7 @@ function addHighlight(targetElement: HTMLElement, selectorValue: Category) {
 		const obj = highlightElements[existUniqueId];
 		if (!obj.categories.includes(selectorValue)) {
 			obj.categories.push(selectorValue);
+			obj.label.textContent = getHighlightLabel(obj.categories);
 		}
 		return obj;
 	}
@@ -44,6 +54,12 @@ function addHighlight(targetElement: HTMLElement, selectorValue: Category) {
 
 	highlighter.style.background = `${color},0.3)`;
 	highlighter.style.borderColor = `${color},0.8)`;
+
+	const label = document.createElement("div");
+	label.className = "styleshift-highlight-label";
+	label.textContent = getHighlightLabel(categories);
+	label.style.backgroundColor = `rgb(${selectorValue.Highlight_color})`;
+	highlighter.append(label);
 
 	const computedStyle = window.getComputedStyle(targetElement);
 	highlighter.style.width = `calc(100% - 
@@ -80,6 +96,7 @@ function addHighlight(targetElement: HTMLElement, selectorValue: Category) {
 
 	const returnObj = {
 		highlighter: highlighter,
+		label: label,
 		targetElement: targetElement,
 		categories: categories,
 		stop: stop,

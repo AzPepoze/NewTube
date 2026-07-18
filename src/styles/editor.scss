@@ -311,9 +311,43 @@
 	top: 0;
 
 	&:hover {
-		background: var(--theme-success-20) !important;
-		border-color: var(--theme-success) !important;
+		background: var(--theme-success-20, rgba(0, 200, 81, 0.2)) !important;
+		border-color: var(--theme-success, #00c851) !important;
+
+		.styleshift-highlight-label {
+			visibility: visible;
+			opacity: 1;
+			transform: translateY(0);
+			transition-delay: 0s;
+		}
 	}
+}
+
+.styleshift-highlight-label {
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	box-sizing: border-box;
+	max-width: calc(100% - 8px);
+	padding: 4px 7px;
+	overflow: hidden;
+	color: #111;
+	border-radius: 5px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+	font-family: sans-serif;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.4;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	visibility: hidden;
+	opacity: 0;
+	transform: translateY(-3px);
+	transition:
+		opacity 0.15s ease-out,
+		transform 0.15s ease-out,
+		visibility 0s linear 0.15s;
+	pointer-events: none;
 }
 
 .styleshift-window {
