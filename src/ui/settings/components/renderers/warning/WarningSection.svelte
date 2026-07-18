@@ -123,6 +123,7 @@
 		flex-direction: column;
 		gap: 6px;
 		padding-top: 2px;
+		min-width: 0;
 
 		.title {
 			font-size: 13px;
@@ -142,8 +143,10 @@
 		li {
 			font-size: 12px;
 			display: flex;
+			flex-wrap: wrap;
 			align-items: center;
 			gap: 8px;
+			min-width: 0;
 
 			&::before {
 				content: "•";
@@ -156,6 +159,7 @@
 		display: flex;
 		align-items: center;
 		gap: 4px;
+		max-width: 100%;
 		background: var(--fg-opacity-08);
 		border: 1px solid var(--fg-opacity-10);
 		padding: 2px 8px;
@@ -166,6 +170,10 @@
 		font-weight: 500;
 		font-family: inherit;
 		font-size: 11px;
+
+		span {
+			overflow-wrap: anywhere;
+		}
 
 		&:hover {
 			background: var(--fg-opacity-15);
@@ -178,6 +186,7 @@
 	.action-text {
 		color: var(--fg-opacity-50);
 		font-style: italic;
+		overflow-wrap: anywhere;
 	}
 
 	@keyframes slideIn {
