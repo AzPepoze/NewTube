@@ -299,6 +299,13 @@
 	}
 }
 
+.styleshift-highlight-layer {
+	position: fixed;
+	z-index: 2147483647;
+	inset: 0;
+	pointer-events: none;
+}
+
 .styleshift-highlight {
 	transition:
 		background 0.2s,
@@ -306,37 +313,21 @@
 	border-radius: 10px;
 	border: 1px solid white;
 	position: absolute;
-	z-index: 2147483647;
 	left: 0;
 	top: 0;
 	box-sizing: border-box;
 	cursor: pointer;
-
-	&.styleshift-highlight-viewport {
-		position: fixed;
-		inset: 0;
-		width: auto;
-		height: auto;
-		z-index: 2147483646;
-		border-radius: 0;
-	}
+	pointer-events: auto;
 
 	&:hover {
 		background: var(--theme-success-20, rgba(0, 200, 81, 0.2)) !important;
 		border-color: var(--theme-success, #00c851) !important;
-
-		.styleshift-highlight-label {
-			visibility: visible;
-			opacity: 1;
-			transform: translateY(0);
-			transition-delay: 0s;
-		}
 	}
 }
 
 .styleshift-highlight-label {
 	position: fixed;
-	z-index: 1;
+	z-index: 2147483647;
 	top: 4px;
 	left: 4px;
 	box-sizing: border-box;
@@ -361,6 +352,13 @@
 		transform 0.15s ease-out,
 		visibility 0s linear 0.15s;
 	pointer-events: none;
+
+	&.styleshift-highlight-label-visible {
+		visibility: visible;
+		opacity: 1;
+		transform: translateY(0);
+		transition-delay: 0s;
+	}
 }
 
 .styleshift-highlight-categories {
@@ -368,6 +366,33 @@
 	max-width: min(420px, calc(100vw - 20px));
 	flex-wrap: wrap;
 	gap: 4px;
+}
+
+.styleshift-highlight-category-adding {
+	animation: styleshift-highlight-category-in 0.12s ease-out;
+}
+
+.styleshift-highlight-category-removing {
+	animation: styleshift-highlight-category-out 0.1s ease-in forwards;
+}
+
+@keyframes styleshift-highlight-category-in {
+	from {
+		opacity: 0;
+		transform: translateY(-2px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes styleshift-highlight-category-out {
+	to {
+		opacity: 0;
+		transform: translateY(-2px);
+	}
 }
 
 .styleshift-highlight-category {
