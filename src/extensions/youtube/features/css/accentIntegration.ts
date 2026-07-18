@@ -85,7 +85,8 @@ path[stroke="rgb(255,255,255)"]
 
 yt-list-item-view-model > div:hover,
 .ytThumbnailHoverOverlayViewModelStyleCover,
-.skeleton-bg-color.ytd-ghost-grid-renderer {
+.skeleton-bg-color.ytd-ghost-grid-renderer,
+#content-wrapper.ytd-feed-nudge-renderer {
 	background: var(--nt-theme-transparent) !important;
 }
 
