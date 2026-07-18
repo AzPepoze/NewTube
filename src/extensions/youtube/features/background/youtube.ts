@@ -3,11 +3,33 @@ import { waitForElement } from "@core/shared/domHelpers";
 import { createError, createNotification } from "@core/shared/notifications";
 import { getUserSetting, saveUserSetting } from "@core/storage/manager";
 import { registerSettingListener, triggerSettingUpdate } from "@settings/engine/functions";
+import { logger } from "@shared/logger";
 import { updateAllUiComponents } from "@ui/window/windowFactory";
 import { createElement, ELEMENTS, getElement, hideElement, removeElement, showElement } from "./helpers";
 import { type IModeHandler } from "./types";
 
+const EMBED_BUTTON_SELECTOR = 'button[title="Embed"], button[aria-label="Embed"], [role="button"][aria-label="Embed"]';
+
+function findEmbedButton(): HTMLElement | null {
+	const labelledButton = document.querySelector<HTMLElement>(EMBED_BUTTON_SELECTOR);
+	if (labelledButton) return labelledButton;
+
+	return (
+		Array.from(document.querySelectorAll<HTMLElement>("button, [role='button'], a")).find(
+			(target) => target.textContent?.trim().toLocaleLowerCase() === "embed" && target.offsetParent !== null,
+		) ?? null
+	);
+}
+
 export async function setCurrentVideoAsBackground() {
+	const startedAt = performance.now();
+	const logProgress = (step: string, details: Record<string, unknown> = {}) => {
+		logger.debug("background", step, {
+			elapsedMs: Math.round(performance.now() - startedAt),
+			...details,
+		});
+	};
+
 	const status = await createNotification({
 		icon: "videocam",
 		title: "Setting background",
@@ -21,19 +43,53 @@ export async function setCurrentVideoAsBackground() {
 	};
 
 	try {
+		logProgress("Starting current-video background setup", {
+			pageUrl: window.location.href,
+		});
+		status.setContent("Looking for YouTube's Share button...");
 		const shareButton = (await waitForElement('[aria-label="Share"]')) as HTMLElement;
 		if (!shareButton) throw new Error("Share button not found");
+		logProgress("Share button found; opening share dialog");
 		shareButton.click();
 
-		const embedButton = (await waitForElement('button[title="Embed"]')) as HTMLElement;
-		if (!embedButton) throw new Error("Embed button not found");
+		status.setContent("Share dialog opened. Looking for the Embed option...");
+		const embedLookupStartedAt = performance.now();
+		let embedButton = findEmbedButton();
+		while (!embedButton && performance.now() - embedLookupStartedAt < 10000) {
+			await sleep(100);
+			embedButton = findEmbedButton();
+		}
+		if (!embedButton) {
+			const shareTargets = Array.from(
+				document.querySelectorAll<HTMLElement>("yt-share-target-renderer, ytd-share-target-renderer"),
+			).map((target) => ({
+				text: target.textContent?.trim(),
+				title: target.querySelector<HTMLElement>("[title]")?.title,
+				ariaLabel: target.querySelector<HTMLElement>("[aria-label]")?.getAttribute("aria-label"),
+			}));
+			logger.error("background", "[DEBUG-bg-embed] Embed option not found in the open share dialog", {
+				selector: EMBED_BUTTON_SELECTOR,
+				shareTargetCount: shareTargets.length,
+				shareTargets,
+			});
+			throw new Error("Embed button not found after 10 seconds");
+		}
+		logProgress("Embed button found; opening embed preview");
 		embedButton.click();
 
+		status.setContent("Embed option opened. Waiting for YouTube's embed URL...");
 		let embedVideo = null;
 		for (let i = 0; i < 50 && !embedVideo; i++) {
-			embedVideo = Array.from(document.querySelectorAll("iframe.yt-sharing-embed-renderer")).find((el: any) =>
-				el.src?.includes("embed/"),
-			);
+			const embedFrames = Array.from(document.querySelectorAll<HTMLIFrameElement>("iframe.yt-sharing-embed-renderer"));
+			embedVideo = embedFrames.find((element) => element.src?.includes("embed/"));
+			if (i === 0 || (i + 1) % 10 === 0 || embedVideo) {
+				logProgress("Checking embed preview for a usable URL", {
+					attempt: i + 1,
+					maxAttempts: 50,
+					iframeCount: embedFrames.length,
+					found: Boolean(embedVideo),
+				});
+			}
 			if (!embedVideo) await sleep(100);
 		}
 
@@ -43,16 +99,27 @@ export async function setCurrentVideoAsBackground() {
 			.replace("https://www.youtube.com/embed/", "")
 			.replace("https://www.youtube-nocookie.com/embed/", "");
 
+		status.setContent(`Embed URL found. Saving video ${cleanId.split("?")[0]}...`);
+		logProgress("Embed URL retrieved; saving background setting", {
+			videoId: cleanId.split("?")[0],
+			embedHost: new URL((embedVideo as HTMLIFrameElement).src).host,
+		});
 		await saveUserSetting("YouTubeBackgroundVideoId", cleanId);
 		triggerSettingUpdate("YouTubeBackgroundVideoId");
 		updateAllUiComponents();
 
 		status.setTitle("Background updated");
 		status.setContent("Current video set as background.");
+		logProgress("Current video background setup completed");
 		await sleep(1000);
 		status.close();
 		closePopups();
 	} catch (error) {
+		logger.error("background", "Failed to set current video as background", {
+			elapsedMs: Math.round(performance.now() - startedAt),
+			pageUrl: window.location.href,
+			error,
+		});
 		closePopups();
 		status.close();
 		createError(`Failed to set background: ${error instanceof Error ? error.message : error}`);
