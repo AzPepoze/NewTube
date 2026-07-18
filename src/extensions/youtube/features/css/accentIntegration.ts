@@ -41,7 +41,8 @@ paper-ripple,
 .ytp-swatch-color,
 a.ytp-ce-link,
 yt-multi-page-menu-section-renderer #items > * yt-icon-shape,
-yt-icon.ytd-toggle-theme-compact-link-renderer {
+yt-icon.ytd-toggle-theme-compact-link-renderer,
+.ytd-ticket-shelf-renderer a {
 	color: var(--nt-theme-color) !important;
 }
 

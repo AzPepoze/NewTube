@@ -52,7 +52,7 @@ export const backgroundCategory: Category = {
 			name: "Tint Color",
 			description:
 				"Applies a color overlay on top of your background image or as a solid background color if no image is used. Useful for improving readability.",
-			value: "#0000005e",
+			value: "#000000ae",
 			varCss: "--nt-bg-main",
 			require: { EnableBackground: true, BackgroundMode: "Image" },
 		},
