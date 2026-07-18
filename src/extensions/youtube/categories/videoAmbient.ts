@@ -1,11 +1,12 @@
 import { type Category } from "@settings/types/styleshiftTypes";
 import { disableVideoAmbient, enableVideoAmbient, updateVideoAmbientSettings } from "../features/videoAmbient/main";
+import { PLAYER_SELECTOR } from "./selectors";
 
 const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
 export const videoAmbientCategory: Category = {
 	category: { icon: "fluorescent", label: "Video Ambient" },
-	selector: "#movie_player",
+	selector: PLAYER_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

@@ -1,7 +1,9 @@
 import { type Category } from "@settings/types/styleshiftTypes";
+import { THUMBNAIL_SELECTOR } from "./selectors";
 
 export const thumbnailCategory: Category = {
 	category: { icon: "image_search", label: "Thumbnail & Clip Cover" },
+	selector: THUMBNAIL_SELECTOR,
 	settings: [
 		{
 			type: "numberSlide",

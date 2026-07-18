@@ -1,7 +1,9 @@
 import { type Category } from "@settings/types/styleshiftTypes";
+import { SIDEBAR_SELECTOR } from "./selectors";
 
 export const sidebarCategory: Category = {
 	category: { icon: "view_sidebar", label: "Sidebar" },
+	selector: SIDEBAR_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

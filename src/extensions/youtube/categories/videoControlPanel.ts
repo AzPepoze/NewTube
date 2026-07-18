@@ -5,10 +5,11 @@ import {
 	ytVideoContainerWatchMode,
 	ytdPlayerWatchMode,
 } from "../modules/youtube";
+import { PLAYER_SELECTOR } from "./selectors";
 
 export const videoControlPanelCategory: Category = {
 	category: { icon: "settings_input_component", label: "Video Control Panel" },
-	selector: "#movie_player",
+	selector: PLAYER_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

@@ -4,12 +4,13 @@ import {
 	enableRemoveBlackBars,
 	updateRemoveBlackBarsSettings,
 } from "../features/removeBlackBars/main";
+import { PLAYER_SELECTOR } from "./selectors";
 
 const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
 export const removeBlackBarsCategory: Category = {
 	category: { icon: "crop_square", label: "Remove black bars on video" },
-	selector: "#movie_player",
+	selector: PLAYER_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

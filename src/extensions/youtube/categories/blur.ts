@@ -1,7 +1,9 @@
 import { type Category } from "@settings/types/styleshiftTypes";
+import { SIDEBAR_SELECTOR } from "./selectors";
 
 export const blurCategory: Category = {
 	category: { icon: "blur_on", label: "Blur" },
+	selector: SIDEBAR_SELECTOR,
 	settings: [
 		{
 			type: "numberSlide",

@@ -1,43 +1,61 @@
 import { createUniqueId } from "@/core/shared/utilities";
-import { onceElementRemove, waitDocumentLoaded } from "@core/shared/domHelpers";
+import { waitDocumentLoaded } from "@core/shared/domHelpers";
 import { getStyleShiftItems } from "@settings/registry/items";
 import { type Category } from "@settings/types/styleshiftTypes";
-import { logger } from "@shared/logger";
 import { createEditorUi, editorUi } from "@ui/window/editor";
 import { showUserConfirmation } from "@ui/window/windowFactory";
 
-let highlightElements = {};
-let debounceTimer: NodeJS.Timeout;
+type HighlightObj = {
+	highlighter: HTMLDivElement;
+	label: HTMLDivElement;
+	targetElement: HTMLElement;
+	categories: Category[];
+	stop: () => void;
+	updateBounds?: () => void;
+};
+
+let highlightElements: Record<string, HighlightObj> = {};
+let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 const debounceDelay = 150;
 
-function getHighlightLabel(categories: Category[]) {
-	return categories
-		.map((category) => {
-			const categoryName = typeof category.category === "string" ? category.category : category.category.label;
-			return `${categoryName} — ${category.selector ?? category.Selector ?? ""}`;
-		})
-		.join(", ");
+function categoryName(category: Category) {
+	return typeof category.category === "string" ? category.category : category.category.label;
 }
 
-function debounce(callback: Function) {
-	if (debounceTimer) {
-		clearTimeout(debounceTimer);
+function categorySelector(category: Category) {
+	return category.selector ?? category.Selector ?? "";
+}
+
+function renderHighlightLabel(label: HTMLDivElement, categories: Category[]) {
+	label.replaceChildren();
+
+	const chips = document.createElement("div");
+	chips.className = "styleshift-highlight-categories";
+	for (const category of categories) {
+		const chip = document.createElement("span");
+		chip.className = "styleshift-highlight-category";
+		chip.textContent = categoryName(category);
+		chip.style.backgroundColor = `rgb(${category.Highlight_color})`;
+		chips.append(chip);
 	}
+	label.append(chips);
+}
+
+function debounce(callback: () => void) {
+	if (debounceTimer) clearTimeout(debounceTimer);
 	debounceTimer = setTimeout(() => {
 		callback();
-		debounceTimer = null;
+		debounceTimer = undefined;
 	}, debounceDelay);
 }
 
 function addHighlight(targetElement: HTMLElement, selectorValue: Category) {
-	logger.info("highlight", highlightElements);
-
 	const existUniqueId = targetElement.getAttribute("StyleShift-uniqueId");
 	if (existUniqueId) {
 		const obj = highlightElements[existUniqueId];
-		if (!obj.categories.includes(selectorValue)) {
+		if (obj && !obj.categories.includes(selectorValue)) {
 			obj.categories.push(selectorValue);
-			obj.label.textContent = getHighlightLabel(obj.categories);
+			renderHighlightLabel(obj.label, obj.categories);
 		}
 		return obj;
 	}
@@ -47,180 +65,180 @@ function addHighlight(targetElement: HTMLElement, selectorValue: Category) {
 	targetElement.setAttribute("StyleShift-uniqueId", uniqueId);
 
 	const color = `rgba(${selectorValue.Highlight_color}`;
-
 	const highlighter = document.createElement("div");
 	highlighter.className = "styleshift-highlight";
-	highlighter.setAttribute("Selector", selectorValue.Selector);
-
+	highlighter.setAttribute("Selector", categorySelector(selectorValue));
 	highlighter.style.background = `${color},0.3)`;
 	highlighter.style.borderColor = `${color},0.8)`;
 
+	const isViewport = targetElement === document.body && categorySelector(selectorValue) === "body";
+	if (isViewport) highlighter.classList.add("styleshift-highlight-viewport");
+
 	const label = document.createElement("div");
 	label.className = "styleshift-highlight-label";
-	label.textContent = getHighlightLabel(categories);
-	label.style.backgroundColor = `rgb(${selectorValue.Highlight_color})`;
+	renderHighlightLabel(label, categories);
 	highlighter.append(label);
 
-	const computedStyle = window.getComputedStyle(targetElement);
-	highlighter.style.width = `calc(100% - 
-	${computedStyle.getPropertyValue("padding-left")} - 
-	${computedStyle.getPropertyValue("padding-right")} - 2px
-	)`;
-	highlighter.style.height = `calc(100% - 
-	${computedStyle.getPropertyValue("padding-top")} - 
-	${computedStyle.getPropertyValue("padding-bottom")} - 2px
-	)`;
+	function updateBounds() {
+		if (isViewport) return;
+		const rect = targetElement.getBoundingClientRect();
+		highlighter.style.position = "fixed";
+		highlighter.style.left = `${rect.left}px`;
+		highlighter.style.top = `${rect.top}px`;
+		highlighter.style.width = `${rect.width}px`;
+		highlighter.style.height = `${rect.height}px`;
 
-	targetElement.append(highlighter);
+		label.style.inset = "auto";
+		const needsOutsideLabel = rect.height < 48 || rect.width < 120;
+		if (!needsOutsideLabel) {
+			label.style.top = `${Math.max(4, rect.top + 4)}px`;
+			label.style.left = `${Math.max(4, rect.left + 4)}px`;
+			return;
+		}
 
-	highlighter.onclick = function () {
+		const spaces = {
+			top: rect.top,
+			right: window.innerWidth - rect.right,
+			bottom: window.innerHeight - rect.bottom,
+			left: rect.left,
+		};
+		const side = (Object.entries(spaces) as [keyof typeof spaces, number][]).reduce((best, current) =>
+			current[1] > best[1] ? current : best,
+		)[0];
+		const gap = 6;
+		if (side === "top") {
+			label.style.bottom = `${window.innerHeight - rect.top + gap}px`;
+			if (rect.left > window.innerWidth / 2) label.style.right = `${Math.max(4, window.innerWidth - rect.right)}px`;
+			else label.style.left = `${Math.max(4, rect.left)}px`;
+		} else if (side === "right") {
+			label.style.left = `${rect.right + gap}px`;
+			if (rect.top > window.innerHeight / 2) label.style.bottom = `${Math.max(4, window.innerHeight - rect.bottom)}px`;
+			else label.style.top = `${Math.max(4, rect.top)}px`;
+		} else if (side === "bottom") {
+			label.style.top = `${rect.bottom + gap}px`;
+			if (rect.left > window.innerWidth / 2) label.style.right = `${Math.max(4, window.innerWidth - rect.right)}px`;
+			else label.style.left = `${Math.max(4, rect.left)}px`;
+		} else {
+			label.style.right = `${window.innerWidth - rect.left + gap}px`;
+			if (rect.top > window.innerHeight / 2) label.style.bottom = `${Math.max(4, window.innerHeight - rect.bottom)}px`;
+			else label.style.top = `${Math.max(4, rect.top)}px`;
+		}
+	}
+
+	if (!isViewport) {
+		updateBounds();
+	}
+
+	document.body.append(highlighter);
+	highlighter.onclick = () => {
 		createEditorUi(targetElement, categories);
 		stopHighlighter();
 	};
 
-	const oldStyle = targetElement.style.position;
-	targetElement.style.position = "relative";
-
 	function stop() {
-		if (targetElement) {
-			targetElement.style.position = oldStyle;
-		}
 		highlighter.remove();
 		targetElement.removeAttribute("StyleShift-uniqueId");
 		delete highlightElements[uniqueId];
 	}
 
-	onceElementRemove(targetElement, function () {
-		stop();
-	});
-
-	const returnObj = {
-		highlighter: highlighter,
-		label: label,
-		targetElement: targetElement,
-		categories: categories,
-		stop: stop,
-	};
-
-	highlightElements[uniqueId] = returnObj;
-
-	return returnObj;
+	const result = { highlighter, label, targetElement, categories, stop, updateBounds };
+	highlightElements[uniqueId] = result;
+	return result;
 }
 
-let watchBody: MutationObserver;
+function hasMatchingAncestor(element: HTMLElement, selector: string) {
+	return Boolean(element.parentElement?.closest(selector));
+}
+
+function addMatches(root: HTMLElement, category: Category, ignoredSelectors: Set<string>) {
+	const selector = categorySelector(category);
+	if (!selector || ignoredSelectors.has(selector)) return;
+
+	const matches: HTMLElement[] = [];
+	if (root.matches(selector)) matches.push(root);
+	matches.push(...Array.from(root.querySelectorAll<HTMLElement>(selector)));
+
+	for (const element of matches) {
+		if (!hasMatchingAncestor(element, selector)) addHighlight(element, category);
+	}
+}
+
+let watchBody: MutationObserver | undefined;
+let updateFrame: number | undefined;
+
+function updateHighlightBounds() {
+	if (updateFrame !== undefined) return;
+	updateFrame = requestAnimationFrame(() => {
+		for (const highlight of Object.values(highlightElements)) {
+			if (highlight.targetElement.isConnected) highlight.updateBounds?.();
+			else highlight.stop();
+		}
+		updateFrame = undefined;
+	});
+}
 
 export async function startHighlighter() {
 	await waitDocumentLoaded();
 	const editableItems = await getStyleShiftItems();
-	logger.info("highlight", "editableItems", editableItems);
-	const exeptItems = [];
+	const categories = [...editableItems.Default, ...editableItems.AddOn] as Category[];
+	const ignoredSelectors = new Set<string>();
+	const pendingRoots = new Set<HTMLElement>();
 
-	const containers = document.querySelectorAll(".dynamic-content, .user-content, main, #content");
-
-	watchBody = new MutationObserver((mutationsList) => {
-		debounce(async () => {
-			for (const mutation of mutationsList) {
-				if (mutation.type === "childList") {
-					mutation.addedNodes.forEach((node) => {
-						if (node.nodeType === Node.ELEMENT_NODE) {
-							const element = node as HTMLElement;
-							for (const item of [...editableItems.Default, ...editableItems.AddOn]) {
-								const selectorValue = item as Category;
-								if (
-									selectorValue.category &&
-									selectorValue.selector &&
-									selectorValue.selector != "" &&
-									element.matches(selectorValue.selector) &&
-									!exeptItems.some((item) => item === selectorValue.selector)
-								) {
-									logger.info("highlight", "Add New Node", selectorValue.selector);
-									addHighlight(element, selectorValue);
-								}
-							}
-						}
-					});
-				}
-			}
-		});
-	});
-
-	if (containers.length > 0) {
-		containers.forEach((container) => {
-			watchBody.observe(container, {
-				childList: true,
-				subtree: true,
-				attributeFilter: ["class", "id"],
-			});
-		});
-	} else {
-		watchBody.observe(document.body, {
-			childList: true,
-			subtree: true,
-			attributeFilter: ["class", "id"],
-		});
-	}
-
-	for (const item of [...editableItems.Default, ...editableItems.AddOn]) {
-		const selectorValue = item as Category;
-		if (!selectorValue.category || selectorValue.selector == "") continue;
-
-		const selectorFound = document.querySelectorAll(selectorValue.selector);
-
+	for (const category of categories) {
+		const selector = categorySelector(category);
+		if (!category.category || !selector) continue;
+		const selectorFound = document.querySelectorAll<HTMLElement>(selector);
 		if (
 			selectorFound.length >= 1000 &&
 			!(await showUserConfirmation(
-				`StyleShift : I found ${selectorFound.length} elements on selector "${selectorValue.selector}"\n\nAre you wish to continue??`,
+				`StyleShift : I found ${selectorFound.length} elements on selector "${selector}"\n\nAre you wish to continue??`,
 			))
 		) {
-			exeptItems.push(selectorValue.selector);
+			ignoredSelectors.add(selector);
 			continue;
 		}
-
-		logger.info("highlight", "selectorFound", selectorValue.selector, selectorFound);
-
-		// Process elements in chunks to avoid blocking the main thread
-		const chunkSize = 50;
-		for (let i = 0; i < selectorFound.length; i += chunkSize) {
-			const chunk = Array.from(selectorFound).slice(i, i + chunkSize);
-			setTimeout(() => {
-				chunk.forEach((element) => {
-					addHighlight(element as HTMLElement, selectorValue);
-				});
-			}, 0);
-		}
+		addMatches(document.documentElement, category, ignoredSelectors);
 	}
+
+	watchBody = new MutationObserver((mutations) => {
+		for (const mutation of mutations) {
+			for (const node of mutation.addedNodes) {
+				if (node instanceof HTMLElement && !node.classList.contains("styleshift-highlight")) pendingRoots.add(node);
+			}
+		}
+		debounce(() => {
+			for (const root of pendingRoots) {
+				for (const category of categories) addMatches(root, category, ignoredSelectors);
+			}
+			pendingRoots.clear();
+			updateHighlightBounds();
+		});
+	});
+	watchBody.observe(document.body, { childList: true, subtree: true });
+	window.addEventListener("resize", updateHighlightBounds);
+	document.addEventListener("scroll", updateHighlightBounds, true);
 }
 
 function stopHighlighter() {
-	if (watchBody) {
-		watchBody.disconnect();
-	}
-
-	interface HighlightObj {
-		stop: () => void;
-	}
-
-	for (const highlightElementsObj of Object.values(highlightElements) as HighlightObj[]) {
-		highlightElementsObj.stop();
-	}
-
+	watchBody?.disconnect();
+	if (debounceTimer) clearTimeout(debounceTimer);
+	if (updateFrame !== undefined) cancelAnimationFrame(updateFrame);
+	window.removeEventListener("resize", updateHighlightBounds);
+	document.removeEventListener("scroll", updateHighlightBounds, true);
+	for (const highlight of Object.values(highlightElements)) highlight.stop();
 	highlightElements = {};
 }
 
 let runningCustomize = false;
 
 export async function startCustomize() {
-	if (runningCustomize) {
-		return;
-	}
+	if (runningCustomize) return;
 	runningCustomize = true;
-	startHighlighter();
+	await startHighlighter();
 }
 
 export function stopCustomize() {
-	if (!runningCustomize) {
-		return;
-	}
+	if (!runningCustomize) return;
 	runningCustomize = false;
 	stopHighlighter();
 }
@@ -230,6 +248,6 @@ export async function toggleCustomize() {
 		stopCustomize();
 		editorUi.removeUi(false);
 	} else {
-		startCustomize();
+		await startCustomize();
 	}
 }

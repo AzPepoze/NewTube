@@ -1,6 +1,7 @@
 import { type Category } from "@settings/types/styleshiftTypes";
 import { disableFlyout, enableFlyout } from "../features/flyout/flyout";
 import { disableAutoShowChatReplay, setupAutoShowChatReplay } from "../features/video/chat";
+import { WATCH_SIDEBAR_SELECTOR } from "./selectors";
 
 export const primaryContainer = "ytd-watch-flexy #primary.ytd-watch-flexy";
 export const primaryInnerContainer = "ytd-watch-flexy #primary-inner.ytd-watch-flexy";
@@ -9,6 +10,7 @@ export const secondaryInnerContainer = "ytd-watch-flexy #secondary-inner.ytd-wat
 
 export const enhancementCategory: Category = {
 	category: { icon: "auto_fix_high", label: "Enhancement" },
+	selector: WATCH_SIDEBAR_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

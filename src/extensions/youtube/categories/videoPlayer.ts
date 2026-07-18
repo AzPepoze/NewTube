@@ -1,9 +1,10 @@
 import { type Category } from "@settings/types/styleshiftTypes";
 import { setupVideoAnimations } from "../features/video/animations";
+import { PLAYER_SELECTOR } from "./selectors";
 
 export const videoPlayerCategory: Category = {
 	category: { icon: "play_circle", label: "Video Player" },
-	selector: "#movie_player",
+	selector: PLAYER_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

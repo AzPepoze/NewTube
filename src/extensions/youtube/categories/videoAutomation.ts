@@ -2,9 +2,11 @@ import { IS_FIREFOX } from "@core/index";
 import { type Category } from "@settings/types/styleshiftTypes";
 import { enableAutoRemoveAmbient, setupAutoTheater } from "../features/video/general";
 import { disableAutoPip, enableAutoExitPip, enableAutoPip } from "../features/video/pip";
+import { PLAYER_SELECTOR } from "./selectors";
 
 export const videoAutomationCategory: Category = {
 	category: { icon: "auto_awesome", label: "Video Automation" },
+	selector: PLAYER_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

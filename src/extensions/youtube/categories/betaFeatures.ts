@@ -1,9 +1,11 @@
 import { type Category } from "@settings/types/styleshiftTypes";
 import { destroyBlackToTransparent, setupBlackToTransparent } from "../features/video/blackToTransparent";
 import { destroyAudioVisualizer, setupAudioVisualizer } from "../features/visualizer";
+import { PLAYER_SELECTOR } from "./selectors";
 
 export const betaFeaturesCategory: Category = {
 	category: { icon: "new_label", label: "Beta features!" },
+	selector: PLAYER_SELECTOR,
 	settings: [
 		{
 			type: "text",

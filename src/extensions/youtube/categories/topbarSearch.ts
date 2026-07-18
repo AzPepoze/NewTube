@@ -1,7 +1,9 @@
 import { type Category } from "@settings/types/styleshiftTypes";
+import { SEARCH_SELECTOR } from "./selectors";
 
 export const topbarSearchCategory: Category = {
 	category: { icon: "search", label: "Topbar & Search" },
+	selector: SEARCH_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

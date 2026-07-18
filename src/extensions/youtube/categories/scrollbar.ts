@@ -1,7 +1,9 @@
 import { type Category } from "@settings/types/styleshiftTypes";
+import { GLOBAL_VISUAL_PROXY_SELECTOR } from "./selectors";
 
 export const scrollbarCategory: Category = {
 	category: { icon: "unfold_more", label: "Scrollbar" },
+	selector: GLOBAL_VISUAL_PROXY_SELECTOR,
 	settings: [
 		{
 			type: "dropdown",

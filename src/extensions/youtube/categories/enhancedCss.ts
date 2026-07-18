@@ -10,9 +10,11 @@ import {
 	uiCleanupCss,
 	videoCenteringCss,
 } from "../features/mainCss";
+import { GLOBAL_VISUAL_PROXY_SELECTOR } from "./selectors";
 
 export const enhancedCssCategory: Category = {
 	category: { icon: "auto_mode", label: "Enhanced CSS" },
+	selector: GLOBAL_VISUAL_PROXY_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

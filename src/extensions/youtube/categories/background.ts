@@ -1,9 +1,11 @@
 import { type Category } from "@settings/types/styleshiftTypes";
 import { enableBackgroundCss, enableBg } from "../features/background/main";
 import { setCurrentVideoAsBackground } from "../features/background/youtube";
+import { BACKGROUND_SELECTOR } from "./selectors";
 
 export const backgroundCategory: Category = {
 	category: { icon: "image", label: "Background" },
+	selector: BACKGROUND_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

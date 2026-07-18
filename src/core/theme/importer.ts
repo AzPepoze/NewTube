@@ -1,6 +1,8 @@
 import { deepClone, sleep } from "@/core/shared/utilities";
-import { loadJSZip, jszipInstance } from "@core/runtime/controller";
+import { jszipInstance, loadJSZip } from "@core/runtime/controller";
+import { alertPrompt, chooseSelection, enterPrompt, enterTextPrompt } from "@core/shared/dialogs";
 import { downloadFile, getFile } from "@core/shared/extensionHelpers";
+import { parseStyleShiftZip } from "@core/shared/importExport";
 import { createError, createNotification } from "@core/shared/notifications";
 import { performStorageGarbageCollection } from "@core/storage/maintenance";
 import {
@@ -11,14 +13,12 @@ import {
 	saveUserSetting,
 	suppressStoragePersistence,
 } from "@core/storage/manager";
+import { saveTheme } from "@core/theme/manager";
 import { triggerSettingsUpdateBatch } from "@settings/engine/functions";
 import { styleshiftCategoryList } from "@settings/registry/defaultItems";
 import { updateStyleShiftItems } from "@settings/registry/items";
 import { logger } from "@shared/logger";
 import { showUserConfirmation } from "@ui/window/windowFactory";
-import { alertPrompt, chooseSelection, enterPrompt, enterTextPrompt } from "@core/shared/dialogs";
-import { parseStyleShiftZip } from "@core/shared/importExport";
-import { saveTheme } from "@core/theme/manager";
 
 import { convertToExportSetting } from "./exportConverter";
 
@@ -284,7 +284,7 @@ export async function importThemeZipWithWorkflow() {
 				title: "Import Error",
 			});
 		}
-	} catch (error) {}
+	} catch {}
 }
 
 export async function importThemeFromTextWorkflow() {
@@ -334,7 +334,7 @@ export async function importThemeFromTextWorkflow() {
 				title: "Import Error",
 			});
 		}
-	} catch (error) {}
+	} catch {}
 }
 
 export async function importThemeWorkflow() {

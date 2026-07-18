@@ -1,0 +1,9 @@
+export const PLAYER_SELECTOR = "#movie_player";
+export const WATCH_DETAILS_SELECTOR = "#below";
+export const WATCH_SIDEBAR_SELECTOR = "#secondary";
+export const GLOBAL_VISUAL_PROXY_SELECTOR = "ytd-masthead ytd-topbar-logo-renderer";
+export const BACKGROUND_SELECTOR = "body";
+export const SIDEBAR_SELECTOR = "#guide-content, ytd-mini-guide-renderer";
+export const THUMBNAIL_SELECTOR = "ytd-thumbnail, ytd-playlist-thumbnail, yt-thumbnail-view-model";
+export const SEARCH_SELECTOR = "ytd-masthead yt-searchbox, ytd-masthead ytd-searchbox";
+export const CAPTIONS_SELECTOR = "#ytp-caption-window-container";

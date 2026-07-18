@@ -1,7 +1,9 @@
 import { type Category } from "@settings/types/styleshiftTypes";
+import { WATCH_DETAILS_SELECTOR } from "./selectors";
 
 export const videoLayoutCategory: Category = {
 	category: { icon: "ondemand_video", label: "Video Layout" },
+	selector: WATCH_DETAILS_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

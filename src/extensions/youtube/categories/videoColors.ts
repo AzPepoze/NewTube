@@ -1,8 +1,9 @@
 import { type Category } from "@settings/types/styleshiftTypes";
+import { PLAYER_SELECTOR } from "./selectors";
 
 export const videoColorsCategory: Category = {
 	category: { icon: "format_paint", label: "Video Colors" },
-	selector: "#movie_player",
+	selector: PLAYER_SELECTOR,
 	settings: [
 		{
 			type: "color",

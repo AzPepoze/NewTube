@@ -1,9 +1,11 @@
 import { type Category } from "@settings/types/styleshiftTypes";
 import { playerWatchModeSelector, ytPlayerWatchMode } from "../modules/youtube";
 import { secondaryContainer } from "./enhancement";
+import { WATCH_SIDEBAR_SELECTOR } from "./selectors";
 
 export const animationCategory: Category = {
 	category: { icon: "slideshow", label: "Animations" },
+	selector: WATCH_SIDEBAR_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

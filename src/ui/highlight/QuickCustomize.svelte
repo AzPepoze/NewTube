@@ -129,7 +129,12 @@
 						<span>Loading Code Editor...</span>
 					</div>
 				{/if}
-				<CodeEditor value={controller.rawCss} language="css" height="100%" onInput={(val) => (controller.rawCss = val)} />
+				<CodeEditor
+					value={controller.rawCss}
+					language="css"
+					height="100%"
+					onInput={(val) => (controller.rawCss = val)}
+				/>
 			</div>
 		{/if}
 	</div>

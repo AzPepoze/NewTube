@@ -1,7 +1,9 @@
 import { type Category } from "@settings/types/styleshiftTypes";
+import { CAPTIONS_SELECTOR } from "./selectors";
 
 export const subtitlesCategory: Category = {
 	category: { icon: "closed_caption", label: "Subtitles & Captions" },
+	selector: CAPTIONS_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",
