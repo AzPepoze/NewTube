@@ -1,9 +1,9 @@
 import { type Category } from "@settings/types/styleshiftTypes";
-import { GLOBAL_VISUAL_PROXY_SELECTOR } from "./selectors";
+import { THUMBNAIL_SELECTOR } from "./selectors";
 
 export const bordersShadowsCategory: Category = {
 	category: { icon: "border_all", label: "Borders / Shadows" },
-	selector: GLOBAL_VISUAL_PROXY_SELECTOR,
+	selector: THUMBNAIL_SELECTOR,
 	settings: [
 		{
 			type: "dropdown",

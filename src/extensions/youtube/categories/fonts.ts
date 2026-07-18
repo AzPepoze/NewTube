@@ -1,11 +1,11 @@
 import { type Category } from "@settings/types/styleshiftTypes";
 import { settingsUi } from "@ui/settings/settingsApi";
 import FontManager from "../features/fonts/FontManager.svelte";
-import { GLOBAL_VISUAL_PROXY_SELECTOR } from "./selectors";
+import { FONT_SELECTOR } from "./selectors";
 
 export const fontsCategory: Category = {
 	category: { icon: "text_fields", label: "Fonts" },
-	selector: GLOBAL_VISUAL_PROXY_SELECTOR,
+	selector: FONT_SELECTOR,
 	settings: [
 		{
 			type: "custom",

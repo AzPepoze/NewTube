@@ -1,9 +1,11 @@
 export const PLAYER_SELECTOR = "#movie_player";
 export const WATCH_DETAILS_SELECTOR = "#below";
 export const WATCH_SIDEBAR_SELECTOR = "#secondary";
-export const GLOBAL_VISUAL_PROXY_SELECTOR = "ytd-masthead ytd-topbar-logo-renderer";
-export const BACKGROUND_SELECTOR = "body";
+export const TOP_LEFT_ICON_SELECTOR = "ytd-masthead ytd-topbar-logo-renderer";
+export const COLOR_THEME_SELECTOR = "ytd-app";
+export const FONT_SELECTOR = "#video-title";
+export const SCROLLBAR_SELECTOR = "ytd-app";
+export const BACKGROUND_SELECTOR = "ytd-app";
 export const SIDEBAR_SELECTOR = "#guide-content, ytd-mini-guide-renderer";
-export const THUMBNAIL_SELECTOR = "ytd-thumbnail, ytd-playlist-thumbnail, yt-thumbnail-view-model";
+export const THUMBNAIL_SELECTOR = "ytd-playlist-thumbnail, yt-thumbnail-view-model";
 export const SEARCH_SELECTOR = "ytd-masthead yt-searchbox, ytd-masthead ytd-searchbox";
-export const CAPTIONS_SELECTOR = "#ytp-caption-window-container";

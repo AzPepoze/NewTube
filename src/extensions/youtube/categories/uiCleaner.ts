@@ -1,9 +1,9 @@
 import { type Category } from "@settings/types/styleshiftTypes";
-import { GLOBAL_VISUAL_PROXY_SELECTOR } from "./selectors";
+import { SIDEBAR_SELECTOR } from "./selectors";
 
 export const uiCleanerCategory: Category = {
 	category: { icon: "layers_clear", label: "UI Cleaner" },
-	selector: GLOBAL_VISUAL_PROXY_SELECTOR,
+	selector: SIDEBAR_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

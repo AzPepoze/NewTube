@@ -1,10 +1,10 @@
 import { type Category } from "@settings/types/styleshiftTypes";
 import { disableThemeByVideo, enableThemeByVideo } from "../features/theme";
-import { GLOBAL_VISUAL_PROXY_SELECTOR } from "./selectors";
+import { COLOR_THEME_SELECTOR } from "./selectors";
 
 export const colorThemeCategory: Category = {
 	category: { icon: "palette", label: "Color Theme" },
-	selector: GLOBAL_VISUAL_PROXY_SELECTOR,
+	selector: COLOR_THEME_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

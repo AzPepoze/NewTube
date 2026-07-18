@@ -1,10 +1,8 @@
 import { type Category } from "@settings/types/styleshiftTypes";
 import { disableTabIconChanger, enableTabIconChanger } from "../features/tabIcon";
-import { GLOBAL_VISUAL_PROXY_SELECTOR } from "./selectors";
 
 export const tabIconCategory: Category = {
 	category: { icon: "tab", label: "Tab Icon" },
-	selector: GLOBAL_VISUAL_PROXY_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",

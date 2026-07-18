@@ -1,10 +1,10 @@
 import { type Category } from "@settings/types/styleshiftTypes";
 import { disableTopLeftIconChanger, enableTopLeftIconChanger } from "../features/topLeftIcon";
-import { GLOBAL_VISUAL_PROXY_SELECTOR } from "./selectors";
+import { TOP_LEFT_ICON_SELECTOR } from "./selectors";
 
 export const topLeftIconCategory: Category = {
 	category: { icon: "featured_video", label: "Top-Left Icon" },
-	selector: GLOBAL_VISUAL_PROXY_SELECTOR,
+	selector: TOP_LEFT_ICON_SELECTOR,
 	settings: [
 		{
 			type: "checkbox",
