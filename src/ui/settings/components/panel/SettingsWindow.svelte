@@ -15,7 +15,7 @@
 		isDevModulesLoaded = false,
 		skipAnimation = false,
 		onClose: _onClose = () => {},
-		onAddCategory = (_name: string) => {},
+		onAddCategory = () => {},
 	}: {
 		internalSettings: (Category | SeparateCategory)[];
 		externalSettings?: Category[];
@@ -25,7 +25,7 @@
 		isDevModulesLoaded?: boolean;
 		skipAnimation?: boolean;
 		onClose?: () => void;
-		onAddCategory?: (name: string) => void;
+		onAddCategory?: () => void | Promise<void>;
 	} = $props();
 
 	const controller = new SettingsWindowController({

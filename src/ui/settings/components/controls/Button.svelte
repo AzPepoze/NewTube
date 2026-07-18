@@ -12,6 +12,7 @@
 		showHelpIcon = false,
 		iconSize = undefined,
 		fontSize = undefined,
+		variant = "default",
 	}: {
 		setting: Extract<Setting, { type: "button" }>;
 		style?: string;
@@ -19,6 +20,7 @@
 		showHelpIcon?: boolean;
 		iconSize?: number;
 		fontSize?: number;
+		variant?: "default" | "subtle" | "ghost";
 	} = $props();
 
 	const name = $derived(setting.name);
@@ -70,7 +72,7 @@
 </script>
 
 <div
-	class="styleshift-button {className}"
+	class="styleshift-button variant-{variant} {className}"
 	class:has-icon={!!icon}
 	style:justify-content={justifyContent}
 	style:transform="scale({scale})"
@@ -146,6 +148,30 @@
 
 		:global(.styleshift-main-description .setting-name) {
 			font-weight: 400;
+		}
+	}
+
+	.variant-subtle {
+		background: var(--fg-opacity-05);
+		border-color: var(--fg-opacity-10);
+		color: var(--fg-opacity-70);
+
+		&:hover {
+			background: var(--fg-opacity-10);
+			color: var(--font-color, white);
+			filter: none;
+		}
+	}
+
+	.variant-ghost {
+		background: transparent;
+		border-color: transparent;
+		color: var(--fg-opacity-50);
+
+		&:hover {
+			background: var(--fg-opacity-05);
+			color: var(--font-color, white);
+			filter: none;
 		}
 	}
 

@@ -10,7 +10,7 @@ export interface SettingsWindowProps {
 	devOnlyItems: Category[];
 	isDeveloperMode: boolean;
 	isDevModulesLoaded: boolean;
-	onAddCategory: (name: string) => void;
+	onAddCategory: () => void | Promise<void>;
 }
 
 export class SettingsWindowController {
@@ -193,10 +193,7 @@ export class SettingsWindowController {
 	};
 
 	handleAddCategory = () => {
-		const categoryName = prompt("Enter category name:");
-		if (categoryName) {
-			this.#props.onAddCategory(categoryName);
-		}
+		void this.#props.onAddCategory();
 	};
 
 	scrollToCategory = (parts: { text: string }) => {

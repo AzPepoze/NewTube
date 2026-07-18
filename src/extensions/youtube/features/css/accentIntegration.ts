@@ -8,6 +8,7 @@ svg [fill="#FF0000"],
 svg [fill="#FF0033"],
 svg [fill="red"],
 svg [fill="#F00"],
+.ytp-chrome-controls path,
 button:not(.yt-share-target-renderer) path:not([fill="none"]),
 [role="option"]:not(.yt-third-party-share-target-section-renderer) path,
 .ytp-heat-map-graph,
@@ -120,5 +121,9 @@ yt-chip-cloud-chip-renderer[selected] #chip-container {
 ytd-author-commebadge-renderer,
 yt-dynamic-text-view-model{
 	background: var(--nt-theme-accent) !important;
+}
+
+.ytSpecButtonShapeNextCallToAction.ytSpecButtonShapeNextOutline{
+	color: var(--nt-theme-color) !important;
 }
 `;

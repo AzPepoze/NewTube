@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Button from "@ui/settings/components/controls/Button.svelte";
 	import Icon from "@primitives/Icon.svelte";
+	import Button from "@ui/settings/components/controls/Button.svelte";
 	import Search from "@ui/settings/components/primitives/Search.svelte";
 	import CapsuleTabs from "@ui/window/components/CapsuleTabs.svelte";
 	import { onMount } from "svelte";
@@ -123,6 +123,7 @@
 		<div class="actions-left">
 			<Button
 				class="footer-btn"
+				variant="subtle"
 				iconSize={18}
 				fontSize={13.5}
 				setting={{
@@ -135,6 +136,7 @@
 			/>
 			<Button
 				class="footer-btn"
+				variant="subtle"
 				iconSize={18}
 				fontSize={13.5}
 				setting={{
@@ -147,6 +149,7 @@
 			/>
 			<Button
 				class="footer-btn"
+				variant="subtle"
 				iconSize={18}
 				fontSize={13.5}
 				setting={{
@@ -286,24 +289,72 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0 5px;
+		gap: 20px;
+		padding: 12px;
 		margin-top: 20px;
 		z-index: 100;
+		position: relative;
+		border: 1px solid var(--fg-opacity-10);
+		border-radius: 16px;
+		background: var(--bg-main, #111);
 
 		.actions-left,
 		.actions-right {
 			display: flex;
-			gap: 10px;
+			gap: 8px;
 			align-items: center;
 		}
 
+		.actions-left {
+			min-width: 0;
+		}
+
+		.actions-right {
+			padding-left: 12px;
+			border-left: 1px solid var(--fg-opacity-10);
+		}
+
 		:global(.footer-btn) {
-			height: 38px;
-			padding: 0 16px !important;
-			border-radius: 10px !important;
+			height: 40px;
+			padding: 0 14px !important;
+			border-radius: 11px !important;
 			font: inherit;
-			font-weight: 500;
+			font-weight: 600;
 			width: auto !important;
+			box-shadow: none;
+			transition:
+				transform 160ms ease,
+				filter 160ms ease,
+				background 160ms ease;
+		}
+
+		:global(.footer-btn:hover) {
+			transform: translateY(-1px) !important;
+			filter: none;
+		}
+
+		@media (max-width: 720px) {
+			gap: 10px;
+
+			:global(.footer-btn) {
+				padding: 0 11px !important;
+			}
+		}
+
+		@media (max-width: 580px) {
+			align-items: stretch;
+			flex-direction: column;
+
+			.actions-left,
+			.actions-right {
+				justify-content: flex-end;
+			}
+
+			.actions-right {
+				padding: 10px 0 0;
+				border-top: 1px solid var(--fg-opacity-10);
+				border-left: 0;
+			}
 		}
 	}
 </style>

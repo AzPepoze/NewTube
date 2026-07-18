@@ -7,7 +7,7 @@ import { getStyleShiftDevOnlyItems } from "@extensions/youtube/developerItems";
 import { addCategory, getAddOnItems, getSettingsList, updateStyleShiftItems } from "@settings/registry/items";
 import { type Category } from "@settings/types/styleshiftTypes";
 import { logger } from "@shared/logger";
-import { createStyleShiftWindow } from "@ui/window/windowFactory";
+import { createStyleShiftWindow, showUserPrompt } from "@ui/window/windowFactory";
 import { unmount } from "svelte";
 import { SvelteSet } from "svelte/reactivity";
 import { settingsUi } from "./settingsApi";
@@ -121,7 +121,10 @@ export async function createMainSettingsUi({
 				showCategoryList,
 				skipAnimation,
 				onClose: () => returnObject.removeUi(),
-				onAddCategory: (categoryName: string) => addCategory(categoryName),
+				onAddCategory: async () => {
+					const categoryName = (await showUserPrompt("Add category", "Enter category name..."))?.trim();
+					if (categoryName) await addCategory(categoryName);
+				},
 			},
 			settingsWindow.contentElement,
 		);
