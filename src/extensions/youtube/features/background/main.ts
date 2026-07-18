@@ -1,5 +1,5 @@
 import { logger } from "@/shared/logger";
-import { getUserSetting } from "@core/storage/manager";
+import { getRootValue, getUserSetting } from "@core/storage/manager";
 import { registerSettingListener } from "@settings/engine/functions";
 import { enableBackgroundCss, removeYoutubeIframe } from "./helpers";
 import { imageBackgroundMode } from "./image";
@@ -18,6 +18,7 @@ class BackgroundModeDispatcher {
 
 	private activeMode: BackgroundMode | null = null;
 	private hiddenByVideo = false;
+	private lifecycleQueue: Promise<void> = Promise.resolve();
 
 	private get activeHandler() {
 		return this.activeMode ? this.modes[this.activeMode] : null;
@@ -35,14 +36,40 @@ class BackgroundModeDispatcher {
 		logger.info("Background mode switched to:", newMode);
 	}
 
+	private queueLifecycle(update: () => Promise<void>): Promise<void> {
+		this.lifecycleQueue = this.lifecycleQueue.then(update, update);
+		return this.lifecycleQueue;
+	}
+
+	private reconcile(): Promise<void> {
+		return this.queueLifecycle(async () => {
+			const [extensionEnabled, backgroundEnabled, mode] = await Promise.all([
+				getRootValue("enableExtension"),
+				getUserSetting("EnableBackground"),
+				getUserSetting("BackgroundMode") as Promise<BackgroundMode>,
+			]);
+
+			if (!extensionEnabled || !backgroundEnabled) {
+				await this.disableActiveMode();
+				return;
+			}
+
+			await this.switchMode(mode);
+		});
+	}
+
+	private async disableActiveMode(): Promise<void> {
+		await this.activeHandler?.disable();
+		this.activeMode = null;
+		removeYoutubeIframe();
+	}
+
 	async enable(): Promise<void> {
-		const mode = (await getUserSetting("BackgroundMode")) as BackgroundMode;
-		await this.switchMode(mode);
+		await this.reconcile();
 	}
 
 	async disable(): Promise<void> {
-		await this.activeHandler?.disable();
-		this.activeMode = null;
+		await this.queueLifecycle(() => this.disableActiveMode());
 	}
 
 	async show(): Promise<void> {
@@ -56,16 +83,9 @@ class BackgroundModeDispatcher {
 	}
 
 	registerListeners(): void {
-		registerSettingListener("BackgroundMode", (value) => this.switchMode(value as BackgroundMode), true);
-
-		registerSettingListener("EnableBackground", async (value) => {
-			if (value) {
-				await this.enable();
-			} else {
-				removeYoutubeIframe();
-				await this.disable();
-			}
-		});
+		registerSettingListener("BackgroundMode", () => this.reconcile(), true);
+		registerSettingListener("EnableBackground", () => this.reconcile());
+		registerSettingListener("enableExtension", () => this.reconcile());
 	}
 }
 

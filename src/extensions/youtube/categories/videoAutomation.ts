@@ -2,7 +2,6 @@ import { IS_FIREFOX } from "@core/index";
 import { type Category } from "@settings/types/styleshiftTypes";
 import { enableAutoRemoveAmbient, setupAutoTheater } from "../features/video/general";
 import { disableAutoPip, enableAutoExitPip, enableAutoPip } from "../features/video/pip";
-import { setupUpdateTimestamp } from "../features/video/timestamp";
 
 export const videoAutomationCategory: Category = {
 	category: { icon: "auto_awesome", label: "Video Automation" },
@@ -40,8 +39,7 @@ export const videoAutomationCategory: Category = {
 			disableFunction: disableAutoPip,
 			lock: {
 				condition: !IS_FIREFOX,
-				message:
-					"Picture-in-Picture functionality has security limitations in Firefox and has been disabled for your protection.",
+				message: "Picture-in-Picture functionality has security limitations in Firefox, I can't do anything I'm sorry.",
 			},
 		},
 		{
@@ -54,8 +52,7 @@ export const videoAutomationCategory: Category = {
 			disableFunction: disableAutoPip,
 			lock: {
 				condition: !IS_FIREFOX,
-				message:
-					"Picture-in-Picture functionality has security limitations in Firefox and has been disabled for your protection.",
+				message: "Picture-in-Picture functionality has security limitations in Firefox, I can't do anything I'm sorry.",
 			},
 		},
 		{
@@ -65,14 +62,6 @@ export const videoAutomationCategory: Category = {
 			description: "Automatically disables YouTube's native ambient lighting effect to prevent visual conflicts.",
 			value: true,
 			enableFunction: enableAutoRemoveAmbient,
-		},
-		{
-			type: "checkbox",
-			id: "UpdateUrlTimestamp",
-			name: "URL Time Sync",
-			description: "Continuously updates the address bar URL with the current timestamp of the video you are watching.",
-			value: false,
-			enableFunction: setupUpdateTimestamp,
 		},
 	],
 };

@@ -166,7 +166,6 @@ export const defaultSetting = {
 		TopbarBackgroundColor: "#00000080",
 		TopbarBlurAmount: 10,
 		TransparentThemeColor: "#9464ce33",
-		UpdateUrlTimestamp: false,
 		VideoAmbient: false,
 		VideoAmbientBlur: 30,
 		VideoAmbientBrightness: 0.4,
