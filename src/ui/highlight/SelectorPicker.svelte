@@ -3,7 +3,8 @@
 	import { applyThemeToElement } from "@ui/themes/theme";
 	import { showUserConfirmation } from "@ui/window/windowFactory";
 	import { onDestroy, onMount } from "svelte";
-	import { fly } from "svelte/transition";
+	import { createEscapeHint } from "./escapeHint";
+	import { setPickingMode } from "./pickingMode";
 	import { generateSelectors } from "./selectorUtils";
 
 	let { onSelect, onClose } = $props<{
@@ -19,6 +20,11 @@
 
 	let overlay = $state<HTMLDivElement | null>(null);
 	let hintHovered = $state(false);
+	let exitHint: ReturnType<typeof createEscapeHint> | undefined;
+
+	$effect(() => {
+		exitHint?.setVisible(picking && !showSuggestions && !hintHovered);
+	});
 
 	function teleport(node: HTMLElement) {
 		node.classList.add("styleshift-main");
@@ -134,11 +140,7 @@
 
 	function exit() {
 		picking = false;
-		window.dispatchEvent(
-			new CustomEvent("styleshift-picker-state", {
-				detail: { picking: false },
-			}),
-		);
+		setPickingMode(false);
 		onClose();
 	}
 
@@ -163,11 +165,8 @@
 
 	onMount(() => {
 		logger.debug("Picker", "SelectorPicker mounted");
-		window.dispatchEvent(
-			new CustomEvent("styleshift-picker-state", {
-				detail: { picking: true },
-			}),
-		);
+		exitHint = createEscapeHint("exit");
+		setPickingMode(true);
 		window.addEventListener("mousemove", handleMouseMove);
 		window.addEventListener("mousedown", handleClick, true);
 		window.addEventListener("keydown", handleKeyDown);
@@ -178,11 +177,8 @@
 		window.removeEventListener("mousemove", handleMouseMove);
 		window.removeEventListener("mousedown", handleClick, true);
 		window.removeEventListener("keydown", handleKeyDown);
-		window.dispatchEvent(
-			new CustomEvent("styleshift-picker-state", {
-				detail: { picking: false },
-			}),
-		);
+		exitHint?.destroy();
+		setPickingMode(false);
 	});
 </script>
 
@@ -221,12 +217,6 @@
 		<div class="selector-tooltip">
 			{generateSelectors(hoveredElement)[0] || "No selector found"}
 		</div>
-	</div>
-{/if}
-
-{#if picking && !showSuggestions && !hintHovered}
-	<div class="exit-hint" transition:fly={{ y: 20, duration: 400 }}>
-		Press <b>ESC</b> to exit
 	</div>
 {/if}
 
@@ -372,25 +362,6 @@
 			left: 10px;
 			border: 6px solid transparent;
 			border-top-color: var(--theme-0, #7f5db7);
-		}
-	}
-
-	.exit-hint {
-		position: fixed;
-		bottom: 30px;
-		left: 50%;
-		transform: translateX(-50%);
-		color: rgba(255, 255, 255, 0.9);
-		font-size: 14px;
-		z-index: 2147483647;
-		pointer-events: auto;
-		user-select: none;
-		text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-
-		b {
-			color: #ffffff;
-			font-weight: 800;
-			margin: 0 2px;
 		}
 	}
 </style>

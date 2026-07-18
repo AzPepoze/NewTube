@@ -4,6 +4,8 @@ import { getStyleShiftItems } from "@settings/registry/items";
 import { type Category } from "@settings/types/styleshiftTypes";
 import { createEditorUi, editorUi } from "@ui/window/editor";
 import { showUserConfirmation } from "@ui/window/windowFactory";
+import { createEscapeHint } from "./escapeHint";
+import { setPickingMode } from "./pickingMode";
 
 type HighlightObj = {
 	highlighter: HTMLDivElement;
@@ -131,6 +133,7 @@ function addHighlight(targetElement: HTMLElement, selectorValue: Category) {
 
 	document.body.append(highlighter);
 	highlighter.onclick = () => {
+		hideExitHint();
 		createEditorUi(targetElement, categories);
 		stopHighlighter();
 	};
@@ -165,6 +168,25 @@ function addMatches(root: HTMLElement, category: Category, ignoredSelectors: Set
 
 let watchBody: MutationObserver | undefined;
 let updateFrame: number | undefined;
+let exitHint: ReturnType<typeof createEscapeHint> | undefined;
+
+function showExitHint() {
+	if (exitHint) return;
+	exitHint = createEscapeHint("cancel");
+}
+
+function hideExitHint() {
+	exitHint?.destroy();
+	exitHint = undefined;
+}
+
+function handleCustomizeKeydown(event: KeyboardEvent) {
+	if (event.key !== "Escape" || !runningCustomize) return;
+	event.preventDefault();
+	event.stopPropagation();
+	editorUi?.removeUi(true);
+	stopCustomize();
+}
 
 function updateHighlightBounds() {
 	if (updateFrame !== undefined) return;
@@ -179,6 +201,7 @@ function updateHighlightBounds() {
 
 export async function startHighlighter() {
 	await waitDocumentLoaded();
+	if (runningCustomize) showExitHint();
 	const editableItems = await getStyleShiftItems();
 	const categories = [...editableItems.Default, ...editableItems.AddOn] as Category[];
 	const ignoredSelectors = new Set<string>();
@@ -234,13 +257,18 @@ let runningCustomize = false;
 export async function startCustomize() {
 	if (runningCustomize) return;
 	runningCustomize = true;
+	setPickingMode(true);
+	window.addEventListener("keydown", handleCustomizeKeydown, true);
 	await startHighlighter();
 }
 
 export function stopCustomize() {
 	if (!runningCustomize) return;
 	runningCustomize = false;
+	hideExitHint();
+	window.removeEventListener("keydown", handleCustomizeKeydown, true);
 	stopHighlighter();
+	setPickingMode(false);
 }
 
 export async function toggleCustomize() {
