@@ -319,7 +319,16 @@ export const animationCategory: Category = {
 					left: unset !important;
 					transition: all 0.4s;
 				}
-			
+			`,
+		},
+		{
+			type: "conditionSetting",
+			id: "AnimationVideoControlsPanelAutohide",
+			condition: {
+				AnimationVideoControlsPanel: true,
+				EnableControlPanelAutohide: true,
+			},
+			enableCss: `
 				${ytPlayerWatchMode} .ytp-autohide .ytp-chrome-bottom {
 					width: 0px !important;
 					left: unset !important;

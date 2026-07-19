@@ -1,6 +1,7 @@
 import { checkAndUpdateTheme, initWebsiteIntegration } from "@core/theme/storeIntegration";
 import { STYLESHIFT_STORE_ORIGINS } from "@core/theme/config";
 import { enableSettingsButton } from "./features/newtubeSettingsButton";
+import { initControlPanelSync } from "./features/controlPanelSync";
 import { checkAndShowWelcome } from "./welcome";
 
 /**
@@ -24,6 +25,7 @@ export function shouldEnableExtension(): boolean {
  */
 export async function appBootstrap() {
 	enableSettingsButton();
+	initControlPanelSync();
 	await checkAndShowWelcome();
 	await checkAndUpdateTheme();
 }
