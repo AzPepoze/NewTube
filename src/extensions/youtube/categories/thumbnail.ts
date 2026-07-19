@@ -8,6 +8,7 @@ export const thumbnailCategory: Category = {
 		{
 			type: "numberSlide",
 			id: "ThumbnailTimeCornerRadius",
+			effectPreview: { selectors: ["yt-thumbnail-bottom-overlay-view-model"] },
 			name: "Time Corner Radius",
 			description: "Adjusts the corner roundness of the video duration timestamp shown on thumbnails.",
 			value: 10,
@@ -20,6 +21,7 @@ export const thumbnailCategory: Category = {
 		{
 			type: "color",
 			id: "ThumbnailTimeBackgroundColor",
+			effectPreview: { selectors: [".yt-badge-shape--thumbnail-default"] },
 			name: "Time Background",
 			description: "Sets the background color of the duration timestamp on video thumbnails.",
 			value: "#00000080",
@@ -29,6 +31,9 @@ export const thumbnailCategory: Category = {
 		{
 			type: "numberSlide",
 			id: "ThumbnailTimeHeight",
+			effectPreview: {
+				selectors: ["ytd-thumbnail-overlay-time-status-renderer", "ytd-thumbnail-overlay-bottom-panel-renderer"],
+			},
 			name: "Time Height",
 			description: "Adjusts the vertical size of the timestamp indicator.",
 			value: 20,
@@ -47,6 +52,7 @@ export const thumbnailCategory: Category = {
 		{
 			type: "checkbox",
 			id: "ThumbnailTimeBorderEnabled",
+			effectPreview: { selectors: ["ytd-thumbnail-overlay-time-status-renderer"] },
 			name: "Time Borders",
 			description: "Applies borders or shadows to the thumbnail time indicator based on your global settings.",
 			value: true,
@@ -60,6 +66,7 @@ export const thumbnailCategory: Category = {
 		{
 			type: "checkbox",
 			id: "ThumbnailTimeHideOnHover",
+			effectPreview: { selectors: ["yt-thumbnail-bottom-overlay-view-model"] },
 			name: "Hide Time on Hover",
 			description:
 				"Automatically fades out the duration timestamp when you hover over a thumbnail, keeping the image clear.",
@@ -77,6 +84,7 @@ export const thumbnailCategory: Category = {
 		{
 			type: "checkbox",
 			id: "ThumbnailTimeCenterEnabled",
+			effectPreview: { selectors: ["yt-thumbnail-bottom-overlay-view-model"] },
 			name: "Center Time Overlay",
 			description:
 				"Centers the duration timestamp and bottom panel on thumbnails instead of keeping them in the corner.",
@@ -104,6 +112,7 @@ export const thumbnailCategory: Category = {
 		{
 			type: "checkbox",
 			id: "ThumbnailHoverOverlayEnabled",
+			effectPreview: { selectors: ["ytd-thumbnail", "ytd-playlist-thumbnail", "yt-thumbnail-view-model"] },
 			name: "Hover Glow Effect",
 			description: "Adds a subtle color overlay and glowing border when you hover over a video thumbnail.",
 			value: true,
@@ -129,6 +138,7 @@ export const thumbnailCategory: Category = {
 		{
 			type: "color",
 			id: "ThumbnailHoverBorderColor",
+			effectPreview: { selectors: ["ytd-thumbnail", "ytd-playlist-thumbnail", "yt-thumbnail-view-model"] },
 			name: "Hover Glow Color",
 			description: "Sets the color of the glow and outline when a thumbnail is hovered.",
 			value: "#659affff",
@@ -138,6 +148,7 @@ export const thumbnailCategory: Category = {
 		{
 			type: "color",
 			id: "ThumbnailClickBorderColor",
+			effectPreview: { selectors: ["ytd-thumbnail", "ytd-playlist-thumbnail", "yt-thumbnail-view-model"] },
 			name: "Click Glow Color",
 			description: "Sets the color of the border at the moment you click a thumbnail.",
 			value: "#ffffffff",
@@ -147,6 +158,7 @@ export const thumbnailCategory: Category = {
 		{
 			type: "numberSlide",
 			id: "ThumbnailHoverBorderWidth",
+			effectPreview: { selectors: ["ytd-thumbnail", "ytd-playlist-thumbnail", "yt-thumbnail-view-model"] },
 			name: "Glow Border Width",
 			description: "Adjusts the thickness of the hover glow border.",
 			value: 1,
@@ -159,6 +171,7 @@ export const thumbnailCategory: Category = {
 		{
 			type: "numberSlide",
 			id: "ThumbnailHoverZoomScale",
+			effectPreview: { selectors: ["ytd-thumbnail", "ytd-playlist-thumbnail", "yt-thumbnail-view-model"] },
 			name: "Zoom Intensity",
 			description: "Adjusts how much the thumbnail grows when 'Zoom' animation is selected.",
 			value: 1.075,
@@ -171,6 +184,7 @@ export const thumbnailCategory: Category = {
 		{
 			type: "checkbox",
 			id: "ThumbnailLoadAnimationEnabled",
+			effectPreview: { selectors: ["yt-lockup-view-model", "ytd-video-renderer"] },
 			name: "Load Animation",
 			description: "Adds a smooth fade and lift effect when thumbnails first appear on the page.",
 			value: true,

@@ -1,6 +1,7 @@
 <script lang="ts">
-	import type { Setting } from "@settings/types/styleshiftTypes";
+	import type { Category, Setting } from "@settings/types/styleshiftTypes";
 	import { highlight as highlightAction } from "@ui/settings/searchHighlight";
+	import { effectPreview } from "@ui/settings/effectPreview";
 	import { onDestroy } from "svelte";
 	import { addDrag, addDropTarget } from "@ui/settings/reorder";
 	import { registerSettingUi, unregisterSettingUi } from "@ui/settings/settingsManager";
@@ -24,16 +25,19 @@
 
 	let {
 		setting,
+		category = undefined,
 		highlight = "",
 		layout = "list",
 	}: {
 		setting: Setting;
+		category?: Category;
 		highlight?: string;
 		layout?: "list" | "grid";
 	} = $props();
 
 	const controller = $derived(new SettingRendererController(setting));
 	let domNode = $state<HTMLElement | null>(null);
+	let previewStatus = $state("");
 
 	const textAlign = $derived(getTextAlign((setting as any).align));
 	const isVerticalSetting = $derived(
@@ -80,6 +84,16 @@
 		if (setting.id && node.parentElement) {
 			registerSettingUi(setting.id, node.parentElement, node);
 		}
+		const previewAction = effectPreview(node, {
+			setting,
+			category,
+			onStatus: (status) => (previewStatus = status),
+		});
+		return {
+			destroy() {
+				previewAction.destroy();
+			},
+		};
 	}}
 	padding={setting.type !== "button" && setting.type !== "subText"}
 	transparent={setting.type === "button" || setting.type === "subText" || setting.type === "text"}
@@ -175,6 +189,9 @@
 		require={setting.require}
 		requiredSettings={controller.requiredSettings}
 	/>
+	{#if previewStatus}
+		<div class="styleshift-effect-preview-status" aria-live="polite">{previewStatus}</div>
+	{/if}
 </SettingFrame>
 
 <style lang="scss">
@@ -190,6 +207,20 @@
 			flex-direction: column;
 			align-items: stretch;
 		}
+	}
+
+	.styleshift-effect-preview-status {
+		position: absolute;
+		right: 14px;
+		bottom: 5px;
+		max-width: calc(100% - 28px);
+		overflow: hidden;
+		color: var(--text-disabled);
+		font-size: 10px;
+		line-height: 1.2;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		pointer-events: none;
 	}
 
 	:global(.styleshift-setting-frame.styleshift-setting-hard-locked .styleshift-setting-row-content) {

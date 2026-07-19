@@ -29,7 +29,7 @@ export function renderSetting(
 	onUpdate?: (value: any) => void,
 	target: HTMLElement = document.createElement("div"),
 ) {
-	mount(SettingRenderer, {
+	mount(SettingRenderer as any, {
 		target,
 		intro: true,
 		props: { setting, onUpdate: onUpdate },

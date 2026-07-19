@@ -306,6 +306,25 @@
 	pointer-events: none;
 }
 
+.styleshift-effect-preview-layer {
+	position: fixed;
+	z-index: 9999;
+	inset: 0;
+	pointer-events: none;
+}
+
+.styleshift-effect-preview-outline {
+	position: fixed;
+	box-sizing: border-box;
+	border: 2px solid var(--theme-0, #659aff);
+	border-radius: 6px;
+	background: color-mix(in srgb, var(--theme-0, #659aff) 12%, transparent);
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.45),
+		0 0 12px var(--theme-0, #659aff);
+	pointer-events: none;
+}
+
 .styleshift-highlight {
 	transition:
 		background 0.2s,

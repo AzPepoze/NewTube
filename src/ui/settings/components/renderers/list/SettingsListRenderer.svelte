@@ -35,7 +35,7 @@
 			/>
 			<div class="styleshift-settings-items" class:grid={category.layout === "grid"}>
 				{#each category.settings as setting, j (j)}
-					<SettingRenderer {setting} highlight={searchQuery} layout={category.layout} />
+					<SettingRenderer {setting} {category} highlight={searchQuery} layout={category.layout} />
 				{/each}
 			</div>
 		</div>

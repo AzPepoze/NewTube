@@ -8,6 +8,7 @@ export const topbarSearchCategory: Category = {
 		{
 			type: "checkbox",
 			id: "EnableTopbarTransparency",
+			effectPreview: { selectors: ["#masthead #background.ytd-masthead"] },
 			name: "Adaptive Topbar",
 			description:
 				"Makes the top header bar transparent by default and applies your custom background color only when you begin to scroll down.",
@@ -48,6 +49,7 @@ export const topbarSearchCategory: Category = {
 		{
 			type: "numberSlide",
 			id: "TopbarBlurAmount",
+			effectPreview: { selectors: ["#masthead #background.ytd-masthead"] },
 			name: "Topbar Blur",
 			description: "Adjusts the blur intensity of the adaptive topbar.",
 			value: 10,
@@ -60,6 +62,7 @@ export const topbarSearchCategory: Category = {
 		{
 			type: "color",
 			id: "TopbarBackgroundColor",
+			effectPreview: { selectors: ["#masthead #background.ytd-masthead"] },
 			name: "Topbar Color",
 			description:
 				"Customizes the background color of the top header. Best used with 'Adaptive Topbar' for a smooth transition while scrolling.",
@@ -70,6 +73,7 @@ export const topbarSearchCategory: Category = {
 		{
 			type: "color",
 			id: "SearchSuggestionHoverColor",
+			effectPreview: { selectors: [".ytSuggestionComponentSuggestion", "ytd-searchbox-spt .sbsb_c > li"] },
 			name: "Search Hover",
 			description: "Sets the background highlight color when navigating through the search suggestion dropdown menu.",
 			value: "#ffffffff",
@@ -78,6 +82,7 @@ export const topbarSearchCategory: Category = {
 		{
 			type: "checkbox",
 			id: "EnableTopbarBorder",
+			effectPreview: { selectors: ["#masthead #background.ytd-masthead"] },
 			name: "Topbar Borders",
 			description: "Applies your global outline or shadow settings to the bottom of the top navigation bar.",
 			value: true,
@@ -91,6 +96,7 @@ export const topbarSearchCategory: Category = {
 		{
 			type: "color",
 			id: "ChipsBarBackgroundColor",
+			effectPreview: { selectors: ["#chips-wrapper.ytd-feed-filter-chip-bar-renderer"] },
 			name: "Chips Bar Color",
 			description:
 				"Changes the background color of the horizontal category list (the 'chips') found at the top of the home and search feeds.",
@@ -105,6 +111,7 @@ export const topbarSearchCategory: Category = {
 		{
 			type: "checkbox",
 			id: "EnableChipsBarBorder",
+			effectPreview: { selectors: ["#chips-wrapper.ytd-feed-filter-chip-bar-renderer"] },
 			name: "Chips Bar Borders",
 			description: "Adds global outlines or shadows to the horizontal category chips bar.",
 			value: false,
@@ -118,6 +125,7 @@ export const topbarSearchCategory: Category = {
 		{
 			type: "checkbox",
 			id: "EnableEnhancedSearchStyle",
+			effectPreview: { selectors: [".ytSearchboxComponentInputBox", ".ytSearchboxComponentSearchButton"] },
 			name: "Enhanced Search Style",
 			description:
 				"Adds a sleek slide-in and fade animation when the search bar is focused, enhancing the overall feel of the header.",
