@@ -26,20 +26,9 @@ function categorySelector(category: Category) {
 	return category.selector ?? category.Selector ?? "";
 }
 
-function hasVisualCss(setting: Setting) {
-	if (["button", "text", "subText", "previewImage", "keyboardShortcuts", "combineSetting"].includes(setting.type)) {
-		return false;
-	}
-
-	const candidate = setting as Setting & Record<string, unknown>;
-	if (["constantCss", "enableCss", "disableCss", "varCss"].some((field) => candidate[field] != null)) return true;
-	return "options" in setting && setting.options.some((option) => option.enableCss != null);
-}
-
 export function resolveHoverPreviewSelectors(setting: Setting, category?: Category): string[] | null {
 	if (setting.hoverPreview === false) return null;
 	if (setting.hoverPreview) return setting.hoverPreview.selectors;
-	if (!hasVisualCss(setting)) return null;
 	const fallback = category ? categorySelector(category) : "";
 	return fallback ? [fallback] : null;
 }
