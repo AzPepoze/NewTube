@@ -8,7 +8,6 @@ svg [fill="#FF0000"],
 svg [fill="#FF0033"],
 svg [fill="red"],
 svg [fill="#F00"],
-.ytp-chrome-controls path,
 button:not(.yt-share-target-renderer) path:not([fill="none"]),
 [role="option"]:not(.yt-third-party-share-target-section-renderer) path,
 .ytp-heat-map-graph,
@@ -57,7 +56,7 @@ yt-icon-button.yt-live-chat-item-list-renderer,
 	background: var(--nt-theme-color) !important;
 }
 
-.ytp-settings-button:after{
+.ytp-settings-button:after {
 	background-color: var(--nt-theme-color) !important;
 }
 
@@ -111,14 +110,6 @@ yt-chip-cloud-chip-renderer[selected] #chip-container {
 
 .sbpqsD .sbpqsA{
 	color: var(--nt-theme-color) !important;
-}
-
-.ytp-autonav-toggle-button[aria-checked="true"]::after{
-	background-color: var(--nt-theme-color) !important;
-}
-
-.ytp-autonav-toggle-button{
-	background-color: var(--nt-theme-accent) !important;
 }
 
 ytd-author-commebadge-renderer,

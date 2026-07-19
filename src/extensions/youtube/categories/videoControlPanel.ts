@@ -180,10 +180,30 @@ export const videoControlPanelCategory: Category = {
 			name: "Icon Color",
 			description: "Changes the color of the icons and timestamps within the video control bar.",
 			value: "#ffffffff",
-			varCss: "--nt-text-primary",
+			varCss: "--control-panel-icon-color",
 			constantCss: `
-				.ytp-time-current, .ytp-time-separator, .ytp-time-duration, .ytp-button {
-					color: var(--nt-text-primary) !important;
+				.ytp-time-contents *,
+				.ytp-time-current,
+				.ytp-time-separator,
+				.ytp-time-duration
+				 {
+					color: var(--control-panel-icon-color) !important;
+				}
+				
+				.ytp-chrome-controls path,
+				.ytp-button path[fill="#fff"]
+				{
+					fill: var(--control-panel-icon-color) !important;
+				}
+
+				.ytp-autonav-toggle-button[aria-checked="true"]::after
+				{
+					background-color: var(--control-panel-icon-color) !important;
+				}
+
+				.ytp-autonav-toggle-button
+				{
+					background-color: color-mix(in srgb, var(--control-panel-icon-color) 50%, transparent 100%) !important;
 				}
 			`,
 		},
@@ -243,12 +263,12 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "checkbox",
 			id: "EnableControlPanelBorder",
-			hoverPreview: { selectors: ["#ytd-player .ytp-chrome-bottom", "#ytd-player .ytp-gradient-bottom"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-gradient-bottom"] },
 			name: "Borders & Shadows",
 			description: "Applies your global outline or glow shadow settings to the video control bar.",
 			value: false,
 			enableCss: `
-                .ytp-chrome-bottom, .ytp-gradient-bottom {
+                .ytp-gradient-bottom {
                     box-shadow: var(--nt-global-shadow) !important;
                     border: var(--nt-global-outline) !important;
                 }

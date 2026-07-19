@@ -8,11 +8,6 @@ export const playerEnhancementsCss = `
 	display: flex;
 }
 
-.ytp-time-current, .ytp-time-separator, .ytp-time-duration
-{
-	color: var(--nt-text-primary) !important;
-}
-
 .ytp-large-play-button.ytp-button:hover path.ytp-large-play-button-bg{
 	filter: drop-shadow(0px 0px 6px black);
 }

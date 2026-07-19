@@ -148,6 +148,8 @@ export const defaultSetting = {
 		ThumbnailHoverBorderWidth: 1,
 		ThumbnailHoverOverlayEnabled: true,
 		ThumbnailHoverZoomScale: 1.075,
+		ThumbnailLiveBadgeBackgroundColor: "#ff0033ff",
+		ThumbnailLiveBadgeTextColor: "#ffffffff",
 		ThumbnailLoadAnimationEnabled: true,
 		ThumbnailSlideOnHoverAnimation: true,
 		ThumbnailTimeBackgroundColor: "#00000080",
