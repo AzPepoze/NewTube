@@ -7,6 +7,7 @@ import { type Category, type SeparateCategory } from "@settings/types/styleshift
 import { toggleCustomize } from "@ui/highlight/highlight";
 import { startQuickCustomize } from "@ui/highlight/quickCustomizeService";
 import { showThemeManager } from "@ui/themes/themeManagerService";
+import { showWelcome } from "./welcome";
 
 const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 	{ isHeader: true, label: "Extension" },
@@ -130,6 +131,16 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				description: "Instantly applies visual changes as you move sliders or pick colors.",
 				type: "checkbox",
 				value: false,
+			},
+			{
+				id: "ShowWelcomePage",
+				name: "Show Welcome Page",
+				description: "Replay NewTube's welcome tour.",
+				clickFunction: showWelcome,
+				type: "button",
+				color: "#7f5db7",
+				align: "left",
+				icon: "waving_hand",
 			},
 			{
 				id: "developerMode",

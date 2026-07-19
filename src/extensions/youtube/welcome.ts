@@ -3,7 +3,39 @@ import { showUserConfirmation } from "@ui/window/windowFactory";
 import { mount, unmount } from "svelte";
 import Welcome from "./ui/Welcome.svelte";
 
-export async function checkAndShowWelcome() {
+let welcomeOpen = false;
+
+function mountWelcome(onDone?: () => void | Promise<void>): void {
+	if (welcomeOpen) return;
+
+	welcomeOpen = true;
+	const target = document.createElement("div");
+	target.id = "NewTube-Welcome-Root";
+	document.body.appendChild(target);
+
+	let component: ReturnType<typeof mount>;
+	component = mount(Welcome, {
+		target,
+		intro: true,
+		props: {
+			onDone: async () => {
+				try {
+					await onDone?.();
+				} finally {
+					unmount(component);
+					target.remove();
+					welcomeOpen = false;
+				}
+			},
+		},
+	});
+}
+
+export function showWelcome(): void {
+	mountWelcome();
+}
+
+export async function checkAndShowWelcome(): Promise<void> {
 	const hasShown = await getRootValue("welcomeShown");
 
 	if (!hasShown) {
@@ -17,20 +49,8 @@ export async function checkAndShowWelcome() {
 			return;
 		}
 
-		const target = document.createElement("div");
-		target.id = "NewTube-Welcome-Root";
-		document.body.appendChild(target);
-
-		const component = mount(Welcome, {
-			target,
-			intro: true,
-			props: {
-				onDone: async () => {
-					await saveRootValue("welcomeShown", true);
-					unmount(component);
-					target.remove();
-				},
-			},
+		mountWelcome(async () => {
+			await saveRootValue("welcomeShown", true);
 		});
 	}
 }

@@ -2,17 +2,18 @@
 	import { logger } from "@/shared/logger";
 	import { IS_FIREFOX } from "@core/index";
 	import { alertPrompt } from "@core/shared/dialogs";
-	import { getAssetUrl } from "@ui/window/utils";
 	import { onMount } from "svelte";
 	import { backOut, quintOut } from "svelte/easing";
 	import { fade, fly, scale } from "svelte/transition";
+	import WelcomeButton from "./WelcomeButton.svelte";
+	import WelcomeHeading from "./WelcomeHeading.svelte";
+	import WelcomeLogo from "./WelcomeLogo.svelte";
 
 	let { onDone }: { onDone: () => void } = $props();
 
 	let visible = $state(false);
 	let step = $state(1);
-
-	let commands = $state([]);
+	let commands: chrome.commands.Command[] = $state([]);
 
 	onMount(() => {
 		visible = true;
@@ -20,29 +21,30 @@
 
 	function nextStep() {
 		step += 1;
-		if (step === 2) {
-			fetchCommandsShortcut();
-		}
+		if (step === 2) void fetchCommandsShortcut();
 	}
 
 	async function fetchCommandsShortcut() {
 		logger.info("ui", "Fetching all keyboard shortcuts");
 		try {
-			const response = await chrome.runtime.sendMessage({
-				Command: "getCommands",
-			});
-			logger.info("ui", "Got response from getCommands:", response);
-			if (!response) {
-				logger.warn("ui", "Empty response from getCommands");
-				return;
-			}
-			if (Array.isArray(response)) {
-				commands = response.filter((cmd) => cmd.shortcut);
-				logger.info("ui", "Loaded commands:", commands);
-			}
-		} catch (e) {
-			logger.error("ui", "Failed to fetch commands:", e);
+			const response = await chrome.runtime.sendMessage({ Command: "getCommands" });
+			if (Array.isArray(response)) commands = response.filter((command) => command.shortcut);
+		} catch (error) {
+			logger.error("ui", "Failed to fetch commands:", error);
 		}
+	}
+
+	function manageShortcuts() {
+		if (IS_FIREFOX) {
+			void alertPrompt({
+				title: "Shortcuts Management",
+				message:
+					'Cannot open shortcut settings in Firefox.\nPlease navigate to "about:addons" manually to manage shortcuts.',
+			});
+			return;
+		}
+
+		void chrome.runtime.sendMessage({ Command: "editCommands" });
 	}
 
 	function close() {
@@ -54,7 +56,6 @@
 {#if visible}
 	<div class="Welcome-Overlay styleshift-main" transition:fade={{ duration: 1000 }}>
 		<div class="Glow-Effect"></div>
-
 		<div
 			class="Welcome-Content-Wrapper"
 			in:scale={{ start: 0.7, duration: 2500, easing: quintOut }}
@@ -64,174 +65,55 @@
 				{#if step === 1}
 					<div class="Step-Container" out:fade={{ duration: 400 }}>
 						<div
-							class="Welcome-Logo-Container"
-							in:fly|global={{
-								y: -20,
-								duration: 1000,
-								delay: 300,
-								easing: backOut,
-							}}
+							class="Visual-Panel Branding-Panel"
+							in:fly|global={{ x: -30, duration: 1000, delay: 300, easing: backOut }}
 						>
-							<img src={getAssetUrl("icon/128.png")} alt="NewTube" class="Main-Icon" />
+							<WelcomeLogo />
 						</div>
-
-						<div class="Main-Title">
-							<h2
-								in:fly|global={{
-									y: 20,
-									duration: 800,
-									delay: 600,
-								}}
-							>
-								{#each "Welcome to NewTube".split("") as char, i (i)}
-									<span class="wave-char white" style="animation-delay: {i * 50}ms"
-										>{char === " " ? "\u00A0" : char}</span
-									>
-								{/each}
-							</h2>
-						</div>
-
-						<div
-							class="Action-Area"
-							in:fly|global={{
-								y: 30,
-								duration: 1000,
-								delay: 1400,
-								easing: backOut,
-							}}
-						>
-							<div class="Button-With-Meme">
-								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme left" />
-								<button class="Start-Button" onclick={nextStep}>
-									<span class="btn-text">YAY!</span>
-								</button>
-								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme right" />
-							</div>
+						<div class="Copy-Panel" in:fly|global={{ x: 30, duration: 1000, delay: 500, easing: backOut }}>
+							<WelcomeHeading text="Welcome to NewTube" level="h1" variant="main" />
+							<WelcomeButton label="YAY!" onClick={nextStep} withMemes />
 						</div>
 					</div>
 				{:else if step === 2}
 					<div class="Step-Container" in:fade={{ duration: 600, delay: 200 }} out:fade={{ duration: 400 }}>
-						<div
-							class="Wave-Title"
-							in:fly|global={{
-								y: 20,
-								duration: 800,
-								easing: backOut,
-							}}
-						>
-							{#each "⌨️ Keyboard Shortcuts".split("") as char, i (i)}
-								<span class="wave-char" style="animation-delay: {i * 50}ms">{char === " " ? "\u00A0" : char}</span>
-							{/each}
-						</div>
-
-						<div
-							class="Support-Section"
-							in:fly|global={{
-								y: 20,
-								duration: 800,
-								delay: 500,
-							}}
-						>
+						<div class="Shortcuts-Panel" in:fly|global={{ x: -30, duration: 800, easing: backOut }}>
+							<div class="Shortcuts-Label">Current Shortcuts</div>
 							{#if commands.length > 0}
-								<div class="shortcuts-section">
-									<p class="shortcuts-subtitle">(You can change these in your browser's extension settings)</p>
-									<div class="shortcuts-list">
-										{#each commands as cmd (cmd.name)}
-											<div class="shortcut-item">
-												<span class="shortcut-desc">{cmd.description}</span>
-												<span class="shortcut-key">{cmd.shortcut}</span>
-											</div>
-										{/each}
-									</div>
+								<div class="shortcuts-list">
+									{#each commands as command (command.name)}
+										<div class="shortcut-item">
+											<span class="shortcut-desc">{command.description || command.name}</span>
+											<kbd>{command.shortcut}</kbd>
+										</div>
+									{/each}
 								</div>
 							{:else}
-								<div class="shortcuts-empty-container">
-									<p class="shortcuts-empty-text">No shortcuts configured</p>
-									<button
-										class="Start-Button highlight"
-										onclick={() => {
-											if (IS_FIREFOX) {
-												alertPrompt({
-													title: "Shortcuts Management",
-													message: `Cannot open shortcut settings in Firefox.\nPlease navigate to "about:addons" manually to manage shortcuts.`,
-												});
-											} else {
-												chrome.runtime.sendMessage({
-													Command: "editCommands",
-												});
-											}
-										}}
-									>
-										<span class="btn-text">Manage Shortcuts</span>
-									</button>
-								</div>
+								<div class="Shortcuts-Empty"><span>⌨️</span><strong>No shortcuts configured</strong></div>
 							{/if}
 						</div>
-
-						<div
-							class="Action-Area"
-							in:fly|global={{
-								y: 30,
-								duration: 1000,
-								delay: 1000,
-								easing: backOut,
-							}}
-						>
-							<div class="Button-With-Meme">
-								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme left" />
-								<button class="Start-Button" onclick={nextStep}>
-									<span class="btn-text">Next</span>
-								</button>
-								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme right" />
+						<div class="Copy-Panel" in:fly|global={{ x: 30, duration: 800, delay: 300, easing: backOut }}>
+							<WelcomeHeading text="Keyboard shortcuts" />
+							<p class="Lead">You can change these in your browser's extension settings.</p>
+							<div class="Button-Stack">
+								<WelcomeButton label="Manage Shortcuts" onClick={manageShortcuts} variant="secondary" />
+								<WelcomeButton label="Next" onClick={nextStep} variant="highlight" />
 							</div>
 						</div>
 					</div>
-				{:else if step === 3}
+				{:else}
 					<div class="Step-Container" in:fade={{ duration: 600, delay: 200 }}>
-						<div
-							class="Wave-Title"
-							in:fly|global={{
-								y: 20,
-								duration: 800,
-								easing: backOut,
-							}}
-						>
-							{#each "Enjoy your new experience!".split("") as char, i (i)}
-								<span class="wave-char" style="animation-delay: {i * 50}ms">{char === " " ? "\u00A0" : char}</span>
-							{/each}
+						<div class="Visual-Panel Branding-Panel" in:fly|global={{ x: -30, duration: 800, easing: backOut }}>
+							<WelcomeLogo />
 						</div>
-
-						<div
-							class="Support-Section"
-							in:fly|global={{
-								y: 20,
-								duration: 800,
-								delay: 500,
-							}}
-						>
-							<p class="Text-Sub">
+						<div class="Copy-Panel" in:fly|global={{ x: 30, duration: 800, delay: 300, easing: backOut }}>
+							<WelcomeHeading text="Enjoy your new experience!" />
+							<p class="Lead">
 								NewTube is a free, open-source project. If you enjoy using it, please consider supporting its
 								development to help me keep improving the experience for everyone!
 							</p>
-							<p class="Text-Sub secondary">If you encounter any issues, please report them on GitHub.</p>
-						</div>
-
-						<div
-							class="Action-Area"
-							in:fly|global={{
-								y: 30,
-								duration: 1000,
-								delay: 1000,
-								easing: backOut,
-							}}
-						>
-							<div class="Button-With-Meme">
-								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme left" />
-								<button class="Start-Button highlight" onclick={close}>
-									<span class="btn-text">Let's GO!!!</span>
-								</button>
-								<img src={getAssetUrl("welcome/kokoro.gif")} alt="" class="Side-Meme right" />
-							</div>
+							<p class="Secondary-Text">If you encounter any issues, please report them on GitHub.</p>
+							<WelcomeButton label="Let's GO!!!" onClick={close} variant="highlight" withMemes />
 						</div>
 					</div>
 				{/if}
@@ -243,32 +125,164 @@
 <style lang="scss">
 	.Welcome-Overlay {
 		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
+		inset: 0;
+		z-index: 999999;
+		display: grid;
+		place-items: center;
+		padding: clamp(20px, 5vw, 72px);
+		box-sizing: border-box;
+		overflow: hidden;
+		color: var(--font-color);
+		font-family: "Inter", system-ui, sans-serif;
 		background-color: var(--bg-welcome);
 		background-image:
 			linear-gradient(to right, var(--fg-opacity-03) 1px, transparent 1px),
 			linear-gradient(to bottom, var(--fg-opacity-03) 1px, transparent 1px);
 		background-size: 40px 40px;
-		z-index: 999999;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--font-color);
-		font-family: "Inter", system-ui, sans-serif;
-		overflow: hidden;
 	}
 
 	.Glow-Effect {
 		position: absolute;
 		width: 150%;
 		height: 150%;
+		z-index: 2;
+		pointer-events: none;
 		background: radial-gradient(circle at center, var(--theme-0-12) 0%, transparent 60%);
 		animation: pulseGlow 8s infinite alternate ease-in-out;
-		pointer-events: none;
-		z-index: 2;
+	}
+
+	.Welcome-Content-Wrapper {
+		z-index: 20;
+		width: min(1120px, 100%);
+	}
+	.Welcome-Content {
+		position: relative;
+		min-height: min(620px, calc(100vh - 40px));
+	}
+	.Step-Container {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: clamp(32px, 6vw, 80px);
+		align-items: center;
+	}
+
+	.Visual-Panel {
+		min-width: 0;
+		min-height: 390px;
+		box-sizing: border-box;
+		border: 1px solid var(--fg-opacity-10);
+		border-radius: 38px;
+		background: linear-gradient(145deg, var(--fg-opacity-08), var(--fg-opacity-02));
+		box-shadow:
+			inset 0 1px 0 var(--fg-opacity-10),
+			0 30px 80px var(--bg-overlay-50);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: clamp(28px, 5vw, 56px);
+	}
+	.Branding-Panel {
+		border: 0;
+		background: none;
+		box-shadow: none;
+	}
+
+	.Copy-Panel {
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 24px;
+		text-align: left;
+	}
+	.Lead {
+		max-width: 580px;
+		margin: 0;
+		color: var(--fg-opacity-50);
+		font-size: clamp(17px, 2vw, 22px);
+		line-height: 1.55;
+	}
+	.Secondary-Text {
+		margin: -10px 0 0;
+		color: var(--fg-opacity-30);
+		font-size: 15px;
+	}
+
+	.Button-Stack {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 14px;
+	}
+
+	.Shortcuts-Panel {
+		min-width: 0;
+		min-height: 390px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		max-height: min(560px, 70vh);
+		padding: clamp(28px, 5vw, 56px);
+		box-sizing: border-box;
+	}
+	.Shortcuts-Label {
+		margin-bottom: 18px;
+		color: var(--fg-opacity-60);
+		font-size: 14px;
+		font-weight: 800;
+		letter-spacing: 0.16em;
+		text-align: center;
+		text-transform: uppercase;
+	}
+	.shortcuts-list {
+		width: 100%;
+		min-height: 0;
+		overflow-y: auto;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding-right: 6px;
+	}
+	.shortcut-item {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 13px 15px;
+		border: 1px solid var(--fg-opacity-10);
+		border-radius: 14px;
+		background: var(--fg-opacity-08);
+		box-shadow: 0 8px 24px var(--bg-overlay-20);
+	}
+	.shortcut-desc {
+		min-width: 0;
+		color: var(--fg-opacity-60);
+		font-size: 14px;
+	}
+	kbd {
+		flex: 0 0 auto;
+		padding: 5px 8px;
+		border: 1px solid var(--theme-0-30);
+		border-radius: 6px;
+		color: var(--theme-0-Text);
+		background: var(--theme-0-15);
+		font:
+			700 12px ui-monospace,
+			monospace;
+	}
+	.Shortcuts-Empty {
+		flex: 1;
+		display: grid;
+		place-items: center;
+		align-content: center;
+		gap: 16px;
+		color: var(--fg-opacity-40);
+	}
+	.Shortcuts-Empty span {
+		font-size: 72px;
 	}
 
 	@keyframes pulseGlow {
@@ -282,254 +296,49 @@
 		}
 	}
 
-	.Welcome-Content-Wrapper {
-		z-index: 20;
-		text-align: center;
-		width: 100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.Welcome-Content {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		width: 100%;
-		min-height: 400px;
-	}
-
-	.Step-Container {
-		position: absolute;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 40px;
-		width: 100%;
-	}
-
-	.Welcome-Logo-Container {
-		position: relative;
-		width: 180px;
-		height: 180px;
-		margin-bottom: 10px;
-	}
-
-	.Main-Icon {
-		width: 100%;
-		height: 100%;
-		object-fit: contain;
-		position: relative;
-		z-index: 2;
-	}
-
-	.Main-Title {
-		h2 {
-			font-size: 64px;
-			font-weight: 900;
-			margin: 0;
-			letter-spacing: -2px;
-			line-height: 1.1;
+	@media (max-width: 760px) {
+		.Welcome-Overlay {
+			padding: 18px;
+			overflow-y: auto;
+		}
+		.Welcome-Content {
+			min-height: max(720px, calc(100vh - 36px));
+		}
+		.Step-Container {
+			grid-template-columns: 1fr;
+			grid-template-rows: minmax(260px, 0.8fr) auto;
+			gap: 24px;
+			align-content: center;
+			padding-block: 18px;
+			box-sizing: border-box;
+		}
+		.Visual-Panel {
+			min-height: 250px;
+			max-height: 42vh;
+			padding: 26px;
+			border-radius: 28px;
+		}
+		.Copy-Panel {
+			align-items: center;
+			gap: 17px;
+			text-align: center;
+		}
+		.Lead {
+			font-size: 16px;
+		}
+		.Button-Stack {
+			justify-content: center;
+		}
+		.Shortcuts-Panel {
+			min-height: 250px;
+			max-height: 42vh;
+			padding: 26px;
 		}
 	}
 
-	.Text-Sub {
-		font-size: 24px;
-		color: var(--fg-opacity-30);
-		margin-top: 20px;
-		letter-spacing: 2px;
-		font-weight: 500;
-		max-width: 600px;
-		line-height: 1.4;
-
-		&.secondary {
-			font-size: 18px;
-			margin-top: 10px;
-			opacity: 0.8;
+	@media (prefers-reduced-motion: reduce) {
+		.Glow-Effect {
+			animation: none;
 		}
-	}
-
-	.Support-Section {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 5px;
-	}
-
-	.Button-With-Meme {
-		display: flex;
-		align-items: center;
-		gap: 20px;
-		position: relative;
-	}
-
-	.Side-Meme {
-		width: 100px;
-		height: 100px;
-		object-fit: contain;
-		filter: drop-shadow(0 0 10px var(--theme-0-30));
-
-		&.left {
-			transform: scaleX(-1);
-		}
-	}
-
-	.Wave-Title {
-		font-size: 48px;
-		font-weight: 900;
-		display: flex;
-		justify-content: center;
-		color: var(--font-color);
-		margin-bottom: 10px;
-	}
-
-	.wave-char {
-		display: inline-block;
-		animation: textWavePurple 2s infinite ease-in-out;
-
-		&.white {
-			animation-name: textWaveWhite;
-		}
-	}
-
-	@keyframes textWavePurple {
-		0%,
-		100% {
-			transform: translateY(0);
-			text-shadow: 0 0 10px var(--theme-0-30);
-		}
-		50% {
-			transform: translateY(-15px);
-			color: var(--theme-0);
-			text-shadow: 0 0 20px var(--theme-0-50);
-		}
-	}
-
-	@keyframes textWaveWhite {
-		0%,
-		100% {
-			transform: translateY(0);
-			text-shadow: 0 0 10px var(--fg-opacity-30);
-		}
-		50% {
-			transform: translateY(-15px);
-			text-shadow: 0 0 20px var(--fg-opacity-80);
-		}
-	}
-
-	@keyframes titleFloat {
-		0%,
-		100% {
-			transform: translateY(0) scale(1);
-			filter: drop-shadow(0 0 0px rgba(127, 93, 183, 0));
-		}
-		50% {
-			transform: translateY(-10px) scale(1.02);
-			filter: drop-shadow(0 0 20px rgba(127, 93, 183, 0.5));
-		}
-	}
-
-	.Start-Button {
-		position: relative;
-		background: var(--fg-opacity-95);
-		color: black;
-		border: none;
-		padding: 22px 70px;
-		border-radius: 30px;
-		font-size: 20px;
-		font-weight: 800;
-		cursor: pointer;
-		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-		box-shadow: 0 10px 30px var(--bg-overlay-50);
-
-		&.highlight {
-			background: var(--theme-0);
-			color: white;
-			box-shadow: 0 15px 40px var(--theme-0-40);
-		}
-
-		&:hover {
-			transform: scale(1.08) translateY(-5px);
-			box-shadow: 0 20px 50px var(--fg-opacity-15);
-			background: white;
-
-			&.highlight {
-				background: var(--theme-0-Light);
-				box-shadow: 0 20px 50px var(--theme-0-50);
-			}
-		}
-
-		&:active {
-			transform: scale(0.96);
-		}
-	}
-
-	.shortcuts-section {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-		margin: 20px 0;
-		padding: 16px;
-		background: var(--fg-opacity-02);
-		border-radius: 8px;
-		border: 1px solid var(--fg-opacity-05);
-		max-width: 600px;
-	}
-
-	.shortcuts-subtitle {
-		font-size: 12px;
-		color: var(--fg-opacity-40);
-		margin: 0 0 12px 0;
-		font-style: italic;
-	}
-
-	.shortcuts-list {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-	}
-
-	.shortcut-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 8px 12px;
-		background: var(--fg-opacity-03);
-		border-radius: 5px;
-		gap: 12px;
-	}
-
-	.shortcut-desc {
-		font-size: 12px;
-		color: var(--fg-opacity-50);
-		flex: 1;
-	}
-
-	.shortcut-key {
-		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
-		font-size: 11px;
-		font-weight: 700;
-		background: var(--theme-0-15);
-		border: 1px solid var(--theme-0-30);
-		color: var(--theme-0-Text);
-		padding: 3px 6px;
-		border-radius: 3px;
-		white-space: nowrap;
-	}
-
-	.shortcuts-empty-container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 20px;
-		padding: 20px;
-	}
-
-	.shortcuts-empty-text {
-		font-size: 16px;
-		color: var(--fg-opacity-40);
-		font-style: italic;
 	}
 </style>
