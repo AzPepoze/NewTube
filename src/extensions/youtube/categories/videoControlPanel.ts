@@ -14,7 +14,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "checkbox",
 			id: "EnableControlsBelowVideo",
-			effectPreview: { selectors: ["#movie_player .ytp-chrome-bottom"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-chrome-bottom"] },
 			name: "Detach Controls",
 			description:
 				"Moves the entire video control bar (play, volume, settings) from an overlay on top of the video to a dedicated space directly underneath it.",
@@ -58,7 +58,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "numberSlide",
 			id: "ControlsBelowVideoDistance",
-			effectPreview: { selectors: ["#movie_player .ytp-chrome-bottom"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-chrome-bottom"] },
 			name: "Detach Gap",
 			description: "Adjusts the vertical distance between the video player and the detached control bar.",
 			value: 75,
@@ -71,7 +71,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "checkbox",
 			id: "EnableCenteredControls",
-			effectPreview: { selectors: ["#movie_player .ytp-chrome-controls"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-chrome-controls"] },
 			name: "Center Buttons",
 			description: "Re-aligns the play, volume, and playback buttons to the exact center of the control bar.",
 			value: true,
@@ -89,7 +89,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "checkbox",
 			id: "EnableControlPanelAutohide",
-			effectPreview: { selectors: ["#movie_player .ytp-chrome-bottom", "#movie_player .ytp-gradient-bottom"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-chrome-bottom", "#ytd-player .ytp-gradient-bottom"] },
 			name: "Auto-Hide Bar",
 			description: "Automatically hides the control bar when your mouse is not moving over the player.",
 			value: true,
@@ -104,7 +104,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "checkbox",
 			id: "EnableControlPanelButtonHoverScale",
-			effectPreview: { selectors: ["#movie_player .ytp-chrome-bottom .ytp-button"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-chrome-bottom .ytp-button"] },
 			name: "Button Pop",
 			description: "Makes control icons grow slightly when you hover over them for better interactive feedback.",
 			value: true,
@@ -125,7 +125,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "color",
 			id: "ControlPanelBackgroundColor",
-			effectPreview: { selectors: ["#movie_player .ytp-gradient-bottom"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-gradient-bottom"] },
 			name: "Bar Color",
 			description: "Sets the background color of the main video control strip.",
 			value: "#00000080",
@@ -139,7 +139,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "checkbox",
 			id: "EnableControlPanelBlur",
-			effectPreview: { selectors: ["#movie_player .ytp-gradient-bottom"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-gradient-bottom"] },
 			name: "Glass Effect",
 			description: "Applies a frosted-glass blur effect to the background of the video control bar.",
 			value: true,
@@ -152,7 +152,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "numberSlide",
 			id: "ControlPanelBlurAmount",
-			effectPreview: { selectors: ["#movie_player .ytp-gradient-bottom"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-gradient-bottom"] },
 			name: "Glass Intensity",
 			description: "Adjusts the strength of the frosted-glass effect on the control bar.",
 			value: 10,
@@ -165,7 +165,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "checkbox",
 			id: "EnableControlPanelRemoveGradient",
-			effectPreview: { selectors: ["#movie_player .ytp-gradient-bottom"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-gradient-bottom"] },
 			name: "Remove Default Gradient",
 			description: "Removes the default dark gradient at the bottom of the video player.",
 			value: false,
@@ -174,8 +174,8 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "color",
 			id: "ControlPanelTextColor",
-			effectPreview: {
-				selectors: ["#movie_player .ytp-time-display", "#movie_player .ytp-chrome-bottom .ytp-button"],
+			hoverPreview: {
+				selectors: ["#ytd-player .ytp-time-display", "#ytd-player .ytp-chrome-bottom .ytp-button"],
 			},
 			name: "Icon Color",
 			description: "Changes the color of the icons and timestamps within the video control bar.",
@@ -190,7 +190,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "color",
 			id: "ControlPanelButtonGroupColor",
-			effectPreview: { selectors: ["#movie_player .ytp-chrome-bottom .ytp-button"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-chrome-bottom .ytp-button"] },
 			name: "Button Group Color",
 			description:
 				"Sets the background color for groups of buttons within the control bar, such as the play button or volume control.",
@@ -205,7 +205,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "color",
 			id: "ControlPanelButtonHoverColor",
-			effectPreview: { selectors: ["#movie_player .ytp-chrome-bottom .ytp-button"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-chrome-bottom .ytp-button"] },
 			name: "Hover Glow",
 			description: "Sets the background highlight color when you hover over any button in the control bar.",
 			value: "#5bbdff20",
@@ -219,7 +219,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "color",
 			id: "ControlPanelPopupBackgroundColor",
-			effectPreview: { selectors: ["#movie_player .ytp-popup", "#movie_player .ytp-settings-menu"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-popup", "#ytd-player .ytp-settings-menu"] },
 			name: "Popup Color",
 			description: "Customizes the background color for all in-player popups.",
 			value: "#00000080",
@@ -228,7 +228,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "numberSlide",
 			id: "ControlPanelBackgroundHeight",
-			effectPreview: { selectors: ["#movie_player .ytp-gradient-bottom"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-gradient-bottom"] },
 			name: "Bar Height",
 			description: "Increases or decreases the height of the control bar's background.",
 			value: 70,
@@ -243,7 +243,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "checkbox",
 			id: "EnableControlPanelBorder",
-			effectPreview: { selectors: ["#movie_player .ytp-chrome-bottom", "#movie_player .ytp-gradient-bottom"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-chrome-bottom", "#ytd-player .ytp-gradient-bottom"] },
 			name: "Borders & Shadows",
 			description: "Applies your global outline or glow shadow settings to the video control bar.",
 			value: false,
@@ -257,7 +257,7 @@ export const videoControlPanelCategory: Category = {
 		{
 			type: "numberSlide",
 			id: "ControlPanelBorderWidth",
-			effectPreview: { selectors: ["#movie_player .ytp-chrome-bottom", "#movie_player .ytp-gradient-bottom"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-chrome-bottom", "#ytd-player .ytp-gradient-bottom"] },
 			name: "Local Border Width",
 			description: "Overrides the global border width specifically for the video player's controls.",
 			value: 1,

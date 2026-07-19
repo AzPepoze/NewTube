@@ -1,4 +1,4 @@
-export const PLAYER_SELECTOR = "#movie_player";
+export const PLAYER_SELECTOR = "#ytd-player";
 export const WATCH_DETAILS_SELECTOR = "#below";
 export const WATCH_SIDEBAR_SELECTOR = "#secondary";
 export const TOP_LEFT_ICON_SELECTOR = "ytd-masthead ytd-topbar-logo-renderer";

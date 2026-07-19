@@ -15,7 +15,7 @@ const fullscreenListeners: ((isFullscreen: boolean) => void)[] = [];
 const smallModeListeners: ((isSmallMode: boolean) => void)[] = [];
 
 export const playerWatchModeSelector =
-	"#movie_player.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)";
+	"#ytd-player.html5-video-player:not(.ytp-fullscreen):not(.ytp-small-mode):not(.ytp-embed)";
 export const ytVideoContainerWatchMode = playerWatchModeSelector;
 export const ytPlayerWatchMode = `#player:has(${playerWatchModeSelector})`;
 export const ytdPlayerWatchMode = `ytd-watch-flexy ytd-player:has(${playerWatchModeSelector})`;
@@ -66,8 +66,8 @@ export async function getVideoElement(): Promise<HTMLVideoElement | null> {
 
 	// Prefer the movie_player if available
 	videoElement =
-		(document.querySelector("#movie_player video") as HTMLVideoElement) ||
-		candidates.find((v) => v.closest("#movie_player")) ||
+		(document.querySelector("#ytd-player video") as HTMLVideoElement) ||
+		candidates.find((v) => v.closest("#ytd-player")) ||
 		candidates[0] ||
 		null;
 
@@ -79,7 +79,7 @@ export async function getVideoElement(): Promise<HTMLVideoElement | null> {
 }
 
 /**
- * Retrieves the main YouTube player element (#movie_player or .html5-video-player).
+ * Retrieves the main YouTube player element (#ytd-player or .html5-video-player).
  */
 export async function getPlayerElement(): Promise<HTMLElement | null> {
 	if (!playerElement || !playerElement.isConnected) {

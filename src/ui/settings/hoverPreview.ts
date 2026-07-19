@@ -2,24 +2,25 @@ import { IS_IN_EXTENSION_SETTINGS_PAGE } from "@core/shared/context";
 import type { Category, Setting } from "@settings/types/styleshiftTypes";
 
 const PREVIEW_DELAY_MS = 180;
+const PREVIEW_EXIT_MS = 160;
 const MAX_VISIBLE_TARGETS = 24;
 const EXCLUDED_UI_SELECTOR =
-	".styleshift-window, .styleshift-effect-preview-layer, .styleshift-highlight-layer, .styleshift-quick-customize-container";
+	".styleshift-window, .styleshift-hover-preview-layer, .styleshift-highlight-layer, .styleshift-quick-customize-container";
 
-type PreviewOptions = {
+type HoverPreviewOptions = {
 	setting: Setting;
 	category?: Category;
 	onStatus: (status: string) => void;
 };
 
-type PreviewSession = {
+type HoverPreviewSession = {
 	owner: HTMLElement;
 	stop: () => void;
 };
 
 let pendingTimer: ReturnType<typeof setTimeout> | undefined;
 let pendingOwner: HTMLElement | undefined;
-let activeSession: PreviewSession | undefined;
+let activeSession: HoverPreviewSession | undefined;
 
 function categorySelector(category: Category) {
 	return category.selector ?? category.Selector ?? "";
@@ -35,9 +36,9 @@ function hasVisualCss(setting: Setting) {
 	return "options" in setting && setting.options.some((option) => option.enableCss != null);
 }
 
-export function resolveEffectPreviewSelectors(setting: Setting, category?: Category): string[] | null {
-	if (setting.effectPreview === false) return null;
-	if (setting.effectPreview) return setting.effectPreview.selectors;
+export function resolveHoverPreviewSelectors(setting: Setting, category?: Category): string[] | null {
+	if (setting.hoverPreview === false) return null;
+	if (setting.hoverPreview) return setting.hoverPreview.selectors;
 	if (!hasVisualCss(setting)) return null;
 	const fallback = category ? categorySelector(category) : "";
 	return fallback ? [fallback] : null;
@@ -65,7 +66,7 @@ function startPreview(selectors: string[], onStatus: (status: string) => void) {
 
 	const targets = [...matches];
 	const layer = document.createElement("div");
-	layer.className = "styleshift-effect-preview-layer";
+	layer.className = "styleshift-hover-preview-layer";
 	layer.setAttribute("aria-hidden", "true");
 	document.body.append(layer);
 	let frame: number | undefined;
@@ -83,7 +84,7 @@ function startPreview(selectors: string[], onStatus: (status: string) => void) {
 
 		for (const { rect } of visible.slice(0, MAX_VISIBLE_TARGETS)) {
 			const outline = document.createElement("div");
-			outline.className = "styleshift-effect-preview-outline";
+			outline.className = "styleshift-hover-preview-outline";
 			outline.style.left = `${rect.left}px`;
 			outline.style.top = `${rect.top}px`;
 			outline.style.width = `${rect.width}px`;
@@ -109,7 +110,8 @@ function startPreview(selectors: string[], onStatus: (status: string) => void) {
 		window.removeEventListener("resize", scheduleRender);
 		document.removeEventListener("scroll", scheduleRender, true);
 		resizeObserver.disconnect();
-		layer.remove();
+		layer.classList.add("is-hiding");
+		setTimeout(() => layer.remove(), PREVIEW_EXIT_MS);
 		onStatus("");
 	};
 }
@@ -140,10 +142,10 @@ function queuePreview(owner: HTMLElement, selectors: string[], onStatus: (status
 	}, PREVIEW_DELAY_MS);
 }
 
-export function effectPreview(node: HTMLElement, options: PreviewOptions) {
+export function hoverPreview(node: HTMLElement, options: HoverPreviewOptions) {
 	const selectors = IS_IN_EXTENSION_SETTINGS_PAGE
 		? null
-		: resolveEffectPreviewSelectors(options.setting, options.category);
+		: resolveHoverPreviewSelectors(options.setting, options.category);
 	if (!selectors) return { destroy() {} };
 
 	let hovered = false;

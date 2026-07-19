@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { Category, Setting } from "@settings/types/styleshiftTypes";
 	import { highlight as highlightAction } from "@ui/settings/searchHighlight";
-	import { effectPreview } from "@ui/settings/effectPreview";
+	import { hoverPreview } from "@ui/settings/hoverPreview";
 	import { onDestroy } from "svelte";
+	import { fade } from "svelte/transition";
 	import { addDrag, addDropTarget } from "@ui/settings/reorder";
 	import { registerSettingUi, unregisterSettingUi } from "@ui/settings/settingsManager";
 	import { getTextAlign } from "@ui/settings/utils";
@@ -84,7 +85,7 @@
 		if (setting.id && node.parentElement) {
 			registerSettingUi(setting.id, node.parentElement, node);
 		}
-		const previewAction = effectPreview(node, {
+		const previewAction = hoverPreview(node, {
 			setting,
 			category,
 			onStatus: (status) => (previewStatus = status),
@@ -190,7 +191,9 @@
 		requiredSettings={controller.requiredSettings}
 	/>
 	{#if previewStatus}
-		<div class="styleshift-effect-preview-status" aria-live="polite">{previewStatus}</div>
+		<div class="styleshift-hover-preview-status" aria-live="polite" transition:fade={{ duration: 160 }}>
+			{previewStatus}
+		</div>
 	{/if}
 </SettingFrame>
 
@@ -209,7 +212,7 @@
 		}
 	}
 
-	.styleshift-effect-preview-status {
+	.styleshift-hover-preview-status {
 		position: absolute;
 		right: 14px;
 		bottom: 5px;

@@ -8,7 +8,7 @@ export const videoColorsCategory: Category = {
 		{
 			type: "color",
 			id: "TimelineBackgroundColor",
-			effectPreview: { selectors: ["#movie_player .ytp-progress-bar"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-progress-bar"] },
 			name: "Timeline Track",
 			description: "Sets the color of the unplayed/background portion of the video progress bar.",
 			value: "#ffffff20",
@@ -22,7 +22,7 @@ export const videoColorsCategory: Category = {
 		{
 			type: "color",
 			id: "TimelineLoadedColor",
-			effectPreview: { selectors: ["#movie_player .ytp-load-progress"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-load-progress"] },
 			name: "Timeline Buffer",
 			description: "Sets the color of the buffered/loaded portion of the progress bar.",
 			value: "#ffffff50",
@@ -36,7 +36,7 @@ export const videoColorsCategory: Category = {
 		{
 			type: "color",
 			id: "EndScreenVideoHoverColor",
-			effectPreview: { selectors: ["#movie_player .ytp-videowall-still-info-content"] },
+			hoverPreview: { selectors: ["#ytd-player .ytp-videowall-still-info-content"] },
 			name: "Endscreen Hover",
 			description: "The highlight color that appears when hovering over suggested videos at the end of a playback.",
 			value: "#00000050",

@@ -29,7 +29,7 @@ export type Color_obj = {
 };
 
 export type BaseSetting = {
-	effectPreview?: false | { selectors: string[] };
+	hoverPreview?: false | { selectors: string[] };
 	lock?: {
 		condition: boolean;
 		message?: string;
