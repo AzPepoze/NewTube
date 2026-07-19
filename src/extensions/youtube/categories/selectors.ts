@@ -1,3 +1,21 @@
+export function classAliasSelector(...aliases: string[]): string {
+	return `:is(${aliases.map((alias) => `.${alias}`).join(", ")})`;
+}
+
+export const LOCKUP_VIEW_MODEL_HOST_SELECTOR = classAliasSelector("yt-lockup-view-model", "ytLockupViewModelHost");
+export const LOCKUP_VIEW_MODEL_HORIZONTAL_SELECTOR = classAliasSelector(
+	"yt-lockup-view-model--horizontal",
+	"ytLockupViewModelHorizontal",
+);
+export const THUMBNAIL_DEFAULT_BADGE_SELECTOR = classAliasSelector(
+	"yt-badge-shape--thumbnail-default",
+	"ytBadgeShapeThumbnailDefault",
+);
+export const THUMBNAIL_LIVE_BADGE_SELECTOR = classAliasSelector(
+	"yt-badge-shape--thumbnail-live",
+	"ytBadgeShapeThumbnailLive",
+);
+
 export const PLAYER_SELECTOR = "#ytd-player";
 export const WATCH_DETAILS_SELECTOR = "#below";
 export const WATCH_SIDEBAR_SELECTOR = "#secondary";

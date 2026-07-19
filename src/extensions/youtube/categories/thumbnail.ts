@@ -1,5 +1,5 @@
 import { type Category } from "@settings/types/styleshiftTypes";
-import { THUMBNAIL_SELECTOR } from "./selectors";
+import { THUMBNAIL_DEFAULT_BADGE_SELECTOR, THUMBNAIL_LIVE_BADGE_SELECTOR, THUMBNAIL_SELECTOR } from "./selectors";
 
 export const thumbnailCategory: Category = {
 	category: { icon: "image_search", label: "Thumbnail & Clip Cover" },
@@ -21,32 +21,32 @@ export const thumbnailCategory: Category = {
 		{
 			type: "color",
 			id: "ThumbnailTimeBackgroundColor",
-			hoverPreview: { selectors: [".ytBadgeShapeThumbnailDefault"] },
+			hoverPreview: { selectors: [THUMBNAIL_DEFAULT_BADGE_SELECTOR] },
 			name: "Time Background",
 			description: "Sets the background color of the duration timestamp on video thumbnails.",
 			value: "#00000080",
 			varCss: "--nt-timestamp-bg",
-			constantCss: `.ytBadgeShapeThumbnailDefault { background-color: var(--nt-timestamp-bg, #00000080) !important; }`,
+			constantCss: `${THUMBNAIL_DEFAULT_BADGE_SELECTOR} { background-color: var(--nt-timestamp-bg, #00000080) !important; }`,
 		},
 		{
 			type: "color",
 			id: "ThumbnailLiveBadgeBackgroundColor",
-			hoverPreview: { selectors: [".ytBadgeShapeThumbnailLive"] },
+			hoverPreview: { selectors: [THUMBNAIL_LIVE_BADGE_SELECTOR] },
 			name: "Live Badge Background",
 			description: "Sets the background color of the LIVE badge shown on video thumbnails.",
 			value: "#ff0033ff",
 			varCss: "--nt-thumbnail-live-badge-bg",
-			constantCss: `.ytBadgeShapeThumbnailLive { background-color: var(--nt-thumbnail-live-badge-bg, #ff0033ff) !important; }`,
+			constantCss: `${THUMBNAIL_LIVE_BADGE_SELECTOR} { background-color: var(--nt-thumbnail-live-badge-bg, #ff0033ff) !important; }`,
 		},
 		{
 			type: "color",
 			id: "ThumbnailLiveBadgeTextColor",
-			hoverPreview: { selectors: [".ytBadgeShapeThumbnailLive"] },
+			hoverPreview: { selectors: [THUMBNAIL_LIVE_BADGE_SELECTOR] },
 			name: "Live Badge Text",
 			description: "Sets the text color of the LIVE badge shown on video thumbnails.",
 			value: "#ffffffff",
 			varCss: "--nt-thumbnail-live-badge-text",
-			constantCss: `.ytBadgeShapeThumbnailLive { color: var(--nt-thumbnail-live-badge-text, #ffffffff) !important; }`,
+			constantCss: `${THUMBNAIL_LIVE_BADGE_SELECTOR} { color: var(--nt-thumbnail-live-badge-text, #ffffffff) !important; }`,
 		},
 		{
 			type: "numberSlide",

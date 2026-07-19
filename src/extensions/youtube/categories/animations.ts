@@ -1,7 +1,13 @@
 import { type Category } from "@settings/types/styleshiftTypes";
 import { playerWatchModeSelector, ytPlayerWatchMode } from "../modules/youtube";
 import { secondaryContainer } from "./enhancement";
-import { WATCH_SIDEBAR_SELECTOR } from "./selectors";
+import {
+	LOCKUP_VIEW_MODEL_HORIZONTAL_SELECTOR,
+	LOCKUP_VIEW_MODEL_HOST_SELECTOR,
+	WATCH_SIDEBAR_SELECTOR,
+} from "./selectors";
+
+const HORIZONTAL_LOCKUP_SELECTOR = `${LOCKUP_VIEW_MODEL_HOST_SELECTOR}${LOCKUP_VIEW_MODEL_HORIZONTAL_SELECTOR}`;
 
 export const animationCategory: Category = {
 	category: { icon: "slideshow", label: "Animations" },
@@ -280,17 +286,15 @@ export const animationCategory: Category = {
 			description: "Adds a subtle slide animation to thumbnail buttons.",
 			value: true,
 			enableCss: `
-				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer .yt-lockup-view-model,
-				yt-lockup-view-model.ytd-item-section-renderer .yt-lockup-view-model {
+				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer > ${HORIZONTAL_LOCKUP_SELECTOR},
+				yt-lockup-view-model.ytd-item-section-renderer > ${HORIZONTAL_LOCKUP_SELECTOR} {
 					transition: all 0.15s ease-out;
 				}
 
-				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer:hover .yt-lockup-view-model.yt-lockup-view-model--horizontal,
-				yt-lockup-view-model.ytd-item-section-renderer:hover .yt-lockup-view-model.yt-lockup-view-model--horizontal {
+				yt-lockup-view-model.ytd-watch-next-secondary-results-renderer:hover > ${HORIZONTAL_LOCKUP_SELECTOR},
+				yt-lockup-view-model.ytd-item-section-renderer:hover > ${HORIZONTAL_LOCKUP_SELECTOR} {
 					transform: translateX(-10px) !important;
 				}
-
-				yt-lockup-view-model.yt-lockup-view-model--horizontal:
 			`,
 		},
 		{
