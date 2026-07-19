@@ -7,11 +7,16 @@ const MAX_VISIBLE_TARGETS = 24;
 const EXCLUDED_UI_SELECTOR =
 	".styleshift-window, .styleshift-hover-preview-layer, .styleshift-highlight-layer, .styleshift-quick-customize-container";
 
-type HoverPreviewOptions = {
-	setting: Setting;
-	category?: Category;
+export type HoverPreviewConfig = {
+	selectors: string[];
 	onStatus: (status: string) => void;
 };
+
+export type HoverPreviewContext = {
+	resolve: () => HoverPreviewConfig | null;
+};
+
+export const HOVER_PREVIEW_CONTEXT = Symbol("hover-preview");
 
 type HoverPreviewSession = {
 	owner: HTMLElement;
@@ -31,6 +36,16 @@ export function resolveHoverPreviewSelectors(setting: Setting, category?: Catego
 	if (setting.hoverPreview) return setting.hoverPreview.selectors;
 	const fallback = category ? categorySelector(category) : "";
 	return fallback ? [fallback] : null;
+}
+
+export function createHoverPreviewConfig(
+	setting: Setting,
+	category: Category | undefined,
+	onStatus: (status: string) => void,
+): HoverPreviewConfig | null {
+	if (IS_IN_EXTENSION_SETTINGS_PAGE) return null;
+	const selectors = resolveHoverPreviewSelectors(setting, category);
+	return selectors?.length ? { selectors, onStatus } : null;
 }
 
 function isVisible(element: HTMLElement, rect: DOMRect) {
@@ -131,15 +146,10 @@ function queuePreview(owner: HTMLElement, selectors: string[], onStatus: (status
 	}, PREVIEW_DELAY_MS);
 }
 
-export function hoverPreview(node: HTMLElement, options: HoverPreviewOptions) {
-	const selectors = IS_IN_EXTENSION_SETTINGS_PAGE
-		? null
-		: resolveHoverPreviewSelectors(options.setting, options.category);
-	if (!selectors) return { destroy() {} };
-
+export function hoverPreview(node: HTMLElement, config: HoverPreviewConfig) {
 	let hovered = false;
 	let focused = false;
-	const activate = () => queuePreview(node, selectors, options.onStatus);
+	const activate = () => queuePreview(node, config.selectors, config.onStatus);
 	const deactivate = () => {
 		if (hovered || focused) return;
 		cancelPending(node);

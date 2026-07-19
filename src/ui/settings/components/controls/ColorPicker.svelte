@@ -79,6 +79,7 @@
 
 <div class="styleshift-color-alpha-section">
 	<Slider
+		showHoverPreview={false}
 		setting={{
 			type: "numberSlide",
 			name: "Opacity",

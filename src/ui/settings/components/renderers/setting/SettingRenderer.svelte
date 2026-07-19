@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Category, Setting } from "@settings/types/styleshiftTypes";
 	import { highlight as highlightAction } from "@ui/settings/searchHighlight";
-	import { hoverPreview } from "@ui/settings/hoverPreview";
-	import { onDestroy } from "svelte";
+	import { createHoverPreviewConfig, HOVER_PREVIEW_CONTEXT, type HoverPreviewContext } from "@ui/settings/hoverPreview";
+	import { onDestroy, setContext } from "svelte";
 	import { fade } from "svelte/transition";
 	import { addDrag, addDropTarget } from "@ui/settings/reorder";
 	import { registerSettingUi, unregisterSettingUi } from "@ui/settings/settingsManager";
@@ -39,6 +39,10 @@
 	const controller = $derived(new SettingRendererController(setting));
 	let domNode = $state<HTMLElement | null>(null);
 	let previewStatus = $state("");
+	const previewContext: HoverPreviewContext = {
+		resolve: () => createHoverPreviewConfig(setting, category, (status) => (previewStatus = status)),
+	};
+	setContext(HOVER_PREVIEW_CONTEXT, previewContext);
 
 	const textAlign = $derived(getTextAlign((setting as any).align));
 	const isVerticalSetting = $derived(
@@ -85,16 +89,6 @@
 		if (setting.id && node.parentElement) {
 			registerSettingUi(setting.id, node.parentElement, node);
 		}
-		const previewAction = hoverPreview(node, {
-			setting,
-			category,
-			onStatus: (status) => (previewStatus = status),
-		});
-		return {
-			destroy() {
-				previewAction.destroy();
-			},
-		};
 	}}
 	padding={setting.type !== "button" && setting.type !== "subText"}
 	transparent={setting.type === "button" || setting.type === "subText" || setting.type === "text"}

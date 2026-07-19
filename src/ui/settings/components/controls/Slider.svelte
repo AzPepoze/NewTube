@@ -8,8 +8,10 @@
 
 	let {
 		setting,
+		showHoverPreview = true,
 	}: {
 		setting: Extract<Setting, { type: "numberSlide" }>;
+		showHoverPreview?: boolean;
 	} = $props();
 
 	let value = $state(0);
@@ -62,7 +64,7 @@
 
 <div class="styleshift-slider-container">
 	<div class="styleshift-slider-header">
-		<Description {name} {description} />
+		<Description {name} {description} {showHoverPreview} />
 		<div class="styleshift-slider-value-wrapper">
 			<input
 				type="number"
