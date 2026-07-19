@@ -20,6 +20,21 @@ export const betaFeaturesCategory: Category = {
 		},
 		{
 			type: "checkbox",
+			id: "EnablePerformanceMode",
+			name: "Performance Mode",
+			description:
+				"Disables all heavy visual effects like blurs, filters, transitions, and animations. Highly recommended for low-end PCs or to save battery.",
+			value: false,
+			enableCss: `
+                * {
+                    backdrop-filter: none !important;
+                    transition: none !important;
+                    animation: none !important;
+                }
+            `,
+		},
+		{
+			type: "checkbox",
 			id: "ExperimentalBlackToTransparent",
 			name: "Black to Transparent",
 			description:

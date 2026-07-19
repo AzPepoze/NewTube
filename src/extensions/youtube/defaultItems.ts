@@ -1,6 +1,6 @@
 import { openSettingPage } from "@core/shared/extensionHelpers";
 import { exportThemeWithSelection } from "@core/theme/exporter";
-import { exportCurrentSettingsObject } from "@core/theme/importer";
+import { exportCurrentSettingsObject, importThemeWorkflow } from "@core/theme/importer";
 import { checkAndUpdateTheme, openThemeStore } from "@core/theme/storeIntegration";
 import { getAddOnItems } from "@settings/registry/items";
 import { type Category, type SeparateCategory } from "@settings/types/styleshiftTypes";
@@ -225,37 +225,17 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				type: "button",
 			},
 			{
-				clickFunction: `const Data = await enterTextPrompt({ title : 'StyleShift Data', placeholder : 'Paste StyleShift data text here.'});
-                    await importStyleShiftJsonText(Data);
-                    `,
+				clickFunction: async function () {
+					await importThemeWorkflow();
+				},
 				color: "#1932ffff",
-				description: "Paste a StyleShift theme code to instantly apply it.",
+				description: "Import one or more StyleShift themes from pasted JSON, JSON files, or ZIP files.",
 				fontSize: 15,
 				icon: "",
 				id: "ImportDataButton",
 				name: "Import Data",
 				align: "center",
 				type: "button",
-			},
-		],
-	},
-	{
-		category: { icon: "flash_on", label: "Performance" },
-		settings: [
-			{
-				type: "checkbox",
-				id: "EnablePerformanceMode",
-				name: "Performance Mode",
-				description:
-					"Disables all heavy visual effects like blurs, filters, transitions, and animations. Highly recommended for low-end PCs or to save battery.",
-				value: false,
-				enableCss: `
-                * {
-                    backdrop-filter: none !important;
-                    transition: none !important;
-                    animation: none !important;
-                }
-            `,
 			},
 		],
 	},

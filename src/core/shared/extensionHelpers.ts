@@ -69,6 +69,24 @@ export async function getFile(type: string): Promise<File> {
 	});
 }
 
+/** Prompts the user to select one or more files, preserving picker order. */
+export async function getFiles(type: string): Promise<File[]> {
+	return new Promise((resolve, reject) => {
+		const input = document.createElement("input");
+		input.type = "file";
+		input.accept = type;
+		input.multiple = true;
+
+		input.addEventListener("change", () => {
+			const files = Array.from(input.files ?? []);
+			if (files.length > 0) resolve(files);
+			else reject(new Error("No files selected"));
+		});
+		input.addEventListener("cancel", () => reject(new Error("Canceled by the user")));
+		input.click();
+	});
+}
+
 /**
  * Dynamically appends a child element or a component's frame/button to a parent element.
  *

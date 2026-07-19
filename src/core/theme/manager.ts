@@ -148,7 +148,13 @@ export async function fetchThemeFromApi(themeId: string): Promise<Theme | null> 
 }
 
 // Save theme
-export async function saveTheme(name: string, data: Theme, targetDomain: string, id?: string): Promise<boolean> {
+export async function saveTheme(
+	name: string,
+	data: Theme,
+	targetDomain: string,
+	id?: string,
+	activate = true,
+): Promise<boolean> {
 	if (!validateDomain(targetDomain)) return false;
 
 	try {
@@ -170,7 +176,7 @@ export async function saveTheme(name: string, data: Theme, targetDomain: string,
 		else themeArray.push(updatedTheme);
 
 		await saveRootValue("themes", themeArray, true);
-		await saveRootValue("activeTheme", themeId);
+		if (activate) await saveRootValue("activeTheme", themeId);
 
 		logger.info("themeManager", `Theme saved: ${name}`);
 		return true;
