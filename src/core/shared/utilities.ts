@@ -151,6 +151,29 @@ export function deepClone(data: any): any {
 }
 
 /**
+ * Recursively sorts object keys without changing array order.
+ */
+export function sortObjectKeys<T>(value: T): T {
+	if (Array.isArray(value)) {
+		return value.map((item) => sortObjectKeys(item)) as T;
+	}
+
+	if (value !== null && typeof value === "object" && Object.getPrototypeOf(value) === Object.prototype) {
+		return Object.keys(value)
+			.sort()
+			.reduce(
+				(sorted, key) => {
+					sorted[key] = sortObjectKeys((value as Record<string, unknown>)[key]);
+					return sorted;
+				},
+				{} as Record<string, unknown>,
+			) as T;
+	}
+
+	return value;
+}
+
+/**
  * Triggers a file download in the browser with the specified data and filename.
  *
  * @param {BlobPart} data - The content of the file.

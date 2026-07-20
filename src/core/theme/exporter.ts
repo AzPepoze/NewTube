@@ -1,7 +1,15 @@
 import { chooseSelection } from "@core/shared/dialogs";
 import { copyToClipboard } from "@core/shared/extensionHelpers";
 import { createNotification } from "@core/shared/notifications";
+import { sortObjectKeys } from "@core/shared/utilities";
 import { addItemsToZip, downloadZip } from "@core/theme/importer";
+
+function sortCurrentSettings(data: any) {
+	return {
+		...data,
+		...(data.currentSettings && { currentSettings: sortObjectKeys(data.currentSettings) }),
+	};
+}
 
 /**
  * Handles the theme export process with user selection for content and format.
@@ -69,7 +77,7 @@ export async function exportThemeWithSelection(themeId: string, themeName: strin
  * Copies theme data to the clipboard as a JSON string.
  */
 export function exportThemeToClipboard(name: string, data: any) {
-	const jsonText = JSON.stringify(data, null, 2);
+	const jsonText = JSON.stringify(sortCurrentSettings(data), null, 2);
 	copyToClipboard(jsonText);
 
 	createNotification({
@@ -87,7 +95,7 @@ export async function exportThemeAsZip(name: string, data: any) {
 
 	// 1. currentSettings.json
 	if (data.currentSettings) {
-		files["currentSettings.json"] = JSON.stringify(data.currentSettings, null, 2);
+		files["currentSettings.json"] = JSON.stringify(sortObjectKeys(data.currentSettings), null, 2);
 	}
 
 	// 2. addOnStyleShiftItems/ (Expanded)

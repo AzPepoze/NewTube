@@ -1,4 +1,4 @@
-import { deepClone, sleep } from "@/core/shared/utilities";
+import { deepClone, sleep, sortObjectKeys } from "@/core/shared/utilities";
 import { jszipInstance, loadJSZip } from "@core/runtime/controller";
 import { alertPrompt, chooseSelection, enterPrompt, enterTextPrompt } from "@core/shared/dialogs";
 import { downloadFile, getFiles } from "@core/shared/extensionHelpers";
@@ -138,7 +138,7 @@ export async function exportCurrentSettingsObject(includeMaintenance = true): Pr
 	if (includeMaintenance) {
 		await performStorageGarbageCollection();
 	}
-	return await getRootValue("currentSettings");
+	return sortObjectKeys(await getRootValue("currentSettings"));
 }
 
 export async function exportCurrentSettingsAsString(): Promise<string> {
