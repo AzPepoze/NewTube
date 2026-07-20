@@ -126,7 +126,7 @@
 	.Welcome-Overlay {
 		position: fixed;
 		inset: 0;
-		z-index: 999999;
+		z-index: 19999;
 		display: grid;
 		place-items: center;
 		padding: clamp(20px, 5vw, 72px);

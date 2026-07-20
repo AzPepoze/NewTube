@@ -11,7 +11,8 @@ svg [fill="#F00"],
 button:not(.yt-share-target-renderer) path:not([fill="none"]),
 [role="option"]:not(.yt-third-party-share-target-section-renderer) path,
 .ytp-heat-map-graph,
-.guide-icon svg
+.guide-icon svg,
+#spinnerContainer *
 {
 	fill: var(--nt-theme-color) !important;
 }
