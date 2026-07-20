@@ -10,6 +10,7 @@
 		style = "",
 		class: className = "",
 		showHelpIcon = false,
+		showHoverPreview = false,
 		iconSize = undefined,
 		fontSize = undefined,
 		variant = "default",
@@ -19,6 +20,7 @@
 		style?: string;
 		class?: string;
 		showHelpIcon?: boolean;
+		showHoverPreview?: boolean;
 		iconSize?: number;
 		fontSize?: number;
 		variant?: "default" | "subtle" | "ghost";
@@ -94,6 +96,7 @@
 		description={showHelpIcon ? "" : description}
 		{align}
 		style="display: flex; color: inherit; font-size: {finalFontSize}px;"
+		{showHoverPreview}
 	/>
 
 	{#if showHelpIcon && description}

@@ -190,8 +190,7 @@ export const videoControlPanelCategory: Category = {
 					color: var(--control-panel-icon-color) !important;
 				}
 				
-				.ytp-chrome-controls path,
-				.ytp-button path[fill="#fff"]
+				div.ytp-chrome-controls path
 				{
 					fill: var(--control-panel-icon-color) !important;
 				}

@@ -104,7 +104,7 @@
 		{#if setting.type === "checkbox"}
 			<Checkbox {setting} />
 		{:else if setting.type === "button"}
-			<Button {setting} {layout} />
+			<Button {setting} {layout} showHoverPreview />
 		{:else if setting.type === "numberSlide"}
 			<Slider {setting} />
 		{:else if setting.type === "textInput"}
