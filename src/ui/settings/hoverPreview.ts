@@ -59,7 +59,7 @@ function startPreview(selectors: string[], onStatus: (status: string) => void) {
 	const matches = new Set<HTMLElement>();
 	try {
 		for (const selector of selectors) {
-			for (const element of document.querySelectorAll<HTMLElement>(selector)) {
+			for (const element of Array.from(document.querySelectorAll<HTMLElement>(selector))) {
 				if (!element.closest(EXCLUDED_UI_SELECTOR)) matches.add(element);
 			}
 		}

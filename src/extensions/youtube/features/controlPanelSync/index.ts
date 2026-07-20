@@ -116,7 +116,7 @@ function queueRebind(): void {
 }
 
 function mutationContainsVideo(mutation: MutationRecord): boolean {
-	return [...mutation.addedNodes, ...mutation.removedNodes].some((node) => {
+	return [...Array.from(mutation.addedNodes), ...Array.from(mutation.removedNodes)].some((node) => {
 		return node instanceof HTMLVideoElement || (node instanceof Element && node.querySelector("video"));
 	});
 }

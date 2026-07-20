@@ -363,7 +363,7 @@ export async function startHighlighter() {
 			}
 			shouldUpdate = true;
 			if (mutation.type !== "childList") continue;
-			for (const node of mutation.addedNodes) {
+			for (const node of Array.from(mutation.addedNodes)) {
 				if (node instanceof HTMLElement) {
 					pendingRoots.add(node);
 				}
