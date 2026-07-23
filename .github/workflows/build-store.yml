@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  store:
     name: Build and Upload to Stores
     runs-on: ubuntu-latest
     steps:
@@ -43,11 +43,11 @@ jobs:
           CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
           CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
           CHROME_FILE_PATH: ${{ steps.assets.outputs.chrome_file }}
-        run: bun utils/deploy-chrome.ts
+        run: bun utils/store-chrome.ts
 
       - name: Upload to Firefox Add-ons
         env:
           AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
           AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
           FIREFOX_FILE_PATH: ${{ steps.assets.outputs.firefox_file }}
-        run: bun utils/deploy-firefox.ts
+        run: bun utils/store-firefox.ts

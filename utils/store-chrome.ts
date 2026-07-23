@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 
-async function deployChrome() {
+async function storeChrome() {
 	const clientId = process.env.CHROME_CLIENT_ID;
 	const clientSecret = process.env.CHROME_CLIENT_SECRET;
 	const refreshToken = process.env.CHROME_REFRESH_TOKEN;
@@ -9,11 +9,11 @@ async function deployChrome() {
 	const filePath = process.env.CHROME_FILE_PATH;
 
 	if (!clientId || !clientSecret || !refreshToken || !extensionId || !filePath) {
-		console.error("Missing environment variables for Chrome deployment.");
+		console.error("Missing environment variables for Chrome Web Store upload.");
 		process.exit(1);
 	}
 
-	console.log(`Starting Chrome deployment for extension: ${extensionId}`);
+	console.log(`Starting Chrome Web Store upload for extension: ${extensionId}`);
 
 	// 1. Exchange Refresh Token for Access Token
 	console.log("Refreshing access token...");
@@ -77,7 +77,7 @@ async function deployChrome() {
 	console.log("Successfully submitted for review/published!");
 }
 
-deployChrome().catch((err) => {
-	console.error("Chrome deployment failed:", err);
+storeChrome().catch((err) => {
+	console.error("Chrome Web Store upload failed:", err);
 	process.exit(1);
 });

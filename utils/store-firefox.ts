@@ -2,17 +2,17 @@ import { execSync } from "child_process";
 import { existsSync, mkdirSync } from "fs";
 import path from "path";
 
-async function deployFirefox() {
+async function storeFirefox() {
 	const apiKey = process.env.AMO_JWT_ISSUER;
 	const apiSecret = process.env.AMO_JWT_SECRET;
 	const filePath = process.env.FIREFOX_FILE_PATH;
 
 	if (!apiKey || !apiSecret || !filePath) {
-		console.error("Missing environment variables for Firefox deployment.");
+		console.error("Missing environment variables for Firefox Add-ons upload.");
 		process.exit(1);
 	}
 
-	console.log(`Starting Firefox deployment for: ${filePath}`);
+	console.log(`Starting Firefox Add-ons upload for: ${filePath}`);
 
 	// web-ext sign requires a source-dir even when using --upload-file
 	const dummyDir = path.resolve("temp/dummy-firefox");
@@ -36,12 +36,12 @@ async function deployFirefox() {
 		execSync(cmd, { stdio: "inherit" });
 		console.log("Successfully signed and uploaded to Firefox Add-ons!");
 	} catch (_error) {
-		console.error("Firefox deployment failed.");
+		console.error("Firefox Add-ons upload failed.");
 		process.exit(1);
 	}
 }
 
-deployFirefox().catch((err) => {
-	console.error("Fatal error in Firefox deployment:", err);
+storeFirefox().catch((err) => {
+	console.error("Fatal error in Firefox Add-ons upload:", err);
 	process.exit(1);
 });
