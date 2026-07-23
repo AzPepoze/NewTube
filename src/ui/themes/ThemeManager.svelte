@@ -28,6 +28,7 @@
 
 	$effect(() => {
 		if (currentView === "store") {
+			controller.fetchTags();
 			const timer = setTimeout(() => controller.fetchStoreThemes(searchQuery), 300);
 			return () => clearTimeout(timer);
 		}
@@ -38,6 +39,33 @@
 		if (success && currentView === "store") {
 			currentView = "installed";
 		}
+	}
+
+	let pageInput = $state(1);
+
+	function handleJumpPage() {
+		let page = Math.floor(Number(pageInput));
+		if (isNaN(page) || page < 1) page = 1;
+		if (page > controller.totalPages) page = controller.totalPages;
+		pageInput = page;
+		if (page !== controller.currentPage) {
+			controller.goToPage(page, searchQuery);
+		}
+	}
+
+	async function prevPage() {
+		await controller.prevPage(searchQuery);
+		pageInput = controller.currentPage;
+	}
+
+	async function nextPage() {
+		await controller.nextPage(searchQuery);
+		pageInput = controller.currentPage;
+	}
+
+	function handleTagChange(e: Event) {
+		const target = e.target as HTMLSelectElement;
+		controller.setSelectedTag(target.value, searchQuery);
 	}
 
 	onMount(() => {
@@ -65,6 +93,20 @@
 				placeholder="Search {currentView === 'installed' ? 'installed' : 'store'} themes..."
 			/>
 		</div>
+		{#if currentView === "store"}
+			<div class="tag-filter-wrapper" transition:fade={{ duration: 150 }}>
+				<select class="tag-select" value={controller.selectedTag} onchange={handleTagChange}>
+					<option value="">All Tags</option>
+					{#each Object.entries(controller.groupedTags) as [groupName, tags] (groupName)}
+						<optgroup label={groupName}>
+							{#each tags as tag (tag.id)}
+								<option value={tag.name}>{tag.name}</option>
+							{/each}
+						</optgroup>
+					{/each}
+				</select>
+			</div>
+		{/if}
 	</div>
 
 	<div
@@ -117,6 +159,49 @@
 				{/if}
 			</div>
 		{/key}
+
+		{#if currentView === "store" && controller.storeTotal > 0}
+			<div class="sticky-pagination-bar" transition:fade={{ duration: 200 }}>
+				<div class="pagination-controls">
+					<button
+						class="page-nav-btn"
+						disabled={controller.currentPage <= 1 || controller.isLoadingStore}
+						onclick={prevPage}
+						title="Previous Page"
+					>
+						<Icon name="chevron_left" size={18} />
+					</button>
+
+					<div class="page-input-wrapper">
+						<span class="label">Page</span>
+						<input
+							type="number"
+							class="page-number-input"
+							min="1"
+							max={controller.totalPages}
+							disabled={controller.isLoadingStore}
+							bind:value={pageInput}
+							onkeydown={(e) => e.key === "Enter" && handleJumpPage()}
+							onblur={handleJumpPage}
+						/>
+						<span class="total-pages">/ {controller.totalPages}</span>
+					</div>
+
+					<button
+						class="page-nav-btn"
+						disabled={controller.currentPage >= controller.totalPages || controller.isLoadingStore}
+						onclick={nextPage}
+						title="Next Page"
+					>
+						<Icon name="chevron_right" size={18} />
+					</button>
+				</div>
+
+				<div class="pagination-meta">
+					<span>{controller.storeTotal} themes available</span>
+				</div>
+			</div>
+		{/if}
 	</div>
 
 	<div class="manager-footer">
@@ -208,6 +293,54 @@
 			flex: 1;
 			min-width: 200px;
 		}
+
+		.tag-filter-wrapper {
+			display: flex;
+			align-items: center;
+
+			.tag-select {
+				height: 38px;
+				padding: 0 32px 0 14px;
+				font-size: 13.5px;
+				font-weight: 500;
+				color: var(--font-color);
+				background: var(--fg-opacity-05);
+				border: 1px solid var(--fg-opacity-10);
+				border-radius: 12px;
+				outline: none;
+				cursor: pointer;
+				transition: all 160ms ease;
+				appearance: none;
+				background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+				background-repeat: no-repeat;
+				background-position: right 10px center;
+
+				&:hover {
+					background-color: var(--fg-opacity-10);
+					border-color: var(--fg-opacity-20);
+				}
+
+				&:focus {
+					border-color: var(--theme-0);
+					box-shadow: 0 0 0 2px rgba(162, 96, 215, 0.2);
+				}
+
+				optgroup {
+					background: var(--bg-main, #141419);
+					color: var(--theme-0);
+					font-weight: 700;
+					font-size: 12px;
+					text-transform: uppercase;
+				}
+
+				option {
+					background: var(--bg-main, #141419);
+					color: var(--font-color);
+					font-weight: 500;
+					font-size: 13.5px;
+				}
+			}
+		}
 	}
 
 	.view-container {
@@ -253,6 +386,115 @@
 		p {
 			font-size: 14px;
 			font-weight: 500;
+		}
+	}
+
+	.sticky-pagination-bar {
+		position: sticky;
+		bottom: 0;
+		z-index: 50;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 10px 16px;
+		margin-top: auto;
+		background: rgba(20, 20, 25, 0.85);
+		backdrop-filter: blur(12px);
+		border: 1px solid var(--fg-opacity-10);
+		border-radius: 14px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+		.pagination-controls {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.page-nav-btn {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 32px;
+			height: 32px;
+			border-radius: 8px;
+			background: var(--fg-opacity-05);
+			border: 1px solid var(--fg-opacity-10);
+			color: var(--font-color);
+			cursor: pointer;
+			transition: all 160ms ease;
+
+			&:hover:not(:disabled) {
+				background: var(--fg-opacity-15);
+				border-color: var(--theme-0);
+				color: var(--theme-0);
+				transform: translateY(-1px);
+			}
+
+			&:disabled {
+				opacity: 0.35;
+				cursor: not-allowed;
+			}
+		}
+
+		.page-input-wrapper {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			font-size: 13.5px;
+			font-weight: 500;
+			color: var(--font-color-dim);
+
+			.label {
+				font-size: 13px;
+			}
+
+			.page-number-input {
+				width: 48px;
+				height: 30px;
+				text-align: center;
+				font-size: 13.5px;
+				font-weight: 600;
+				color: var(--font-color);
+				background: var(--fg-opacity-05);
+				border: 1px solid var(--fg-opacity-15);
+				border-radius: 8px;
+				outline: none;
+				transition: all 160ms ease;
+				appearance: none;
+				-moz-appearance: textfield;
+
+				&::-webkit-outer-spin-button,
+				&::-webkit-inner-spin-button {
+					-webkit-appearance: none;
+					margin: 0;
+				}
+
+				&:focus {
+					border-color: var(--theme-0);
+					background: var(--fg-opacity-10);
+					box-shadow: 0 0 0 2px rgba(162, 96, 215, 0.2);
+				}
+
+				&:disabled {
+					opacity: 0.5;
+				}
+			}
+
+			.total-pages {
+				font-weight: 600;
+				color: var(--font-color);
+			}
+		}
+
+		.pagination-meta {
+			font-size: 12.5px;
+			color: var(--font-color-dim);
+			font-weight: 500;
+		}
+
+		@media (max-width: 500px) {
+			flex-direction: column;
+			gap: 8px;
 		}
 	}
 

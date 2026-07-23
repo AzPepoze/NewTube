@@ -11,6 +11,13 @@ import {
 	type Theme,
 } from "@core/theme/manager";
 import { STYLESHIFT_STORE_API_URL } from "@core/theme/config";
+import {
+	extractListFromResponse,
+	extractPaginationFromResponse,
+	groupTagsByCategory,
+	normalizeStoreThemePayload,
+	type Tag,
+} from "@core/theme/parser";
 
 export class ThemeManagerController {
 	themes = $state<Theme[]>([]);
@@ -18,7 +25,15 @@ export class ThemeManagerController {
 	activeThemeId = $state<string | null>(null);
 	loadingThemeId = $state<string | null>(null);
 	isLoadingStore = $state(false);
+	isLoadingMoreStore = $state(false);
+	storeOffset = $state(0);
+	storeLimit = $state(24);
+	storeTotal = $state(0);
+	hasMoreStore = $state(false);
 	wasThemeModified = $state(false);
+
+	availableTags = $state<Tag[]>([]);
+	selectedTag = $state<string>("");
 
 	private backupSettings: any = null;
 	private originalActiveTheme: string | null = null;
@@ -29,6 +44,9 @@ export class ThemeManagerController {
 	}
 
 	installedThemeIds = $derived(new SvelteSet(this.themes.map((t) => t.themeId)));
+	currentPage = $derived(Math.floor(this.storeOffset / this.storeLimit) + 1);
+	totalPages = $derived(Math.max(1, Math.ceil(this.storeTotal / this.storeLimit)));
+	groupedTags = $derived(groupTagsByCategory(this.availableTags));
 
 	async loadThemes() {
 		this.themes = (await getRootValue("themes")) || [];
@@ -41,42 +59,100 @@ export class ThemeManagerController {
 		this.activeThemeId = await getRootValue("activeTheme");
 	}
 
-	async fetchStoreThemes(query = "") {
-		this.isLoadingStore = true;
+	async fetchTags() {
+		if (this.availableTags.length > 0) return;
 		try {
-			const res = await fetch(`${STYLESHIFT_STORE_API_URL}/themes?q=${encodeURIComponent(query)}&sort=popular`);
+			const res = await fetch(`${STYLESHIFT_STORE_API_URL}/tags`);
+			if (res.ok) {
+				this.availableTags = await res.json();
+			}
+		} catch (e) {
+			console.error("Failed to fetch store tags", e);
+		}
+	}
+
+	async setSelectedTag(tag: string, query = "") {
+		this.selectedTag = tag;
+		await this.fetchStoreThemes(query, true);
+	}
+
+	async fetchStoreThemes(query = "", reset = true) {
+		if (reset) {
+			this.storeOffset = 0;
+			this.isLoadingStore = true;
+		} else {
+			this.isLoadingMoreStore = true;
+		}
+
+		try {
+			const tagParam = this.selectedTag ? `&tag=${encodeURIComponent(this.selectedTag)}` : "";
+			const res = await fetch(
+				`${STYLESHIFT_STORE_API_URL}/themes?q=${encodeURIComponent(query)}&sort=popular${tagParam}&limit=${this.storeLimit}&offset=${this.storeOffset}`,
+			);
 			if (res.ok) {
 				const data = await res.json();
-				this.storeThemes = data.map((t: any) => {
-					const s = t.settings;
-					let currentSettings: Record<string, unknown> | undefined;
-					let addOnStyleShiftItems: Theme["addOnStyleShiftItems"];
-					if (s && typeof s === "object" && !Array.isArray(s)) {
-						if (
-							"currentSettings" in s &&
-							s.currentSettings &&
-							typeof s.currentSettings === "object" &&
-							!Array.isArray(s.currentSettings)
-						) {
-							currentSettings = s.currentSettings as Record<string, unknown>;
-							addOnStyleShiftItems = Array.isArray(s.addOnStyleShiftItems) ? s.addOnStyleShiftItems : undefined;
-						} else {
-							currentSettings = s as Record<string, unknown>;
-						}
-					}
-					return {
-						themeId: t.themeId,
-						themeName: t.themeName,
-						currentSettings,
-						addOnStyleShiftItems,
-					};
-				});
+				const items = extractListFromResponse(data);
+				const pagination = extractPaginationFromResponse(data, items.length);
+				const mappedItems = items.map((t) => normalizeStoreThemePayload(t));
+
+				if (reset) {
+					this.storeThemes = mappedItems;
+				} else {
+					this.storeThemes = [...this.storeThemes, ...mappedItems];
+				}
+
+				this.storeTotal = pagination.total;
+				this.hasMoreStore = pagination.hasMore;
 			}
 		} catch (e) {
 			console.error("Store fetch failed", e);
 		} finally {
 			this.isLoadingStore = false;
+			this.isLoadingMoreStore = false;
 		}
+	}
+
+	async goToPage(page: number, query = "") {
+		const targetPage = Math.min(Math.max(1, page), this.totalPages);
+		const targetOffset = (targetPage - 1) * this.storeLimit;
+		this.storeOffset = targetOffset;
+		this.isLoadingStore = true;
+		try {
+			const tagParam = this.selectedTag ? `&tag=${encodeURIComponent(this.selectedTag)}` : "";
+			const res = await fetch(
+				`${STYLESHIFT_STORE_API_URL}/themes?q=${encodeURIComponent(query)}&sort=popular${tagParam}&limit=${this.storeLimit}&offset=${targetOffset}`,
+			);
+			if (res.ok) {
+				const data = await res.json();
+				const items = extractListFromResponse(data);
+				const pagination = extractPaginationFromResponse(data, items.length);
+				this.storeThemes = items.map((t) => normalizeStoreThemePayload(t));
+				this.storeTotal = pagination.total;
+				this.hasMoreStore = pagination.hasMore;
+			}
+		} catch (e) {
+			console.error("Store page fetch failed", e);
+		} finally {
+			this.isLoadingStore = false;
+		}
+	}
+
+	async nextPage(query = "") {
+		if (this.currentPage < this.totalPages) {
+			await this.goToPage(this.currentPage + 1, query);
+		}
+	}
+
+	async prevPage(query = "") {
+		if (this.currentPage > 1) {
+			await this.goToPage(this.currentPage - 1, query);
+		}
+	}
+
+	async loadMoreStoreThemes(query = "") {
+		if (this.isLoadingStore || this.isLoadingMoreStore || !this.hasMoreStore) return;
+		this.storeOffset = this.storeThemes.length;
+		await this.fetchStoreThemes(query, false);
 	}
 
 	async saveCurrentAsTheme() {
