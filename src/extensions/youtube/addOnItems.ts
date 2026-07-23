@@ -1,0 +1,124 @@
+import { type Category } from "@settings/types/styleshiftTypes";
+
+const addOnStyleShiftItems: Category[] = [
+	// {
+	// 	category: { icon: "science", label: "Test Add-on Category" },
+	// 	editable: true,
+	// 	settings: [
+	// 		{
+	// 			type: "text",
+	// 			id: "Test_text",
+	// 			html: "<b>Test text</b> with <i>HTML</i> support",
+	// 			align: "center",
+	// 			fontSize: 18,
+	// 			editable: true,
+	// 		},
+	// 		{
+	// 			type: "subText",
+	// 			id: "Test_sub_text",
+	// 			text: "This is a sub text test",
+	// 			align: "left",
+	// 			color: "#00ff00",
+	// 			fontSize: 14,
+	// 			editable: true,
+	// 		},
+	// 		{
+	// 			type: "button",
+	// 			id: "Test_button_full",
+	// 			name: "Full Test Button",
+	// 			description: "Testing button properties",
+	// 			icon: "🔥",
+	// 			align: "center",
+	// 			color: "#ffaa00",
+	// 			fontSize: 16,
+	// 			clickFunction: 'alert("Button Clicked!")',
+	// 			editable: true,
+	// 		},
+	// 		{
+	// 			type: "checkbox",
+	// 			id: "Test_checkbox",
+	// 			name: "Checkbox Test",
+	// 			description: "Testing checkbox functionality",
+	// 			value: true,
+	// 			enableFunction: 'console.log("Enabled")',
+	// 			disableFunction: 'console.log("Disabled")',
+	// 			editable: true,
+	// 		},
+	// 		{
+	// 			type: "numberSlide",
+	// 			id: "Test_number_slide",
+	// 			name: "Slider Test",
+	// 			description: "Testing slider properties",
+	// 			min: 0,
+	// 			max: 200,
+	// 			step: 5,
+	// 			value: 75,
+	// 			unit: "px",
+	// 			editable: true,
+	// 		},
+	// 		{
+	// 			type: "dropdown",
+	// 			id: "Test_dropdown",
+	// 			name: "Dropdown Test",
+	// 			description: "Testing dropdown options",
+	// 			value: "Option 1",
+	// 			options: [
+	// 				{ label: "Option 1", value: "Option 1", enableFunction: 'console.log("Opt 1")' },
+	// 				{ label: "Option 2", value: "Option 2", enableFunction: 'console.log("Opt 2")' },
+	// 				{ label: "Option 3", value: "Option 3", enableFunction: 'console.log("Opt 3")' },
+	// 			],
+	// 			editable: true,
+	// 		},
+	// 		{
+	// 			type: "color",
+	// 			id: "Test_color",
+	// 			name: "Color Test",
+	// 			description: "Testing color picker",
+	// 			showAlphaSlider: true,
+	// 			value: "#7f5db7ff",
+	// 			editable: true,
+	// 		},
+	// 		{
+	// 			type: "textInput",
+	// 			id: "Test_text_input",
+	// 			name: "Text Input Test",
+	// 			description: "Testing simple text input",
+	// 			value: "Hello NewTube",
+	// 			editable: true,
+	// 		},
+	// 		{
+	// 			type: "imageInput",
+	// 			id: "Test_image_input",
+	// 			name: "Image Input Test",
+	// 			description: "Testing image selection",
+	// 			value: "",
+	// 			maxFileSize: 5000000,
+	// 			editable: true,
+	// 		},
+	// 		{
+	// 			type: "previewImage",
+	// 			id: "Test_image_input",
+	// 			editable: true,
+	// 		},
+	// 		{
+	// 			type: "custom",
+	// 			id: "Test_custom",
+	// 			uiFunction:
+	// 				"thisSettingFrame.innerHTML = \"<div style='padding: 20px; background: #333; color: gold; border-radius: 10px;'>Custom UI Rendered</div>\";",
+	// 			editable: true,
+	// 		},
+	// 		{
+	// 			type: "combineSetting",
+	// 			id: "Test_combine",
+	// 			name: "Combine Test",
+	// 			description: "Testing combineSetting type",
+	// 			settingIds: ["Test_checkbox", "Test_number_slide"],
+	// 			editable: true,
+	// 		},
+	// 	],
+	// },
+];
+
+export function getStyleShiftAddOnItems() {
+	return addOnStyleShiftItems;
+}

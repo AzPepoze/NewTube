@@ -1,0 +1,54 @@
+@keyframes styleshift-show-pop-animation {
+	0% {
+		transform: scale(0.95);
+		opacity: 0;
+	}
+	100% {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+@keyframes styleshift-hide-pop-animation {
+	0% {
+		transform: scale(1);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0.95);
+		opacity: 0;
+	}
+}
+
+@keyframes glowing {
+	0% {
+		background-position: 0 0;
+	}
+	50% {
+		background-position: 400% 0;
+	}
+	100% {
+		background-position: 0 0;
+	}
+}
+
+@keyframes styleshift-spin-rainbow {
+	from {
+		--angle: 0deg;
+	}
+	to {
+		--angle: 360deg;
+	}
+}
+
+@keyframes styleshift-slide-rainbow {
+	0% {
+		background-position: 0px 0px;
+	}
+	50% {
+		background-position: 400% 0px;
+	}
+	100% {
+		background-position: 0px 0px;
+	}
+}

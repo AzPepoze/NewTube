@@ -1,0 +1,33 @@
+{
+	"compilerOptions": {
+		"target": "es2022",
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"strict": true,
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"outDir": "./dist",
+		"types": ["chrome", "node"],
+		"lib": ["es2022", "dom"],
+		"verbatimModuleSyntax": true,
+		"strictNullChecks": false,
+		"noImplicitAny": false,
+		"paths": {
+			"@/*": ["./src/*"],
+			"@core/*": ["./src/core/*"],
+			"@settings/*": ["./src/settings/*"],
+			"@ui/*": ["./src/ui/*"],
+			"@extensions/*": ["./src/extensions/*"],
+			"@shared/*": ["./src/shared/*"],
+			"@renderers/*": ["./src/ui/settings/components/renderers/*"],
+			"@controls/*": ["./src/ui/settings/components/controls/*"],
+			"@primitives/*": ["./src/ui/settings/components/primitives/*"],
+			"@editor/*": ["./src/ui/settings/components/primitives/editor/*"],
+			"@panel/*": ["./src/ui/settings/components/panel/*"]
+		}
+	},
+	"include": ["src/**/*.ts", "src/**/*.svelte", "src/**/*.svelte.ts", "utils/**/*.ts", "eslint.config.mts"],
+	"exclude": ["node_modules"]
+}

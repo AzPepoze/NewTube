@@ -1,0 +1,53 @@
+name: build-store
+
+on:
+  workflow_dispatch:
+
+jobs:
+  store:
+    name: Build and Upload to Stores
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install
+
+      - name: Build and Pack Extension
+        run: bun run release
+
+      - name: Identify Assets
+        id: assets
+        run: |
+          CHROME_FILE=$(ls out/release/newtube_chromium_*.zip 2>/dev/null | head -n 1)
+          FIREFOX_FILE=$(ls out/release/newtube_firefox_*.zip 2>/dev/null | head -n 1)
+
+          if [ -z "$CHROME_FILE" ]; then echo "Error: Chrome zip not found"; exit 1; fi
+          if [ -z "$FIREFOX_FILE" ]; then echo "Error: Firefox zip not found"; exit 1; fi
+
+          echo "chrome_file=$CHROME_FILE" >> $GITHUB_OUTPUT
+          echo "firefox_file=$FIREFOX_FILE" >> $GITHUB_OUTPUT
+          echo "Found Chrome asset: $CHROME_FILE"
+          echo "Found Firefox asset: $FIREFOX_FILE"
+
+      - name: Upload to Chrome Web Store
+        env:
+          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          CHROME_FILE_PATH: ${{ steps.assets.outputs.chrome_file }}
+        run: bun utils/store-chrome.ts
+
+      - name: Upload to Firefox Add-ons
+        env:
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+          FIREFOX_FILE_PATH: ${{ steps.assets.outputs.firefox_file }}
+        run: bun utils/store-firefox.ts

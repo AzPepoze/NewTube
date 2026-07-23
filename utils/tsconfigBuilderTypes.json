@@ -1,0 +1,25 @@
+{
+	"compilerOptions": {
+		"target": "es2022",
+		"module": "commonjs",
+		"noEmit": true,
+		"allowJs": true,
+		"skipLibCheck": true,
+		"noImplicitAny": false,
+		"strictNullChecks": false,
+		"strict": false,
+		"types": ["chrome", "node"],
+		"rootDir": "../src",
+		"paths": {
+			"@/*": ["../src/*"],
+			"@core/*": ["../src/core/*"],
+			"@ui/*": ["../src/ui/*"],
+			"@settings/*": ["../src/settings/*"],
+			"@extensions/*": ["../src/extensions/*"],
+			"@shared/*": ["../src/shared/*"],
+			"@functions/*": ["../src/core/shared/extensionHelpers.ts"]
+		}
+	},
+	"include": ["../src/core/shared/extensionHelpers.ts"],
+	"exclude": ["../node_modules"]
+}

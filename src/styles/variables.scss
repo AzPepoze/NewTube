@@ -1,0 +1,184 @@
+.styleshift-main {
+	/* --- Theme Core --- */
+	--theme-0: #7f5db7;
+	--theme-0-10: rgba(127, 93, 183, 0.1);
+	--theme-0-12: rgba(127, 93, 183, 0.12);
+	--theme-0-15: rgba(127, 93, 183, 0.15);
+	--theme-0-20: rgba(127, 93, 183, 0.2);
+	--theme-0-30: rgba(127, 93, 183, 0.3);
+	--theme-0-40: rgba(127, 93, 183, 0.4);
+	--theme-0-50: rgba(127, 93, 183, 0.5);
+	--theme-0-light: #9374c9;
+	--theme-0-text: #b39dd9;
+	--theme-1: rgb(246, 196, 255);
+
+	--theme-warning: #ffbb33;
+	--theme-warning-10: rgba(255, 187, 51, 0.1);
+	--theme-warning-20: rgba(255, 187, 51, 0.2);
+	--theme-warning-50: rgba(255, 187, 51, 0.5);
+
+	--theme-error: #ff4444;
+	--theme-error-10: rgba(255, 68, 68, 0.1);
+	--theme-error-20: rgba(255, 68, 68, 0.2);
+	--theme-error-50: rgba(255, 68, 68, 0.5);
+
+	--theme-success: #00c851;
+	--theme-success-10: rgba(0, 200, 81, 0.1);
+	--theme-success-20: rgba(0, 200, 81, 0.2);
+	--theme-success-50: rgba(0, 200, 81, 0.5);
+
+	/* --- Default Dark Theme --- */
+	--bg-main: rgba(43, 43, 43, 1);
+	--bg-welcome: #111111;
+	--bg-surface: rgba(255, 255, 255, 0.03);
+	--bg-surface-hover: rgba(255, 255, 255, 0.06);
+	--bg-input: rgba(43, 43, 43, 0.8);
+	--font-color: #ffffff;
+	--font-color-dim: rgba(255, 255, 255, 0.5);
+	--border-color: rgba(255, 255, 255, 0.08);
+	--shadow-color: rgba(0, 0, 0, 0.5);
+
+	/* --- Content / Foreground Opacity Scale --- */
+	--fg-opacity-02: rgba(255, 255, 255, 0.02);
+	--fg-opacity-03: rgba(255, 255, 255, 0.03);
+	--fg-opacity-05: rgba(255, 255, 255, 0.05);
+	--fg-opacity-06: rgba(255, 255, 255, 0.06);
+	--fg-opacity-08: rgba(255, 255, 255, 0.08);
+	--fg-opacity-10: rgba(255, 255, 255, 0.1);
+	--fg-opacity-15: rgba(255, 255, 255, 0.15);
+	--fg-opacity-17: rgba(255, 255, 255, 0.17);
+	--fg-opacity-20: rgba(255, 255, 255, 0.2);
+	--fg-opacity-30: rgba(255, 255, 255, 0.3);
+	--fg-opacity-38: rgba(255, 255, 255, 0.38);
+	--fg-opacity-40: rgba(255, 255, 255, 0.4);
+	--fg-opacity-50: rgba(255, 255, 255, 0.5);
+	--fg-opacity-52: rgba(255, 255, 255, 0.32);
+	--fg-opacity-60: rgba(255, 255, 255, 0.6);
+	--fg-opacity-70: rgba(255, 255, 255, 0.7);
+	--fg-opacity-80: rgba(255, 255, 255, 0.8);
+	--fg-opacity-87: rgba(255, 255, 255, 0.53);
+	--fg-opacity-90: rgba(255, 255, 255, 0.9);
+	--fg-opacity-95: rgba(255, 255, 255, 0.95);
+	--fg-opacity-100: rgba(255, 255, 255, 1);
+
+	/* --- Background Overlay / Shadow Scale --- */
+	--bg-overlay-10: rgba(0, 0, 0, 0.1);
+	--bg-overlay-20: rgba(0, 0, 0, 0.2);
+	--bg-overlay-30: rgba(0, 0, 0, 0.3);
+	--bg-overlay-40: rgba(0, 0, 0, 0.4);
+	--bg-overlay-50: rgba(0, 0, 0, 0.5);
+	--bg-overlay-60: rgba(0, 0, 0, 0.6);
+
+	/* --- Semantic Aliases (Explain themselves) --- */
+	--text-primary: var(--fg-opacity-100);
+	--text-secondary: var(--fg-opacity-80);
+	--text-muted: var(--fg-opacity-50);
+	--text-disabled: var(--fg-opacity-70);
+
+	--border-subtle: var(--fg-opacity-10);
+	--border-strong: var(--fg-opacity-20);
+
+	--surface-highlight: var(--fg-opacity-10);
+	--surface-hover: var(--fg-opacity-20);
+
+	--bg-element-muted: var(--bg-overlay-30);
+	--bg-element-muted-strong: var(--bg-overlay-50);
+
+	--shadow-subtle: var(--bg-overlay-30);
+	--shadow-strong: var(--bg-overlay-50);
+
+	--border-radius: 12px;
+	--drag-top-bg: rgba(128, 128, 128, 0.2);
+
+	--category-title-bg: radial-gradient(at center top, rgb(255, 255, 255), var(--fg-opacity-50));
+	--category-title-text-color: black;
+
+	--category-left-bg: linear-gradient(90deg, transparent, var(--fg-opacity-10));
+	--category-left-title-bg-hover: rgb(125, 80, 133);
+	--category-left-title-bg-selected: var(--fg-opacity-90);
+	--category-left-title-text-color: var(--text-primary);
+	--category-left-title-text-color-hover: var(--theme-1);
+	--category-left-title-text-color-selected: var(--bg-main);
+
+	--text-editor-bg: var(--bg-main);
+	--setting-frame-bg: var(--fg-opacity-10);
+	--checkbox-bg: #979797;
+	--slider-track: #969696;
+
+	/* --- Dynamic --- */
+	--window-bg: var(--bg-main);
+	--window-blur: none;
+	--window-saturate: saturate(100%);
+}
+
+.styleshift-main[data-transparent="true"] {
+	--window-bg: rgba(43, 43, 43, 0.8);
+	--window-blur: blur(var(--setting-bg-blur-amount, 10px));
+	--window-saturate: saturate(180%);
+
+	--bg-surface: rgba(255, 255, 255, 0.05);
+}
+
+.styleshift-main[data-theme="light"][data-transparent="true"] {
+	--window-bg: rgba(248, 248, 250, 0.8);
+	--bg-surface: rgba(0, 0, 0, 0.05);
+}
+
+.styleshift-main[data-theme="light"] {
+	--bg-main: rgb(248, 248, 250);
+	--bg-surface: rgba(0, 0, 0, 0.03);
+	--bg-surface-hover: rgba(0, 0, 0, 0.06);
+	--bg-input: rgb(255, 255, 255);
+	--font-color: #1a1a1a;
+	--font-color-dim: rgba(0, 0, 0, 0.5);
+	--border-color: rgba(0, 0, 0, 0.08);
+	--shadow-color: rgba(0, 0, 0, 0.1);
+
+	/* Full Foreground Opacity Scale for Light Mode (Dark values) */
+	--fg-opacity-02: rgba(0, 0, 0, 0.02);
+	--fg-opacity-03: rgba(0, 0, 0, 0.03);
+	--fg-opacity-05: rgba(0, 0, 0, 0.05);
+	--fg-opacity-06: rgba(0, 0, 0, 0.06);
+	--fg-opacity-08: rgba(0, 0, 0, 0.08);
+	--fg-opacity-10: rgba(0, 0, 0, 0.05);
+	--fg-opacity-15: rgba(0, 0, 0, 0.1);
+	--fg-opacity-17: rgba(0, 0, 0, 0.12);
+	--fg-opacity-20: rgba(0, 0, 0, 0.1);
+	--fg-opacity-30: rgba(0, 0, 0, 0.2);
+	--fg-opacity-38: rgba(0, 0, 0, 0.25);
+	--fg-opacity-40: rgba(0, 0, 0, 0.3);
+	--fg-opacity-50: rgba(0, 0, 0, 0.4);
+	--fg-opacity-52: rgba(0, 0, 0, 0.45);
+	--fg-opacity-60: rgba(0, 0, 0, 0.5);
+	--fg-opacity-70: rgba(0, 0, 0, 0.6);
+	--fg-opacity-80: rgba(0, 0, 0, 0.7);
+	--fg-opacity-87: rgba(0, 0, 0, 0.75);
+	--fg-opacity-90: rgba(0, 0, 0, 0.8);
+	--fg-opacity-95: rgba(0, 0, 0, 0.9);
+	--fg-opacity-100: rgba(0, 0, 0, 1);
+
+	/* Full Background Overlay Scale for Light Mode (Light values) */
+	--bg-overlay-10: rgba(255, 255, 255, 0.1);
+	--bg-overlay-20: rgba(255, 255, 255, 0.2);
+	--bg-overlay-30: rgba(255, 255, 255, 0.3);
+	--bg-overlay-40: rgba(255, 255, 255, 0.4);
+	--bg-overlay-50: rgba(255, 255, 255, 0.5);
+	--bg-overlay-60: rgba(255, 255, 255, 0.6);
+
+	--bg-element-muted: #e0e0e0;
+	--bg-element-muted-strong: #bdbdbd;
+	--text-disabled: rgba(0, 0, 0, 0.38);
+
+	--drag-top-bg: rgba(0, 0, 0, 0.05);
+
+	/* --- Refined Light Theme Accents --- */
+	--theme-1: #d81b60; /* Darker pink for better visibility on light background */
+
+	--category-title-bg: radial-gradient(at center top, #ffffff, var(--fg-opacity-05));
+	--category-title-text-color: var(--text-primary);
+
+	--category-left-title-bg-selected: var(--fg-opacity-10);
+	--category-left-title-text-color-selected: var(--theme-0);
+
+	--shadow-color: rgba(0, 0, 0, 0.08);
+}

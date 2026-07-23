@@ -1,0 +1,128 @@
+@use "variables";
+
+@keyframes styleshift-notification-hide {
+	0% {
+		opacity: 1;
+		max-height: 1000px;
+		padding: 12px;
+	}
+	100% {
+		opacity: 0;
+		max-height: 0;
+		min-height: 0;
+		height: 0;
+		padding: 0;
+	}
+}
+
+@keyframes styleshift-notification-show {
+	0% {
+		opacity: 0;
+		max-height: 0;
+		padding: 0;
+	}
+	100% {
+		opacity: 1;
+		max-height: 1000px;
+		padding: 12px;
+	}
+}
+
+.styleshift-main {
+	.styleshift-notification-container {
+		right: 0;
+		position: absolute;
+		width: 400px;
+		height: 100%;
+		pointer-events: none;
+		display: flex;
+		flex-direction: column-reverse;
+		padding: 20px;
+		bottom: 0;
+		overflow-y: auto;
+		gap: 10px;
+	}
+
+	.styleshift-notification {
+		background: var(--window-bg);
+		border: 1px solid var(--border-color);
+		box-shadow: 0px 4px 15px var(--shadow-color);
+		border-radius: 12px;
+		width: 100%;
+		gap: 15px;
+		display: flex;
+		flex-direction: row !important;
+		align-items: center !important;
+		pointer-events: all;
+		height: max-content;
+		overflow: hidden;
+		min-height: fit-content;
+		color: var(--font-color);
+		backdrop-filter: var(--window-blur) var(--window-saturate);
+		transition:
+			background-color 0.3s,
+			backdrop-filter 0.3s;
+		padding: 12px;
+		box-sizing: border-box;
+
+		&.styleshift-notification-error {
+			border-left: 4px solid var(--theme-error);
+		}
+		&.styleshift-notification-warning {
+			border-left: 4px solid var(--theme-warning);
+		}
+		&.styleshift-notification-success {
+			border-left: 4px solid var(--theme-success, #00c851);
+		}
+
+		.styleshift-notification-icon {
+			font-size: 24px;
+			min-width: 40px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 0 5px;
+		}
+
+		.styleshift-notification-content-frame {
+			display: flex;
+			flex-direction: column !important;
+			gap: 4px;
+			flex: 1;
+			align-items: flex-start !important;
+			padding: 4px 0;
+		}
+
+		.styleshift-notification-title {
+			font-size: 15px;
+			font-weight: 1000;
+			color: var(--font-color);
+			padding: 0 !important;
+			text-align: left !important;
+			user-select: text;
+		}
+
+		.styleshift-notification-content {
+			font-size: 13px;
+			color: var(--font-color);
+			padding: 0 !important;
+			text-align: left !important;
+			white-space: pre;
+			text-wrap: auto;
+			user-select: text;
+		}
+
+		.styleshift-notification-close {
+			cursor: pointer;
+			width: 30px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			color: var(--font-color);
+			user-select: none;
+			&:hover {
+				background: red;
+			}
+		}
+	}
+}
