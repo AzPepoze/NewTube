@@ -39,15 +39,21 @@ async function storeChrome() {
 	// 2. Upload the ZIP file
 	console.log(`Uploading ${filePath}...`);
 	const fileBuffer = readFileSync(filePath);
+	const boundary = `----NewTube${crypto.randomUUID()}`;
+	const multipartBody = new Blob([
+		`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n{}\r\n--${boundary}\r\nContent-Type: application/zip\r\n\r\n`,
+		fileBuffer,
+		`\r\n--${boundary}--\r\n`,
+	]);
 	const uploadUrl = `https://chromewebstore.googleapis.com/upload/v2/publishers/${publisherId}/items/${extensionId}:upload`;
 
 	const uploadResponse = await fetch(uploadUrl, {
 		method: "POST",
 		headers: {
 			Authorization: `Bearer ${accessToken}`,
-			"x-goog-upload-protocol": "multipart",
+			"Content-Type": `multipart/related; boundary=${boundary}`,
 		},
-		body: fileBuffer,
+		body: multipartBody,
 	});
 
 	if (!uploadResponse.ok) {
