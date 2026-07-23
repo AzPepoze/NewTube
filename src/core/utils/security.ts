@@ -73,16 +73,11 @@ export function isSafeCode(code: string, codeName: string): boolean {
 				const endContext = Math.min(errorLine.length, charPosition + match[0].length + 15);
 				const contextSnippet = errorLine.slice(startContext, endContext);
 
-				const highlightedError = contextSnippet.replace(
-					match[0],
-					`<span style="color: #ff4b4b; text-decoration: underline;">${match[0]}</span>`,
-				);
-
 				createNotification({
 					icon: "block",
 					iconColor: "#888888",
 					title: "StyleShift - Error",
-					content: `<b>"${match[0]}"</b> is not allowed.<br>Found at line: <b>${lineNumber}</b>, character: <b>${charPosition}</b><br>From: <b>${codeName}</b><br><br><pre>${highlightedError}</pre>`,
+					content: `"${match[0]}" is not allowed.\nFound at line: ${lineNumber}, character: ${charPosition}\nFrom: ${codeName}\n\n${contextSnippet}`,
 					timeout: 0,
 				});
 

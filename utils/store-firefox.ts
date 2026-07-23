@@ -1,4 +1,4 @@
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import { existsSync, mkdirSync } from "fs";
 import path from "path";
 
@@ -22,18 +22,26 @@ async function storeFirefox() {
 
 	try {
 		// Using bun x to ensure we use the project's web-ext version
-		const cmd = [
-			"bun x web-ext sign",
-			`--api-key ${apiKey}`,
-			`--api-secret ${apiSecret}`,
-			`--source-dir ${dummyDir}`,
-			"--artifacts-dir out/signed",
-			`--upload-file ${filePath}`,
-			"--channel listed",
-		].join(" ");
+		const args = [
+			"x",
+			"web-ext",
+			"sign",
+			"--api-key",
+			apiKey,
+			"--api-secret",
+			apiSecret,
+			"--source-dir",
+			dummyDir,
+			"--artifacts-dir",
+			"out/signed",
+			"--upload-file",
+			filePath,
+			"--channel",
+			"listed",
+		];
 
 		console.log("Executing web-ext sign...");
-		execSync(cmd, { stdio: "inherit" });
+		execFileSync("bun", args, { stdio: "inherit" });
 		console.log("Successfully signed and uploaded to Firefox Add-ons!");
 	} catch (_error) {
 		console.error("Firefox Add-ons upload failed.");

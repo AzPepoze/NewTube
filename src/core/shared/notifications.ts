@@ -12,7 +12,7 @@ import { globalNotificationContainer, playUiAnimation } from "@ui/window/windowF
  * @param {string | null} [options.icon=null] - The name of the material icon to display.
  * @param {string} [options.iconColor=""] - The CSS color for the icon.
  * @param {string} [options.title="StyleShift"] - The title of the notification.
- * @param {string} [options.content=""] - The HTML content of the notification.
+ * @param {string} [options.content=""] - The text content of the notification.
  * @param {number} [options.timeout=3000] - Duration in ms before auto-closing (0 for manual close, -1 for persistent).
  * @returns {Promise<Object>} An object containing methods to control the notification (setIcon, setIconColor, setContent, setTitle, close).
  *
@@ -66,8 +66,8 @@ export async function createNotification({
 	contentUi.style.display = "block";
 	contentFrame.append(contentUi);
 
-	const setContent = (val: any) => {
-		contentUi.innerHTML = String(val).replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gim, "");
+	const setContent = (val: unknown) => {
+		contentUi.textContent = String(val);
 	};
 	setContent(content);
 
