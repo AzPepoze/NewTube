@@ -5,10 +5,10 @@ async function storeChrome() {
 	const clientSecret = process.env.CHROME_CLIENT_SECRET;
 	const refreshToken = process.env.CHROME_REFRESH_TOKEN;
 	const extensionId = process.env.CHROME_EXTENSION_ID;
-	const publisherId = process.env.CHROME_PUBLISHER_ID || "default";
+	const publisherId = process.env.CHROME_PUBLISHER_ID;
 	const filePath = process.env.CHROME_FILE_PATH;
 
-	if (!clientId || !clientSecret || !refreshToken || !extensionId || !filePath) {
+	if (!clientId || !clientSecret || !refreshToken || !extensionId || !publisherId || !filePath) {
 		console.error("Missing environment variables for Chrome Web Store upload.");
 		process.exit(1);
 	}
