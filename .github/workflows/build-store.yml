@@ -47,6 +47,7 @@ jobs:
         run: bun utils/store-chrome.ts
 
       - name: Upload to Firefox Add-ons
+        if: ${{ always() }}
         env:
           AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
           AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
