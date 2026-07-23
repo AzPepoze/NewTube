@@ -1,4 +1,4 @@
-name: Deploy Last Release
+name: build-store
 
 on:
   workflow_dispatch:
