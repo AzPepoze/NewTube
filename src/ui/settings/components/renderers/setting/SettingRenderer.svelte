@@ -61,6 +61,15 @@
 	}
 
 	$effect(() => {
+		if (domNode) {
+			const actionInstance = highlightAction(domNode, highlight);
+			return () => {
+				actionInstance?.destroy?.();
+			};
+		}
+	});
+
+	$effect(() => {
 		if (controller.isDeveloperMode && domNode && domNode.parentElement) {
 			addDropTarget(domNode, domNode.parentElement, setting, "setting");
 		}
@@ -85,7 +94,6 @@
 		: ''} {isLocked || !controller.requirementsMet ? 'flex-direction: column; align-items: stretch;' : ''}"
 	useAction={(node) => {
 		domNode = node;
-		highlightAction(node, highlight);
 		if (setting.id && node.parentElement) {
 			registerSettingUi(setting.id, node.parentElement, node);
 		}
@@ -102,7 +110,7 @@
 		{/if}
 
 		{#if setting.type === "checkbox"}
-			<Checkbox {setting} />
+			<Checkbox {setting} disabled={isLocked} />
 		{:else if setting.type === "button"}
 			<Button {setting} {layout} showHoverPreview />
 		{:else if setting.type === "numberSlide"}
@@ -126,7 +134,12 @@
 		{:else if setting.type === "imageInput"}
 			<ImageInput {setting} />
 		{:else if setting.type === "previewImage"}
-			<PreviewImage src={controller.value} />
+			<PreviewImage
+				src={controller.value}
+				title={setting.title}
+				preset={setting.preset}
+				settingIds={setting.settingIds}
+			/>
 		{:else if setting.type === "custom"}
 			<div use:controller.customSettingAction></div>
 		{:else if setting.type === "combineSetting"}

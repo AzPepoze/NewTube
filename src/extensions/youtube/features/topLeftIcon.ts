@@ -1,5 +1,6 @@
 import { getUserSetting } from "@core/storage/manager";
 import { registerSettingListener } from "@settings/engine/functions";
+import { computeImageTransformStyles } from "@/shared/utils/imageStyles";
 import { onYoutubeNavigate } from "../modules/youtube";
 
 let logoObserver: MutationObserver | null = null;
@@ -21,8 +22,31 @@ async function updateLogo() {
 		if (img.src !== url) {
 			img.src = url;
 		}
-		img.style.scale = await getUserSetting("TopLeftIconSize");
-		img.style.translate = `${await getUserSetting("TopLeftIconPositionX")}% ${await getUserSetting("TopLeftIconPositionY")}%`;
+
+		const scale = (await getUserSetting("TopLeftIconSize")) as number;
+		const posX = (await getUserSetting("TopLeftIconPositionX")) as number;
+		const posY = (await getUserSetting("TopLeftIconPositionY")) as number;
+		const cropTop = (await getUserSetting("TopLeftIconCropTop")) as number;
+		const cropBottom = (await getUserSetting("TopLeftIconCropBottom")) as number;
+		const cropLeft = (await getUserSetting("TopLeftIconCropLeft")) as number;
+		const cropRight = (await getUserSetting("TopLeftIconCropRight")) as number;
+		const flip = (await getUserSetting("EnableTopLeftIconFlip")) as boolean;
+
+		const styles = computeImageTransformStyles({
+			scale,
+			positionX: posX,
+			positionY: posY,
+			cropTop,
+			cropBottom,
+			cropLeft,
+			cropRight,
+			flip,
+		});
+
+		img.style.scale = styles.scale;
+		img.style.translate = styles.translate;
+		img.style.clipPath = styles.clipPath;
+		img.style.transform = styles.transform;
 	} else {
 		const logo = document.querySelector("#nt-custom-logo");
 		if (logo) logo.remove();
@@ -84,3 +108,8 @@ registerSettingListener("EnableCustomTopLeftIcon", updateLogo);
 registerSettingListener("TopLeftIconSize", updateLogo);
 registerSettingListener("TopLeftIconPositionX", updateLogo);
 registerSettingListener("TopLeftIconPositionY", updateLogo);
+registerSettingListener("TopLeftIconCropTop", updateLogo);
+registerSettingListener("TopLeftIconCropBottom", updateLogo);
+registerSettingListener("TopLeftIconCropLeft", updateLogo);
+registerSettingListener("TopLeftIconCropRight", updateLogo);
+registerSettingListener("EnableTopLeftIconFlip", updateLogo);

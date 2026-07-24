@@ -9,13 +9,21 @@
 		setting,
 		value = $bindable(false),
 		hideLabel = false,
+		disabled = false,
 	}: {
 		setting: Extract<Setting, { type: "checkbox" }>;
 		value?: boolean;
 		hideLabel?: boolean;
+		disabled?: boolean;
 	} = $props();
 
+	const isLocked = $derived(disabled || (setting.lock?.condition ?? false));
+
 	async function init() {
+		if (isLocked) {
+			value = false;
+			return;
+		}
 		if (setting.id) {
 			value = await getFromStorage(setting.id);
 		} else {
@@ -25,7 +33,9 @@
 	init();
 
 	$effect(() => {
-		if (!setting.id && setting.value !== undefined) {
+		if (isLocked) {
+			value = false;
+		} else if (!setting.id && setting.value !== undefined) {
 			value = setting.value;
 		}
 	});
@@ -34,6 +44,7 @@
 	const description = $derived(setting.description || "");
 
 	async function handleChange() {
+		if (isLocked) return;
 		if (setting.id) {
 			await setAndSave(setting, value);
 			triggerSettingUpdate(setting.id);
@@ -46,7 +57,7 @@
 {#if !hideLabel}
 	<Description {name} {description} />
 {/if}
-<input type="checkbox" class="styleshift-checkbox" bind:checked={value} onchange={handleChange} />
+<input type="checkbox" class="styleshift-checkbox" bind:checked={value} onchange={handleChange} disabled={isLocked} />
 
 <style lang="scss">
 	.styleshift-checkbox {

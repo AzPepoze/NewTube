@@ -134,7 +134,7 @@ export const thumbnailCategory: Category = {
 			id: "ThumbnailHoverOverlayEnabled",
 			hoverPreview: { selectors: ["ytd-thumbnail", "ytd-playlist-thumbnail", "yt-thumbnail-view-model"] },
 			name: "Hover Glow Effect",
-			description: "Adds a subtle color overlay and glowing border when you hover over a video thumbnail.",
+			description: "Adds a glowing border or shadow when you hover over a video thumbnail.",
 			value: true,
 			enableCss: `
                 ytd-thumbnail:hover, ytd-playlist-thumbnail:hover {
@@ -143,15 +143,6 @@ export const thumbnailCategory: Category = {
                 }
                 ytd-thumbnail:active, ytd-playlist-thumbnail:active {
                     outline-color: var(--nt-click-color) !important;
-                }
-                #thumbnail:hover:after {
-                    content: "";
-                    position: absolute;
-                    top: 0; left: 0; right: 0; bottom: 0;
-                    background: var(--nt-hover-color);
-                    opacity: 0.1;
-                    pointer-events: none;
-                    border-radius: var(--nt-border-radius);
                 }
             `,
 		},

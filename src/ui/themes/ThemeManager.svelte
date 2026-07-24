@@ -5,6 +5,7 @@
 	import CapsuleTabs from "@ui/window/components/CapsuleTabs.svelte";
 	import { onMount } from "svelte";
 	import { fade, fly } from "svelte/transition";
+	import GroupedTagDropdown from "./GroupedTagDropdown.svelte";
 	import ThemeCard from "./ThemeCard.svelte";
 	import { ThemeManagerController } from "./ThemeManagerController.svelte";
 
@@ -28,6 +29,7 @@
 
 	$effect(() => {
 		if (currentView === "store") {
+			controller.fetchTags();
 			const timer = setTimeout(() => controller.fetchStoreThemes(searchQuery), 300);
 			return () => clearTimeout(timer);
 		}
@@ -38,6 +40,28 @@
 		if (success && currentView === "store") {
 			currentView = "installed";
 		}
+	}
+
+	let pageInput = $state(1);
+
+	function handleJumpPage() {
+		let page = Math.floor(Number(pageInput));
+		if (isNaN(page) || page < 1) page = 1;
+		if (page > controller.totalPages) page = controller.totalPages;
+		pageInput = page;
+		if (page !== controller.currentPage) {
+			controller.goToPage(page, searchQuery);
+		}
+	}
+
+	async function prevPage() {
+		await controller.prevPage(searchQuery);
+		pageInput = controller.currentPage;
+	}
+
+	async function nextPage() {
+		await controller.nextPage(searchQuery);
+		pageInput = controller.currentPage;
 	}
 
 	onMount(() => {
@@ -65,6 +89,15 @@
 				placeholder="Search {currentView === 'installed' ? 'installed' : 'store'} themes..."
 			/>
 		</div>
+		{#if currentView === "store"}
+			<div class="tag-filter-wrapper" transition:fade={{ duration: 150 }}>
+				<GroupedTagDropdown
+					selectedTag={controller.selectedTag}
+					groupedTags={controller.groupedTags}
+					onSelect={(tag) => controller.setSelectedTag(tag, searchQuery)}
+				/>
+			</div>
+		{/if}
 	</div>
 
 	<div
@@ -89,6 +122,8 @@
 					{/each}
 					{#if controller.themes.length === 0}
 						{@render emptyState("palette", "Your collection is empty.", "Save your current setup to see it here!")}
+					{:else if filteredLocalThemes.length === 0}
+						{@render emptyState("search_off", "No themes found.", "Try a different search query.")}
 					{/if}
 				{:else}
 					{#each controller.storeThemes as theme, i (theme.themeId)}
@@ -111,8 +146,10 @@
 							<div class="spinner"></div>
 							<p>Fetching themes from store...</p>
 						</div>
+					{:else if controller.storeError}
+						{@render emptyState("cloud_off", "Could not load store themes.", controller.storeError)}
 					{:else if controller.storeThemes.length === 0}
-						{@render emptyState("cloud_off", "Could not load store themes.", "Check your connection and try again.")}
+						{@render emptyState("search_off", "No themes found.", "Try adjusting your search query or filters.")}
 					{/if}
 				{/if}
 			</div>
@@ -161,6 +198,44 @@
 				}}
 			/>
 		</div>
+
+		{#if currentView === "store" && controller.storeTotal > 0}
+			<div class="actions-center" transition:fade={{ duration: 150 }}>
+				<button
+					class="page-nav-btn"
+					disabled={controller.currentPage <= 1 || controller.isLoadingStore}
+					onclick={prevPage}
+					title="Previous Page"
+				>
+					<Icon name="chevron_left" size={18} />
+				</button>
+
+				<div class="page-input-wrapper">
+					<span class="label">Page</span>
+					<input
+						type="number"
+						class="page-number-input"
+						min="1"
+						max={controller.totalPages}
+						disabled={controller.isLoadingStore}
+						bind:value={pageInput}
+						onkeydown={(e) => e.key === "Enter" && handleJumpPage()}
+						onblur={handleJumpPage}
+					/>
+					<span class="total-pages">/ {controller.totalPages}</span>
+				</div>
+
+				<button
+					class="page-nav-btn"
+					disabled={controller.currentPage >= controller.totalPages || controller.isLoadingStore}
+					onclick={nextPage}
+					title="Next Page"
+				>
+					<Icon name="chevron_right" size={18} />
+				</button>
+			</div>
+		{/if}
+
 		<div class="actions-right">
 			<Button
 				class="footer-btn"
@@ -207,6 +282,11 @@
 		.search-box {
 			flex: 1;
 			min-width: 200px;
+		}
+
+		.tag-filter-wrapper {
+			display: flex;
+			align-items: center;
 		}
 	}
 
@@ -299,7 +379,8 @@
 		background: var(--bg-main, #111);
 
 		.actions-left,
-		.actions-right {
+		.actions-right,
+		.actions-center {
 			display: flex;
 			gap: 8px;
 			align-items: center;
@@ -307,6 +388,88 @@
 
 		.actions-left {
 			min-width: 0;
+		}
+
+		.actions-center {
+			flex: 1;
+			justify-content: center;
+			gap: 10px;
+
+			.page-nav-btn {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 32px;
+				height: 32px;
+				border-radius: 8px;
+				background: var(--fg-opacity-05);
+				border: 1px solid var(--fg-opacity-10);
+				color: var(--font-color);
+				cursor: pointer;
+				transition: all 160ms ease;
+
+				&:hover:not(:disabled) {
+					background: var(--fg-opacity-15);
+					border-color: var(--theme-0);
+					color: var(--theme-0);
+					transform: translateY(-1px);
+				}
+
+				&:disabled {
+					opacity: 0.35;
+					cursor: not-allowed;
+				}
+			}
+
+			.page-input-wrapper {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				font-size: 13.5px;
+				font-weight: 500;
+				color: var(--font-color-dim);
+
+				.label {
+					font-size: 13px;
+				}
+
+				.page-number-input {
+					width: 48px;
+					height: 30px;
+					text-align: center;
+					font-size: 13.5px;
+					font-weight: 600;
+					color: var(--font-color);
+					background: var(--fg-opacity-05);
+					border: 1px solid var(--fg-opacity-15);
+					border-radius: 8px;
+					outline: none;
+					transition: all 160ms ease;
+					appearance: none;
+					-moz-appearance: textfield;
+
+					&::-webkit-outer-spin-button,
+					&::-webkit-inner-spin-button {
+						-webkit-appearance: none;
+						margin: 0;
+					}
+
+					&:focus {
+						border-color: var(--theme-0);
+						background: var(--fg-opacity-10);
+						box-shadow: 0 0 0 2px rgba(162, 96, 215, 0.2);
+					}
+
+					&:disabled {
+						opacity: 0.5;
+					}
+				}
+
+				.total-pages {
+					font-weight: 600;
+					color: var(--font-color);
+				}
+			}
 		}
 
 		.actions-right {

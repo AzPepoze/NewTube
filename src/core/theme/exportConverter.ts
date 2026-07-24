@@ -5,9 +5,7 @@ export async function convertToExportSetting(
 	thisSetting: Setting,
 	createFileFunction: (fileName: string, fileData: string) => Promise<void>,
 ) {
-	const properties =
-		styleshiftPropertyList[thisSetting.type] ||
-		styleshiftPropertyList[thisSetting.type.charAt(0).toUpperCase() + thisSetting.type.slice(1)];
+	const properties = styleshiftPropertyList[thisSetting.type];
 	if (properties) {
 		for (const thisProperty of properties) {
 			if ((thisProperty.includes("_css") || thisProperty.includes("_function")) && !(thisProperty in thisSetting)) {

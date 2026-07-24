@@ -38,6 +38,25 @@ export type BaseSetting = {
 	quickCustomize?: any;
 };
 
+export enum SettingType {
+	Text = "text",
+	SubText = "subText",
+	Button = "button",
+	Checkbox = "checkbox",
+	NumberSlide = "numberSlide",
+	Dropdown = "dropdown",
+	Color = "color",
+	TextInput = "textInput",
+	ImageInput = "imageInput",
+	PreviewImage = "previewImage",
+	Custom = "custom",
+	CombineSetting = "combineSetting",
+	ConditionSetting = "conditionSetting",
+	KeyboardShortcuts = "keyboardShortcuts",
+	Group = "group",
+	SelectorInput = "selectorInput",
+}
+
 export type Setting = (
 	| {
 			type: "text";
@@ -199,8 +218,19 @@ export type Setting = (
 	| {
 			type: "previewImage";
 			id: string;
-
-			//--------------
+			title?: string;
+			preset?: "default" | "topbar" | "banner" | "card" | "avatar";
+			settingIds?: {
+				url?: string;
+				size?: string;
+				positionX?: string;
+				positionY?: string;
+				cropTop?: string;
+				cropBottom?: string;
+				cropLeft?: string;
+				cropRight?: string;
+				flip?: string;
+			};
 			editable?: boolean;
 	  }
 	| {

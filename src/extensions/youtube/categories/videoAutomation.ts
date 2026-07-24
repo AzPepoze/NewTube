@@ -40,7 +40,7 @@ export const videoAutomationCategory: Category = {
 			enableFunction: enableAutoPip,
 			disableFunction: disableAutoPip,
 			lock: {
-				condition: !IS_FIREFOX,
+				condition: IS_FIREFOX,
 				message: "Picture-in-Picture functionality has security limitations in Firefox, I can't do anything I'm sorry.",
 			},
 		},
@@ -53,7 +53,7 @@ export const videoAutomationCategory: Category = {
 			enableFunction: enableAutoExitPip,
 			disableFunction: disableAutoPip,
 			lock: {
-				condition: !IS_FIREFOX,
+				condition: IS_FIREFOX,
 				message: "Picture-in-Picture functionality has security limitations in Firefox, I can't do anything I'm sorry.",
 			},
 		},
