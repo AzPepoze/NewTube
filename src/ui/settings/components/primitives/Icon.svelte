@@ -59,7 +59,8 @@
 	/>
 {:else if isMaterialIcon}
 	<i
-		class="material-icons styleshift-icon styleshift-material-icon {className}"
+		class="material-icons notranslate styleshift-icon styleshift-material-icon {className}"
+		translate="no"
 		style="font-size: {size}px; line-height: {size}px; width: {size}px; height: {size}px; {style}"
 		style:color={color || undefined}
 	>
@@ -67,7 +68,8 @@
 	</i>
 {:else if isEmoji}
 	<span
-		class="styleshift-icon styleshift-text-icon {className}"
+		class="styleshift-icon styleshift-text-icon notranslate {className}"
+		translate="no"
 		style="font-size: {size}px; line-height: {size}px; width: {size}px; height: {size}px; {style}"
 	>
 		{name}

@@ -244,7 +244,7 @@
 					}}
 				/>
 				<button class="icon-btn" onclick={toggleMute}>
-					<span class="material-icons"
+					<span class="material-icons notranslate" translate="no"
 						>{isMuted || volume === 0 ? "volume_off" : volume < 0.5 ? "volume_down" : "volume_up"}</span
 					>
 				</button>
@@ -254,7 +254,7 @@
 		<div class="bottom-controls">
 			<div class="timeline-container">
 				<button class="icon-btn play-pause-btn" onclick={togglePlay}>
-					<span class="material-icons">{isPlaying ? "pause" : "play_arrow"}</span>
+					<span class="material-icons notranslate" translate="no">{isPlaying ? "pause" : "play_arrow"}</span>
 				</button>
 				<span class="time-label">{formatTime(currentTime)}</span>
 				<div class="range-wrapper">
