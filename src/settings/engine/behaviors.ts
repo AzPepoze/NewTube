@@ -33,8 +33,9 @@ export const SETTING_TYPE_BEHAVIORS = {
 		const stylesheet = initBase(setting)!;
 
 		async function applyCheckboxUpdate() {
-			const currentValue = await getFromStorage(setting.id);
-			logger.debug("settings", `Applying checkbox update for ${setting.id}:`, currentValue);
+			const isLocked = setting.lock?.condition ?? false;
+			const currentValue = isLocked ? false : await getFromStorage(setting.id);
+			logger.debug("settings", `Applying checkbox update for ${setting.id}:`, currentValue, isLocked ? "(locked)" : "");
 
 			stylesheet.textContent =
 				(setting.constantCss || ``) + (currentValue ? setting.enableCss || `` : setting.disableCss || ``);

@@ -102,7 +102,7 @@
 		{/if}
 
 		{#if setting.type === "checkbox"}
-			<Checkbox {setting} />
+			<Checkbox {setting} disabled={isLocked} />
 		{:else if setting.type === "button"}
 			<Button {setting} {layout} showHoverPreview />
 		{:else if setting.type === "numberSlide"}
