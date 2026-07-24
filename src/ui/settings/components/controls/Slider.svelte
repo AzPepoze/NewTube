@@ -17,11 +17,10 @@
 	let value = $state(0);
 
 	async function init() {
+		value = setting.value ?? 0;
 		if (setting.id) {
 			const storedValue = await getFromStorage(setting.id);
-			if (storedValue !== undefined) value = storedValue;
-		} else {
-			value = setting.value;
+			if (storedValue !== undefined && storedValue !== null) value = storedValue;
 		}
 	}
 	init();

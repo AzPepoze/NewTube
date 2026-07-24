@@ -12,9 +12,9 @@ export const scrollbarCategory: Category = {
 			description: "Adjusts the scrollbar width for Chromium-based browsers (Chrome, Edge, Opera).",
 			value: "thin",
 			options: [
-				{ label: "Default", value: "auto", enableCss: `html { scrollbar-width: auto; }` },
-				{ label: "Thin", value: "thin", enableCss: `html { scrollbar-width: thin; }` },
-				{ label: "Hidden", value: "none", enableCss: `html { scrollbar-width: none; }` },
+				{ label: "Default", value: "auto", enableCss: `* { scrollbar-width: auto !important; }` },
+				{ label: "Thin", value: "thin", enableCss: `* { scrollbar-width: thin !important; }` },
+				{ label: "Hidden", value: "none", enableCss: `* { scrollbar-width: none !important; }` },
 			],
 		},
 		{

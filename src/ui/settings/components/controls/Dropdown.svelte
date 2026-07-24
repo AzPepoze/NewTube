@@ -27,18 +27,17 @@
 	let value = $state("");
 
 	async function init() {
+		value = setting.value ?? "";
 		logger.debug("ui", `[Dropdown] Initializing for setting: ${setting.id || "no-id"}`, {
 			initialValue: setting.value,
 			optionsCount: setting.options?.length,
 		});
 		if (setting.id) {
 			const storedValue = await getFromStorage(setting.id);
-			if (storedValue !== undefined) {
+			if (storedValue !== undefined && storedValue !== null) {
 				logger.debug("ui", `[Dropdown] Loaded stored value: ${storedValue} for ${setting.id}`);
 				value = storedValue;
 			}
-		} else {
-			value = setting.value;
 		}
 	}
 	init();
@@ -314,7 +313,7 @@
 		grid-area: stack;
 		visibility: hidden;
 		white-space: nowrap;
-		height: 0;
+		pointer-events: none;
 		overflow: hidden;
 	}
 
