@@ -61,6 +61,15 @@
 	}
 
 	$effect(() => {
+		if (domNode) {
+			const actionInstance = highlightAction(domNode, highlight);
+			return () => {
+				actionInstance?.destroy?.();
+			};
+		}
+	});
+
+	$effect(() => {
 		if (controller.isDeveloperMode && domNode && domNode.parentElement) {
 			addDropTarget(domNode, domNode.parentElement, setting, "setting");
 		}
@@ -85,7 +94,6 @@
 		: ''} {isLocked || !controller.requirementsMet ? 'flex-direction: column; align-items: stretch;' : ''}"
 	useAction={(node) => {
 		domNode = node;
-		highlightAction(node, highlight);
 		if (setting.id && node.parentElement) {
 			registerSettingUi(setting.id, node.parentElement, node);
 		}
