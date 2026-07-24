@@ -122,6 +122,8 @@
 					{/each}
 					{#if controller.themes.length === 0}
 						{@render emptyState("palette", "Your collection is empty.", "Save your current setup to see it here!")}
+					{:else if filteredLocalThemes.length === 0}
+						{@render emptyState("search_off", "No themes found.", "Try a different search query.")}
 					{/if}
 				{:else}
 					{#each controller.storeThemes as theme, i (theme.themeId)}
@@ -144,8 +146,10 @@
 							<div class="spinner"></div>
 							<p>Fetching themes from store...</p>
 						</div>
+					{:else if controller.storeError}
+						{@render emptyState("cloud_off", "Could not load store themes.", controller.storeError)}
 					{:else if controller.storeThemes.length === 0}
-						{@render emptyState("cloud_off", "Could not load store themes.", "Check your connection and try again.")}
+						{@render emptyState("search_off", "No themes found.", "Try adjusting your search query or filters.")}
 					{/if}
 				{/if}
 			</div>

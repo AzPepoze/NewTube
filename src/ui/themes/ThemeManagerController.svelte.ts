@@ -19,6 +19,22 @@ import {
 	type Tag,
 } from "@core/theme/parser";
 
+async function parseResponseError(res: Response): Promise<string> {
+	try {
+		const data = await res.json();
+		if (data && typeof data === "object") {
+			const msg = data.message || data.error || data.detail || data.msg;
+			if (typeof msg === "string" && msg.trim()) return msg;
+		}
+	} catch {
+		// Response was not JSON
+	}
+	if (res.statusText) {
+		return `Server error (${res.status}): ${res.statusText}`;
+	}
+	return `Server error (${res.status})`;
+}
+
 export class ThemeManagerController {
 	themes = $state<Theme[]>([]);
 	storeThemes = $state<Theme[]>([]);
@@ -26,6 +42,7 @@ export class ThemeManagerController {
 	loadingThemeId = $state<string | null>(null);
 	isLoadingStore = $state(false);
 	isLoadingMoreStore = $state(false);
+	storeError = $state<string | null>(null);
 	storeOffset = $state(0);
 	storeLimit = $state(24);
 	storeTotal = $state(0);
@@ -80,6 +97,7 @@ export class ThemeManagerController {
 		if (reset) {
 			this.storeOffset = 0;
 			this.isLoadingStore = true;
+			this.storeError = null;
 		} else {
 			this.isLoadingMoreStore = true;
 		}
@@ -91,21 +109,29 @@ export class ThemeManagerController {
 			);
 			if (res.ok) {
 				const data = await res.json();
-				const items = extractListFromResponse(data);
-				const pagination = extractPaginationFromResponse(data, items.length);
-				const mappedItems = items.map((t) => normalizeStoreThemePayload(t));
-
-				if (reset) {
-					this.storeThemes = mappedItems;
+				if (data && typeof data === "object" && !Array.isArray(data) && (data.error || data.success === false)) {
+					this.storeError = (data.message || data.error || "Failed to load store themes") as string;
 				} else {
-					this.storeThemes = [...this.storeThemes, ...mappedItems];
-				}
+					const items = extractListFromResponse(data);
+					const pagination = extractPaginationFromResponse(data, items.length);
+					const mappedItems = items.map((t) => normalizeStoreThemePayload(t));
 
-				this.storeTotal = pagination.total;
-				this.hasMoreStore = pagination.hasMore;
+					if (reset) {
+						this.storeThemes = mappedItems;
+					} else {
+						this.storeThemes = [...this.storeThemes, ...mappedItems];
+					}
+
+					this.storeTotal = pagination.total;
+					this.hasMoreStore = pagination.hasMore;
+					this.storeError = null;
+				}
+			} else {
+				this.storeError = await parseResponseError(res);
 			}
 		} catch (e) {
 			console.error("Store fetch failed", e);
+			this.storeError = e instanceof Error && e.message ? e.message : "Check your connection and try again.";
 		} finally {
 			this.isLoadingStore = false;
 			this.isLoadingMoreStore = false;
@@ -117,6 +143,7 @@ export class ThemeManagerController {
 		const targetOffset = (targetPage - 1) * this.storeLimit;
 		this.storeOffset = targetOffset;
 		this.isLoadingStore = true;
+		this.storeError = null;
 		try {
 			const tagParam = this.selectedTag ? `&tag=${encodeURIComponent(this.selectedTag)}` : "";
 			const res = await fetch(
@@ -124,14 +151,22 @@ export class ThemeManagerController {
 			);
 			if (res.ok) {
 				const data = await res.json();
-				const items = extractListFromResponse(data);
-				const pagination = extractPaginationFromResponse(data, items.length);
-				this.storeThemes = items.map((t) => normalizeStoreThemePayload(t));
-				this.storeTotal = pagination.total;
-				this.hasMoreStore = pagination.hasMore;
+				if (data && typeof data === "object" && !Array.isArray(data) && (data.error || data.success === false)) {
+					this.storeError = (data.message || data.error || "Failed to load store themes") as string;
+				} else {
+					const items = extractListFromResponse(data);
+					const pagination = extractPaginationFromResponse(data, items.length);
+					this.storeThemes = items.map((t) => normalizeStoreThemePayload(t));
+					this.storeTotal = pagination.total;
+					this.hasMoreStore = pagination.hasMore;
+					this.storeError = null;
+				}
+			} else {
+				this.storeError = await parseResponseError(res);
 			}
 		} catch (e) {
 			console.error("Store page fetch failed", e);
+			this.storeError = e instanceof Error && e.message ? e.message : "Check your connection and try again.";
 		} finally {
 			this.isLoadingStore = false;
 		}
