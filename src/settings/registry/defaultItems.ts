@@ -1,10 +1,20 @@
-import { type Category, type Setting } from "@settings/types/styleshiftTypes";
+import { SettingType, type Category, type Setting } from "@settings/types/styleshiftTypes";
 
-export const styleshiftPropertyList: { [key: string]: string[] } = {
-	text: ["type", "id", "html", "align", "color", "fontSize", "editable"],
-	subText: ["type", "id", "text", "align", "color", "fontSize", "editable"],
-	button: ["type", "id", "description", "icon", "align", "color", "fontSize", "clickFunction", "editable"],
-	checkbox: [
+export const styleshiftPropertyList: Record<SettingType, readonly string[]> = {
+	[SettingType.Text]: ["type", "id", "html", "align", "color", "fontSize", "editable"],
+	[SettingType.SubText]: ["type", "id", "text", "align", "color", "fontSize", "editable"],
+	[SettingType.Button]: [
+		"type",
+		"id",
+		"description",
+		"icon",
+		"align",
+		"color",
+		"fontSize",
+		"clickFunction",
+		"editable",
+	],
+	[SettingType.Checkbox]: [
 		"type",
 		"id",
 		"name",
@@ -18,7 +28,7 @@ export const styleshiftPropertyList: { [key: string]: string[] } = {
 		"disableFunction",
 		"editable",
 	],
-	numberSlide: [
+	[SettingType.NumberSlide]: [
 		"type",
 		"id",
 		"name",
@@ -33,8 +43,18 @@ export const styleshiftPropertyList: { [key: string]: string[] } = {
 		"updateFunction",
 		"editable",
 	],
-	dropdown: ["type", "id", "name", "description", "value", "constantCss", "setupFunction", "options", "editable"],
-	color: [
+	[SettingType.Dropdown]: [
+		"type",
+		"id",
+		"name",
+		"description",
+		"value",
+		"constantCss",
+		"setupFunction",
+		"options",
+		"editable",
+	],
+	[SettingType.Color]: [
 		"type",
 		"id",
 		"name",
@@ -47,10 +67,15 @@ export const styleshiftPropertyList: { [key: string]: string[] } = {
 		"updateFunction",
 		"editable",
 	],
-	imageInput: ["type", "id", "name", "description", "value", "maxFileSize", "editable"],
-	previewImage: ["type", "id", "title", "preset", "settingIds", "editable"],
-	Custom: ["type", "id", "setupFunction", "constantCss", "uiFunction"],
-	Combine_settings: ["type", "id", "name", "description", "syncId", "updateFunction", "editable"],
+	[SettingType.TextInput]: ["type", "id", "name", "description", "value", "updateFunction", "editable"],
+	[SettingType.ImageInput]: ["type", "id", "name", "description", "value", "maxFileSize", "editable"],
+	[SettingType.PreviewImage]: ["type", "id", "title", "preset", "settingIds", "editable"],
+	[SettingType.Custom]: ["type", "id", "setupFunction", "constantCss", "uiFunction"],
+	[SettingType.CombineSetting]: ["type", "id", "name", "description", "syncId", "updateFunction", "editable"],
+	[SettingType.ConditionSetting]: ["type", "id", "name", "description", "condition", "editable"],
+	[SettingType.KeyboardShortcuts]: ["type", "id", "name", "description", "editable"],
+	[SettingType.Group]: ["type", "id", "text", "leftSeparator", "editable"],
+	[SettingType.SelectorInput]: ["type", "id", "name", "description", "value", "updateFunction", "editable"],
 };
 
 export const styleshiftCategoryList: Category = { category: "Category", selector: "", rainbow: false, settings: [] };

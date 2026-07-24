@@ -38,6 +38,25 @@ export type BaseSetting = {
 	quickCustomize?: any;
 };
 
+export enum SettingType {
+	Text = "text",
+	SubText = "subText",
+	Button = "button",
+	Checkbox = "checkbox",
+	NumberSlide = "numberSlide",
+	Dropdown = "dropdown",
+	Color = "color",
+	TextInput = "textInput",
+	ImageInput = "imageInput",
+	PreviewImage = "previewImage",
+	Custom = "custom",
+	CombineSetting = "combineSetting",
+	ConditionSetting = "conditionSetting",
+	KeyboardShortcuts = "keyboardShortcuts",
+	Group = "group",
+	SelectorInput = "selectorInput",
+}
+
 export type Setting = (
 	| {
 			type: "text";
