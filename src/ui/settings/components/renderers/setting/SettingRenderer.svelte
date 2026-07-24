@@ -134,7 +134,12 @@
 		{:else if setting.type === "imageInput"}
 			<ImageInput {setting} />
 		{:else if setting.type === "previewImage"}
-			<PreviewImage src={controller.value} />
+			<PreviewImage
+				src={controller.value}
+				title={setting.title}
+				preset={setting.preset}
+				settingIds={setting.settingIds}
+			/>
 		{:else if setting.type === "custom"}
 			<div use:controller.customSettingAction></div>
 		{:else if setting.type === "combineSetting"}

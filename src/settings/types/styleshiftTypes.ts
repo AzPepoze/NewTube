@@ -199,8 +199,19 @@ export type Setting = (
 	| {
 			type: "previewImage";
 			id: string;
-
-			//--------------
+			title?: string;
+			preset?: "default" | "topbar" | "banner" | "card" | "avatar";
+			settingIds?: {
+				url?: string;
+				size?: string;
+				positionX?: string;
+				positionY?: string;
+				cropTop?: string;
+				cropBottom?: string;
+				cropLeft?: string;
+				cropRight?: string;
+				flip?: string;
+			};
 			editable?: boolean;
 	  }
 	| {

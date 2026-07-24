@@ -48,7 +48,7 @@ export const styleshiftPropertyList: { [key: string]: string[] } = {
 		"editable",
 	],
 	imageInput: ["type", "id", "name", "description", "value", "maxFileSize", "editable"],
-	previewImage: ["type", "id", "editable"],
+	previewImage: ["type", "id", "title", "preset", "settingIds", "editable"],
 	Custom: ["type", "id", "setupFunction", "constantCss", "uiFunction"],
 	Combine_settings: ["type", "id", "name", "description", "syncId", "updateFunction", "editable"],
 };
