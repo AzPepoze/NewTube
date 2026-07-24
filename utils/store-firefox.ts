@@ -1,24 +1,18 @@
 import { execFileSync } from "child_process";
-import { existsSync, mkdirSync } from "fs";
+import { existsSync } from "fs";
 import path from "path";
 
 async function storeFirefox() {
 	const apiKey = process.env.AMO_JWT_ISSUER;
 	const apiSecret = process.env.AMO_JWT_SECRET;
-	const filePath = process.env.FIREFOX_FILE_PATH;
+	const sourceDir = path.resolve("out/dist/firefox");
 
-	if (!apiKey || !apiSecret || !filePath) {
+	if (!apiKey || !apiSecret || !existsSync(sourceDir)) {
 		console.error("Missing environment variables for Firefox Add-ons upload.");
 		process.exit(1);
 	}
 
-	console.log(`Starting Firefox Add-ons upload for: ${filePath}`);
-
-	// web-ext sign requires a source-dir even when using --upload-file
-	const dummyDir = path.resolve("temp/dummy-firefox");
-	if (!existsSync(dummyDir)) {
-		mkdirSync(dummyDir, { recursive: true });
-	}
+	console.log(`Starting Firefox Add-ons upload from: ${sourceDir}`);
 
 	try {
 		// Using bun x to ensure we use the project's web-ext version
@@ -31,11 +25,9 @@ async function storeFirefox() {
 			"--api-secret",
 			apiSecret,
 			"--source-dir",
-			dummyDir,
+			sourceDir,
 			"--artifacts-dir",
 			"out/signed",
-			"--upload-file",
-			filePath,
 			"--channel",
 			"listed",
 		];
