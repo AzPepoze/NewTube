@@ -98,11 +98,11 @@ export const colorThemeCategory: Category = {
 			type: "color",
 			id: "PrimaryTextColor",
 			name: "Primary Text",
-			description: "Sets the color for all main text, including video titles and channel names.",
+			description: "Sets the color for all main text, including video titles.",
 			value: "#ffffffff",
 			varCss: "--nt-text-primary",
 			constantCss: `
-                ytd-watch-flexy, #video-title, #channel-name, .ytd-video-primary-info-renderer, .ytd-video-secondary-info-renderer {
+                ytd-watch-flexy, #video-title, .ytLockupMetadataViewModelTitle, .ytd-video-primary-info-renderer, .ytd-video-secondary-info-renderer {
                     color: var(--nt-text-primary) !important;
                 }
             `,
