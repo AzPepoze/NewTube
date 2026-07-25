@@ -217,6 +217,14 @@ export async function updateTheme(id: string, name: string, latestData: Theme, t
 	}
 }
 
+export async function recordThemeDownload(themeId: string): Promise<void> {
+	try {
+		await fetch(`${STYLESHIFT_STORE_API_URL}/themes/${themeId}/download`, { method: "POST" });
+	} catch (error) {
+		logger.error("themeManager", `Failed to record download for theme ${themeId}`, error);
+	}
+}
+
 // Install theme
 export async function installTheme(id: string, name: string, targetDomains: string[]): Promise<boolean> {
 	if (!validateDomains(targetDomains)) return false;
@@ -240,6 +248,7 @@ export async function installTheme(id: string, name: string, targetDomains: stri
 
 		await Promise.all(targetDomains.map((domain) => applyThemeToDomainStorage(domain, id, name, themeData)));
 		logger.info("themeManager", `Theme installed to ${targetDomains.length} domain(s): ${name}`);
+		void recordThemeDownload(id);
 		return true;
 	} catch (error) {
 		logger.error("themeManager", "Failed to install theme", error);
