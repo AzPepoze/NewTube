@@ -12,7 +12,8 @@ export const videoLayoutCategory: Category = {
 			description: "Aligns the video title and description to the center of the page when in default view.",
 			value: true,
 			enableCss: `
-				#title.ytd-watch-metadata, #container.ytd-video-primary-info-renderer {
+				#title.ytd-watch-metadata,
+				#container.ytd-video-primary-info-renderer {
 					display: flex;
 					flex-direction: column;
 					align-items: center;

@@ -81,7 +81,9 @@ export const videoControlPanelCategory: Category = {
 					flex-direction: row !important;
 					justify-content: center !important;
 				}
-				.ytp-left-controls, .ytp-chapter-title.ytp-button, .ytp-chapter-container {
+				.ytp-left-controls,
+				.ytp-chapter-title.ytp-button,
+				.ytp-chapter-container {
 					display: contents !important;
 				}
 			`,

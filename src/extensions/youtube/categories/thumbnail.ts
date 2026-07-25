@@ -137,11 +137,13 @@ export const thumbnailCategory: Category = {
 			description: "Adds a glowing border or shadow when you hover over a video thumbnail.",
 			value: true,
 			enableCss: `
-                ytd-thumbnail:hover, ytd-playlist-thumbnail:hover {
+                ytd-thumbnail:hover,
+                ytd-playlist-thumbnail:hover {
                     outline: var(--nt-hover-border-width, 1px) solid var(--nt-hover-color) !important;
                     box-shadow: 0 0 15px var(--nt-hover-color) !important;
                 }
-                ytd-thumbnail:active, ytd-playlist-thumbnail:active {
+                ytd-thumbnail:active,
+                ytd-playlist-thumbnail:active {
                     outline-color: var(--nt-click-color) !important;
                 }
             `,
