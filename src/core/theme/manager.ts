@@ -30,8 +30,13 @@ async function confirmAction(message: string, title: string, cancelLog?: string)
 	return confirmed;
 }
 
+declare const IS_DEV: boolean;
+
 export function validateOrigin(origin: string): boolean {
-	const isAllowed = STYLESHIFT_STORE_ORIGINS.includes(origin);
+	const isLocalDev =
+		(typeof IS_DEV !== "undefined" ? IS_DEV : false) &&
+		(origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:"));
+	const isAllowed = isLocalDev || STYLESHIFT_STORE_ORIGINS.includes(origin);
 	if (!isAllowed) {
 		logger.warn("themeManager", `Unauthorized origin attempted theme operation: ${origin}`);
 	}

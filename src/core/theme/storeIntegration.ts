@@ -84,6 +84,10 @@ export async function initWebsiteIntegration(): Promise<void> {
 		);
 	});
 
+	window.addEventListener("check_styleshift_extension", () => {
+		window.dispatchEvent(new CustomEvent("styleshift_is_ready"));
+	});
+
 	for (let i = 0; i < 10; i++) {
 		window.dispatchEvent(new CustomEvent("styleshift_is_ready"));
 		await sleep(100);
