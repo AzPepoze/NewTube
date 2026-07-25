@@ -8,6 +8,8 @@ import { toggleCustomize } from "@ui/highlight/highlight";
 import { startQuickCustomize } from "@ui/highlight/quickCustomizeService";
 import { showThemeManager } from "@ui/themes/themeManagerService";
 import { showWelcome } from "./welcome";
+import { showExtensionUpdateNotification } from "@core/shared/versionUpdate";
+import { showAllCurrentSave, showTryImportOldNPreset } from "./dangerzone";
 
 const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 	{ isHeader: true, label: "Extension" },
@@ -212,6 +214,27 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				align: "left",
 				icon: "waving_hand",
 			},
+			{
+				id: "TestVersionUpdateNotification",
+				name: "Test Version Update Notification",
+				description: "Show a preview notification for extension updates.",
+				clickFunction: showExtensionUpdateNotification,
+				type: "button",
+				color: "#7f5db7",
+				align: "left",
+				icon: "system_update",
+			},
+			{
+				id: "ShowAllCurrentSaveButton",
+				name: "Show All Current Save",
+				description: "Displays the complete raw storage data (all current save data, not just settings).",
+				clickFunction: showAllCurrentSave,
+				type: "button",
+				color: "#7f5db7",
+				align: "left",
+				icon: "data_object",
+				require: { developerMode: true },
+			},
 		],
 	},
 	{
@@ -229,7 +252,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				color: "#1932ffff",
 				description: "Copies your current theme and settings as a text code to your clipboard.",
 				fontSize: 15,
-				icon: "",
+				icon: "file_upload",
 				id: "ExportDataButton",
 				name: "Export Data",
 				align: "center",
@@ -242,9 +265,20 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				color: "#1932ffff",
 				description: "Import one or more StyleShift themes from pasted JSON, JSON files, or ZIP files.",
 				fontSize: 15,
-				icon: "",
+				icon: "download",
 				id: "ImportDataButton",
 				name: "Import Data",
+				align: "center",
+				type: "button",
+			},
+			{
+				id: "ShowTryImportOldNPresetButton",
+				name: "Import Old NPreset",
+				description: "Import legacy NPreset JSON format from older versions of NewTube.",
+				clickFunction: showTryImportOldNPreset,
+				color: "#1932ffff",
+				fontSize: 15,
+				icon: "file_open",
 				align: "center",
 				type: "button",
 			},

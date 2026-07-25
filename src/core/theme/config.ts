@@ -38,9 +38,15 @@ export const STYLESHIFT_STORE_URL: string = config.store_url || "";
  */
 export const STYLESHIFT_STORE_DISCOVER_URL: string = config.store_discover || "";
 
+/**
+ * Version of the extension defined in extension.config.json.
+ */
+export const STYLESHIFT_VERSION: string = config.version || "";
+
 logger.info("themeConfig", "Theme store configuration loaded", {
 	origins: STYLESHIFT_STORE_ORIGINS,
 	apiUrl: STYLESHIFT_STORE_API_URL,
 	storeUrl: STYLESHIFT_STORE_URL,
 	discoverUrl: STYLESHIFT_STORE_DISCOVER_URL,
+	version: STYLESHIFT_VERSION,
 });

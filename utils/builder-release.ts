@@ -32,7 +32,7 @@ export async function buildRelease() {
 
 	const manifestPath = path.join(ENTRYPOINTS, "manifest.json");
 	const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-	const version = manifest.version;
+	const version = extensionConfig.version || manifest.version;
 
 	const distDir = path.join(OUT, "dist");
 	if (!fs.existsSync(distDir)) {

@@ -1,8 +1,6 @@
 import { spawn, spawnSync } from "child_process";
-import * as fs from "fs";
-import * as path from "path";
 import { log } from "./shared/logger";
-import { ROOT, extensionConfig } from "./shared/paths";
+import { ROOT, extensionConfig, getBinaryPath } from "./shared/paths";
 
 interface TaskResult {
 	description: string;
@@ -11,12 +9,6 @@ interface TaskResult {
 }
 
 const taskResults: TaskResult[] = [];
-
-function getBinaryPath(binaryName: string): string {
-	const binPath = path.join(ROOT, "node_modules/.bin", binaryName);
-	if (fs.existsSync(binPath)) return binPath;
-	return binaryName;
-}
 
 function runTaskSync(command: string, args: string[], description: string) {
 	log.info(description);
@@ -103,6 +95,7 @@ async function runCheck() {
 
 	// Step 1: Sequential auto-fix
 	if (shouldRunFix) {
+		runTaskSync("prettier", ["--write", "."], "Prettier - Auto-formatting code");
 		runTaskSync("eslint", ["--fix", "src", "utils"], "ESLint - Auto-fixing issues");
 	}
 

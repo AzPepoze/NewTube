@@ -4,7 +4,7 @@ import { buildModules } from "./builder-modules";
 import { buildRelease } from "./builder-release";
 import { buildTemplates } from "./builder-template";
 import { log } from "./shared/logger";
-import { extensionConfig, ROOT } from "./shared/paths";
+import { extensionConfig, getBinaryPath, ROOT } from "./shared/paths";
 
 const args = process.argv.slice(2);
 const isProduction = args.includes("--production") || args.includes("--release");
@@ -18,7 +18,7 @@ async function main() {
 		// 1. Build CSS
 		log.step("Building CSS...");
 		const sassResult = spawnSync(
-			"sass",
+			getBinaryPath("sass"),
 			[
 				"src/styles/setting.scss",
 				"out/build/style.css",
@@ -37,7 +37,7 @@ async function main() {
 
 		// 3. Build Templates & Types
 		log.step("Building Templates & Types...");
-		const tscResult = spawnSync("tsc", ["-p", "utils/tsconfigBuilderTypes.json"], {
+		const tscResult = spawnSync(getBinaryPath("tsc"), ["-p", "utils/tsconfigBuilderTypes.json"], {
 			stdio: "inherit",
 			shell: true,
 			cwd: ROOT,
