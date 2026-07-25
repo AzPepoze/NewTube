@@ -27,3 +27,9 @@ export function ensureDir(dir: string) {
 export function getFileName(filePath: string) {
 	return path.basename(filePath);
 }
+
+export function getBinaryPath(binaryName: string): string {
+	const binPath = path.join(ROOT, "node_modules/.bin", binaryName);
+	if (fs.existsSync(binPath)) return binPath;
+	return binaryName;
+}

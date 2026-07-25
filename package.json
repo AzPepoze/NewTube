@@ -1,7 +1,5 @@
 {
 	"name": "newtube",
-	"version": "6.0.1",
-	"private": true,
 	"type": "module",
 	"scripts": {
 		"dev": "bun utils/dev.ts",

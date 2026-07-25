@@ -19,10 +19,15 @@ function augmentManifestForThemeStore(buildDir: string) {
 	if (!fs.existsSync(manifestPath)) return;
 
 	const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8")) as {
+		version?: string;
 		host_permissions?: string[];
 		content_scripts?: Array<{ matches: string[]; all_frames?: boolean; js: string[]; css: string[]; run_at?: string }>;
 		web_accessible_resources?: Array<{ resources: string[]; matches: string[] }>;
 	};
+
+	if (extensionConfig.version) {
+		manifest.version = extensionConfig.version;
+	}
 
 	const hostPerms = new Set<string>(manifest.host_permissions ?? []);
 	const storeOrigins: string[] = Array.isArray(extensionConfig.store_origin) ? extensionConfig.store_origin : [];
