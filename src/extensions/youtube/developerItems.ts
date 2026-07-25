@@ -1,6 +1,6 @@
+import { getRootValue } from "@core/storage/manager";
 import { exportThemeWithSelection } from "@core/theme/exporter";
 import { importThemeZipWithWorkflow } from "@core/theme/importer";
-import { getRootValue } from "@core/storage/manager";
 import { type Category } from "@settings/types/styleshiftTypes";
 
 const devOnlyItems: Category[] = [

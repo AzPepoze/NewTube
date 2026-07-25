@@ -3,6 +3,7 @@ import { saveToStorage } from "@core/storage/manager";
 import { getAddOnItems, updateStyleShiftItems } from "@settings/registry/items";
 import type { Category, SeparateCategory } from "@settings/types/styleshiftTypes";
 import { addDrag, addDropTarget, clearDropTargets } from "@ui/settings/reorder";
+import { getCategoryParts } from "@ui/window/utils";
 
 export interface SettingsWindowProps {
 	internalSettings: (Category | SeparateCategory)[];
@@ -76,16 +77,18 @@ export class SettingsWindowController {
 		if (!this.#props.isDevModulesLoaded || !this.#props.isDeveloperMode) return categories;
 
 		for (const devCategory of this.#props.devOnlyItems.filter((item) => !this.isHeaderItem(item))) {
-			const label = (devCategory as Category).category;
+			const devLabel = getCategoryParts((devCategory as Category).category).text;
 			const target = categories.find(
-				(item) => !this.isHeaderItem(item) && (item as Category).category === label,
+				(item) => !this.isHeaderItem(item) && getCategoryParts((item as Category).category).text === devLabel,
 			) as Category;
 
 			if (target) {
 				target.settings = [...target.settings, ...devCategory.settings];
 			} else if (
 				pushMissing &&
-				!allCategories.some((item) => !this.isHeaderItem(item) && (item as Category).category === label)
+				!allCategories.some(
+					(item) => !this.isHeaderItem(item) && getCategoryParts((item as Category).category).text === devLabel,
+				)
 			) {
 				categories.push(devCategory);
 			}
