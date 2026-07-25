@@ -8,6 +8,7 @@ import { toggleCustomize } from "@ui/highlight/highlight";
 import { startQuickCustomize } from "@ui/highlight/quickCustomizeService";
 import { showThemeManager } from "@ui/themes/themeManagerService";
 import { showWelcome } from "./welcome";
+import { showExtensionUpdateNotification } from "@core/shared/versionUpdate";
 
 const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 	{ isHeader: true, label: "Extension" },
@@ -211,6 +212,16 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				color: "#7f5db7",
 				align: "left",
 				icon: "waving_hand",
+			},
+			{
+				id: "TestVersionUpdateNotification",
+				name: "Test Version Update Notification",
+				description: "Show a preview notification for extension updates.",
+				clickFunction: showExtensionUpdateNotification,
+				type: "button",
+				color: "#7f5db7",
+				align: "left",
+				icon: "system_update",
 			},
 		],
 	},

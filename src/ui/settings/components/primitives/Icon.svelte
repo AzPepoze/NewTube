@@ -39,7 +39,18 @@
 		scale?: number;
 	} = $props();
 
-	const isUrl = $derived(name.includes("://") || name.startsWith("data:"));
+	const isImageFile = $derived(
+		typeof name === "string" &&
+			(name.endsWith(".png") ||
+				name.endsWith(".jpg") ||
+				name.endsWith(".jpeg") ||
+				name.endsWith(".webp") ||
+				name.endsWith(".svg") ||
+				name.endsWith(".gif") ||
+				name.startsWith("icon/") ||
+				name.startsWith("assets/")),
+	);
+	const isUrl = $derived(name.includes("://") || name.startsWith("data:") || isImageFile);
 	const iconPath = $derived(icons[name]);
 	const src = $derived(iconPath ? getAssetUrl(iconPath) : isUrl ? getAssetUrl(name) : "");
 	const isMaterialIcon = $derived(!iconPath && !isUrl && typeof name === "string" && /^[a-z_0-9]+$/.test(name));
@@ -51,7 +62,7 @@
 		{src}
 		alt={name}
 		class="styleshift-icon {className}"
-		class:with-filter={applyFilter && !color}
+		class:with-filter={applyFilter && !color && !isImageFile}
 		style="transform: scale({Math.min(scale, 2)}); width: {size}px; height: {size}px; {color
 			? `filter: none;`
 			: ''}{style}"

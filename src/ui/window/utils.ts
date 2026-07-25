@@ -14,10 +14,11 @@ export function getAssetUrl(path: string): string {
 	// Mapping for specific shortcuts
 	const shortcuts: Record<string, string> = {
 		"icon/": "assets/branding/",
+		"128.png": "assets/branding/128.png",
 	};
 
 	for (const [prefix, replacement] of Object.entries(shortcuts)) {
-		if (cleanPath.startsWith(prefix)) {
+		if (cleanPath === prefix || cleanPath.startsWith(prefix)) {
 			return chrome.runtime.getURL(cleanPath.replace(prefix, replacement));
 		}
 	}
