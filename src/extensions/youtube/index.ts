@@ -1,5 +1,5 @@
 import { checkAndUpdateTheme, initWebsiteIntegration } from "@core/theme/storeIntegration";
-import { STYLESHIFT_STORE_ORIGINS } from "@core/theme/config";
+import { validateOrigin } from "@core/theme/manager";
 import { enableSettingsButton } from "./features/newtubeSettingsButton";
 import { initControlPanelSync } from "./features/controlPanelSync";
 import { checkAndShowWelcome } from "./welcome";
@@ -12,8 +12,8 @@ import { checkAndShowUpdateNotification } from "@core/shared/versionUpdate";
 export function shouldEnableExtension(): boolean {
 	const origin = window.location.origin;
 	// Don't run extension logic on the store site
-	if (STYLESHIFT_STORE_ORIGINS.includes(origin)) {
-		// Still init website integration so the store communciates properly
+	if (validateOrigin(origin)) {
+		// Still init website integration so the store communicates properly
 		initWebsiteIntegration();
 		return false;
 	}

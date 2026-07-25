@@ -53,6 +53,14 @@ function augmentManifestForThemeStore(buildDir: string) {
 		}
 	}
 
+	if (!isProduction()) {
+		const devPatterns = ["http://localhost/*", "http://127.0.0.1/*"];
+		for (const p of devPatterns) {
+			hostPerms.add(p);
+			storeMatchPatterns.push(p);
+		}
+	}
+
 	manifest.host_permissions = [...hostPerms];
 
 	const baseCs = manifest.content_scripts?.[0];
@@ -205,7 +213,10 @@ export async function buildExtension() {
 			external: esbuildExternals,
 			alias: esbuildAliases,
 			plugins: [esbuildSvelte({ compilerOptions: createSvelteCompilerOptions() })],
-			define: { imgbb_api_key: JSON.stringify(process.env.IMGBB_API_KEY || "") },
+			define: {
+				imgbb_api_key: JSON.stringify(process.env.IMGBB_API_KEY || ""),
+				IS_DEV: JSON.stringify(!isProduction()),
+			},
 			loader: esbuildLoaders,
 			assetNames: "assets/[name]",
 		});

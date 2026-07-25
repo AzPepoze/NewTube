@@ -2,8 +2,25 @@ import { getRootValue } from "@core/storage/manager";
 import { exportThemeWithSelection } from "@core/theme/exporter";
 import { importThemeZipWithWorkflow } from "@core/theme/importer";
 import { type Category } from "@settings/types/styleshiftTypes";
+import { showAllCurrentSave } from "./dangerzone";
 
 const devOnlyItems: Category[] = [
+	{
+		category: { icon: "settings", label: "Extention's settings" },
+		settings: [
+			{
+				id: "ShowAllCurrentSaveButton",
+				name: "Show All Current Save",
+				description: "Displays the complete raw storage data (all current save data, not just settings).",
+				clickFunction: showAllCurrentSave,
+				type: "button",
+				color: "#7f5db7",
+				align: "left",
+				icon: "data_object",
+				require: { developerMode: true },
+			},
+		],
+	},
 	{
 		category: { icon: "swap_vert", label: "Import / Export Theme" },
 		settings: [
@@ -47,20 +64,6 @@ const devOnlyItems: Category[] = [
 				},
 				align: "center",
 				icon: "download",
-			},
-			{
-				type: "button",
-				id: "SelectorPickerButton",
-				name: "Selector Picker",
-				description: "Allows you to pick an element from the page and get its CSS selector for development purposes.",
-				color: "#7f5db7",
-				fontSize: 15,
-				clickFunction: async function () {
-					const { openSelectorPicker } = await import("@ui/highlight/selectorPicker");
-					openSelectorPicker();
-				},
-				align: "center",
-				icon: "target",
 			},
 		],
 	},

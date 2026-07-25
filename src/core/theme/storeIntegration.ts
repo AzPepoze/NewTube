@@ -9,6 +9,7 @@ import {
 	validateOrigin,
 } from "@core/theme/manager";
 import { STYLESHIFT_STORE_DISCOVER_URL } from "@core/theme/config";
+import { ThemeStoreEvent } from "@core/theme/events";
 import { logger } from "@shared/logger";
 
 export async function initWebsiteIntegration(): Promise<void> {
@@ -19,10 +20,10 @@ export async function initWebsiteIntegration(): Promise<void> {
 
 	logger.info("themeStore", `Website integration initialized for origin: ${window.location.origin}`);
 
-	window.addEventListener("install_styleshift_theme", async (e) => {
+	window.addEventListener(ThemeStoreEvent.INSTALL, async (e) => {
 		const detail = (e as CustomEvent).detail;
 		if (!detail?.themeId || !detail?.targetDomains) {
-			logger.warn("themeStore", "install_styleshift_theme: Missing required parameters");
+			logger.warn("themeStore", `${ThemeStoreEvent.INSTALL}: Missing required parameters`);
 			return;
 		}
 
@@ -39,12 +40,18 @@ export async function initWebsiteIntegration(): Promise<void> {
 				content: `${detail.themeName || "Theme"} installed to ${detail.targetDomains.length} site(s).`,
 			});
 		}
+
+		window.dispatchEvent(
+			new CustomEvent(ThemeStoreEvent.INSTALL_STATUS, {
+				detail: { themeId: detail.themeId, isInstalled: success },
+			}),
+		);
 	});
 
-	window.addEventListener("save_styleshift_theme", async (e) => {
+	window.addEventListener(ThemeStoreEvent.SAVE, async (e) => {
 		const detail = (e as CustomEvent).detail;
 		if (!detail?.themeId || !detail?.targetDomain) {
-			logger.warn("themeStore", "save_styleshift_theme: Missing required parameters");
+			logger.warn("themeStore", `${ThemeStoreEvent.SAVE}: Missing required parameters`);
 			return;
 		}
 
@@ -67,10 +74,10 @@ export async function initWebsiteIntegration(): Promise<void> {
 		}
 	});
 
-	window.addEventListener("is_styleshift_theme_installed", async (e) => {
+	window.addEventListener(ThemeStoreEvent.CHECK_INSTALL, async (e) => {
 		const detail = (e as CustomEvent).detail;
 		if (!detail?.themeId || !detail?.targetDomain) {
-			logger.warn("themeStore", "is_styleshift_theme_installed: Missing required parameters");
+			logger.warn("themeStore", `${ThemeStoreEvent.CHECK_INSTALL}: Missing required parameters`);
 			return;
 		}
 
@@ -78,14 +85,18 @@ export async function initWebsiteIntegration(): Promise<void> {
 		const isInstalled = await isThemeInstalled(detail.themeId, detail.targetDomain);
 
 		window.dispatchEvent(
-			new CustomEvent("styleshift_theme_install_status", {
+			new CustomEvent(ThemeStoreEvent.INSTALL_STATUS, {
 				detail: { themeId: detail.themeId, isInstalled },
 			}),
 		);
 	});
 
+	window.addEventListener(ThemeStoreEvent.CHECK_EXTENSION, () => {
+		window.dispatchEvent(new CustomEvent(ThemeStoreEvent.READY));
+	});
+
 	for (let i = 0; i < 10; i++) {
-		window.dispatchEvent(new CustomEvent("styleshift_is_ready"));
+		window.dispatchEvent(new CustomEvent(ThemeStoreEvent.READY));
 		await sleep(100);
 	}
 

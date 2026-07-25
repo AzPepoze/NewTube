@@ -39,6 +39,11 @@ export const STYLESHIFT_STORE_URL: string = config.store_url || "";
 export const STYLESHIFT_STORE_DISCOVER_URL: string = config.store_discover || "";
 
 /**
+ * Preview URL for theme store (e.g. /themes/preview).
+ */
+export const STYLESHIFT_STORE_PREVIEW_URL: string = config.store_url ? `${config.store_url}/preview` : "";
+
+/**
  * Version of the extension defined in extension.config.json.
  */
 export const STYLESHIFT_VERSION: string = config.version || "";

@@ -9,7 +9,7 @@ import { startQuickCustomize } from "@ui/highlight/quickCustomizeService";
 import { showThemeManager } from "@ui/themes/themeManagerService";
 import { showWelcome } from "./welcome";
 import { showExtensionUpdateNotification } from "@core/shared/versionUpdate";
-import { showAllCurrentSave, showTryImportOldNPreset } from "./dangerzone";
+import { showTryImportOldNPreset } from "./dangerzone";
 
 const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 	{ isHeader: true, label: "Extension" },
@@ -223,17 +223,6 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				color: "#7f5db7",
 				align: "left",
 				icon: "system_update",
-			},
-			{
-				id: "ShowAllCurrentSaveButton",
-				name: "Show All Current Save",
-				description: "Displays the complete raw storage data (all current save data, not just settings).",
-				clickFunction: showAllCurrentSave,
-				type: "button",
-				color: "#7f5db7",
-				align: "left",
-				icon: "data_object",
-				require: { developerMode: true },
 			},
 		],
 	},
