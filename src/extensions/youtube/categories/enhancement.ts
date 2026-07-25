@@ -20,11 +20,11 @@ export const enhancementCategory: Category = {
 				"Swaps the positions of the video player and the sidebar (recommendations/chat). Moves the sidebar to the left and the video to the right.",
 			value: false,
 			enableCss: `
-                #columns {
+                ytd-watch-flexy:not([fullscreen]) #columns {
                     display: flex !important;
                     flex-direction: row-reverse !important;
                 }
-                ${primaryContainer} {
+                ytd-watch-flexy:not([fullscreen]) #primary.ytd-watch-flexy {
                     margin-right: 0 !important;
                     margin-left: 24px !important;
                 }
