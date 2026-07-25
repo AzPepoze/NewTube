@@ -96,10 +96,10 @@ export const videoControlPanelCategory: Category = {
 			description: "Automatically hides the control bar when your mouse is not moving over the player.",
 			value: true,
 			disableCss: `
-                div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed).ytp-autohide .ytp-gradient-bottom,
-                div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed).ytp-autohide .ytp-chrome-bottom {
+                div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-livebadge-color):not(.ytp-live).ytp-autohide .ytp-gradient-bottom,
+                div.html5-video-player:not(.ytp-fullscreen):not(.ytp-embed):not(.ytp-livebadge-color):not(.ytp-live).ytp-autohide .ytp-chrome-bottom {
                     opacity: 1 !important;
-                    display: block !important;
+                    pointer-events: auto !important;
                 }
             `,
 		},
