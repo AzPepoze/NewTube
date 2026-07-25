@@ -37,7 +37,14 @@ export const fontsCategory: Category = {
 
 				return `
                     ${imports}
-                    body, #masthead, .ytd-app, button, input, textarea, select, * { 
+                    body,
+                    #masthead,
+                    .ytd-app,
+                    button,
+                    input,
+                    textarea,
+                    select,
+                    * { 
                         font-family: ${fontStack}, Roboto, Arial, sans-serif !important; 
                     }
                 `;

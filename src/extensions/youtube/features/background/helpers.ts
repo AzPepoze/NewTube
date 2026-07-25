@@ -9,7 +9,9 @@ export const ELEMENTS = {
 
 export const enableBackgroundCss = `
 ytd-app { background : transparent; }
-#${ELEMENTS.TINT}, #${ELEMENTS.IMAGE}, #${ELEMENTS.YOUTUBE} {
+#${ELEMENTS.TINT},
+#${ELEMENTS.IMAGE},
+#${ELEMENTS.YOUTUBE} {
 	width : 100%;
 	height : 100%;
 	position : fixed;

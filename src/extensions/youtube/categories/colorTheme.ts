@@ -14,7 +14,8 @@ export const colorThemeCategory: Category = {
 				"Forces YouTube's internal design system to use your custom colors. This ensures consistency in menus, buttons, and badges.",
 			value: true,
 			enableCss: `
-                html, [watch-color-update] {
+                html,
+                [watch-color-update] {
                     --ytd-chip-cloud-background: rgba(0,0,0,.3) !important;
                     --yt-spec-brand-background-primary: var(--nt-topbar-bg) !important;
                     --yt-spec-brand-background-solid: var(--nt-bg-main) !important;
@@ -98,11 +99,15 @@ export const colorThemeCategory: Category = {
 			type: "color",
 			id: "PrimaryTextColor",
 			name: "Primary Text",
-			description: "Sets the color for all main text, including video titles and channel names.",
+			description: "Sets the color for all main text, including video titles.",
 			value: "#ffffffff",
 			varCss: "--nt-text-primary",
 			constantCss: `
-                ytd-watch-flexy, #video-title, #channel-name, .ytd-video-primary-info-renderer, .ytd-video-secondary-info-renderer {
+                ytd-watch-flexy,
+                #video-title,
+                .ytLockupMetadataViewModelTitle,
+                .ytd-video-primary-info-renderer,
+                .ytd-video-secondary-info-renderer {
                     color: var(--nt-text-primary) !important;
                 }
             `,
@@ -115,7 +120,11 @@ export const colorThemeCategory: Category = {
 			value: "#c4c4c4ff",
 			varCss: "--nt-text-secondary",
 			constantCss: `
-                #metadata-line, .ytd-video-meta-block, #description-text, .ytd-comment-renderer, .yt-formatted-string[is-empty] {
+                #metadata-line,
+                .ytd-video-meta-block,
+                #description-text,
+                .ytd-comment-renderer,
+                .yt-formatted-string[is-empty] {
                     color: var(--nt-text-secondary) !important;
                 }
             `,
@@ -167,7 +176,8 @@ export const colorThemeCategory: Category = {
 			value: "#00000000",
 			varCss: "--nt-sidebar-bg",
 			constantCss: `
-                #guide-inner-content.ytd-app, ytd-mini-guide-renderer {
+                #guide-inner-content.ytd-app,
+                ytd-mini-guide-renderer {
                     background: var(--nt-sidebar-bg) !important;
                 }
             `,
