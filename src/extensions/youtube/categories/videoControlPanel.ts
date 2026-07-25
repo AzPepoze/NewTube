@@ -177,10 +177,14 @@ export const videoControlPanelCategory: Category = {
 			type: "color",
 			id: "ControlPanelTextColor",
 			hoverPreview: {
-				selectors: ["#ytd-player .ytp-time-display", "#ytd-player .ytp-chrome-bottom .ytp-button"],
+				selectors: [
+					"#ytd-player .ytp-time-display",
+					"#ytd-player .ytp-chrome-bottom .ytp-button",
+					"#ytd-player .ytp-volume-slider-handle",
+				],
 			},
 			name: "Icon Color",
-			description: "Changes the color of the icons and timestamps within the video control bar.",
+			description: "Changes the color of the icons, timestamps, and sliders within the video control bar.",
 			value: "#ffffffff",
 			varCss: "--control-panel-icon-color",
 			constantCss: `
@@ -205,6 +209,17 @@ export const videoControlPanelCategory: Category = {
 				.ytp-autonav-toggle-button
 				{
 					background-color: color-mix(in srgb, var(--control-panel-icon-color) 50%, transparent 100%) !important;
+				}
+
+				.ytp-volume-slider-handle,
+				.ytp-volume-slider-handle::before
+				{
+					background: var(--control-panel-icon-color) !important;
+					background-color: var(--control-panel-icon-color) !important;
+				}
+
+				.ytp-swatch-color {
+					color: var(--control-panel-icon-color) !important;
 				}
 			`,
 		},

@@ -62,9 +62,7 @@ yt-icon-button.yt-live-chat-item-list-renderer,
 }
 
 *::selection,
-.ytp-menuitem[aria-checked=true] .ytp-menuitem-toggle-checkbox,
-.ytp-volume-slider-handle,
-.ytp-volume-slider-handle:before
+.ytp-menuitem[aria-checked=true] .ytp-menuitem-toggle-checkbox
 {
 	background: var(--nt-theme-color) !important;
 	color: var(--nt-text-primary) !important;
