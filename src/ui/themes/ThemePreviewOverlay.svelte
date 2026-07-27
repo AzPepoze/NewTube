@@ -161,7 +161,12 @@
 				</div>
 
 				<div class="header-right">
-					<button class="preview-header-close" onclick={handleClose} aria-label="Close Preview" title="Close Preview (Esc)">
+					<button
+						class="preview-header-close"
+						onclick={handleClose}
+						aria-label="Close Preview"
+						title="Close Preview (Esc)"
+					>
 						<Icon name="close" size={18} />
 					</button>
 				</div>
