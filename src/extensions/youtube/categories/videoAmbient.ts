@@ -11,14 +11,6 @@ export const videoAmbientCategory: Category = {
 	settings: [
 		{
 			type: "checkbox",
-			id: "AutoRemoveAmbientMode",
-			name: "Auto Remove Ambient Mode",
-			description: "Automatically disables YouTube's native ambient lighting effect to prevent visual conflicts.",
-			value: true,
-			enableFunction: enableAutoRemoveAmbient,
-		},
-		{
-			type: "checkbox",
 			id: "VideoAmbient",
 			name: "Video Ambient",
 			description:
@@ -26,6 +18,14 @@ export const videoAmbientCategory: Category = {
 			value: false,
 			enableFunction: enableVideoAmbient,
 			disableFunction: disableVideoAmbient,
+		},
+		{
+			type: "checkbox",
+			id: "AutoRemoveAmbientMode",
+			name: "Auto Remove Ambient",
+			description: "Automatically disables YouTube's native ambient lighting effect to prevent visual conflicts.",
+			value: true,
+			enableFunction: enableAutoRemoveAmbient,
 		},
 		{
 			type: "dropdown",
