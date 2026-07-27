@@ -111,4 +111,3 @@ registerSettingListener("TopLeftIconCropBottom", updateLogo);
 registerSettingListener("TopLeftIconCropLeft", updateLogo);
 registerSettingListener("TopLeftIconCropRight", updateLogo);
 registerSettingListener("EnableTopLeftIconFlip", updateLogo);
-

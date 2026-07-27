@@ -11,6 +11,8 @@ export type Theme = {
 	themeName: string;
 	currentSettings?: { [key: string]: string };
 	addOnStyleShiftItems?: any[];
+	images?: string[];
+	coverImage?: string;
 };
 
 function createThemeObject(id: string, name: string, data: any): Theme {

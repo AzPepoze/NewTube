@@ -86,10 +86,24 @@ export function normalizeStoreThemePayload(data: any, fallbackId = ""): Theme {
 		}
 	}
 
+	const images = Array.isArray(data?.images)
+		? data.images
+		: Array.isArray(data?.screenshots)
+			? data.screenshots
+			: undefined;
+	const coverImage =
+		typeof data?.coverImage === "string"
+			? data.coverImage
+			: typeof data?.previewImage === "string"
+				? data.previewImage
+				: undefined;
+
 	return {
 		themeId,
 		themeName,
 		currentSettings: currentSettings as Theme["currentSettings"],
 		addOnStyleShiftItems,
+		images,
+		coverImage,
 	};
 }

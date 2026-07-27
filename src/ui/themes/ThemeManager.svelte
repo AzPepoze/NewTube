@@ -8,6 +8,7 @@
 	import GroupedTagDropdown from "./GroupedTagDropdown.svelte";
 	import ThemeCard from "./ThemeCard.svelte";
 	import { ThemeManagerController } from "./ThemeManagerController.svelte";
+	import { startLivePreviewMode } from "./themeManagerService";
 
 	let { closeWindow }: { closeWindow?: () => void } = $props();
 
@@ -112,10 +113,12 @@
 							id={theme.themeId}
 							name={theme.themeName}
 							preview={controller.getThemePreview(theme)}
+							rawTheme={theme}
 							isActive={controller.activeThemeId === theme.themeId}
 							isLoading={controller.loadingThemeId === theme.themeId}
 							animationDelay={i * 50}
 							onApply={applyTheme}
+							onApplyLivePreview={(t) => startLivePreviewMode(t, false, closeWindow)}
 							onExport={controller.exportTheme.bind(controller)}
 							onDelete={controller.deleteTheme.bind(controller)}
 						/>
@@ -131,12 +134,14 @@
 							id={theme.themeId}
 							name={theme.themeName}
 							preview={controller.getThemePreview(theme)}
+							rawTheme={theme}
 							isActive={controller.activeThemeId === theme.themeId}
 							isLoading={controller.loadingThemeId === theme.themeId}
 							isStoreItem={true}
 							isInstalled={controller.installedThemeIds.has(theme.themeId)}
 							animationDelay={i * 50}
 							onApply={applyTheme}
+							onApplyLivePreview={(t) => startLivePreviewMode(t, true, closeWindow)}
 							onSave={controller.saveStoreTheme.bind(controller)}
 						/>
 					{/each}
@@ -387,11 +392,14 @@
 		}
 
 		.actions-left {
+			flex: 1;
 			min-width: 0;
+			justify-content: flex-start;
 		}
 
 		.actions-center {
-			flex: 1;
+			display: flex;
+			align-items: center;
 			justify-content: center;
 			gap: 10px;
 
