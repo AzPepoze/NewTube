@@ -1,125 +1,56 @@
 <script lang="ts">
-	import { createUniqueId } from "@/core/shared/utilities";
-	import { getFromStorage } from "@core/storage/manager";
-	import { triggerSettingUpdate } from "@settings/engine/functions";
 	import type { Setting } from "@settings/types/styleshiftTypes";
 	import Button from "@ui/settings/components/controls/Button.svelte";
 	import Checkbox from "@ui/settings/components/controls/Checkbox.svelte";
 	import Description from "@ui/settings/components/primitives/Description.svelte";
 	import IconButton from "@ui/settings/components/primitives/IconButton.svelte";
 	import TextEditor from "@ui/settings/components/primitives/TextEditor.svelte";
-	import { setAndSave } from "@ui/settings/settingsApi";
 	import { showUserConfirmation } from "@ui/window/windowFactory";
-
-	type FontEntry = {
-		id: string;
-		fontName: string;
-		importUrl: string;
-		enabled: boolean;
-	};
+	import { detectPageFonts, extractFontsFromText, loadFonts, moveFont, saveFonts, type FontEntry } from "./fontService";
 
 	let { setting }: { setting: Extract<Setting, { type: "custom" }> } = $props();
 
 	let fonts = $state<FontEntry[]>([]);
 	let pasteText = $state("");
 
-	function extractFontsFromText(text: string): FontEntry[] {
-		const found: FontEntry[] = [];
-		const importRegex = /@import\s+url\(['"]?([^'"]+)['"]?\)/g;
-		let match;
-
-		while ((match = importRegex.exec(text)) !== null) {
-			const urlStr = match[1];
-			const names = extractFontNames(urlStr);
-			for (const name of names) {
-				found.push({
-					id: createUniqueId(8),
-					fontName: name,
-					importUrl: urlStr,
-					enabled: true,
-				});
-			}
-		}
-
-		if (found.length === 0 && text.trim().startsWith("http")) {
-			const lines = text.trim().split(/\n+/);
-			for (const line of lines) {
-				const trimmed = line.trim();
-				if (trimmed.startsWith("http")) {
-					const names = extractFontNames(trimmed);
-					for (const name of names) {
-						found.push({
-							id: createUniqueId(8),
-							fontName: name,
-							importUrl: trimmed,
-							enabled: true,
-						});
-					}
-				}
-			}
-		}
-		return found;
-	}
-
-	function extractFontNames(urlStr: string): string[] {
-		try {
-			const url = new URL(urlStr);
-			const families = url.searchParams.getAll("family");
-			if (families.length > 0) {
-				return families.map((f) => f.split(":")[0].replace(/\+/g, " "));
-			}
-		} catch (_e) {}
-		return [];
-	}
-
 	async function handleAdd() {
 		const newFonts = extractFontsFromText(pasteText);
 		if (newFonts.length > 0) {
 			fonts = [...fonts, ...newFonts];
 			pasteText = "";
-			await saveFonts();
+			await saveFonts(setting, fonts);
+		}
+	}
+
+	async function handleDetectPageFonts() {
+		const newDetected = detectPageFonts(fonts);
+		if (newDetected.length > 0) {
+			fonts = [...fonts, ...newDetected];
+			await saveFonts(setting, fonts);
 		}
 	}
 
 	async function handleToggle(_id: string) {
-		// The value is already updated via bind:value={font.enabled}
-		await saveFonts();
+		await saveFonts(setting, fonts);
 	}
 
 	async function handleRemove(id: string, name: string) {
+		const target = fonts.find((f) => f.id === id);
+		if (target?.isDefault) return;
+
 		if (await showUserConfirmation(`Are you sure you want to remove the font "${name}"?`, "Remove Font")) {
 			fonts = fonts.filter((f) => f.id !== id);
-			await saveFonts();
+			await saveFonts(setting, fonts);
 		}
 	}
 
-	async function moveUp(index: number) {
-		if (index === 0) return;
-		const newFonts = [...fonts];
-		[newFonts[index - 1], newFonts[index]] = [newFonts[index], newFonts[index - 1]];
-		fonts = newFonts;
-		await saveFonts();
-	}
-
-	async function moveDown(index: number) {
-		if (index === fonts.length - 1) return;
-		const newFonts = [...fonts];
-		[newFonts[index], newFonts[index + 1]] = [newFonts[index + 1], newFonts[index]];
-		fonts = newFonts;
-		await saveFonts();
-	}
-
-	async function saveFonts() {
-		const plainFonts = JSON.parse(JSON.stringify(fonts));
-		await setAndSave(setting, plainFonts);
-		triggerSettingUpdate(setting.id);
+	async function handleMove(index: number, direction: "up" | "down") {
+		fonts = moveFont(fonts, index, direction);
+		await saveFonts(setting, fonts);
 	}
 
 	async function init() {
-		const val = await getFromStorage(setting.id);
-		if (Array.isArray(val)) {
-			fonts = val;
-		}
+		fonts = await loadFonts(setting.id);
 	}
 	init();
 </script>
@@ -129,7 +60,7 @@
 	<div class="section paste-section">
 		<Description name="Paste Section" description="Paste Google Fonts style or URL here." />
 		<TextEditor bind:value={pasteText} />
-		<div class="add-button-container">
+		<div class="action-buttons-container">
 			<Button
 				setting={{
 					type: "button",
@@ -137,6 +68,15 @@
 					color: "#7f5db7",
 					align: "center",
 					clickFunction: handleAdd,
+				}}
+			/>
+			<Button
+				setting={{
+					type: "button",
+					name: "Detect Page Fonts",
+					color: "#4a6fa5",
+					align: "center",
+					clickFunction: handleDetectPageFonts,
 				}}
 			/>
 		</div>
@@ -148,13 +88,16 @@
 		{#if fonts.length > 0}
 			<div class="font-list">
 				{#each fonts as font, i (font.id)}
-					<div class="font-item">
+					<div class="font-item" class:is-default={font.isDefault}>
 						<div class="sort-buttons">
-							<IconButton icon="arrowUp" onClick={() => moveUp(i)} className="sort-btn" size={14} />
-							<IconButton icon="arrowDown" onClick={() => moveDown(i)} className="sort-btn" size={14} />
+							<IconButton icon="arrowUp" onClick={() => handleMove(i, "up")} className="sort-btn" size={14} />
+							<IconButton icon="arrowDown" onClick={() => handleMove(i, "down")} className="sort-btn" size={14} />
 						</div>
 						<div class="font-info">
 							<span class="name">{font.fontName}</span>
+							{#if font.isDefault}
+								<span class="default-badge">Built-in</span>
+							{/if}
 						</div>
 						<div class="actions">
 							<Checkbox
@@ -167,12 +110,16 @@
 								}}
 								bind:value={font.enabled}
 							/>
-							<IconButton
-								icon="delete"
-								onClick={() => handleRemove(font.id, font.fontName)}
-								className="delete-btn"
-								size={20}
-							/>
+							{#if !font.isDefault}
+								<IconButton
+									icon="delete"
+									onClick={() => handleRemove(font.id, font.fontName)}
+									className="delete-btn"
+									size={20}
+								/>
+							{:else}
+								<div class="non-deletable-placeholder" title="Built-in default font cannot be removed">Built-in</div>
+							{/if}
 						</div>
 					</div>
 				{/each}
@@ -203,7 +150,9 @@
 		gap: 12px;
 	}
 
-	.add-button-container {
+	.action-buttons-container {
+		display: flex;
+		gap: 10px;
 		margin-top: 5px;
 		:global(.styleshift-button) {
 			padding: 12px !important;
@@ -226,14 +175,33 @@
 		border: 1px solid var(--fg-opacity-10);
 		transition: all 0.2s;
 		gap: 15px;
+
+		&.is-default {
+			background: var(--fg-opacity-03);
+			border-color: var(--fg-opacity-08);
+		}
 	}
 
 	.font-info {
+		display: flex;
+		align-items: center;
+		gap: 10px;
 		flex: 1;
+
 		.name {
 			font-size: 16px;
 			font-weight: 600;
 			color: white;
+		}
+
+		.default-badge {
+			font-size: 11px;
+			font-weight: 500;
+			padding: 2px 8px;
+			background: var(--fg-opacity-10);
+			border: 1px solid var(--fg-opacity-15);
+			border-radius: 10px;
+			color: var(--fg-opacity-70, rgba(255, 255, 255, 0.7));
 		}
 	}
 
@@ -241,6 +209,15 @@
 		display: flex;
 		align-items: center;
 		gap: 20px;
+	}
+
+	.non-deletable-placeholder {
+		font-size: 12px;
+		color: var(--fg-opacity-30, rgba(255, 255, 255, 0.3));
+		padding: 6px 10px;
+		background: var(--fg-opacity-03);
+		border-radius: 8px;
+		user-select: none;
 	}
 
 	.sort-buttons {

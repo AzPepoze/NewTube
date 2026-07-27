@@ -28,8 +28,6 @@ export const betaFeaturesCategory: Category = {
 			enableCss: `
                 * {
                     backdrop-filter: none !important;
-                    transition: none !important;
-                    animation: none !important;
                 }
             `,
 		},
