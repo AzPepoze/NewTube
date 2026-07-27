@@ -29,7 +29,7 @@ export async function processOutputFile(filePath: string, isFirefox = false) {
 
 		content = applyBranding(content);
 		if (isFirefox) {
-			if (filePath.endsWith(".css") || filePath.endsWith(".js")) {
+			if (filePath.endsWith(".css")) {
 				content = applyFirefoxCompatibility(content);
 			}
 			if (filePath.endsWith("manifest.json")) {
@@ -38,13 +38,18 @@ export async function processOutputFile(filePath: string, isFirefox = false) {
 					manifest.background.scripts = [manifest.background.service_worker];
 					delete manifest.background.service_worker;
 				}
-				if (manifest.web_accessible_resources?.[0]) {
-					if (!manifest.web_accessible_resources[0].resources.includes("workers/*")) {
-						manifest.web_accessible_resources[0].resources.push("workers/*");
-					}
-				}
 				content = JSON.stringify(manifest, null, "\t");
 			}
+		}
+
+		if (filePath.endsWith("manifest.json")) {
+			const manifest = JSON.parse(content);
+			if (manifest.web_accessible_resources?.[0]) {
+				if (!manifest.web_accessible_resources[0].resources.includes("workers/*")) {
+					manifest.web_accessible_resources[0].resources.push("workers/*");
+				}
+			}
+			content = JSON.stringify(manifest, null, "\t");
 		}
 		await fs.writeFile(filePath, content, "utf8");
 	} catch (err: any) {

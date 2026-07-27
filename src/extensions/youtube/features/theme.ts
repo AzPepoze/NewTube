@@ -69,6 +69,9 @@ export async function clearTheme() {
 		"--nt-player-bg",
 		"--nt-theme-shadow",
 		"--nt-theme-control-panel-button-group",
+		"--nt-thumbnail-live-badge-bg",
+		"--nt-thumbnail-live-badge-text",
+		"--nt-control-panel-icon-color",
 	];
 
 	props.forEach((prop) => body.style.removeProperty(prop));
@@ -184,6 +187,11 @@ export function enableThemeByVideo() {
 			const loadedHsv = { ...hsv, s: hsv.s * 0.5, v: hsv.v * 0.6 };
 			const loadedRgb = hsvToRgb(loadedHsv);
 			setProp("--nt-timeline-load", `rgba(${loadedRgb.r}, ${loadedRgb.g}, ${loadedRgb.b}, 1)`);
+
+			// Live Badge & Control Panel
+			setProp("--nt-thumbnail-live-badge-bg", themeRgba(1));
+			setProp("--nt-thumbnail-live-badge-text", `rgba(${textRgb.r}, ${textRgb.g}, ${textRgb.b}, 1)`, "important");
+			setProp("--nt-control-panel-icon-color", `rgba(${textRgb.r}, ${textRgb.g}, ${textRgb.b}, 1)`, "important");
 
 			// Control Panel
 			const cpHsv = { ...hsv, v: hsv.v * 0.2 };

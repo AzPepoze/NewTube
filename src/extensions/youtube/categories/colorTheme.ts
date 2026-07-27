@@ -50,6 +50,7 @@ export const colorThemeCategory: Category = {
                     --yt-spec-themed-green: var(--nt-theme-color) !important;
                     --yt-spec-overlay-background-medium-light: var(--nt-theme-control-panel-button-group) !important;
 					--yt-spec-outline: var(--nt-theme-transparent) !important;
+					--yt-endpoint-hover-color: var(--nt-theme-color) !important;
                 }
             `,
 		},

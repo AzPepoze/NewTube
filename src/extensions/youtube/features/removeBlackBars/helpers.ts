@@ -1,12 +1,19 @@
 export interface BarDetectionData {
-	imgData: Uint8ClampedArray;
-	vHeight: number;
+	verticalImgData: Uint8ClampedArray;
+	horizontalImgData?: Uint8ClampedArray;
+	videoHeight: number;
+	videoWidth?: number;
+	mode?: "vertical" | "horizontal" | "both";
 	threshold: number;
-	sR: number;
-	sG: number;
-	sB: number;
+	verticalR: number;
+	verticalG: number;
+	verticalB: number;
+	horizontalR?: number;
+	horizontalG?: number;
+	horizontalB?: number;
 	pixelBudget?: number;
 	currentLastHeight?: number;
+	currentLastWidth?: number;
 }
 
 export function checkPixelDiff(
@@ -21,66 +28,82 @@ export function checkPixelDiff(
 	return Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2) > threshold;
 }
 
-export function calculateVdoHeight(heights: (number | "inf")[], currentLastHeight: number) {
-	const validHeights = heights.filter((h): h is number => typeof h === "number");
-	if (validHeights.length < 3) return currentLastHeight;
+export function calculateBarDimension(values: (number | "inf")[], currentLastValue: number): number {
+	const validValues = values.filter((v): v is number => typeof v === "number");
+	if (validValues.length < 3) return currentLastValue;
 
 	const frequencyMap = new Map<number, number>();
-	for (const height of validHeights) {
-		const rounded = Math.round(height / 5) * 5; // Group in 5px bins
+	for (const val of validValues) {
+		const rounded = Math.round(val / 5) * 5; // Group in 5px bins
 		frequencyMap.set(rounded, (frequencyMap.get(rounded) || 0) + 1);
 	}
 
 	let maxFreq = 0;
-	let bestHeight = currentLastHeight;
+	let bestValue = currentLastValue;
 
-	for (const [height, freq] of frequencyMap.entries()) {
-		if (freq > maxFreq || (freq === maxFreq && height > bestHeight)) {
+	for (const [val, freq] of frequencyMap.entries()) {
+		if (freq > maxFreq || (freq === maxFreq && val > bestValue)) {
 			maxFreq = freq;
-			bestHeight = height;
+			bestValue = val;
 		}
 	}
 
-	return maxFreq >= 3 ? bestHeight : currentLastHeight;
+	return maxFreq >= 3 ? bestValue : currentLastValue;
 }
 
-export async function detectBlackBars(data: BarDetectionData, ctx?: CanvasRenderingContext2D | null) {
-	const { imgData, vHeight, threshold, sR, sG, sB, pixelBudget } = data;
+export async function detectVerticalBars(
+	verticalImgData: Uint8ClampedArray,
+	videoHeight: number,
+	verticalR: number,
+	verticalG: number,
+	verticalB: number,
+	threshold: number,
+	pixelBudget?: number,
+	verticalCtx?: CanvasRenderingContext2D | null,
+): Promise<(number | "inf")[]> {
 	const heightsFound: (number | "inf")[] = [];
 	let pixelsChecked = 0;
 
-	const isDifferent = (base: number) =>
-		checkPixelDiff(imgData[base], imgData[base + 1], imgData[base + 2], sR, sG, sB, threshold);
+	const isDifferentVertical = (dataArray: Uint8ClampedArray, base: number) =>
+		checkPixelDiff(
+			dataArray[base],
+			dataArray[base + 1],
+			dataArray[base + 2],
+			verticalR,
+			verticalG,
+			verticalB,
+			threshold,
+		);
 
-	if (ctx) ctx.fillStyle = "red";
+	if (verticalCtx) verticalCtx.fillStyle = "red";
 
 	for (let x = 0; x < 5; x++) {
 		let top = -1;
 		let bottom = -1;
 
 		// Top scan (skip first 5 pixels)
-		for (let i = 5; i < vHeight / 2; i++) {
+		for (let i = 5; i < videoHeight / 2; i++) {
 			pixelsChecked++;
-			if (isDifferent((i * 5 + x) * 4)) {
+			if (isDifferentVertical(verticalImgData, (i * 5 + x) * 4)) {
 				top = i;
 				break;
 			}
-			if (ctx) ctx.fillRect(x, i, 1, 1);
-			if (pixelBudget && ++pixelsChecked >= pixelBudget) {
+			if (verticalCtx) verticalCtx.fillRect(x, i, 1, 1);
+			if (pixelBudget && pixelBudget > 0 && pixelsChecked >= pixelBudget) {
 				await new Promise((r) => setTimeout(r, 1));
 				pixelsChecked = 0;
 			}
 		}
 
 		// Bottom scan (skip last 5 pixels)
-		for (let i = vHeight - 5; i > vHeight / 2; i--) {
+		for (let i = videoHeight - 5; i > videoHeight / 2; i--) {
 			pixelsChecked++;
-			if (isDifferent((i * 5 + x) * 4)) {
-				bottom = vHeight - i;
+			if (isDifferentVertical(verticalImgData, (i * 5 + x) * 4)) {
+				bottom = videoHeight - i;
 				break;
 			}
-			if (ctx) ctx.fillRect(x, i, 1, 1);
-			if (pixelBudget && ++pixelsChecked >= pixelBudget) {
+			if (verticalCtx) verticalCtx.fillRect(x, i, 1, 1);
+			if (pixelBudget && pixelBudget > 0 && pixelsChecked >= pixelBudget) {
 				await new Promise((r) => setTimeout(r, 1));
 				pixelsChecked = 0;
 			}
@@ -94,4 +117,131 @@ export async function detectBlackBars(data: BarDetectionData, ctx?: CanvasRender
 	}
 
 	return heightsFound;
+}
+
+export async function detectHorizontalBars(
+	horizontalImgData: Uint8ClampedArray,
+	videoWidth: number,
+	horizontalR: number,
+	horizontalG: number,
+	horizontalB: number,
+	threshold: number,
+	pixelBudget?: number,
+	horizontalCtx?: CanvasRenderingContext2D | null,
+): Promise<(number | "inf")[]> {
+	const widthsFound: (number | "inf")[] = [];
+	let pixelsChecked = 0;
+
+	const isDifferentHorizontal = (dataArray: Uint8ClampedArray, base: number) =>
+		checkPixelDiff(
+			dataArray[base],
+			dataArray[base + 1],
+			dataArray[base + 2],
+			horizontalR,
+			horizontalG,
+			horizontalB,
+			threshold,
+		);
+
+	if (horizontalCtx) horizontalCtx.fillStyle = "red";
+
+	for (let y = 0; y < 5; y++) {
+		let left = -1;
+		let right = -1;
+
+		// Left scan (skip first 5 pixels)
+		for (let i = 5; i < videoWidth / 2; i++) {
+			pixelsChecked++;
+			if (isDifferentHorizontal(horizontalImgData, (y * videoWidth + i) * 4)) {
+				left = i;
+				break;
+			}
+			if (horizontalCtx) horizontalCtx.fillRect(i, y, 1, 1);
+			if (pixelBudget && pixelBudget > 0 && pixelsChecked >= pixelBudget) {
+				await new Promise((r) => setTimeout(r, 1));
+				pixelsChecked = 0;
+			}
+		}
+
+		// Right scan (skip last 5 pixels)
+		for (let i = videoWidth - 5; i > videoWidth / 2; i--) {
+			pixelsChecked++;
+			if (isDifferentHorizontal(horizontalImgData, (y * videoWidth + i) * 4)) {
+				right = videoWidth - i;
+				break;
+			}
+			if (horizontalCtx) horizontalCtx.fillRect(i, y, 1, 1);
+			if (pixelBudget && pixelBudget > 0 && pixelsChecked >= pixelBudget) {
+				await new Promise((r) => setTimeout(r, 1));
+				pixelsChecked = 0;
+			}
+		}
+
+		if (left !== -1 && right !== -1) {
+			widthsFound.push(Math.max(left, right));
+		} else {
+			widthsFound.push("inf");
+		}
+	}
+
+	return widthsFound;
+}
+
+export async function detectBlackBars(
+	data: BarDetectionData,
+	verticalCtx?: CanvasRenderingContext2D | null,
+	horizontalCtx?: CanvasRenderingContext2D | null,
+) {
+	const {
+		verticalImgData,
+		videoHeight,
+		videoWidth = 0,
+		mode = "vertical",
+		threshold,
+		verticalR,
+		verticalG,
+		verticalB,
+		horizontalR = verticalR,
+		horizontalG = verticalG,
+		horizontalB = verticalB,
+		pixelBudget,
+		horizontalImgData,
+		currentLastHeight = 0,
+		currentLastWidth = 0,
+	} = data;
+
+	const runVertical = mode === "vertical" || mode === "both";
+	const runHorizontal = (mode === "horizontal" || mode === "both") && !!horizontalImgData && videoWidth > 0;
+
+	const [heightsFound, widthsFound] = await Promise.all([
+		runVertical
+			? detectVerticalBars(
+					verticalImgData,
+					videoHeight,
+					verticalR,
+					verticalG,
+					verticalB,
+					threshold,
+					pixelBudget,
+					verticalCtx,
+				)
+			: Promise.resolve([] as (number | "inf")[]),
+		runHorizontal
+			? detectHorizontalBars(
+					horizontalImgData!,
+					videoWidth,
+					horizontalR,
+					horizontalG,
+					horizontalB,
+					threshold,
+					pixelBudget,
+					horizontalCtx,
+				)
+			: Promise.resolve([] as (number | "inf")[]),
+	]);
+
+	const heightResult = runVertical ? calculateBarDimension(heightsFound, currentLastHeight) : currentLastHeight;
+	const widthResult = runHorizontal ? calculateBarDimension(widthsFound, currentLastWidth) : currentLastWidth;
+
+	return { heightResult, widthResult };
 }

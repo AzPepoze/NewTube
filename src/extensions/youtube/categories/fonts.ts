@@ -15,12 +15,18 @@ export const fontsCategory: Category = {
 			},
 			constantCss: (value) => {
 				if (!Array.isArray(value)) return "";
-				const enabledFonts = value.filter((f) => f.enabled && f.fontName && f.importUrl);
+				const enabledFonts = value.filter((f) => f && f.enabled && f.fontName);
 				if (enabledFonts.length === 0) return "";
 
 				// Deduplicate imports by URL
-				const uniqueUrls = [...new Set(enabledFonts.map((f) => f.importUrl))];
-				const imports = uniqueUrls.map((url) => `@import url('${url}');`).join("\n");
+				const uniqueUrls = [
+					...new Set(
+						enabledFonts
+							.map((f) => f.importUrl)
+							.filter((url): url is string => typeof url === "string" && url.trim().length > 0),
+					),
+				];
+				const imports = uniqueUrls.length > 0 ? uniqueUrls.map((url) => `@import url('${url}');`).join("\n") : "";
 
 				// Generate font stack.
 				const fontStack = enabledFonts

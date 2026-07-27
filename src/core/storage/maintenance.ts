@@ -27,7 +27,7 @@ export async function initializeDefaultAddOnItems(): Promise<void> {
  * Ensures all available settings have a value in storage, applying defaults where missing.
  */
 export async function populateMissingDefaultSettings(): Promise<void> {
-	const availableSettings = await getSettingsList(true);
+	const availableSettings = getSettingsList();
 	let changed = false;
 
 	const defaultSettingsConfig = defaultSetting.currentSettings || {};
@@ -79,7 +79,7 @@ export async function performStorageGarbageCollection(): Promise<void> {
 
 	logger.info("maintenance", "Starting storage garbage collection");
 
-	const activeSettingIds = Object.keys(await getSettingsList(true));
+	const activeSettingIds = Object.keys(getSettingsList());
 	const userSettings = cachedStorageData["currentSettings"];
 
 	// Remove obsolete user settings
@@ -123,7 +123,7 @@ export async function initializeRequiredStorageStructures(): Promise<void> {
 	}
 
 	const currentSettings = (await getRootValue("currentSettings")) || {};
-	const availableSettings = await getSettingsList(true);
+	const availableSettings = getSettingsList();
 
 	for (const [id, config] of Object.entries(availableSettings) as [string, any]) {
 		if (EXTERNAL_STORAGE_KEYS.includes(id)) continue;

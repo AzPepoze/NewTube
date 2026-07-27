@@ -100,6 +100,7 @@ export async function updateStyleShiftItems() {
 	}
 
 	autoAddHightlight(getAllStyleShiftItems());
+	getSettingsList(true);
 
 	// Default
 	for (const item of styleshiftItems.Default) {
@@ -127,7 +128,7 @@ export async function updateStyleShiftItems() {
 
 let settingsList = {} as { [id: string]: Setting };
 
-export async function getSettingsList(rebuild = false): Promise<{ [id: string]: Setting }> {
+export function getSettingsList(rebuild = false): { [id: string]: Setting } {
 	if (!rebuild && Object.keys(settingsList).length) {
 		return settingsList;
 	}
@@ -143,6 +144,10 @@ export async function getSettingsList(rebuild = false): Promise<{ [id: string]: 
 	}
 
 	return settingsList;
+}
+
+export function getSettingById(id: string): Setting | undefined {
+	return getSettingsList()[id];
 }
 
 //--------------------------------------------------
@@ -167,6 +172,8 @@ export async function addSetting(categorySettings: Setting[], thisSetting) {
 
 	categorySettings.push(thisSetting);
 	logger.info("settings", "update Category settings", categorySettings);
+
+	getSettingsList(true);
 
 	if (thisSetting.value) {
 		await saveToStorage(thisSetting.id, thisSetting.value);
@@ -194,7 +201,10 @@ export async function removeSetting(thisSetting: Setting): Promise<boolean> {
 		}
 	}
 
-	if (wasRemoved) await saveAndRefreshAll();
+	if (wasRemoved) {
+		getSettingsList(true);
+		await saveAndRefreshAll();
+	}
 	return wasRemoved;
 }
 
@@ -226,6 +236,8 @@ export async function addCategory(categoryName: string) {
 	addOnItems.push(thisCategory);
 	logger.info("category", "Added Category", addOnItems);
 
+	getSettingsList(true);
+
 	// Track the new category ID for UI highlighting
 	const categoryId = typeof thisCategory.category === "string" ? thisCategory.category : thisCategory.category.label;
 	await saveToStorage("lastAddedCategory", categoryId);
@@ -246,6 +258,7 @@ export async function removeCategory(thisCategory: Category): Promise<boolean> {
 	if (index === -1) return false;
 
 	addOnItems.splice(index, 1);
+	getSettingsList(true);
 	await saveAddOnItemsAndRefreshExtensionState(addOnItems);
 	return true;
 }

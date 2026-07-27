@@ -1,13 +1,12 @@
-import { type BarDetectionData, calculateVdoHeight, detectBlackBars } from "./helpers";
+import { type BarDetectionData, detectBlackBars } from "./helpers";
 
 self.onmessage = async (e) => {
 	try {
 		const { type, data } = e.data;
 
 		if (type === "detect") {
-			const heightsFound = await detectBlackBars(data as BarDetectionData);
-			const result = calculateVdoHeight(heightsFound, data.currentLastHeight);
-			self.postMessage({ type: "result", data: { result } });
+			const { heightResult, widthResult } = await detectBlackBars(data as BarDetectionData);
+			self.postMessage({ type: "result", data: { heightResult, widthResult } });
 		}
 	} catch (err) {
 		self.postMessage({

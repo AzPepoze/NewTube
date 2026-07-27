@@ -14,6 +14,7 @@ import {
 	disableUltraWide,
 	removeDebugCanvas,
 	removeDebugUI,
+	updateDebugUI,
 } from "./ui";
 
 async function initWorkerState() {
@@ -26,10 +27,23 @@ async function initWorkerState() {
 	if (settings.worker && state.enabled) {
 		state.worker = await loadWorker("removeBlackBarsWorker.js");
 		if (state.worker) {
-			state.worker.onmessage = (_e) => {
+			state.worker.onmessage = (e) => {
+				const { type, data } = e.data || {};
+				if (type === "result" && data) {
+					const { heightResult, widthResult, result } = data;
+					state.processLatency = performance.now() - state.startTime;
+					const hRes = typeof heightResult === "number" ? heightResult : typeof result === "number" ? result : 0;
+					const wRes = typeof widthResult === "number" ? widthResult : 0;
+					if (hRes !== state.lastHeight || wRes !== state.lastWidth) {
+						applyCrop(hRes, state.videoHeight || 1080, wRes, state.videoWidth || 1920);
+					}
+					updateDebugUI(hRes, state.videoHeight, wRes, state.videoWidth);
+				}
 				state.isChecking = false;
 			};
-			state.worker.onerror = () => {
+			state.worker.onerror = (_err) => {
+				state.worker?.terminate();
+				state.worker = null;
 				state.isChecking = false;
 			};
 		}
@@ -41,6 +55,14 @@ export async function updateRemoveBlackBarsSettings(value?: any, settingId?: str
 		switch (settingId) {
 			case "RemoveBlackBars":
 				settings.enabled = value;
+				break;
+			case "RemoveBlackBarsMode":
+				settings.mode = value || "vertical";
+				if (state.enabled) {
+					getVideoElement().then((video) => {
+						if (video) applyCrop(0, video.videoHeight, 0, video.videoWidth);
+					});
+				}
 				break;
 			case "RemoveBlackBarsDebugCanvas":
 				settings.debugCanvas = value;
@@ -80,17 +102,19 @@ export async function enableRemoveBlackBars() {
 	if ((await getFromStorage("enableExtension")) === false) return;
 	if (state.enabled) return;
 	state.enabled = true;
+	state.sessionId++;
 	const mySession = state.sessionId;
 
 	await initWorkerState();
 
 	const init = async () => {
 		state.lastHeight = 0;
+		state.lastWidth = 0;
 		if (!state.enabled || state.sessionId !== mySession) return;
 
 		const video = await getVideoElement();
 		if (video) {
-			applyCrop(0, video.videoHeight);
+			applyCrop(0, video.videoHeight, 0, video.videoWidth);
 			checkBlackBars();
 		} else {
 			await waitOneFrame();
@@ -99,11 +123,16 @@ export async function enableRemoveBlackBars() {
 	};
 	init();
 
-	window.addEventListener("yt-navigate-finish", init);
+	const handleNav = () => init();
+	window.addEventListener("yt-navigate-finish", handleNav);
+	state.navCleanup = () => window.removeEventListener("yt-navigate-finish", handleNav);
+
 	state.fullscreenCleanup = onYoutubeFullscreen(async () => {
 		if (state.enabled && state.sessionId === mySession) {
 			const video = await getVideoElement();
-			if (video) checkBlackBars();
+			if (video && !state.isScheduled && !state.isChecking) {
+				checkBlackBars();
+			}
 		}
 	});
 }
@@ -114,9 +143,11 @@ export function disableRemoveBlackBars() {
 	if (state.animationId) {
 		cancelAnimationFrame(state.animationId);
 		clearTimeout(state.animationId);
+		state.animationId = null;
 	}
 	if (state.videoFrameCallbackId && videoElement && "cancelVideoFrameCallback" in videoElement) {
 		videoElement.cancelVideoFrameCallback(state.videoFrameCallbackId);
+		state.videoFrameCallbackId = null;
 	}
 
 	if (state.worker) {
@@ -128,6 +159,11 @@ export function disableRemoveBlackBars() {
 	if (state.fullscreenCleanup) {
 		state.fullscreenCleanup();
 		state.fullscreenCleanup = null;
+	}
+
+	if (state.navCleanup) {
+		state.navCleanup();
+		state.navCleanup = null;
 	}
 
 	const player = document.querySelector(".html5-video-container") as HTMLElement;
@@ -148,12 +184,16 @@ export function disableRemoveBlackBars() {
 	removeDebugUI();
 
 	state.lastHeight = 0;
+	state.lastWidth = 0;
 	state.droppedFrames = 0;
-	state.vHeight = 0;
+	state.videoHeight = 0;
+	state.videoWidth = 0;
 	state.processLatency = 0;
 	state.startTime = 0;
 	state.lastIntervalTime = 0;
 	state.currentInterval = 0;
+	state.isChecking = false;
+	state.isScheduled = false;
 	state.sessionId++;
 	disableUltraWide();
 }
@@ -161,6 +201,7 @@ export function disableRemoveBlackBars() {
 export function registerRemoveBlackBarsListeners() {
 	const settingsList = [
 		"RemoveBlackBars",
+		"RemoveBlackBarsMode",
 		"RemoveBlackBarsDebugCanvas",
 		"RemoveBlackBarsDebugInfo",
 		"RemoveBlackBarsLazyCheck",

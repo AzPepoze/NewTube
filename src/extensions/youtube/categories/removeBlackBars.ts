@@ -1,12 +1,12 @@
 import { type Category } from "@settings/types/styleshiftTypes";
+import { settingsUi } from "@ui/settings/settingsApi";
+import BlackBarVisualOptions from "@controls/BlackBarVisualOptions.svelte";
 import {
 	disableRemoveBlackBars,
 	enableRemoveBlackBars,
 	updateRemoveBlackBarsSettings,
 } from "../features/removeBlackBars/main";
 import { PLAYER_SELECTOR } from "./selectors";
-
-const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
 export const removeBlackBarsCategory: Category = {
 	category: { icon: "crop_square", label: "Remove black bars on video" },
@@ -16,11 +16,22 @@ export const removeBlackBarsCategory: Category = {
 			type: "checkbox",
 			id: "RemoveBlackBars",
 			name: "Remove Black Bars",
-			description:
-				"Automatically detects and crops out horizontal black bars (letterboxing) from the top and bottom of videos to fill your screen better.",
+			description: "Automatically detects and crops out black bars from videos to fill your screen better.",
 			value: false,
 			enableFunction: enableRemoveBlackBars,
 			disableFunction: disableRemoveBlackBars,
+		},
+		{
+			type: "custom",
+			id: "RemoveBlackBarsMode",
+			name: "Crop Direction",
+			description:
+				"Choose whether to remove vertical (top/bottom), horizontal (left/right - experimental), or both black bars.",
+			value: "vertical",
+			require: { RemoveBlackBars: true },
+			uiFunction: function (frame: HTMLElement) {
+				settingsUi.renderComponent(BlackBarVisualOptions, { setting: this }, frame);
+			},
 		},
 		{
 			type: "checkbox",
@@ -49,11 +60,6 @@ export const removeBlackBarsCategory: Category = {
 			description:
 				"Offloads the video analysis to a separate background thread. This prevents the main interface from stuttering or lagging during complex frame analysis.",
 			value: true,
-			lock: {
-				condition: !isFirefox,
-				message:
-					"I didn't want to lock this feature for Firefox only, but Chromium browsers (Chrome, Edge, etc.) are making it really hard to get workers running correctly. Maybe I'm just stupid and can't make it work, but honestly, Chrome's rendering is already so fast that you won't see much of a performance boost anyway.",
-			},
 			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },
 		},

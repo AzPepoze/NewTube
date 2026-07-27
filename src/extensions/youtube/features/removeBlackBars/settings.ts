@@ -2,6 +2,7 @@ import { getUserSetting } from "@core/storage/manager";
 
 export const settings = {
 	enabled: false,
+	mode: "vertical" as "vertical" | "horizontal" | "both",
 	debugCanvas: false,
 	debugInfo: false,
 	lazyCheck: false,
@@ -13,6 +14,12 @@ export const settings = {
 
 export async function loadInitialSettings() {
 	settings.enabled = await getUserSetting("RemoveBlackBars");
+	const storedMode = await getUserSetting("RemoveBlackBarsMode");
+	if (storedMode === "vertical" || storedMode === "horizontal" || storedMode === "both") {
+		settings.mode = storedMode;
+	} else {
+		settings.mode = "vertical";
+	}
 	settings.debugCanvas = await getUserSetting("RemoveBlackBarsDebugCanvas");
 	settings.debugInfo = await getUserSetting("RemoveBlackBarsDebugInfo");
 	settings.lazyCheck = await getUserSetting("RemoveBlackBarsLazyCheck");

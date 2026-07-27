@@ -1,8 +1,7 @@
 import { type Category } from "@settings/types/styleshiftTypes";
+import { enableAutoRemoveAmbient } from "../features/video/general";
 import { disableVideoAmbient, enableVideoAmbient, updateVideoAmbientSettings } from "../features/videoAmbient/main";
 import { PLAYER_SELECTOR } from "./selectors";
-
-const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
 export const videoAmbientCategory: Category = {
 	category: { icon: "fluorescent", label: "Video Ambient" },
@@ -17,6 +16,14 @@ export const videoAmbientCategory: Category = {
 			value: false,
 			enableFunction: enableVideoAmbient,
 			disableFunction: disableVideoAmbient,
+		},
+		{
+			type: "checkbox",
+			id: "AutoRemoveAmbientMode",
+			name: "Auto Remove Ambient",
+			description: "Automatically disables YouTube's native ambient lighting effect to prevent visual conflicts.",
+			value: true,
+			enableFunction: enableAutoRemoveAmbient,
 		},
 		{
 			type: "dropdown",
@@ -47,11 +54,6 @@ export const videoAmbientCategory: Category = {
 			value: true,
 			enableFunction: updateVideoAmbientSettings,
 			disableFunction: updateVideoAmbientSettings,
-			lock: {
-				condition: !isFirefox,
-				message:
-					"I didn't want to lock this feature for Firefox only, but Chromium browsers (Chrome, Edge, etc.) are making it really hard to get workers running correctly. Maybe I'm just stupid and can't make it work, but honestly, Chrome's rendering is already so fast that you won't see much of a performance boost anyway.",
-			},
 			require: { VideoAmbient: true },
 		},
 		{

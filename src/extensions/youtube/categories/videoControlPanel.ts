@@ -186,40 +186,40 @@ export const videoControlPanelCategory: Category = {
 			name: "Icon Color",
 			description: "Changes the color of the icons, timestamps, and sliders within the video control bar.",
 			value: "#ffffffff",
-			varCss: "--control-panel-icon-color",
+			varCss: "--nt-control-panel-icon-color",
 			constantCss: `
 				.ytp-time-contents *,
 				.ytp-time-current,
 				.ytp-time-separator,
 				.ytp-time-duration
 				 {
-					color: var(--control-panel-icon-color) !important;
+					color: var(--nt-control-panel-icon-color) !important;
 				}
 				
 				div.ytp-chrome-controls path
 				{
-					fill: var(--control-panel-icon-color) !important;
+					fill: var(--nt-control-panel-icon-color) !important;
 				}
 
 				.ytp-autonav-toggle-button[aria-checked="true"]::after
 				{
-					background-color: var(--control-panel-icon-color) !important;
+					background-color: var(--nt-control-panel-icon-color) !important;
 				}
 
 				.ytp-autonav-toggle-button
 				{
-					background-color: color-mix(in srgb, var(--control-panel-icon-color) 50%, transparent 100%) !important;
+					background-color: color-mix(in srgb, var(--nt-control-panel-icon-color) 50%, transparent 100%) !important;
 				}
 
 				.ytp-volume-slider-handle,
 				.ytp-volume-slider-handle::before
 				{
-					background: var(--control-panel-icon-color) !important;
-					background-color: var(--control-panel-icon-color) !important;
+					background: var(--nt-control-panel-icon-color) !important;
+					background-color: var(--nt-control-panel-icon-color) !important;
 				}
 
 				.ytp-swatch-color {
-					color: var(--control-panel-icon-color) !important;
+					color: var(--nt-control-panel-icon-color) !important;
 				}
 			`,
 		},
@@ -302,6 +302,34 @@ export const videoControlPanelCategory: Category = {
 			step: 1,
 			varCss: "--nt-player-border-width",
 			require: { EnableControlPanelBorder: true },
+		},
+		{
+			type: "color",
+			id: "TimelineBackgroundColor",
+			hoverPreview: { selectors: ["#ytd-player .ytp-progress-bar"] },
+			name: "Timeline Track",
+			description: "Sets the color of the unplayed/background portion of the video progress bar.",
+			value: "#ffffff20",
+			varCss: "--nt-timeline-bg",
+			constantCss: `
+      .ytp-progress-bar {
+        background-color: var(--nt-timeline-bg, #ffffff20) !important;
+      }
+    `,
+		},
+		{
+			type: "color",
+			id: "TimelineLoadedColor",
+			hoverPreview: { selectors: ["#ytd-player .ytp-load-progress"] },
+			name: "Timeline Buffer",
+			description: "Sets the color of the buffered/loaded portion of the progress bar.",
+			value: "#ffffff50",
+			varCss: "--nt-timeline-load",
+			constantCss: `
+      .ytp-load-progress {
+        background: var(--nt-timeline-load, #ffffff50) !important;
+      }
+    `,
 		},
 	],
 };

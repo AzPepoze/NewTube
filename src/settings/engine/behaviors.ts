@@ -1,6 +1,7 @@
 import { executeSettingScript } from "@core/runtime/controller";
 import { getFromStorage } from "@core/storage/manager";
 import { logger } from "@shared/logger";
+import { getSettingById } from "../registry/items";
 import { createStylesheet } from "../stylesheet/styleSheet";
 import { evaluateConditionAsync } from "./conditions";
 import { activeSettingsState } from "./functions";
@@ -14,6 +15,14 @@ function tryExecute(setting: any, scriptName: string) {
 		logger.debug("settings", `Executing ${scriptName} for ${setting.id}`);
 		executeSettingScript(setting, scriptName);
 	}
+}
+
+/**
+ * Helper to fetch the latest setting object from registry.
+ */
+function getLatestSetting(setting: any) {
+	if (!setting?.id) return setting;
+	return getSettingById(setting.id) || setting;
 }
 
 /**
@@ -33,23 +42,30 @@ export const SETTING_TYPE_BEHAVIORS = {
 		const stylesheet = initBase(setting)!;
 
 		async function applyCheckboxUpdate() {
-			const isLocked = setting.lock?.condition ?? false;
-			const currentValue = isLocked ? false : await getFromStorage(setting.id);
-			logger.debug("settings", `Applying checkbox update for ${setting.id}:`, currentValue, isLocked ? "(locked)" : "");
+			const currentSetting = getLatestSetting(setting);
+			const isLocked = currentSetting.lock?.condition ?? false;
+			const currentValue = isLocked ? false : await getFromStorage(currentSetting.id);
+			logger.debug(
+				"settings",
+				`Applying checkbox update for ${currentSetting.id}:`,
+				currentValue,
+				isLocked ? "(locked)" : "",
+			);
 
 			stylesheet.textContent =
-				(setting.constantCss || ``) + (currentValue ? setting.enableCss || `` : setting.disableCss || ``);
+				(currentSetting.constantCss || ``) +
+				(currentValue ? currentSetting.enableCss || `` : currentSetting.disableCss || ``);
 
-			logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
+			logger.debug("settings", `CSS updated for ${currentSetting.id}:`, stylesheet.textContent);
 
-			if (activeSettingsState[setting.id] === currentValue) {
-				logger.debug("settings", `Value unchanged for ${setting.id}, skipping functions`);
+			if (activeSettingsState[currentSetting.id] === currentValue) {
+				logger.debug("settings", `Value unchanged for ${currentSetting.id}, skipping functions`);
 				return;
 			}
-			activeSettingsState[setting.id] = currentValue;
+			activeSettingsState[currentSetting.id] = currentValue;
 
-			tryExecute(setting, "updateFunction");
-			tryExecute(setting, currentValue ? "enableFunction" : "disableFunction");
+			tryExecute(currentSetting, "updateFunction");
+			tryExecute(currentSetting, currentValue ? "enableFunction" : "disableFunction");
 		}
 
 		applyCheckboxUpdate();
@@ -60,16 +76,18 @@ export const SETTING_TYPE_BEHAVIORS = {
 		const stylesheet = initBase(setting, !!(setting.constantCss || setting.varCss));
 
 		async function applySliderUpdate() {
-			const value = await getFromStorage(setting.id);
+			const currentSetting = getLatestSetting(setting);
+			const value = await getFromStorage(currentSetting.id);
 
 			if (stylesheet) {
-				const varName = setting.varCss || `--${setting.id}`;
-				stylesheet.textContent = `:root{${varName}: ${value}${setting.unit || "px"}}` + (setting.constantCss || "");
-				logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
+				const varName = currentSetting.varCss || `--${currentSetting.id}`;
+				stylesheet.textContent =
+					`:root{${varName}: ${value}${currentSetting.unit || "px"}}` + (currentSetting.constantCss || "");
+				logger.debug("settings", `CSS updated for ${currentSetting.id}:`, stylesheet.textContent);
 			}
 
-			activeSettingsState[setting.id] = value;
-			tryExecute(setting, "updateFunction");
+			activeSettingsState[currentSetting.id] = value;
+			tryExecute(currentSetting, "updateFunction");
 		}
 
 		applySliderUpdate();
@@ -80,23 +98,24 @@ export const SETTING_TYPE_BEHAVIORS = {
 		const stylesheet = initBase(setting)!;
 
 		async function applyDropdownUpdate() {
-			const value = await getFromStorage(setting.id);
-			if (activeSettingsState[setting.id] === value) return;
+			const currentSetting = getLatestSetting(setting);
+			const value = await getFromStorage(currentSetting.id);
+			if (activeSettingsState[currentSetting.id] === value) return;
 
 			// Disable the previous option
-			const previousValue = activeSettingsState[setting.id];
-			const options = Array.isArray(setting.options) ? setting.options : [];
+			const previousValue = activeSettingsState[currentSetting.id];
+			const options = Array.isArray(currentSetting.options) ? currentSetting.options : [];
 			const previousOption = options.find((opt: any) => opt.value === previousValue);
 			tryExecute(previousOption, "disableFunction");
 
-			activeSettingsState[setting.id] = value;
+			activeSettingsState[currentSetting.id] = value;
 			const selectedOption = options.find((opt: any) => opt.value === value);
 
 			// Enable the new option
 			tryExecute(selectedOption, "enableFunction");
 
-			stylesheet.textContent = (setting.constantCss || "") + (selectedOption?.enableCss || "");
-			logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
+			stylesheet.textContent = (currentSetting.constantCss || "") + (selectedOption?.enableCss || "");
+			logger.debug("settings", `CSS updated for ${currentSetting.id}:`, stylesheet.textContent);
 		}
 
 		applyDropdownUpdate();
@@ -107,14 +126,15 @@ export const SETTING_TYPE_BEHAVIORS = {
 		const stylesheet = initBase(setting)!;
 
 		async function applyColorUpdate() {
-			const value = await getFromStorage(setting.id);
-			activeSettingsState[setting.id] = value;
+			const currentSetting = getLatestSetting(setting);
+			const value = await getFromStorage(currentSetting.id);
+			activeSettingsState[currentSetting.id] = value;
 
-			const varName = setting.varCss || `--${setting.id}`;
-			stylesheet.textContent = `:root{${varName}: ${value}}` + (setting.constantCss || ``);
-			logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
+			const varName = currentSetting.varCss || `--${currentSetting.id}`;
+			stylesheet.textContent = `:root{${varName}: ${value}}` + (currentSetting.constantCss || ``);
+			logger.debug("settings", `CSS updated for ${currentSetting.id}:`, stylesheet.textContent);
 
-			tryExecute(setting, "updateFunction");
+			tryExecute(currentSetting, "updateFunction");
 		}
 
 		applyColorUpdate();
@@ -125,13 +145,16 @@ export const SETTING_TYPE_BEHAVIORS = {
 		const stylesheet = initBase(setting, !!setting.constantCss);
 
 		async function applyCustomUpdate() {
-			const value = await getFromStorage(setting.id);
-			activeSettingsState[setting.id] = value;
+			const currentSetting = getLatestSetting(setting);
+			const value = await getFromStorage(currentSetting.id);
+			activeSettingsState[currentSetting.id] = value;
 
 			if (stylesheet) {
 				stylesheet.textContent =
-					(typeof setting.constantCss === "function" ? setting.constantCss(value) : setting.constantCss) || ``;
-				logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
+					(typeof currentSetting.constantCss === "function"
+						? currentSetting.constantCss(value)
+						: currentSetting.constantCss) || ``;
+				logger.debug("settings", `CSS updated for ${currentSetting.id}:`, stylesheet.textContent);
 			}
 		}
 
@@ -143,9 +166,10 @@ export const SETTING_TYPE_BEHAVIORS = {
 		const stylesheet = initBase(setting)!;
 
 		async function applyCombinedUpdate() {
-			if (stylesheet && setting.updateFunction) {
-				stylesheet.textContent = setting.updateFunction;
-				logger.debug("settings", `CSS updated for ${setting.id}:`, stylesheet.textContent);
+			const currentSetting = getLatestSetting(setting);
+			if (stylesheet && currentSetting.updateFunction) {
+				stylesheet.textContent = currentSetting.updateFunction;
+				logger.debug("settings", `CSS updated for ${currentSetting.id}:`, stylesheet.textContent);
 			}
 		}
 
@@ -156,22 +180,23 @@ export const SETTING_TYPE_BEHAVIORS = {
 	["conditionSetting"]: async function (setting: any) {
 		const stylesheet = initBase(setting)!;
 
-		async function checkConditionsMet(): Promise<boolean> {
-			return await evaluateConditionAsync(setting.condition);
+		async function checkConditionsMet(cond: any): Promise<boolean> {
+			return await evaluateConditionAsync(cond);
 		}
 
 		let lastStatus: boolean | null = null;
 
 		async function applyConditionUpdate() {
-			const isMet = await checkConditionsMet();
-			logger.debug("settings", `Applying condition update for ${setting.id}: met=${isMet}`);
+			const currentSetting = getLatestSetting(setting);
+			const isMet = await checkConditionsMet(currentSetting.condition);
+			logger.debug("settings", `Applying condition update for ${currentSetting.id}: met=${isMet}`);
 
-			stylesheet.textContent = isMet ? setting.enableCss || "" : setting.disableCss || "";
+			stylesheet.textContent = isMet ? currentSetting.enableCss || "" : currentSetting.disableCss || "";
 
 			if (lastStatus === isMet) return;
 			lastStatus = isMet;
 
-			tryExecute(setting, isMet ? "enableFunction" : "disableFunction");
+			tryExecute(currentSetting, isMet ? "enableFunction" : "disableFunction");
 		}
 
 		if (setting.condition) {
