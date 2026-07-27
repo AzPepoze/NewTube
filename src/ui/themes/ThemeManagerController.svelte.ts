@@ -7,6 +7,7 @@ import { exportCurrentSettingsObject, importPresetToSettings, importThemeWorkflo
 import {
 	applyTheme as applyThemeManager,
 	deleteTheme as deleteThemeManager,
+	recordThemeDownload,
 	saveTheme as saveThemeManager,
 	type Theme,
 } from "@core/theme/manager";
@@ -221,6 +222,7 @@ export class ThemeManagerController {
 				title: "Theme Installed",
 				content: `"${displayName}" added to collection.`,
 			});
+			await recordThemeDownload(id);
 		}
 
 		if (await applyThemeManager(id, displayName, "EXTENSION")) {

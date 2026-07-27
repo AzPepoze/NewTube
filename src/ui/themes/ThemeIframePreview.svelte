@@ -85,7 +85,6 @@
 
 			<button class="close-btn" onclick={onClose} aria-label="Close Preview" title="Close Preview (Esc)">
 				<Icon name="close" size={20} />
-				<span class="close-label">Close Preview</span>
 			</button>
 		</div>
 
@@ -155,9 +154,11 @@
 		.close-btn {
 			display: flex;
 			align-items: center;
-			gap: 6px;
-			padding: 6px 14px;
-			border-radius: 10px;
+			justify-content: center;
+			width: 40px;
+			height: 40px;
+			padding: 0;
+			border-radius: 50%;
 			border: 1px solid rgba(255, 255, 255, 0.15);
 			background: rgba(255, 255, 255, 0.08);
 			color: #ffffff;

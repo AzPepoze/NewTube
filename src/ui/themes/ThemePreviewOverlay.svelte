@@ -3,6 +3,7 @@
 	import type { Theme } from "@core/theme/manager";
 	import { NEWTUBE_STORE_THEMES_URL } from "@extensions/youtube/constants";
 	import Button from "@ui/settings/components/controls/Button.svelte";
+	import Icon from "@ui/settings/components/primitives/Icon.svelte";
 	import CapsuleTabs from "@ui/window/components/CapsuleTabs.svelte";
 	import { onMount } from "svelte";
 	import { fade, scale } from "svelte/transition";
@@ -159,7 +160,11 @@
 					{/if}
 				</div>
 
-				<div class="header-right"></div>
+				<div class="header-right">
+					<button class="preview-header-close" onclick={handleClose} aria-label="Close Preview" title="Close Preview (Esc)">
+						<Icon name="close" size={18} />
+					</button>
+				</div>
 			</div>
 
 			<!-- Content Container with border-radius and border -->
@@ -249,21 +254,6 @@
 							/>
 						</div>
 					{/if}
-
-					<div title="Close Preview (Esc)">
-						<Button
-							class="preview-footer-btn close-btn icon-only-btn"
-							fontSize={0}
-							iconSize={18}
-							setting={{
-								type: "button",
-								name: "",
-								icon: "close",
-								color: "var(--theme-error)",
-								clickFunction: () => handleClose(),
-							}}
-						/>
-					</div>
 				</div>
 			</div>
 		</div>
@@ -287,6 +277,7 @@
 	}
 
 	.preview-modal-wrapper {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		width: 100%;
@@ -348,6 +339,27 @@
 			align-items: center;
 			justify-content: flex-end;
 		}
+
+		.preview-header-close {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 40px !important;
+			height: 40px !important;
+			padding: 0 !important;
+			border-radius: 50% !important;
+			background: var(--theme-error-10, rgba(255, 68, 68, 0.12)) !important;
+			border: 1px solid var(--theme-error-50, rgba(255, 68, 68, 0.5)) !important;
+			color: var(--theme-error, #ff4444) !important;
+			cursor: pointer;
+			box-shadow: 0 0 0 3px var(--theme-error-10, rgba(255, 68, 68, 0.12)) !important;
+
+			&:hover {
+				background: var(--theme-error, #ff4444) !important;
+				color: #ffffff !important;
+				transform: scale(1.05);
+			}
+		}
 	}
 
 	.preview-content-card {
@@ -404,6 +416,7 @@
 		justify-content: center;
 		gap: 16px;
 		box-shadow: 0 10px 30px var(--shadow-color, rgba(0, 0, 0, 0.5));
+		border-top: 2px solid var(--theme-0);
 
 		.footer-actions {
 			display: flex;
@@ -452,6 +465,10 @@
 		background: transparent !important;
 		border: 1px solid var(--theme-0, #7f5db7) !important;
 		color: var(--theme-0, #7f5db7) !important;
+		box-shadow:
+			0 0 0 1px var(--theme-0-20, rgba(127, 93, 183, 0.2)),
+			0 6px 18px var(--theme-0-20, rgba(127, 93, 183, 0.2)) !important;
+		font-size: 13.5px !important;
 
 		&:hover {
 			background: var(--theme-0, #7f5db7) !important;
@@ -500,6 +517,12 @@
 		background: var(--theme-error-10, rgba(255, 60, 60, 0.15)) !important;
 		border: 1px solid var(--theme-error-30, rgba(255, 60, 60, 0.3)) !important;
 		color: var(--theme-error, #ff6666) !important;
+		border-radius: 50% !important;
+		width: 40px !important;
+		height: 40px !important;
+		padding: 0 !important;
+		margin-left: 4px;
+		box-shadow: 0 0 0 2px var(--theme-error-10, rgba(255, 68, 68, 0.1)) !important;
 
 		&:hover {
 			background: var(--theme-error-50, rgba(255, 60, 60, 0.4)) !important;
