@@ -14,6 +14,7 @@ import {
 	disableUltraWide,
 	removeDebugCanvas,
 	removeDebugUI,
+	updateDebugUI,
 } from "./ui";
 
 async function initWorkerState() {
@@ -26,10 +27,23 @@ async function initWorkerState() {
 	if (settings.worker && state.enabled) {
 		state.worker = await loadWorker("removeBlackBarsWorker.js");
 		if (state.worker) {
-			state.worker.onmessage = (_e) => {
+			state.worker.onmessage = (e) => {
+				const { type, data } = e.data || {};
+				if (type === "result" && data) {
+					const { result } = data;
+					state.processLatency = performance.now() - state.startTime;
+					if (typeof result === "number") {
+						if (result !== state.lastHeight) {
+							applyCrop(result, state.vHeight || 1080);
+						}
+						updateDebugUI(result, state.vHeight);
+					}
+				}
 				state.isChecking = false;
 			};
-			state.worker.onerror = () => {
+			state.worker.onerror = (_err) => {
+				state.worker?.terminate();
+				state.worker = null;
 				state.isChecking = false;
 			};
 		}

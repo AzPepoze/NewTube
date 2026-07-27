@@ -9,9 +9,8 @@ import {
 import { registerSettingListener } from "@settings/engine/functions";
 import { logger } from "@shared/logger";
 import { showBg } from "../background/main";
-import { sendToWorker } from "./helpers";
+import { createAmbientCanvas, fallbackToLocalRenderer, initLocalRenderer, sendToWorker } from "./helpers";
 import { render, updatePositionLoop } from "./logic";
-import { VideoBGRenderer } from "./renderer";
 import { loadInitialSettings, settings } from "./settings";
 import { state } from "./state";
 import { fadeOut, resetLastRect } from "./ui";
@@ -125,12 +124,7 @@ export async function enableVideoAmbient() {
 		state.wrapper.style.position = "relative";
 		state.wrapper.style.background = "black";
 
-		state.canvas = document.createElement("canvas");
-		state.canvas.id = "newtube-blur-bg";
-		state.canvas.style.position = "absolute";
-		state.canvas.style.zIndex = "0";
-		state.canvas.width = 128;
-		state.canvas.height = 72;
+		createAmbientCanvas();
 
 		state.overlay = document.createElement("div");
 		state.overlay.id = "newtube-black-overlay";
@@ -174,6 +168,10 @@ export async function enableVideoAmbient() {
 					}
 				}
 			};
+			state.worker.onerror = (err) => {
+				logger.warn("video-ambient", "Worker error, terminating worker and falling back to local renderer:", err);
+				fallbackToLocalRenderer();
+			};
 			const offscreen = state.canvas.transferControlToOffscreen();
 			state.worker.postMessage(
 				{
@@ -191,13 +189,7 @@ export async function enableVideoAmbient() {
 				[offscreen],
 			);
 		} else {
-			state.localRenderer = new VideoBGRenderer();
-			state.localRenderer.init(state.canvas, {
-				blur: settings.blur,
-				quality: settings.quality,
-				smooth: settings.smooth,
-				engine: settings.engine as any,
-			});
+			initLocalRenderer();
 		}
 
 		state.wrapper.appendChild(state.canvas);

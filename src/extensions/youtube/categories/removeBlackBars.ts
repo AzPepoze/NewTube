@@ -6,8 +6,6 @@ import {
 } from "../features/removeBlackBars/main";
 import { PLAYER_SELECTOR } from "./selectors";
 
-const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
-
 export const removeBlackBarsCategory: Category = {
 	category: { icon: "crop_square", label: "Remove black bars on video" },
 	selector: PLAYER_SELECTOR,
@@ -49,11 +47,6 @@ export const removeBlackBarsCategory: Category = {
 			description:
 				"Offloads the video analysis to a separate background thread. This prevents the main interface from stuttering or lagging during complex frame analysis.",
 			value: true,
-			lock: {
-				condition: !isFirefox,
-				message:
-					"I didn't want to lock this feature for Firefox only, but Chromium browsers (Chrome, Edge, etc.) are making it really hard to get workers running correctly. Maybe I'm just stupid and can't make it work, but honestly, Chrome's rendering is already so fast that you won't see much of a performance boost anyway.",
-			},
 			updateFunction: updateRemoveBlackBarsSettings,
 			require: { RemoveBlackBars: true },
 		},

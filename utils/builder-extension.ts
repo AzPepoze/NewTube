@@ -231,13 +231,8 @@ export async function buildExtension() {
 			fs.copySync(path.join(SRC, "assets"), path.join(BUILD, "assets"));
 		}
 
-		// 6. Distribution
-		log.info("Deploying to distribution folders...");
-		fs.copySync(BUILD, DIST_CHROMIUM);
-		fs.copySync(BUILD, DIST_FIREFOX);
-
-		const firefoxWorkersPath = path.join(DIST_FIREFOX, "workers");
-		ensureDir(firefoxWorkersPath);
+		const buildWorkersPath = path.join(BUILD, "workers");
+		ensureDir(buildWorkersPath);
 		const workerEntries = [
 			{ src: "extensions/youtube/features/videoAmbient/worker.ts", out: "videoAmbientWorker.js" },
 			{ src: "extensions/youtube/features/removeBlackBars/worker.ts", out: "removeBlackBarsWorker.js" },
@@ -248,13 +243,18 @@ export async function buildExtension() {
 				await esbuild.build({
 					entryPoints: [entryPath],
 					bundle: true,
-					outfile: path.join(firefoxWorkersPath, entry.out),
+					outfile: path.join(buildWorkersPath, entry.out),
 					platform: "browser",
 					minify: isProduction(),
 					alias: esbuildAliases,
 				});
 			}
 		}
+
+		// 6. Distribution
+		log.info("Deploying to distribution folders...");
+		fs.copySync(BUILD, DIST_CHROMIUM);
+		fs.copySync(BUILD, DIST_FIREFOX);
 
 		await processOutputDirectory(DIST_CHROMIUM, false);
 		await processOutputDirectory(DIST_FIREFOX, true);

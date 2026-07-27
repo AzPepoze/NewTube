@@ -286,6 +286,9 @@ export async function loadWorker(fileName: string): Promise<Worker | null> {
 
 		try {
 			const response = await fetch(scriptUrl);
+			if (!response.ok) {
+				throw new Error(`HTTP error fetching worker script: ${response.status} ${response.statusText}`);
+			}
 			const blob = await response.blob();
 			const blobUrl = URL.createObjectURL(blob);
 			const trustedBlobUrl = policy ? policy.createScriptURL(blobUrl) : blobUrl;

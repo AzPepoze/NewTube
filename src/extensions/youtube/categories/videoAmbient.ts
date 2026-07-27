@@ -3,8 +3,6 @@ import { enableAutoRemoveAmbient } from "../features/video/general";
 import { disableVideoAmbient, enableVideoAmbient, updateVideoAmbientSettings } from "../features/videoAmbient/main";
 import { PLAYER_SELECTOR } from "./selectors";
 
-const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
-
 export const videoAmbientCategory: Category = {
 	category: { icon: "fluorescent", label: "Video Ambient" },
 	selector: PLAYER_SELECTOR,
@@ -56,11 +54,6 @@ export const videoAmbientCategory: Category = {
 			value: true,
 			enableFunction: updateVideoAmbientSettings,
 			disableFunction: updateVideoAmbientSettings,
-			lock: {
-				condition: !isFirefox,
-				message:
-					"I didn't want to lock this feature for Firefox only, but Chromium browsers (Chrome, Edge, etc.) are making it really hard to get workers running correctly. Maybe I'm just stupid and can't make it work, but honestly, Chrome's rendering is already so fast that you won't see much of a performance boost anyway.",
-			},
 			require: { VideoAmbient: true },
 		},
 		{

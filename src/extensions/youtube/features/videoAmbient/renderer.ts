@@ -112,9 +112,14 @@ export class VideoBGRenderer {
 		this.settings = settings;
 
 		if (this.settings.engine === "GPU") {
-			this.gl =
-				(this.canvas.getContext("webgl2", { preserveDrawingBuffer: true }) as WebGL2RenderingContext) ||
-				(this.canvas.getContext("webgl", { preserveDrawingBuffer: true }) as WebGLRenderingContext);
+			try {
+				this.gl =
+					(this.canvas.getContext("webgl2", { preserveDrawingBuffer: true }) as WebGL2RenderingContext) ||
+					(this.canvas.getContext("webgl", { preserveDrawingBuffer: true }) as WebGLRenderingContext);
+			} catch (e) {
+				logger.warn("video-bg-renderer", "WebGL context creation failed on canvas:", e);
+				this.gl = null;
+			}
 
 			if (this.gl) {
 				const gl = this.gl;

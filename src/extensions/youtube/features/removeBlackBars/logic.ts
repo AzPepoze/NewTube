@@ -84,6 +84,15 @@ export async function checkBlackBars() {
 	state.isChecking = true;
 
 	if (settings.worker && !settings.debugCanvas && state.worker) {
+		const currentWorker = state.worker;
+		setTimeout(() => {
+			if (state.isChecking && state.worker === currentWorker) {
+				state.isChecking = false;
+				state.worker?.terminate();
+				state.worker = null;
+			}
+		}, 1000);
+
 		state.worker.postMessage(
 			{
 				type: "detect",
