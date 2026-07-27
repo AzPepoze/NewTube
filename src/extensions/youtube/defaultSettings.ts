@@ -93,7 +93,7 @@ export const defaultSetting = {
 		GlobalBorderSize: 5,
 		GlobalClickBorderColor: "#ffffffff",
 		GlobalCornerRadius: 10,
-		GlobalHoverBackgroundColor: "#ffffff80",
+		GlobalHoverBackgroundColor: "#d269ff6d",
 		GlobalHoverBorderColor: "#ffffffff",
 		GlobalStyleType: "Sha",
 		HideShortsEverywhere: false,

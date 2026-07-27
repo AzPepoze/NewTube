@@ -13,7 +13,8 @@ export const hoverClickColorCategory: Category = {
 			varCss: "--nt-hover-bg",
 			constantCss: `
                 .ytp-menuitem:hover,
-                ytd-menu-popup-renderer:not([disable-upgrade]) tp-yt-paper-listbox.ytd-menu-popup-renderer .yt-spec-touch-feedback-shape--touch-response-inverse {
+				#endpoint.yt-simple-endpoint.ytd-guide-entry-renderer:hover
+				{
                     background-color: var(--nt-hover-bg) !important;
                 }
             `,
