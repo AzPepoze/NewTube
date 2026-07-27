@@ -35,9 +35,9 @@ async function initWorkerState() {
 					const hRes = typeof heightResult === "number" ? heightResult : typeof result === "number" ? result : 0;
 					const wRes = typeof widthResult === "number" ? widthResult : 0;
 					if (hRes !== state.lastHeight || wRes !== state.lastWidth) {
-						applyCrop(hRes, state.vHeight || 1080, wRes, state.vWidth || 1920);
+						applyCrop(hRes, state.videoHeight || 1080, wRes, state.videoWidth || 1920);
 					}
-					updateDebugUI(hRes, state.vHeight, wRes, state.vWidth);
+					updateDebugUI(hRes, state.videoHeight, wRes, state.videoWidth);
 				}
 				state.isChecking = false;
 			};
@@ -186,8 +186,8 @@ export function disableRemoveBlackBars() {
 	state.lastHeight = 0;
 	state.lastWidth = 0;
 	state.droppedFrames = 0;
-	state.vHeight = 0;
-	state.vWidth = 0;
+	state.videoHeight = 0;
+	state.videoWidth = 0;
 	state.processLatency = 0;
 	state.startTime = 0;
 	state.lastIntervalTime = 0;

@@ -36,9 +36,9 @@ export async function createDebugUI() {
 
 export async function updateDebugUI(
 	finalDetectedHeight?: number,
-	vHeight?: number,
+	videoHeight?: number,
 	finalDetectedWidth?: number,
-	vWidth?: number,
+	videoWidth?: number,
 ) {
 	if (!state.enabled || !settings.debugInfo) {
 		removeDebugUI();
@@ -50,8 +50,8 @@ export async function updateDebugUI(
 		if (!state.debugContainer) return;
 	}
 
-	if (vHeight !== undefined) state.vHeight = vHeight;
-	if (vWidth !== undefined) state.vWidth = vWidth;
+	if (videoHeight !== undefined) state.videoHeight = videoHeight;
+	if (videoWidth !== undefined) state.videoWidth = videoWidth;
 
 	const video = await getVideoElement();
 	const container = video?.parentElement;
@@ -59,8 +59,8 @@ export async function updateDebugUI(
 		container.appendChild(state.debugContainer);
 	}
 
-	const currentVHeight = vHeight || state.vHeight || video?.videoHeight || 0;
-	const currentVWidth = vWidth || state.vWidth || video?.videoWidth || 0;
+	const currentVHeight = videoHeight || state.videoHeight || video?.videoHeight || 0;
+	const currentVWidth = videoWidth || state.videoWidth || video?.videoWidth || 0;
 	const currentDetectedHeight = finalDetectedHeight !== undefined ? finalDetectedHeight : state.lastHeight;
 	const currentDetectedWidth = finalDetectedWidth !== undefined ? finalDetectedWidth : state.lastWidth;
 
@@ -78,8 +78,8 @@ export async function updateDebugUI(
 			<span>Worker:</span> <span>${state.worker ? "Yes" : "No"}</span>
 			<span>Dropped:</span> <span>${state.droppedFrames}</span>
 			<span>Sample (V/H):</span> <span style="display: flex; gap: 5px;">
-				<div style="width: 100%; height: 16px; background: ${state.lastSampleColorV}; border: 1px solid rgba(255,255,255,0.8); border-radius: 4px; box-shadow: 0 0 2px rgba(0,0,0,0.5);"></div>
-				<div style="width: 100%; height: 16px; background: ${state.lastSampleColorH}; border: 1px solid rgba(255,255,255,0.8); border-radius: 4px; box-shadow: 0 0 2px rgba(0,0,0,0.5);"></div>
+				<div style="width: 100%; height: 16px; background: ${state.lastSampleColorVertical}; border: 1px solid rgba(255,255,255,0.8); border-radius: 4px; box-shadow: 0 0 2px rgba(0,0,0,0.5);"></div>
+				<div style="width: 100%; height: 16px; background: ${state.lastSampleColorHorizontal}; border: 1px solid rgba(255,255,255,0.8); border-radius: 4px; box-shadow: 0 0 2px rgba(0,0,0,0.5);"></div>
 			</span>
 			<span>V-Detected:</span> <span>${currentDetectedHeight}px (${cropPercentV.toFixed(1)}%)</span>
 			<span>H-Detected:</span> <span>${currentDetectedWidth}px (${cropPercentH.toFixed(1)}%)</span>
@@ -105,97 +105,97 @@ export async function createDebugCanvas() {
 	if (!video || !video.parentElement) return;
 
 	const container = video.parentElement;
-	const vHeight = video.videoHeight;
-	const vWidth = video.videoWidth;
+	const videoHeight = video.videoHeight;
+	const videoWidth = video.videoWidth;
 
 	// Vertical Debug Canvas (Left side)
 	if (settings.mode === "vertical" || settings.mode === "both") {
-		if (!state.canvas) {
-			state.canvas = document.createElement("canvas");
-			state.canvas.width = 5;
-			state.ctx = state.canvas.getContext("2d", { alpha: false });
-			state.canvas.id = "NewtubeVDOCanvas";
+		if (!state.verticalCanvas) {
+			state.verticalCanvas = document.createElement("canvas");
+			state.verticalCanvas.width = 5;
+			state.verticalCtx = state.verticalCanvas.getContext("2d", { alpha: false });
+			state.verticalCanvas.id = "NewtubeVDOCanvas";
 		}
-		if (state.canvas.height !== vHeight) {
-			state.canvas.height = vHeight;
+		if (state.verticalCanvas.height !== videoHeight) {
+			state.verticalCanvas.height = videoHeight;
 		}
 
-		if (state.canvas.parentElement !== container) {
-			container.appendChild(state.canvas);
-			state.canvas.style.position = "absolute";
-			state.canvas.style.width = "50px";
-			state.canvas.style.zIndex = "1000";
-			state.canvas.style.imageRendering = "pixelated";
-			state.canvas.style.pointerEvents = "none";
+		if (state.verticalCanvas.parentElement !== container) {
+			container.appendChild(state.verticalCanvas);
+			state.verticalCanvas.style.position = "absolute";
+			state.verticalCanvas.style.width = "50px";
+			state.verticalCanvas.style.zIndex = "1000";
+			state.verticalCanvas.style.imageRendering = "pixelated";
+			state.verticalCanvas.style.pointerEvents = "none";
 		}
 
 		const videoRect = video.getBoundingClientRect();
-		if (state.canvas.style.height !== `${videoRect.height}px`) {
-			state.canvas.style.height = `${videoRect.height}px`;
+		if (state.verticalCanvas.style.height !== `${videoRect.height}px`) {
+			state.verticalCanvas.style.height = `${videoRect.height}px`;
 		}
 
 		// Align with video element position
-		if (state.canvas.style.top !== video.style.top) state.canvas.style.top = video.style.top;
-		if (state.canvas.style.left !== video.style.left) state.canvas.style.left = video.style.left;
+		if (state.verticalCanvas.style.top !== video.style.top) state.verticalCanvas.style.top = video.style.top;
+		if (state.verticalCanvas.style.left !== video.style.left) state.verticalCanvas.style.left = video.style.left;
 
-		state.canvas.style.display = "block";
-	} else if (state.canvas) {
-		state.canvas.style.display = "none";
+		state.verticalCanvas.style.display = "block";
+	} else if (state.verticalCanvas) {
+		state.verticalCanvas.style.display = "none";
 	}
 
 	// Horizontal Debug Canvas (Top side)
 	if (settings.mode === "horizontal" || settings.mode === "both") {
-		if (!state.hCanvas) {
-			state.hCanvas = document.createElement("canvas");
-			state.hCanvas.height = 5;
-			state.hCtx = state.hCanvas.getContext("2d", { alpha: false });
-			state.hCanvas.id = "NewtubeVDOCanvasH";
+		if (!state.horizontalCanvas) {
+			state.horizontalCanvas = document.createElement("canvas");
+			state.horizontalCanvas.height = 5;
+			state.horizontalCtx = state.horizontalCanvas.getContext("2d", { alpha: false });
+			state.horizontalCanvas.id = "NewtubeVDOCanvasH";
 		}
-		if (state.hCanvas.width !== vWidth) {
-			state.hCanvas.width = vWidth;
+		if (state.horizontalCanvas.width !== videoWidth) {
+			state.horizontalCanvas.width = videoWidth;
 		}
 
-		if (state.hCanvas.parentElement !== container) {
-			container.appendChild(state.hCanvas);
-			state.hCanvas.style.position = "absolute";
-			state.hCanvas.style.height = "50px";
-			state.hCanvas.style.zIndex = "1000";
-			state.hCanvas.style.imageRendering = "pixelated";
-			state.hCanvas.style.pointerEvents = "none";
+		if (state.horizontalCanvas.parentElement !== container) {
+			container.appendChild(state.horizontalCanvas);
+			state.horizontalCanvas.style.position = "absolute";
+			state.horizontalCanvas.style.height = "50px";
+			state.horizontalCanvas.style.zIndex = "1000";
+			state.horizontalCanvas.style.imageRendering = "pixelated";
+			state.horizontalCanvas.style.pointerEvents = "none";
 		}
 
 		const videoRect = video.getBoundingClientRect();
-		if (state.hCanvas.style.width !== `${videoRect.width}px`) {
-			state.hCanvas.style.width = `${videoRect.width}px`;
+		if (state.horizontalCanvas.style.width !== `${videoRect.width}px`) {
+			state.horizontalCanvas.style.width = `${videoRect.width}px`;
 		}
 
 		// Align with video element position
-		if (state.hCanvas.style.top !== video.style.top) state.hCanvas.style.top = video.style.top;
-		if (state.hCanvas.style.left !== video.style.left) state.hCanvas.style.left = video.style.left;
+		if (state.horizontalCanvas.style.top !== video.style.top) state.horizontalCanvas.style.top = video.style.top;
+		if (state.horizontalCanvas.style.left !== video.style.left) state.horizontalCanvas.style.left = video.style.left;
 
-		state.hCanvas.style.display = "block";
-	} else if (state.hCanvas) {
-		state.hCanvas.style.display = "none";
+		state.horizontalCanvas.style.display = "block";
+	} else if (state.horizontalCanvas) {
+		state.horizontalCanvas.style.display = "none";
 	}
 }
 
 export function hideDebugCanvas() {
-	if (state.canvas) {
-		state.canvas.style.display = "none";
-		if (state.canvas.parentNode) state.canvas.remove();
+	if (state.verticalCanvas) {
+		state.verticalCanvas.style.display = "none";
+		if (state.verticalCanvas.parentNode) state.verticalCanvas.remove();
 	}
-	if (state.hCanvas) {
-		state.hCanvas.style.display = "none";
-		if (state.hCanvas.parentNode) state.hCanvas.remove();
+	if (state.horizontalCanvas) {
+		state.horizontalCanvas.style.display = "none";
+		if (state.horizontalCanvas.parentNode) state.horizontalCanvas.remove();
 	}
 }
 
 export function removeDebugCanvas() {
 	hideDebugCanvas();
-	state.canvas = null;
-	state.ctx = null;
-	state.hCanvas = null;
-	state.hCtx = null;
+	state.verticalCanvas = null;
+	state.verticalCtx = null;
+	state.horizontalCanvas = null;
+	state.horizontalCtx = null;
 }
 
 export async function enableUltraWide(ratio: number) {
