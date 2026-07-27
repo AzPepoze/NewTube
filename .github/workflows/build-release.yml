@@ -39,4 +39,3 @@ jobs:
             out/release/*.zip
           draft: false
           prerelease: false
-

@@ -19,7 +19,10 @@ export function applyFirefoxCompatibility(content: string): string {
 		{ from: /webkit/g, to: "moz" },
 		{ from: /nowrap/g, to: "pre" },
 	];
-	return replacements.reduce((text, { from, to }) => text.replace(from, to), content);
+	let text = replacements.reduce((acc, { from, to }) => acc.replace(from, to), content);
+	// Remove WebKit box-shadow progress hack from -moz-range-thumb to prevent giant unclipped shadows in Firefox
+	text = text.replace(/(-moz-range-thumb\s*\{[^}]*?)box-shadow:\s*-[0-9]+px\s+0\s+0\s+[0-9]+px[^;}]*;?/g, "$1");
+	return text;
 }
 
 export async function processOutputFile(filePath: string, isFirefox = false) {

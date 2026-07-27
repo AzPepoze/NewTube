@@ -66,5 +66,33 @@
 		&::-webkit-slider-thumb:hover {
 			transform: scale(1.1);
 		}
+
+		&::-moz-range-track {
+			background: transparent;
+			height: 6px;
+			border-radius: 10px;
+		}
+
+		&::-moz-range-progress {
+			background: var(--theme-0, #7f5db7);
+			height: 6px;
+			border-radius: 10px;
+		}
+
+		&::-moz-range-thumb {
+			width: 16px;
+			height: 16px;
+			background: var(--font-color, white);
+			border: 2px solid var(--theme-0, #7f5db7);
+			border-radius: 50%;
+			cursor: pointer;
+			box-shadow: 0 0 10px var(--bg-overlay-30);
+			transition: transform 0.1s ease;
+			box-sizing: border-box;
+		}
+
+		&::-moz-range-thumb:hover {
+			transform: scale(1.1);
+		}
 	}
 </style>
