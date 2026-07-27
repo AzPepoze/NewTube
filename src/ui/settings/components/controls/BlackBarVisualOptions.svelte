@@ -154,15 +154,15 @@
 		outline: none;
 
 		&:hover:not(.disabled) {
-			border-color: var(--theme-0, #7f5db7);
+			border-color: rgba(255, 255, 255, 0.3);
 			transform: translateY(-2px);
 			background: var(--bg-overlay-30, rgba(255, 255, 255, 0.08));
 		}
 
 		&.selected {
-			border-color: var(--theme-0, #7f5db7);
-			background: rgba(127, 93, 183, 0.15);
-			box-shadow: 0 0 12px rgba(127, 93, 183, 0.25);
+			border-color: rgba(255, 255, 255, 0.8);
+			background: rgba(255, 255, 255, 0.15);
+			box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
 
 			.card-label span {
 				color: var(--text-primary, #ffffff);
@@ -255,8 +255,9 @@
 		font-weight: 700 !important;
 		padding: 2px 5px;
 		border-radius: 4px;
-		background: linear-gradient(135deg, #ff9800, #f44336);
-		color: white !important;
+		background: var(--theme-warning-15, rgba(255, 187, 51, 0.15));
+		border: 1px solid var(--theme-warning-20, rgba(255, 187, 51, 0.2));
+		color: var(--theme-warning, #ffbb33) !important;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}
