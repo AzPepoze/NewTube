@@ -94,6 +94,7 @@ export async function enableRemoveBlackBars() {
 	if ((await getFromStorage("enableExtension")) === false) return;
 	if (state.enabled) return;
 	state.enabled = true;
+	state.sessionId++;
 	const mySession = state.sessionId;
 
 	await initWorkerState();
@@ -113,11 +114,16 @@ export async function enableRemoveBlackBars() {
 	};
 	init();
 
-	window.addEventListener("yt-navigate-finish", init);
+	const handleNav = () => init();
+	window.addEventListener("yt-navigate-finish", handleNav);
+	state.navCleanup = () => window.removeEventListener("yt-navigate-finish", handleNav);
+
 	state.fullscreenCleanup = onYoutubeFullscreen(async () => {
 		if (state.enabled && state.sessionId === mySession) {
 			const video = await getVideoElement();
-			if (video) checkBlackBars();
+			if (video && !state.isScheduled && !state.isChecking) {
+				checkBlackBars();
+			}
 		}
 	});
 }
@@ -128,9 +134,11 @@ export function disableRemoveBlackBars() {
 	if (state.animationId) {
 		cancelAnimationFrame(state.animationId);
 		clearTimeout(state.animationId);
+		state.animationId = null;
 	}
 	if (state.videoFrameCallbackId && videoElement && "cancelVideoFrameCallback" in videoElement) {
 		videoElement.cancelVideoFrameCallback(state.videoFrameCallbackId);
+		state.videoFrameCallbackId = null;
 	}
 
 	if (state.worker) {
@@ -142,6 +150,11 @@ export function disableRemoveBlackBars() {
 	if (state.fullscreenCleanup) {
 		state.fullscreenCleanup();
 		state.fullscreenCleanup = null;
+	}
+
+	if (state.navCleanup) {
+		state.navCleanup();
+		state.navCleanup = null;
 	}
 
 	const player = document.querySelector(".html5-video-container") as HTMLElement;
@@ -168,6 +181,8 @@ export function disableRemoveBlackBars() {
 	state.startTime = 0;
 	state.lastIntervalTime = 0;
 	state.currentInterval = 0;
+	state.isChecking = false;
+	state.isScheduled = false;
 	state.sessionId++;
 	disableUltraWide();
 }

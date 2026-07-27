@@ -31,10 +31,18 @@ export async function checkBlackBars() {
 	const video = await getVideoElement();
 	const schedule = () => {
 		if (!state.enabled || state.sessionId !== mySession) return;
+		if (state.isScheduled) return;
+		state.isScheduled = true;
 		if ("requestVideoFrameCallback" in video!) {
-			state.videoFrameCallbackId = video.requestVideoFrameCallback(() => checkBlackBars());
+			state.videoFrameCallbackId = video.requestVideoFrameCallback(() => {
+				state.isScheduled = false;
+				checkBlackBars();
+			});
 		} else {
-			state.animationId = window.setTimeout(() => checkBlackBars(), 33) as any;
+			state.animationId = window.setTimeout(() => {
+				state.isScheduled = false;
+				checkBlackBars();
+			}, 33) as any;
 		}
 	};
 

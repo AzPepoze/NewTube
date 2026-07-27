@@ -66,7 +66,7 @@ export async function detectBlackBars(data: BarDetectionData, ctx?: CanvasRender
 				break;
 			}
 			if (ctx) ctx.fillRect(x, i, 1, 1);
-			if (pixelBudget && ++pixelsChecked >= pixelBudget) {
+			if (pixelBudget && pixelBudget > 0 && pixelsChecked >= pixelBudget) {
 				await new Promise((r) => setTimeout(r, 1));
 				pixelsChecked = 0;
 			}
@@ -80,7 +80,7 @@ export async function detectBlackBars(data: BarDetectionData, ctx?: CanvasRender
 				break;
 			}
 			if (ctx) ctx.fillRect(x, i, 1, 1);
-			if (pixelBudget && ++pixelsChecked >= pixelBudget) {
+			if (pixelBudget && pixelBudget > 0 && pixelsChecked >= pixelBudget) {
 				await new Promise((r) => setTimeout(r, 1));
 				pixelsChecked = 0;
 			}

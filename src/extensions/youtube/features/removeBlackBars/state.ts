@@ -26,5 +26,7 @@ export const state = {
 	debugContainer: null as HTMLDivElement | null,
 	sessionId: 0,
 	fullscreenCleanup: null as (() => void) | null,
+	navCleanup: null as (() => void) | null,
+	isScheduled: false,
 	isUltraWideMode: false,
 };

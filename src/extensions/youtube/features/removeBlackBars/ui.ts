@@ -104,9 +104,8 @@ export async function createDebugCanvas() {
 		state.canvas.height = vHeight;
 	}
 
-	const videoRect = video.getBoundingClientRect();
-	if (!state.canvas.parentElement) {
-		const container = video.parentElement;
+	const container = video.parentElement;
+	if (state.canvas.parentElement !== container) {
 		container.appendChild(state.canvas);
 		state.canvas.style.position = "absolute";
 		state.canvas.style.top = "0px";
@@ -117,6 +116,7 @@ export async function createDebugCanvas() {
 		state.canvas.style.pointerEvents = "none";
 	}
 
+	const videoRect = video.getBoundingClientRect();
 	if (state.canvas.style.height !== `${videoRect.height}px`) {
 		state.canvas.style.height = `${videoRect.height}px`;
 	}
