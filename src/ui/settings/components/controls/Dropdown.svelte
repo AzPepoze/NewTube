@@ -370,7 +370,8 @@
 
 		&.selected {
 			background: var(--theme-0, #7f5db7);
-			color: var(--bg-main);
+			color: #ffffff;
+			font-weight: bold;
 		}
 	}
 

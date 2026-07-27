@@ -7,6 +7,7 @@ import { exportCurrentSettingsObject, importPresetToSettings, importThemeWorkflo
 import {
 	applyTheme as applyThemeManager,
 	deleteTheme as deleteThemeManager,
+	recordThemeDownload,
 	saveTheme as saveThemeManager,
 	type Theme,
 } from "@core/theme/manager";
@@ -221,6 +222,7 @@ export class ThemeManagerController {
 				title: "Theme Installed",
 				content: `"${displayName}" added to collection.`,
 			});
+			await recordThemeDownload(id);
 		}
 
 		if (await applyThemeManager(id, displayName, "EXTENSION")) {
@@ -284,6 +286,29 @@ export class ThemeManagerController {
 			);
 		}
 		this.closeWindow?.();
+	}
+
+	async startLivePreview(theme: Theme) {
+		const targetSettings = theme.currentSettings || (theme as any).settings || {};
+		const displayName = theme.themeName || "Preview Theme";
+
+		if (!this.backupSettings) {
+			this.backupSettings = JSON.parse(JSON.stringify(await getRootValue("currentSettings")));
+			this.originalActiveTheme = await getRootValue("activeTheme");
+		}
+
+		await importPresetToSettings(targetSettings, false, displayName);
+		this.closeWindow?.();
+	}
+
+	async cancelLivePreview() {
+		if (this.backupSettings) {
+			await importPresetToSettings(
+				$state.snapshot(this.backupSettings),
+				false,
+				this.originalActiveTheme || "Previous Settings",
+			);
+		}
 	}
 
 	getThemePreview(theme: Theme) {

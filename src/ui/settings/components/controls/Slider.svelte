@@ -178,5 +178,27 @@
 			cursor: pointer;
 			box-shadow: -1907px 0 0 1900px var(--theme-0);
 		}
+
+		&::-moz-range-track {
+			height: 15px;
+			background: var(--slider-track);
+			border-radius: 20px;
+		}
+
+		&::-moz-range-progress {
+			height: 15px;
+			background: var(--theme-0);
+			border-radius: 20px 0 0 20px;
+		}
+
+		&::-moz-range-thumb {
+			width: 15px;
+			height: 15px;
+			background-color: white;
+			border-radius: 50%;
+			border: 2px solid var(--theme-0);
+			cursor: pointer;
+			box-sizing: border-box;
+		}
 	}
 </style>

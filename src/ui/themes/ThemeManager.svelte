@@ -8,6 +8,7 @@
 	import GroupedTagDropdown from "./GroupedTagDropdown.svelte";
 	import ThemeCard from "./ThemeCard.svelte";
 	import { ThemeManagerController } from "./ThemeManagerController.svelte";
+	import { startLivePreviewMode } from "./themeManagerService";
 
 	let { closeWindow }: { closeWindow?: () => void } = $props();
 
@@ -15,6 +16,7 @@
 
 	let currentView = $state<"installed" | "store">("installed");
 	let searchQuery = $state("");
+	let cardMinWidth = $state(240);
 
 	let filteredLocalThemes = $derived.by(() => {
 		if (!searchQuery) return controller.themes;
@@ -103,6 +105,7 @@
 	<div
 		class="theme-grid"
 		class:has-themes={(currentView === "installed" ? filteredLocalThemes : controller.storeThemes).length > 0}
+		style={`--theme-card-min-width: ${cardMinWidth}px`}
 	>
 		{#key currentView}
 			<div class="view-container" in:fly={{ y: 20, duration: 400, delay: 200 }} out:fade={{ duration: 200 }}>
@@ -112,10 +115,12 @@
 							id={theme.themeId}
 							name={theme.themeName}
 							preview={controller.getThemePreview(theme)}
+							rawTheme={theme}
 							isActive={controller.activeThemeId === theme.themeId}
 							isLoading={controller.loadingThemeId === theme.themeId}
 							animationDelay={i * 50}
 							onApply={applyTheme}
+							onApplyLivePreview={(t) => startLivePreviewMode(t, false, closeWindow)}
 							onExport={controller.exportTheme.bind(controller)}
 							onDelete={controller.deleteTheme.bind(controller)}
 						/>
@@ -131,12 +136,14 @@
 							id={theme.themeId}
 							name={theme.themeName}
 							preview={controller.getThemePreview(theme)}
+							rawTheme={theme}
 							isActive={controller.activeThemeId === theme.themeId}
 							isLoading={controller.loadingThemeId === theme.themeId}
 							isStoreItem={true}
 							isInstalled={controller.installedThemeIds.has(theme.themeId)}
 							animationDelay={i * 50}
 							onApply={applyTheme}
+							onApplyLivePreview={(t) => startLivePreviewMode(t, true, closeWindow)}
 							onSave={controller.saveStoreTheme.bind(controller)}
 						/>
 					{/each}
@@ -237,8 +244,15 @@
 		{/if}
 
 		<div class="actions-right">
+			<label class="card-size-control" title="Adjust theme card size">
+				<Icon name="view_comfy" size={17} />
+				<span>Card size</span>
+				<input type="range" min="180" max="360" step="10" bind:value={cardMinWidth} />
+				<span class="card-size-value">{cardMinWidth}px</span>
+			</label>
 			<Button
 				class="footer-btn"
+				variant="subtle"
 				fontSize={13.5}
 				setting={{
 					type: "button",
@@ -249,6 +263,7 @@
 			/>
 			<Button
 				class="footer-btn"
+				variant="ghost"
 				fontSize={13.5}
 				setting={{
 					type: "button",
@@ -292,7 +307,7 @@
 
 	.view-container {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(var(--theme-card-min-width, 240px), 1fr));
 		gap: 20px;
 		width: 100%;
 	}
@@ -387,11 +402,14 @@
 		}
 
 		.actions-left {
+			flex: 1;
 			min-width: 0;
+			justify-content: flex-start;
 		}
 
 		.actions-center {
-			flex: 1;
+			display: flex;
+			align-items: center;
 			justify-content: center;
 			gap: 10px;
 
@@ -475,6 +493,28 @@
 		.actions-right {
 			padding-left: 12px;
 			border-left: 1px solid var(--fg-opacity-10);
+			gap: 12px;
+		}
+
+		.card-size-control {
+			display: inline-flex;
+			align-items: center;
+			gap: 7px;
+			color: var(--font-color-dim);
+			font-size: 12px;
+			white-space: nowrap;
+
+			input[type="range"] {
+				width: 100px;
+				accent-color: var(--theme-0);
+				cursor: pointer;
+			}
+
+			.card-size-value {
+				min-width: 38px;
+				color: var(--font-color);
+				font-variant-numeric: tabular-nums;
+			}
 		}
 
 		:global(.footer-btn) {

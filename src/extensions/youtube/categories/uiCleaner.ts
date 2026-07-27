@@ -34,6 +34,18 @@ export const uiCleanerCategory: Category = {
 		},
 		{
 			type: "checkbox",
+			id: "RemoveChannelBannerBg",
+			name: "Remove BG for Channel Banner",
+			description: "Removes the background from the channel banner header.",
+			value: true,
+			enableCss: `
+                #page-header-container.ytd-tabbed-page-header {
+                    background: transparent !important;
+                }
+            `,
+		},
+		{
+			type: "checkbox",
 			id: "HideSidebarYourChannel",
 			name: "Hide 'Your Channel'",
 			description: "Removes the link to your own channel from the left-hand navigation sidebar.",

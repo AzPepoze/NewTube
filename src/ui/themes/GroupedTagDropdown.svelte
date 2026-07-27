@@ -234,8 +234,8 @@
 
 		&.selected {
 			background: var(--fg-opacity-15);
-			color: var(--theme-0, #a260d7);
-			font-weight: 600;
+			color: #ffffff;
+			font-weight: bold;
 		}
 	}
 </style>

@@ -13,6 +13,10 @@ export const enhancementCategory: Category = {
 	selector: WATCH_SIDEBAR_SELECTOR,
 	settings: [
 		{
+			type: "subText",
+			text: "Watching page",
+		},
+		{
 			type: "checkbox",
 			id: "EnhancementSwapLayout",
 			name: "Swap Sidebar",
@@ -34,8 +38,7 @@ export const enhancementCategory: Category = {
 			type: "checkbox",
 			id: "EnhancementIndependentScroll",
 			name: "Independent Scroll",
-			description:
-				"Allows you to scroll through the sidebar and comments independently without moving the video player. Note: This feature is incompatible with Flyout Player.",
+			description: "Allows you to scroll through the sidebar and video player independently.",
 			value: false,
 			enableCss: `
                 ytd-watch-flexy #columns {
@@ -145,6 +148,34 @@ export const enhancementCategory: Category = {
 			value: false,
 			enableFunction: setupAutoShowChatReplay,
 			disableFunction: disableAutoShowChatReplay,
+		},
+		{
+			type: "subText",
+			text: "Channel page",
+		},
+		{
+			type: "checkbox",
+			id: "EnhancementBetterChannelTabs",
+			name: "Better Tabs",
+			description: "Applies rounded corners and inline margins to channel page tabs.",
+			value: true,
+			enableCss: `
+                #tabs-container.ytd-tabbed-page-header {
+                    border-radius: 10px !important;
+                }
+            `,
+		},
+		{
+			type: "checkbox",
+			id: "EnhancementBetterChannelName",
+			name: "Better Channel Name",
+			description: "Applies rounded corners to the channel name on the channel page.",
+			value: true,
+			enableCss: `
+				.dynamicTextViewModelHost {
+					border-radius: 10px;
+				}
+			`,
 		},
 	],
 };

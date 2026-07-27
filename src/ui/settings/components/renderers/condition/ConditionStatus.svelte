@@ -58,27 +58,31 @@
 
 <style lang="scss">
 	.styleshift-condition-status-container {
-		margin-top: 8px;
-		padding: 12px;
-		background: var(--fg-opacity-05);
-		border: 1px solid var(--fg-opacity-10);
-		border-radius: 12px;
+		margin: 8px auto 0;
+		width: fit-content;
+		padding: 6px 14px;
+		background: transparent;
+		border: none;
+		border-radius: 20px;
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
 		&.is-all-met {
-			background: var(--theme-success-10);
-			border-color: var(--theme-success-20);
-			box-shadow: 0 4px 20px var(--theme-success-10);
+			background: transparent;
+			border-color: transparent;
+			box-shadow: none;
 		}
 	}
 
 	.status-header {
 		display: flex;
 		align-items: center;
-		gap: 8px;
+		justify-content: center;
+		gap: 6px;
 
 		.icon-wrapper {
 			display: flex;
@@ -87,11 +91,17 @@
 		}
 
 		.status-title {
-			font-size: 13px;
+			font-size: 12.5px;
 			font-weight: 600;
-			color: var(--fg-opacity-100);
+			color: var(--fg-opacity-80);
 			letter-spacing: 0.2px;
 		}
+	}
+
+	.conditions-list-wrapper {
+		display: flex;
+		justify-content: center;
+		width: 100%;
 	}
 
 	.conditions-list {
@@ -100,19 +110,22 @@
 		list-style: none;
 		display: flex;
 		flex-direction: column;
-		gap: 6px;
+		align-items: center;
+		gap: 4px;
 
 		li {
 			display: flex;
 			align-items: center;
-			gap: 10px;
-			padding: 4px 8px;
-			border-radius: 8px;
+			justify-content: center;
+			gap: 8px;
+			padding: 2px 10px;
+			border-radius: 12px;
+			width: fit-content;
 			transition: all 0.2s;
 
 			.item-icon {
-				width: 16px;
-				height: 16px;
+				width: 14px;
+				height: 14px;
 				display: flex;
 				align-items: center;
 				justify-content: center;
@@ -128,12 +141,12 @@
 			.item-content {
 				display: flex;
 				align-items: center;
-				gap: 6px;
+				gap: 5px;
 				font-size: 12px;
 			}
 
 			.item-name {
-				color: var(--fg-opacity-100);
+				color: var(--fg-opacity-90);
 				font-weight: 500;
 				background: var(--fg-opacity-05);
 				padding: 1px 6px;

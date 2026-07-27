@@ -1,6 +1,7 @@
 import { getUserSetting } from "@core/storage/manager";
 import { registerSettingListener } from "@settings/engine/functions";
 import { computeImageTransformStyles } from "@/shared/utils/imageStyles";
+import { waitForElement } from "@core/shared/domHelpers";
 import { onYoutubeNavigate } from "../modules/youtube";
 
 let logoObserver: MutationObserver | null = null;
@@ -8,8 +9,19 @@ let tempObserver: MutationObserver | null = null;
 let navigateCleanup: (() => void) | null = null;
 
 async function updateLogo() {
-	const enabled = await getUserSetting("EnableCustomTopLeftIcon");
-	const url = (await getUserSetting("TopLeftIconImageUrl")) as string;
+	const [enabled, url, scale, posX, posY, cropTop, cropBottom, cropLeft, cropRight, flip] = await Promise.all([
+		getUserSetting("EnableCustomTopLeftIcon"),
+		getUserSetting("TopLeftIconImageUrl"),
+		getUserSetting("TopLeftIconSize"),
+		getUserSetting("TopLeftIconPositionX"),
+		getUserSetting("TopLeftIconPositionY"),
+		getUserSetting("TopLeftIconCropTop"),
+		getUserSetting("TopLeftIconCropBottom"),
+		getUserSetting("TopLeftIconCropLeft"),
+		getUserSetting("TopLeftIconCropRight"),
+		getUserSetting("EnableTopLeftIconFlip"),
+	]);
+
 	const renderer = document.querySelector("ytd-topbar-logo-renderer");
 
 	if (enabled && url && renderer) {
@@ -18,29 +30,23 @@ async function updateLogo() {
 			img = document.createElement("img");
 			img.id = "nt-custom-logo";
 			renderer.appendChild(img);
-		}
-		if (img.src !== url) {
-			img.src = url;
+		} else if (img.parentElement !== renderer) {
+			renderer.appendChild(img);
 		}
 
-		const scale = (await getUserSetting("TopLeftIconSize")) as number;
-		const posX = (await getUserSetting("TopLeftIconPositionX")) as number;
-		const posY = (await getUserSetting("TopLeftIconPositionY")) as number;
-		const cropTop = (await getUserSetting("TopLeftIconCropTop")) as number;
-		const cropBottom = (await getUserSetting("TopLeftIconCropBottom")) as number;
-		const cropLeft = (await getUserSetting("TopLeftIconCropLeft")) as number;
-		const cropRight = (await getUserSetting("TopLeftIconCropRight")) as number;
-		const flip = (await getUserSetting("EnableTopLeftIconFlip")) as boolean;
+		if (img.src !== url) {
+			img.src = url as string;
+		}
 
 		const styles = computeImageTransformStyles({
-			scale,
-			positionX: posX,
-			positionY: posY,
-			cropTop,
-			cropBottom,
-			cropLeft,
-			cropRight,
-			flip,
+			scale: scale as number,
+			positionX: posX as number,
+			positionY: posY as number,
+			cropTop: cropTop as number,
+			cropBottom: cropBottom as number,
+			cropLeft: cropLeft as number,
+			cropRight: cropRight as number,
+			flip: flip as boolean,
 		});
 
 		img.style.scale = styles.scale;
@@ -54,26 +60,15 @@ async function updateLogo() {
 }
 
 async function startLogoObserver() {
-	if (logoObserver || tempObserver) return;
+	if (logoObserver) return;
 
 	logoObserver = new MutationObserver(() => {
 		updateLogo();
 	});
 
-	let masthead = document.querySelector("#masthead-container");
-	if (!masthead) {
-		tempObserver = new MutationObserver((_, obs) => {
-			masthead = document.querySelector("#masthead-container");
-			if (masthead) {
-				obs.disconnect();
-				tempObserver = null;
-				if (logoObserver) logoObserver.observe(masthead, { childList: true, subtree: true });
-			}
-		});
-		tempObserver.observe(document.documentElement, { childList: true, subtree: true });
-	} else {
-		if (logoObserver) logoObserver.observe(masthead, { childList: true, subtree: true });
-	}
+	const masthead = document.querySelector("#masthead-container") || document.querySelector("ytd-masthead");
+	const targetNode = masthead || document.documentElement;
+	logoObserver.observe(targetNode, { childList: true, subtree: true });
 }
 
 function stopLogoObserver() {
@@ -89,6 +84,9 @@ function stopLogoObserver() {
 
 export function enableTopLeftIconChanger() {
 	updateLogo();
+	waitForElement("ytd-topbar-logo-renderer", 10000).then((el) => {
+		if (el) updateLogo();
+	});
 	startLogoObserver();
 	navigateCleanup = onYoutubeNavigate(updateLogo);
 }

@@ -33,7 +33,8 @@ ytd-toggle-button-renderer yt-icon,
 .ytSearchboxComponentInput,
 [role="listbox"] > div,
 [role="search"],
-yt-icon.ytd-compact-link-renderer {
+yt-icon.ytd-compact-link-renderer,
+.ytAttributedStringLinkCallToActionColor {
 	color: var(--nt-theme-color) !important;
 }
 
