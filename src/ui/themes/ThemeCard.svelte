@@ -271,7 +271,9 @@
 	.theme-card {
 		position: relative;
 		z-index: 2;
-		height: 150px;
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		height: auto;
 		background: var(--fg-opacity-05);
 		border-radius: 16px;
 		border: 1px solid var(--fg-opacity-10);

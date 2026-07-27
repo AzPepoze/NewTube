@@ -117,71 +117,46 @@ export function openThemePreviewOverlay({
 	document.body.appendChild(mountPoint);
 
 	let instance: any;
+	let pendingCloseAction: (() => void | Promise<void>) | null = null;
+	let isCleanedUp = false;
 
 	const cleanup = () => {
-		if (instance) unmount(instance);
+		if (isCleanedUp) return;
+		isCleanedUp = true;
+		if (instance) unmount(instance, { outro: true });
 		mountPoint.remove();
 	};
 
-	const handleLivePreviewFromOverlay = async (t: Theme) => {
-		const backupSettings = JSON.parse(JSON.stringify((await getRootValue("currentSettings")) || {}));
-		const originalActiveTheme = await getRootValue("activeTheme");
-		const targetSettings = t.currentSettings || (t as any).settings || {};
-		const themeName = t.themeName || "Preview Theme";
-
-		// Hide overlay with animation during live previewing
-		if (instance) {
-			instance.isOpen = false;
+	const closeOverlay = (afterClose?: () => void | Promise<void>) => {
+		pendingCloseAction = afterClose || null;
+		if (instance?.close) instance.close();
+		else {
+			cleanup();
+			pendingCloseAction?.();
+			pendingCloseAction = null;
 		}
-
-		// Apply settings live without persisting to storage
-		await importPresetToSettings(targetSettings, false, themeName);
-
-		// Mount top-level floating live preview bar directly to body
-		const barMountPoint = document.createElement("div");
-		barMountPoint.className = "styleshift-live-preview-bar-mount";
-		document.body.appendChild(barMountPoint);
-
-		let barInstance: any;
-
-		const barCleanup = () => {
-			if (barInstance) unmount(barInstance);
-			barMountPoint.remove();
-		};
-
-		const handleCancel = async () => {
-			barCleanup();
-			// Restore previous settings live
-			await importPresetToSettings(backupSettings, false, originalActiveTheme || "Previous Settings");
-			// Restore ThemePreviewOverlay (unhide)
-			if (instance) {
-				instance.isOpen = true;
-			}
-		};
-
-		barInstance = mount(LivePreviewBar, {
-			target: barMountPoint,
-			props: {
-				themeName,
-				onCancel: handleCancel,
-			},
-		});
 	};
 
 	instance = mount(ThemePreviewOverlay, {
 		target: mountPoint,
+		intro: true,
 		props: {
 			theme,
 			isStoreItem,
 			isInstalled,
 			isOpen: true,
-			onClose: () => cleanup(),
-			onApply: (t: Theme) => {
+			onClose: () => {},
+			onCloseEnd: () => {
+				const action = pendingCloseAction;
+				pendingCloseAction = null;
 				cleanup();
-				onApply(t);
+				action?.();
+			},
+			onApply: (t: Theme) => {
+				closeOverlay(() => onApply(t));
 			},
 			onApplyLivePreview: (t: Theme) => {
-				handleLivePreviewFromOverlay(t);
+				closeOverlay(() => onApplyLivePreview(t));
 			},
 			onSave: onSave
 				? (t: Theme) => {

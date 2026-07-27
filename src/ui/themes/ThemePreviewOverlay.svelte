@@ -4,14 +4,16 @@
 	import { NEWTUBE_STORE_THEMES_URL } from "@extensions/youtube/constants";
 	import Button from "@ui/settings/components/controls/Button.svelte";
 	import CapsuleTabs from "@ui/window/components/CapsuleTabs.svelte";
+	import { onMount } from "svelte";
 	import { fade, scale } from "svelte/transition";
 
 	let {
 		theme,
 		isStoreItem = false,
 		isInstalled = false,
-		isOpen = false,
+		isOpen = $bindable(false),
 		onClose,
+		onCloseEnd,
 		onApply,
 		onApplyLivePreview,
 		onSave,
@@ -19,8 +21,9 @@
 		theme: Theme | null;
 		isStoreItem?: boolean;
 		isInstalled?: boolean;
-		isOpen: boolean;
-		onClose: () => void;
+		isOpen?: boolean;
+		onClose?: () => void;
+		onCloseEnd?: () => void;
 		onApply: (theme: Theme) => void;
 		onApplyLivePreview: (theme: Theme) => void;
 		onSave?: (theme: Theme) => void;
@@ -28,15 +31,16 @@
 
 	let iframeEl = $state<HTMLIFrameElement | null>(null);
 	let isLoading = $state(true);
+	let mounted = $state(false);
 	let previewSource = $state<"store" | "mockup">("store");
 
-	let applyIcon = $derived(
-		isStoreItem ? (isInstalled ? "check_circle" : "download") : "check_circle"
-	);
+	onMount(() => {
+		mounted = true;
+	});
 
-	let applyTitle = $derived(
-		isStoreItem ? (isInstalled ? "Installed" : "Install") : "Apply Theme"
-	);
+	let applyIcon = $derived(isStoreItem ? (isInstalled ? "check_circle" : "download") : "check_circle");
+
+	let applyTitle = $derived(isStoreItem ? (isInstalled ? "Installed" : "Install") : "Apply Theme");
 
 	$effect(() => {
 		if (theme?.themeId && isStoreItem) {
@@ -109,18 +113,39 @@
 		}
 	}
 
+	function handleClose() {
+		isOpen = false;
+		onClose?.();
+	}
+
+	export function close() {
+		handleClose();
+	}
+
+	export function reopen() {
+		isOpen = true;
+	}
+
 	function handleKeyDown(e: KeyboardEvent) {
 		if (e.key === "Escape") {
-			onClose();
+			handleClose();
 		}
 	}
 </script>
 
 <svelte:window onkeydown={handleKeyDown} />
 
-{#if isOpen && theme}
-	<div class="styleshift-main top-level-preview-overlay" in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
-		<div class="preview-modal-wrapper" in:scale={{ duration: 250, start: 0.96 }} out:scale={{ duration: 200, start: 0.96 }}>
+{#if isOpen && mounted && theme}
+	<div
+		class="styleshift-main top-level-preview-overlay"
+		transition:fade={{ duration: 200 }}
+		onoutroend={() => {
+			if (!isOpen) {
+				onCloseEnd?.();
+			}
+		}}
+	>
+		<div class="preview-modal-wrapper" transition:scale={{ duration: 250, start: 0.96 }}>
 			<!-- Top Header Bar with Theme Title and Capsule Slider -->
 			<div class="preview-header-bar">
 				<div class="header-left">
@@ -235,7 +260,7 @@
 								name: "",
 								icon: "close",
 								color: "var(--theme-error)",
-								clickFunction: () => onClose(),
+								clickFunction: () => handleClose(),
 							}}
 						/>
 					</div>
@@ -252,7 +277,7 @@
 		width: 100vw;
 		height: 100vh;
 		z-index: 999999;
-		background: var(--bg-overlay-80, rgba(8, 8, 12, 0.85));
+		background: var(--bg-overlay-60, rgba(0, 0, 0, 0.6));
 		backdrop-filter: blur(16px);
 		display: flex;
 		align-items: center;
@@ -274,7 +299,7 @@
 	.preview-header-bar {
 		margin-bottom: 12px;
 		padding: 10px 20px;
-		background: var(--bg-overlay-90, rgba(18, 18, 24, 0.92));
+		background: var(--window-bg, var(--bg-main, #2b2b2b));
 		backdrop-filter: blur(20px);
 		border: 1px solid var(--fg-opacity-15, rgba(255, 255, 255, 0.15));
 		border-radius: 18px;
@@ -330,7 +355,7 @@
 		flex: 1;
 		width: 100%;
 		height: 100%;
-		background: var(--bg-main, #0f0f14);
+		background: var(--bg-main, #2b2b2b);
 		border: 1px solid var(--fg-opacity-15, rgba(255, 255, 255, 0.12));
 		border-radius: 20px;
 		overflow: hidden;
@@ -346,7 +371,7 @@
 		.stage-loading {
 			position: absolute;
 			inset: 0;
-			background: var(--bg-secondary, #0e0e12);
+			background: var(--bg-surface, var(--bg-main, #2b2b2b));
 			z-index: 10;
 			display: flex;
 			flex-direction: column;
@@ -370,7 +395,7 @@
 	.floating-footer-bar {
 		margin-top: 14px;
 		padding: 10px 20px;
-		background: var(--bg-overlay-90, rgba(18, 18, 24, 0.92));
+		background: var(--window-bg, var(--bg-main, #2b2b2b));
 		backdrop-filter: blur(20px);
 		border: 1px solid var(--fg-opacity-15, rgba(255, 255, 255, 0.15));
 		border-radius: 18px;
@@ -425,20 +450,20 @@
 
 	:global(.preview-footer-btn.primary-live-btn) {
 		background: transparent !important;
-		border: 1px solid var(--theme-0, #00ffcc) !important;
-		color: var(--theme-0, #00ffcc) !important;
+		border: 1px solid var(--theme-0, #7f5db7) !important;
+		color: var(--theme-0, #7f5db7) !important;
 
 		&:hover {
-			background: var(--theme-0, #00ffcc) !important;
+			background: var(--theme-0, #7f5db7) !important;
 			color: #ffffff !important;
 			transform: translateY(-1px);
-			box-shadow: 0 4px 15px rgba(0, 255, 204, 0.3) !important;
+			box-shadow: 0 4px 15px var(--theme-0-30, rgba(127, 93, 183, 0.3)) !important;
 		}
 	}
 
 	:global(.preview-footer-btn.apply-btn) {
-		background: var(--theme-0, #00ffcc) !important;
-		border: 1px solid var(--theme-0, #00ffcc) !important;
+		background: var(--theme-0, #7f5db7) !important;
+		border: 1px solid var(--theme-0, #7f5db7) !important;
 		color: #ffffff !important;
 
 		&:hover {
