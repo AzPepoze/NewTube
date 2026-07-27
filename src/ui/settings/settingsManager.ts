@@ -52,7 +52,7 @@ export async function refreshSettingUi(settingId: string) {
 	}
 
 	const { parent, container } = entry;
-	const settings = await getSettingsList();
+	const settings = getSettingsList();
 	const setting = settings[settingId];
 	if (!setting) return;
 

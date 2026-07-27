@@ -43,7 +43,7 @@ export class SettingRendererController {
 			}
 
 			if (this.setting.require && Object.keys(this.setting.require).length > 0) {
-				const allSettings = await getSettingsList();
+				const allSettings = getSettingsList();
 				for (const reqId in this.setting.require) {
 					const reqSetting = allSettings[reqId];
 					if (reqSetting) {
@@ -67,7 +67,7 @@ export class SettingRendererController {
 			}
 
 			if (this.setting.type === "conditionSetting" && this.setting.condition) {
-				const allSettings = await getSettingsList();
+				const allSettings = getSettingsList();
 				for (const id in this.setting.condition) {
 					if (!this.requiredSettings[id]) {
 						const reqSetting = allSettings[id];

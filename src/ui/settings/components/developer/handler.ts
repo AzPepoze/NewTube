@@ -62,7 +62,7 @@ export async function applyPropertyUpdate(
 		migrateSettingRuntimeState(oldId, finalValue);
 		migrateSettingUiRegistry(oldId, finalValue);
 
-		await getSettingsList(true);
+		getSettingsList(true);
 		await attachBehaviorToSetting(setting);
 	}
 
