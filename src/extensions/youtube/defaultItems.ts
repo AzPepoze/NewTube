@@ -162,7 +162,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				id: "EnableSettingsBackgroundBlur",
 				name: "Glass UI",
 				description: "Applies a frosted-glass blur effect to the background of this settings window.",
-				value: true,
+				value: false,
 			},
 			{
 				type: "numberSlide",

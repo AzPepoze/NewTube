@@ -63,7 +63,7 @@ export const defaultSetting = {
 		EnableModernScrollbars: true,
 		EnablePerformanceMode: false,
 		EnablePlayerEnhancements: true,
-		EnableSettingsBackgroundBlur: true,
+		EnableSettingsBackgroundBlur: false,
 		EnableShadowsOutlines: true,
 		EnableSidebarBlur: false,
 		EnableSolidThemeByVideo: false,
