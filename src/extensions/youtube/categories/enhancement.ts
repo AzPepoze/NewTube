@@ -34,8 +34,7 @@ export const enhancementCategory: Category = {
 			type: "checkbox",
 			id: "EnhancementIndependentScroll",
 			name: "Independent Scroll",
-			description:
-				"Allows you to scroll through the sidebar and comments independently without moving the video player. Note: This feature is incompatible with Flyout Player.",
+			description: "Allows you to scroll through the sidebar and video player independently.",
 			value: false,
 			enableCss: `
                 ytd-watch-flexy #columns {
