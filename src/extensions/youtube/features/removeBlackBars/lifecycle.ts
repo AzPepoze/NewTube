@@ -30,14 +30,14 @@ async function initWorkerState() {
 			state.worker.onmessage = (e) => {
 				const { type, data } = e.data || {};
 				if (type === "result" && data) {
-					const { result } = data;
+					const { heightResult, widthResult, result } = data;
 					state.processLatency = performance.now() - state.startTime;
-					if (typeof result === "number") {
-						if (result !== state.lastHeight) {
-							applyCrop(result, state.vHeight || 1080);
-						}
-						updateDebugUI(result, state.vHeight);
+					const hRes = typeof heightResult === "number" ? heightResult : typeof result === "number" ? result : 0;
+					const wRes = typeof widthResult === "number" ? widthResult : 0;
+					if (hRes !== state.lastHeight || wRes !== state.lastWidth) {
+						applyCrop(hRes, state.vHeight || 1080, wRes, state.vWidth || 1920);
 					}
+					updateDebugUI(hRes, state.vHeight, wRes, state.vWidth);
 				}
 				state.isChecking = false;
 			};
@@ -55,6 +55,14 @@ export async function updateRemoveBlackBarsSettings(value?: any, settingId?: str
 		switch (settingId) {
 			case "RemoveBlackBars":
 				settings.enabled = value;
+				break;
+			case "RemoveBlackBarsMode":
+				settings.mode = value || "vertical";
+				if (state.enabled) {
+					getVideoElement().then((video) => {
+						if (video) applyCrop(0, video.videoHeight, 0, video.videoWidth);
+					});
+				}
 				break;
 			case "RemoveBlackBarsDebugCanvas":
 				settings.debugCanvas = value;
@@ -101,11 +109,12 @@ export async function enableRemoveBlackBars() {
 
 	const init = async () => {
 		state.lastHeight = 0;
+		state.lastWidth = 0;
 		if (!state.enabled || state.sessionId !== mySession) return;
 
 		const video = await getVideoElement();
 		if (video) {
-			applyCrop(0, video.videoHeight);
+			applyCrop(0, video.videoHeight, 0, video.videoWidth);
 			checkBlackBars();
 		} else {
 			await waitOneFrame();
@@ -175,8 +184,10 @@ export function disableRemoveBlackBars() {
 	removeDebugUI();
 
 	state.lastHeight = 0;
+	state.lastWidth = 0;
 	state.droppedFrames = 0;
 	state.vHeight = 0;
+	state.vWidth = 0;
 	state.processLatency = 0;
 	state.startTime = 0;
 	state.lastIntervalTime = 0;
@@ -190,6 +201,7 @@ export function disableRemoveBlackBars() {
 export function registerRemoveBlackBarsListeners() {
 	const settingsList = [
 		"RemoveBlackBars",
+		"RemoveBlackBarsMode",
 		"RemoveBlackBarsDebugCanvas",
 		"RemoveBlackBarsDebugInfo",
 		"RemoveBlackBarsLazyCheck",

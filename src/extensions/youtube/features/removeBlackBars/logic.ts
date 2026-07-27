@@ -1,18 +1,26 @@
 import { getVideoElement, isYoutubeFullscreen } from "@extensions/youtube/modules/youtube";
 import { shouldFeatureShow } from "../helpers";
-import { calculateVdoHeight, detectBlackBars } from "./helpers";
+import { calculateVdoHeight, calculateVdoWidth, detectBlackBars } from "./helpers";
 import { settings } from "./settings";
 import { state } from "./state";
 import { applyCrop, createDebugCanvas, hideDebugCanvas, updateDebugUI } from "./ui";
 
-async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number, mySession: number) {
+async function handleDetectedResults(
+	finalDetectedHeight: number,
+	vHeight: number,
+	finalDetectedWidth: number,
+	vWidth: number,
+	mySession: number,
+) {
 	if (state.sessionId !== mySession) return;
 	state.processLatency = performance.now() - state.startTime;
-	updateDebugUI(finalDetectedHeight, vHeight);
+	updateDebugUI(finalDetectedHeight, vHeight, finalDetectedWidth, vWidth);
 
-	if (finalDetectedHeight > 0 || state.lastHeight > 0) applyCrop(finalDetectedHeight, vHeight);
+	if (finalDetectedHeight > 0 || state.lastHeight > 0 || finalDetectedWidth > 0 || state.lastWidth > 0) {
+		applyCrop(finalDetectedHeight, vHeight, finalDetectedWidth, vWidth);
+	}
 
-	if (settings.debugCanvas && state.ctx) {
+	if (settings.debugCanvas && state.ctx && (settings.mode === "vertical" || settings.mode === "both")) {
 		const ctx = state.ctx;
 		ctx.fillStyle = "yellow";
 		ctx.fillRect(0, 10, 5, 1);
@@ -21,6 +29,17 @@ async function handleDetectedHeight(finalDetectedHeight: number, vHeight: number
 		ctx.fillRect(0, vHeight - finalDetectedHeight, 5, 1);
 		ctx.fillRect(0, state.lastHeight, 5, 1);
 		ctx.fillRect(0, vHeight - state.lastHeight, 5, 1);
+	}
+
+	if (settings.debugCanvas && state.hCtx && (settings.mode === "horizontal" || settings.mode === "both")) {
+		const ctxH = state.hCtx;
+		ctxH.fillStyle = "yellow";
+		ctxH.fillRect(10, 0, 1, 5);
+		ctxH.fillStyle = "green";
+		ctxH.fillRect(finalDetectedWidth, 0, 1, 5);
+		ctxH.fillRect(vWidth - finalDetectedWidth, 0, 1, 5);
+		ctxH.fillRect(state.lastWidth, 0, 1, 5);
+		ctxH.fillRect(vWidth - state.lastWidth, 0, 1, 5);
 	}
 }
 
@@ -49,14 +68,18 @@ export async function checkBlackBars() {
 	if (!video) return schedule();
 
 	if (!shouldFeatureShow(settings.disableFullscreen)) {
-		if (settings.disableFullscreen && isYoutubeFullscreen && state.lastHeight !== 0) applyCrop(0, video.videoHeight);
+		if (settings.disableFullscreen && isYoutubeFullscreen && (state.lastHeight !== 0 || state.lastWidth !== 0)) {
+			applyCrop(0, video.videoHeight, 0, video.videoWidth);
+		}
 		return schedule();
 	}
 
 	if (video.ended || video.paused) return schedule();
 
 	const vHeight = video.videoHeight;
+	const vWidth = video.videoWidth;
 	state.vHeight = vHeight;
+	state.vWidth = vWidth;
 
 	const now = performance.now();
 	if (state.lastIntervalTime !== 0) state.currentInterval = Math.round(now - state.lastIntervalTime);
@@ -74,13 +97,46 @@ export async function checkBlackBars() {
 		if (state.canvas.height !== vHeight) state.canvas.height = vHeight;
 	}
 
-	if (state.ctx) state.ctx.drawImage(video, 0, 0, 5, vHeight);
+	if (state.ctx && (settings.mode === "vertical" || settings.mode === "both")) {
+		state.ctx.drawImage(video, 0, 0, 5, vHeight);
+	}
 
-	const ctx = state.ctx!;
-	const imgData = ctx.getImageData(0, 0, 5, vHeight).data;
-	const sampleColor = ctx.getImageData(1, 3, 1, 1).data;
-	const [sR, sG, sB] = [sampleColor[0], sampleColor[1], sampleColor[2]];
-	state.lastSampleColor = `rgb(${sR},${sG},${sB})`;
+	let sampleColor: Uint8ClampedArray;
+	if (state.ctx) {
+		sampleColor = state.ctx.getImageData(1, 3, 1, 1).data;
+	} else {
+		sampleColor = new Uint8ClampedArray([0, 0, 0, 255]);
+	}
+	const [vR, vG, vB] = [sampleColor[0], sampleColor[1], sampleColor[2]];
+	state.lastSampleColorV = `rgb(${vR},${vG},${vB})`;
+
+	const imgData = state.ctx ? state.ctx.getImageData(0, 0, 5, vHeight).data : new Uint8ClampedArray(5 * vHeight * 4);
+
+	let horizontalImgData: Uint8ClampedArray | undefined;
+	let hR = vR,
+		hG = vG,
+		hB = vB;
+
+	if ((settings.mode === "horizontal" || settings.mode === "both") && vWidth > 0) {
+		if (!state.hCanvas) {
+			state.hCanvas = document.createElement("canvas");
+			state.hCanvas.height = 5;
+			state.hCtx = state.hCanvas.getContext("2d", { alpha: false });
+		}
+		if (state.hCanvas.width !== vWidth) {
+			state.hCanvas.width = vWidth;
+		}
+		if (state.hCtx) {
+			state.hCtx.drawImage(video, 0, 0, vWidth, 5);
+			horizontalImgData = state.hCtx.getImageData(0, 0, vWidth, 5).data;
+
+			const hSampleColor = state.hCtx.getImageData(3, 1, 1, 1).data;
+			hR = hSampleColor[0];
+			hG = hSampleColor[1];
+			hB = hSampleColor[2];
+			state.lastSampleColorH = `rgb(${hR},${hG},${hB})`;
+		}
+	}
 
 	if (state.isChecking) {
 		state.droppedFrames++;
@@ -101,42 +157,59 @@ export async function checkBlackBars() {
 			}
 		}, 1000);
 
+		const transferables: Transferable[] = [imgData.buffer];
+		if (horizontalImgData) transferables.push(horizontalImgData.buffer);
+
 		state.worker.postMessage(
 			{
 				type: "detect",
 				data: {
 					imgData,
+					horizontalImgData,
 					vHeight,
+					vWidth,
+					mode: settings.mode,
 					threshold: 20,
-					sR,
-					sG,
-					sB,
+					vR,
+					vG,
+					vB,
+					hR,
+					hG,
+					hB,
 					pixelBudget: settings.lazyCheck ? settings.lazyAmount : 0,
 					currentLastHeight: state.lastHeight,
+					currentLastWidth: state.lastWidth,
 				},
 			},
-			[imgData.buffer],
+			transferables,
 		);
 		return schedule();
 	}
 
-	const heightsFound = await detectBlackBars(
+	const { heightsFound, widthsFound } = await detectBlackBars(
 		{
 			imgData,
+			horizontalImgData,
 			vHeight,
+			vWidth,
+			mode: settings.mode,
 			threshold: 20,
-			sR,
-			sG,
-			sB,
+			vR,
+			vG,
+			vB,
+			hR,
+			hG,
+			hB,
 			pixelBudget: settings.lazyCheck ? settings.lazyAmount : 0,
 		},
-		settings.debugCanvas ? ctx : null,
+		settings.debugCanvas ? state.ctx : null,
 	);
 
 	if (state.sessionId === mySession) {
-		const result = calculateVdoHeight(heightsFound, state.lastHeight);
+		const heightResult = calculateVdoHeight(heightsFound, state.lastHeight);
+		const widthResult = calculateVdoWidth(widthsFound, state.lastWidth);
 		state.isChecking = false;
-		handleDetectedHeight(result, vHeight, mySession);
+		handleDetectedResults(heightResult, vHeight, widthResult, vWidth, mySession);
 	}
 	state.isChecking = false;
 	schedule();

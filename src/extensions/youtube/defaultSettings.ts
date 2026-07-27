@@ -109,6 +109,7 @@ export const defaultSetting = {
 		PlaylistPanelMaxHeightTheater: 800,
 		PrimaryTextColor: "#ffffffff",
 		RemoveBlackBars: false,
+		RemoveBlackBarsMode: "vertical",
 		RemoveBlackBarsDebugCanvas: false,
 		RemoveBlackBarsDebugInfo: false,
 		RemoveBlackBarsDisableFullscreen: true,

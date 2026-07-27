@@ -236,6 +236,9 @@ export type Setting = (
 	| {
 			type: "custom";
 			id: string;
+			name?: string;
+			description?: string;
+			value?: any;
 
 			//--------------
 
