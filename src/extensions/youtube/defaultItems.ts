@@ -1,4 +1,5 @@
 import { openSettingPage } from "@core/shared/extensionHelpers";
+import { showExtensionUpdateNotification } from "@core/shared/versionUpdate";
 import { exportThemeWithSelection } from "@core/theme/exporter";
 import { exportCurrentSettingsObject, importThemeWorkflow } from "@core/theme/importer";
 import { checkAndUpdateTheme, openThemeStore } from "@core/theme/storeIntegration";
@@ -7,9 +8,8 @@ import { type Category, type SeparateCategory } from "@settings/types/styleshift
 import { toggleCustomize } from "@ui/highlight/highlight";
 import { startQuickCustomize } from "@ui/highlight/quickCustomizeService";
 import { showThemeManager } from "@ui/themes/themeManagerService";
-import { showWelcome } from "./welcome";
-import { showExtensionUpdateNotification } from "@core/shared/versionUpdate";
 import { showTryImportOldNPreset } from "./dangerzone";
+import { showWelcome } from "./welcome";
 
 const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 	{ isHeader: true, label: "Extension" },
@@ -132,7 +132,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				name: "Realtime Updating",
 				description: "Instantly applies visual changes as you move sliders or pick colors.",
 				type: "checkbox",
-				value: false,
+				value: true,
 			},
 			{
 				id: "developerMode",

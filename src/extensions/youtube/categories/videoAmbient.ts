@@ -1,4 +1,5 @@
 import { type Category } from "@settings/types/styleshiftTypes";
+import { enableAutoRemoveAmbient } from "../features/video/general";
 import { disableVideoAmbient, enableVideoAmbient, updateVideoAmbientSettings } from "../features/videoAmbient/main";
 import { PLAYER_SELECTOR } from "./selectors";
 
@@ -8,6 +9,14 @@ export const videoAmbientCategory: Category = {
 	category: { icon: "fluorescent", label: "Video Ambient" },
 	selector: PLAYER_SELECTOR,
 	settings: [
+		{
+			type: "checkbox",
+			id: "AutoRemoveAmbientMode",
+			name: "Auto Remove Ambient Mode",
+			description: "Automatically disables YouTube's native ambient lighting effect to prevent visual conflicts.",
+			value: true,
+			enableFunction: enableAutoRemoveAmbient,
+		},
 		{
 			type: "checkbox",
 			id: "VideoAmbient",

@@ -19,7 +19,6 @@ import { topbarSearchCategory } from "./categories/topbarSearch";
 import { topLeftIconCategory } from "./categories/topLeftIcon";
 import { uiCleanerCategory } from "./categories/uiCleaner";
 import { videoAmbientCategory } from "./categories/videoAmbient";
-import { videoAutomationCategory } from "./categories/videoAutomation";
 import { videoColorsCategory } from "./categories/videoColors";
 import { videoControlPanelCategory } from "./categories/videoControlPanel";
 import { videoLayoutCategory } from "./categories/videoLayout";
@@ -30,7 +29,6 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 	videoPlayerCategory,
 	videoControlPanelCategory,
 	videoColorsCategory,
-	videoAutomationCategory,
 	videoLayoutCategory,
 	videoAmbientCategory,
 	removeBlackBarsCategory,
