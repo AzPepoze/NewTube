@@ -303,5 +303,33 @@ export const videoControlPanelCategory: Category = {
 			varCss: "--nt-player-border-width",
 			require: { EnableControlPanelBorder: true },
 		},
+		{
+			type: "color",
+			id: "TimelineBackgroundColor",
+			hoverPreview: { selectors: ["#ytd-player .ytp-progress-bar"] },
+			name: "Timeline Track",
+			description: "Sets the color of the unplayed/background portion of the video progress bar.",
+			value: "#ffffff20",
+			varCss: "--nt-timeline-bg",
+			constantCss: `
+      .ytp-progress-bar {
+        background-color: var(--nt-timeline-bg, #ffffff20) !important;
+      }
+    `,
+		},
+		{
+			type: "color",
+			id: "TimelineLoadedColor",
+			hoverPreview: { selectors: ["#ytd-player .ytp-load-progress"] },
+			name: "Timeline Buffer",
+			description: "Sets the color of the buffered/loaded portion of the progress bar.",
+			value: "#ffffff50",
+			varCss: "--nt-timeline-load",
+			constantCss: `
+      .ytp-load-progress {
+        background: var(--nt-timeline-load, #ffffff50) !important;
+      }
+    `,
+		},
 	],
 };

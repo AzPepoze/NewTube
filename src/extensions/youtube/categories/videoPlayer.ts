@@ -131,5 +131,19 @@ export const videoPlayerCategory: Category = {
 				message: "Picture-in-Picture functionality has security limitations in Firefox, I can't do anything I'm sorry.",
 			},
 		},
+		{
+			type: "color",
+			id: "EndScreenVideoHoverColor",
+			hoverPreview: { selectors: ["#ytd-player .ytp-videowall-still-info-content"] },
+			name: "Endscreen Hover",
+			description: "The highlight color that appears when hovering over suggested videos at the end of a playback.",
+			value: "#00000050",
+			varCss: "--nt-endscreen-hover-bg",
+			constantCss: `
+      .ytp-videowall-still:hover .ytp-videowall-still-info-content {
+        background: var(--nt-endscreen-hover-bg, #00000050) !important;
+      }
+    `,
+		},
 	],
 };

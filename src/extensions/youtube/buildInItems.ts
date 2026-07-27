@@ -19,7 +19,6 @@ import { topbarSearchCategory } from "./categories/topbarSearch";
 import { topLeftIconCategory } from "./categories/topLeftIcon";
 import { uiCleanerCategory } from "./categories/uiCleaner";
 import { videoAmbientCategory } from "./categories/videoAmbient";
-import { videoColorsCategory } from "./categories/videoColors";
 import { videoControlPanelCategory } from "./categories/videoControlPanel";
 import { videoLayoutCategory } from "./categories/videoLayout";
 import { videoPlayerCategory } from "./categories/videoPlayer";
@@ -28,7 +27,6 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 	{ isHeader: true, label: "Video Experience" },
 	videoPlayerCategory,
 	videoControlPanelCategory,
-	videoColorsCategory,
 	videoLayoutCategory,
 	videoAmbientCategory,
 	removeBlackBarsCategory,
