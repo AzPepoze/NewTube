@@ -98,6 +98,10 @@ export function normalizeStoreThemePayload(data: any, fallbackId = ""): Theme {
 				? data.previewImage
 				: undefined;
 
+	const downloads = typeof data?.downloads === "number" ? data.downloads : undefined;
+	const rating = typeof data?.rating === "number" || data?.rating === null ? data.rating : undefined;
+	const ratingCount = typeof data?.ratingCount === "number" ? data.ratingCount : undefined;
+
 	return {
 		themeId,
 		themeName,
@@ -105,5 +109,8 @@ export function normalizeStoreThemePayload(data: any, fallbackId = ""): Theme {
 		addOnStyleShiftItems,
 		images,
 		coverImage,
+		downloads,
+		rating,
+		ratingCount,
 	};
 }

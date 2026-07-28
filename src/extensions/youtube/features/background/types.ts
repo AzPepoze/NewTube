@@ -1,4 +1,4 @@
-export type BackgroundMode = "Image" | "Thumbnail" | "YouTube";
+export type BackgroundMode = "Image" | "Solid" | "Thumbnail" | "YouTube";
 
 export interface BackgroundState {
 	tintElement: HTMLElement | null;

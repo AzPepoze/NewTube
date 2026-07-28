@@ -3,6 +3,7 @@ import { getRootValue, getUserSetting } from "@core/storage/manager";
 import { registerSettingListener } from "@settings/engine/functions";
 import { enableBackgroundCss, removeYoutubeIframe } from "./helpers";
 import { imageBackgroundMode } from "./image";
+import { solidBackgroundMode } from "./solid";
 import { thumbnailBackgroundMode } from "./thumbnail";
 import { type BackgroundMode, type IModeHandler } from "./types";
 import { youtubeBackgroundMode } from "./youtube";
@@ -12,6 +13,7 @@ export { enableBackgroundCss };
 class BackgroundModeDispatcher {
 	private modes: Record<BackgroundMode, IModeHandler> = {
 		Image: imageBackgroundMode,
+		Solid: solidBackgroundMode,
 		Thumbnail: thumbnailBackgroundMode,
 		YouTube: youtubeBackgroundMode,
 	};

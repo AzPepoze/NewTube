@@ -21,7 +21,6 @@ export const defaultSetting = {
 		BackgroundImageSize: 100,
 		BackgroundImageUrl: "https://cdn.wallpapersafari.com/74/55/4dgN3G.jpg",
 		BackgroundMode: "Image",
-		BackgroundOpacity: 80,
 		BackgroundTintColor: "#00000099",
 		BlurTargetSelection: "none",
 		CenterVideoTitleNormal: true,

@@ -13,6 +13,9 @@ export type Theme = {
 	addOnStyleShiftItems?: any[];
 	images?: string[];
 	coverImage?: string;
+	downloads?: number;
+	rating?: number | null;
+	ratingCount?: number;
 };
 
 function createThemeObject(id: string, name: string, data: any): Theme {
@@ -21,6 +24,11 @@ function createThemeObject(id: string, name: string, data: any): Theme {
 		themeName: name,
 		currentSettings: data.currentSettings,
 		addOnStyleShiftItems: data.addOnStyleShiftItems,
+		images: data.images,
+		coverImage: data.coverImage,
+		downloads: data.downloads,
+		rating: data.rating,
+		ratingCount: data.ratingCount,
 	};
 }
 

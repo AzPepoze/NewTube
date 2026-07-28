@@ -419,6 +419,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		flex-wrap: wrap;
 		gap: 16px;
 		box-shadow: 0 10px 30px var(--shadow-color, rgba(0, 0, 0, 0.5));
 		border-top: 2px solid var(--theme-0);
@@ -427,6 +428,7 @@
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			flex-wrap: wrap;
 			gap: 10px;
 		}
 	}

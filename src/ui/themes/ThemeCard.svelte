@@ -86,6 +86,22 @@
 			},
 		},
 	);
+
+	function handleCardClick() {
+		if (isLoading) return;
+		if (isStoreItem) {
+			openThemePreviewOverlay({
+				theme: currentThemeObject,
+				isStoreItem,
+				isInstalled,
+				onApply: () => onApply(id),
+				onApplyLivePreview: (t) => onApplyLivePreview?.(t),
+				onSave: () => onSave?.(id),
+			});
+		} else {
+			onApply(id);
+		}
+	}
 </script>
 
 <div
@@ -101,13 +117,19 @@
 		class="theme-card"
 		class:active={isActive}
 		class:loading={isLoading}
-		onclick={() => !isLoading && onApply(id)}
-		onkeydown={(e) => e.key === "Enter" && !isLoading && onApply(id)}
+		onclick={handleCardClick}
+		onkeydown={(e) => e.key === "Enter" && handleCardClick()}
 		role="button"
 		tabindex="0"
 	>
 		{#if isActive}
 			<div class="active-badge">ACTIVE</div>
+		{/if}
+
+		{#if isStoreItem && isInstalled}
+			<div class="installed-badge" class:has-active={isActive} title="Installed">
+				<Icon name="check_circle" size={16} />
+			</div>
 		{/if}
 
 		{#if isLoading}
@@ -147,9 +169,27 @@
 				<div class="title-container" title={name}>
 					<span class="theme-name">{name}</span>
 				</div>
+				{#if isStoreItem && (rawTheme?.downloads != null || rawTheme?.rating != null)}
+					<div class="stats-container">
+						{#if rawTheme?.downloads != null}
+							<span class="stat-badge downloads" title="{(rawTheme.downloads || 0).toLocaleString()} downloads">
+								<Icon name="download" size={13} />
+								<span
+									>{rawTheme.downloads >= 1000
+										? (rawTheme.downloads / 1000).toFixed(1) + "k"
+										: rawTheme.downloads}</span
+								>
+							</span>
+						{/if}
+						{#if rawTheme?.rating != null}
+							<span class="stat-badge rating" title="{rawTheme.rating.toFixed(1)} rating">
+								<Icon name="star" size={13} />
+								<span>{rawTheme.rating.toFixed(1)}</span>
+							</span>
+						{/if}
+					</div>
+				{/if}
 			</div>
-
-			<div class="accent-bar" style:background-color={preview.bgColor}></div>
 		</div>
 	</div>
 
@@ -201,23 +241,26 @@
 					size={18}
 					className="delete-btn"
 				/>
+			{:else if isInstalled}
+				<IconButton
+					icon="check_circle"
+					onClick={(e) => {
+						e.stopPropagation();
+						onApply(id);
+					}}
+					size={18}
+					className="apply-btn"
+				/>
 			{:else}
-				{#if isInstalled}
-					<div class="installed-indicator">
-						<Icon name="check_circle" size={16} />
-						<span>Installed</span>
-					</div>
-				{:else}
-					<IconButton
-						icon="save"
-						onClick={(e) => {
-							e.stopPropagation();
-							onSave?.(id);
-						}}
-						size={18}
-						className="save-btn"
-					/>
-				{/if}
+				<IconButton
+					icon="save"
+					onClick={(e) => {
+						e.stopPropagation();
+						onSave?.(id);
+					}}
+					size={18}
+					className="save-btn"
+				/>
 				<IconButton
 					icon="download"
 					onClick={(e) => {
@@ -260,11 +303,6 @@
 				word-break: break-word;
 				text-overflow: clip;
 			}
-
-			.accent-bar {
-				height: 4px;
-				filter: drop-shadow(0 0 8px var(--theme-0));
-			}
 		}
 	}
 
@@ -300,6 +338,26 @@
 				font-weight: 800;
 				z-index: 10;
 				box-shadow: 0 2px 8px var(--shadow-color);
+			}
+		}
+
+		.installed-badge {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			background: rgba(34, 197, 94, 0.9);
+			color: #ffffff;
+			width: 24px;
+			height: 24px;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			z-index: 10;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+
+			&.has-active {
+				right: 70px;
 			}
 		}
 
@@ -428,19 +486,38 @@
 			padding: 28px 12px 10px;
 			background: linear-gradient(to top, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.5) 60%, transparent 100%);
 			pointer-events: none;
+			display: flex;
+			align-items: flex-end;
+			justify-content: space-between;
+			gap: 8px;
 		}
+	}
 
-		.accent-bar {
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			right: 0;
-			height: 3px;
-			z-index: 6;
-			opacity: 0.9;
-			transition:
-				height 0.3s ease,
-				filter 0.3s ease;
+	.stats-container {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		flex-shrink: 0;
+
+		.stat-badge {
+			display: flex;
+			align-items: center;
+			gap: 3px;
+			font-size: 11px;
+			font-weight: 600;
+			color: rgba(255, 255, 255, 0.9);
+			background: rgba(0, 0, 0, 0.45);
+			backdrop-filter: blur(4px);
+			padding: 2px 6px;
+			border-radius: 6px;
+
+			&.downloads {
+				color: #60a5fa;
+			}
+
+			&.rating {
+				color: #f59e0b;
+			}
 		}
 	}
 
@@ -538,21 +615,6 @@
 			&:hover {
 				background: var(--theme-error-50) !important;
 			}
-		}
-	}
-
-	.installed-indicator {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		color: var(--theme-success);
-		font-size: 13px;
-		font-weight: 600;
-		padding: 0 8px;
-		opacity: 0.9;
-
-		:global(.styleshift-icon) {
-			margin: 0;
 		}
 	}
 </style>
