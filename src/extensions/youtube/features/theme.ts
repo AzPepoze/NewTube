@@ -175,7 +175,12 @@ export function enableThemeByVideo() {
 			const bgHsv = { ...hsv, v: hsv.v * 0.15 };
 			const bgRgb = hsvToRgb(bgHsv);
 			const isSolid = await getUserSetting("EnableSolidThemeByVideo");
-			const bgOpacity = isSolid ? 1 : (await getUserSetting("BackgroundOpacity")) / 100;
+			const tintColor = (await getUserSetting("BackgroundTintColor")) as string;
+			let tintAlpha = 0.7;
+			if (typeof tintColor === "string" && tintColor.startsWith("#") && tintColor.length === 9) {
+				tintAlpha = parseInt(tintColor.slice(7, 9), 16) / 255;
+			}
+			const bgOpacity = isSolid ? 1 : tintAlpha;
 			setProp("--nt-bg-main", `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${bgOpacity})`);
 			setProp("--nt-topbar-bg", `var(--nt-bg-main)`);
 

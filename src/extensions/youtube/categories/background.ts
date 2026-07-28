@@ -22,10 +22,11 @@ export const backgroundCategory: Category = {
 			id: "BackgroundMode",
 			name: "Background Mode",
 			description:
-				"Select the type of background to display: Image (static or custom), Thumbnail (current video's thumbnail), or YouTube (embed a YouTube video).",
+				"Select the type of background to display: Image (static or custom), Solid Color (flat color fill), Thumbnail (current video's thumbnail), or YouTube (embed a YouTube video).",
 			value: "Image",
 			options: [
 				{ label: "Image", value: "Image" },
+				{ label: "Solid Color", value: "Solid" },
 				{ label: "Video Thumbnail", value: "Thumbnail" },
 				{ label: "YouTube Video", value: "YouTube" },
 			],
@@ -56,21 +57,7 @@ export const backgroundCategory: Category = {
 				"Applies a color overlay on top of your background image or as a solid background color if no image is used. Useful for improving readability.",
 			value: "#000000ae",
 			varCss: "--nt-bg-main",
-			require: { EnableBackground: true, BackgroundMode: "Image" },
-		},
-		{
-			type: "numberSlide",
-			id: "BackgroundOpacity",
-			name: "Tint Opacity",
-			description:
-				"Adjusts how strong the tint color is. Lower values make the background image more visible, while higher values make it more solid.",
-			value: 80,
-			min: 0,
-			max: 100,
-			step: 1,
-			varCss: "--nt-bg-opacity",
-			unit: "",
-			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
+			require: { EnableBackground: true, BackgroundMode: ["Image", "Solid"] },
 		},
 		{
 			type: "numberSlide",
