@@ -38,10 +38,7 @@
 	});
 
 	async function applyTheme(id: string) {
-		const success = await controller.applyTheme(id, currentView);
-		if (success && currentView === "store") {
-			currentView = "installed";
-		}
+		await controller.applyTheme(id, currentView);
 	}
 
 	let pageInput = $state(1);
