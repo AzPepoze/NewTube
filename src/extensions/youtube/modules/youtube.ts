@@ -8,6 +8,14 @@ export let isYoutubeFullscreen = false;
 export let isYoutubeSmallMode = false;
 export let isYoutubeVideoPage = !!new URLSearchParams(window.location.search).get("v");
 
+export type YoutubeVideoInfo = {
+	element: HTMLVideoElement;
+	width: number;
+	height: number;
+	aspectRatio: number | null;
+	isSixteenByNine: boolean;
+};
+
 let playerObserver: MutationObserver | null = null;
 
 const navigateListeners: (() => void)[] = [];
@@ -95,6 +103,74 @@ export async function getPlayerElement(): Promise<HTMLElement | null> {
  */
 export function getPlayerContainer(): HTMLElement | null {
 	return document.querySelector(".html5-video-container") as HTMLElement;
+}
+
+/**
+ * Creates a reusable snapshot of the current video's intrinsic metadata.
+ * Addons should use this instead of measuring the styled player box.
+ */
+export function getYoutubeVideoInfo(video: HTMLVideoElement | null = videoElement): YoutubeVideoInfo | null {
+	if (!video?.isConnected) return null;
+
+	const width = video.videoWidth;
+	const height = video.videoHeight;
+	const aspectRatio = width > 0 && height > 0 ? width / height : null;
+
+	return {
+		element: video,
+		width,
+		height,
+		aspectRatio,
+		isSixteenByNine: aspectRatio !== null && Math.abs(aspectRatio - 16 / 9) <= 0.02,
+	};
+}
+
+/**
+ * Observes the current video's element and intrinsic metadata. The callback
+ * runs when YouTube swaps videos, metadata becomes available, or dimensions
+ * change. Returns a cleanup function.
+ */
+export function onYoutubeVideo(callback: (info: YoutubeVideoInfo) => void): () => void {
+	let observedVideo: HTMLVideoElement | null = null;
+	let videoCleanup: (() => void) | null = null;
+	let stopped = false;
+
+	const bind = async () => {
+		videoCleanup?.();
+		videoCleanup = null;
+
+		const video = await getVideoElement();
+		if (stopped || !video) return;
+
+		observedVideo = video;
+		const notify = () => {
+			const info = getYoutubeVideoInfo(video);
+			if (info) callback(info);
+		};
+		const events = ["loadedmetadata", "durationchange", "resize"] as const;
+
+		events.forEach((event) => video.addEventListener(event, notify));
+		notify();
+
+		videoCleanup = () => {
+			events.forEach((event) => video.removeEventListener(event, notify));
+			if (observedVideo === video) observedVideo = null;
+		};
+	};
+
+	const navigateCleanup = onYoutubeNavigate(() => {
+		void bind();
+		setTimeout(() => void bind(), 500);
+	});
+	void bind();
+
+	return () => {
+		stopped = true;
+		navigateCleanup();
+		videoCleanup?.();
+		videoCleanup = null;
+		observedVideo = null;
+	};
 }
 
 /**

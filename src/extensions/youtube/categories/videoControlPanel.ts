@@ -5,7 +5,10 @@ import {
 	ytVideoContainerWatchMode,
 	ytdPlayerWatchMode,
 } from "../modules/youtube";
+import { setupDetachControlsAspectGuard } from "../features/video/detachControlsAspectGuard";
 import { PLAYER_SELECTOR } from "./selectors";
+
+const DETACH_CONTROLS_RATIO_SELECTOR = "html.nt-detach-controls-16x9";
 
 export const videoControlPanelCategory: Category = {
 	category: { icon: "settings_input_component", label: "Video Control Panel" },
@@ -19,38 +22,39 @@ export const videoControlPanelCategory: Category = {
 			description:
 				"Moves the entire video control bar (play, volume, settings) from an overlay on top of the video to a dedicated space directly underneath it.",
 			value: true,
+			setupFunction: setupDetachControlsAspectGuard,
 			enableCss: `
-				${ytdPlayerWatchMode},
-				${ytPlayerWatchMode}
+				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytdPlayerWatchMode},
+				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytPlayerWatchMode}
 				{
 					padding-bottom: var(--nt-player-below-space, 70px) !important;
 				}
 
-				${ytTheaterModeContainer} {
+				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytTheaterModeContainer} {
 					margin-bottom: var(--nt-player-below-space, 70px) !important;
 				}
 
-				${ytVideoContainerWatchMode} {
+				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} {
 					overflow: visible !important;
 				}
 
-				${ytVideoContainerWatchMode} .ytp-chrome-bottom,
-				${ytVideoContainerWatchMode} .ytp-gradient-bottom,
-				${ytVideoContainerWatchMode} .ytp-tooltip {
+				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} .ytp-chrome-bottom,
+				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} .ytp-gradient-bottom,
+				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} .ytp-tooltip {
 					overflow: visible !important;
 					transform: translateY(var(--nt-player-below-space, 70px)) !important;
 				}
 
-				${ytVideoContainerWatchMode} .ytp-chrome-bottom {
+				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} .ytp-chrome-bottom {
 					padding-top: 0px !important;
 				}
 
-				${ytVideoContainerWatchMode} #ytp-caption-window-container,
-				${ytVideoContainerWatchMode} .ytp-overlays-container {
+				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} #ytp-caption-window-container,
+				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} .ytp-overlays-container {
 					height: 100% !important;
 				}
 
-				${ytVideoContainerWatchMode} .caption-window.ytp-caption-window-bottom {
+				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} .caption-window.ytp-caption-window-bottom {
 					margin-bottom: 0px !important;
 				}
 			`,
