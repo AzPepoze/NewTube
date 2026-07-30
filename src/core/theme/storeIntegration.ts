@@ -8,7 +8,6 @@ import {
 	checkAndUpdateTheme as themeManagerCheckAndUpdate,
 	validateOrigin,
 } from "@core/theme/manager";
-import { STYLESHIFT_STORE_DISCOVER_URL } from "@core/theme/config";
 import { ThemeStoreEvent } from "@core/theme/events";
 import { logger } from "@shared/logger";
 
@@ -107,6 +106,8 @@ export async function checkAndUpdateTheme(manual: boolean = false, targetDomain?
 	await themeManagerCheckAndUpdate(manual, targetDomain);
 }
 
+import { showThemeManager } from "@ui/themes/themeManagerService";
+
 export function openThemeStore() {
-	window.open(STYLESHIFT_STORE_DISCOVER_URL, "_blank");
+	showThemeManager("store");
 }

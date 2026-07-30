@@ -10,11 +10,19 @@
 	import { ThemeManagerController } from "./ThemeManagerController.svelte";
 	import { startLivePreviewMode } from "./themeManagerService";
 
-	let { closeWindow }: { closeWindow?: () => void } = $props();
+	let {
+		closeWindow,
+		initialTab = "installed",
+		onRegisterSetTab,
+	}: {
+		closeWindow?: () => void;
+		initialTab?: "installed" | "store";
+		onRegisterSetTab?: (setTabFn: (tab: "installed" | "store") => void) => void;
+	} = $props();
 
 	const controller = new ThemeManagerController({ closeWindow: () => closeWindow?.() });
 
-	let currentView = $state<"installed" | "store">("installed");
+	let currentView = $state<"installed" | "store">((() => initialTab)());
 	let searchQuery = $state("");
 	let cardMinWidth = $state(240);
 
@@ -64,6 +72,9 @@
 	}
 
 	onMount(() => {
+		onRegisterSetTab?.((tab) => {
+			currentView = tab;
+		});
 		controller.loadThemes();
 		const storageListener = (_: any, area: string) => area === "local" && controller.refreshActiveTheme();
 		chrome.storage.onChanged.addListener(storageListener);
