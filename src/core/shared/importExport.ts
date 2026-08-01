@@ -1,8 +1,9 @@
 import { loadJSZip, jszipInstance as jszip, saveAndRefreshAll } from "@core/runtime/controller";
 import { initializeRequiredStorageStructures as setNullSave } from "@core/storage/maintenance";
 import { ALLOWED_STORAGE_KEYS, cachedStorageData as savedData } from "@core/storage/manager";
-import type { Category, Setting } from "@settings/types/styleshiftTypes";
-import { assertCanonicalPersistedItems } from "@settings/types/persistedSettings";
+import { fromPersistedCategory, toPersistedCategory } from "@core/theme/exportConverter";
+import type { PersistedCategory, PersistedCurrentSettings, PersistedSetting, PersistedStyleShiftData } from "@settings/types/persistedSettings";
+import { assertCanonicalPersistedItems, assertNoLegacyPersistedFields } from "@settings/types/persistedSettings";
 import { logger } from "@shared/logger";
 
 import { createError, createNotification, createWarning } from "./notifications";
@@ -18,7 +19,7 @@ import { deepClone, sleep } from "./utilities";
  * @example
  * await importStyleShiftData(myConfigObject);
  */
-export async function importStyleShiftData(styleshiftData: object) {
+export async function importStyleShiftData(styleshiftData: PersistedStyleShiftData) {
 	const notification = await createNotification({
 		icon: "sync",
 		title: "StyleShift - Importing data",
@@ -27,10 +28,14 @@ export async function importStyleShiftData(styleshiftData: object) {
 	});
 
 	try {
-		const addOnItems = (styleshiftData as { addOnStyleShiftItems?: unknown }).addOnStyleShiftItems;
+		assertNoLegacyPersistedFields(styleshiftData);
+		const addOnItems = styleshiftData.addOnStyleShiftItems;
 		if (addOnItems !== undefined) assertCanonicalPersistedItems(addOnItems);
 		for (const thisKey of ALLOWED_STORAGE_KEYS) {
-			savedData[thisKey] = styleshiftData[thisKey];
+			const value = styleshiftData[thisKey as keyof PersistedStyleShiftData];
+			savedData[thisKey] = thisKey === "addOnStyleShiftItems" && Array.isArray(value)
+				? value.map(fromPersistedCategory)
+				: value;
 		}
 
 		await setNullSave();
@@ -62,12 +67,16 @@ export async function importStyleShiftData(styleshiftData: object) {
  * const data = exportStyleShiftData();
  * console.log(JSON.stringify(data));
  */
-export function exportStyleShiftData() {
-	const exportData: any = {};
+export function exportStyleShiftData(): PersistedStyleShiftData {
+	const exportData: PersistedStyleShiftData = {};
 
 	for (const thisKey of ALLOWED_STORAGE_KEYS) {
 		if (savedData[thisKey]) {
-			exportData[thisKey] = deepClone(savedData[thisKey]);
+			if (thisKey === "addOnStyleShiftItems") {
+				exportData.addOnStyleShiftItems = savedData[thisKey].map(toPersistedCategory);
+			} else {
+				exportData.currentSettings = deepClone(savedData[thisKey]) as PersistedCurrentSettings;
+			}
 		}
 	}
 
@@ -75,8 +84,8 @@ export function exportStyleShiftData() {
 
 	if (addOnItems) {
 		for (const thisCategory of addOnItems) {
-			delete thisCategory.highlightColor;
-			delete thisCategory.editable;
+			delete (thisCategory as Record<string, unknown>).highlightColor;
+			delete (thisCategory as Record<string, unknown>).editable;
 
 			for (const thisSetting of thisCategory.settings) {
 				delete thisSetting.editable;
@@ -99,7 +108,7 @@ export function exportStyleShiftData() {
  * await importStyleShiftJsonText('{"currentSettings": {}}');
  */
 export async function importStyleShiftJsonText(text: string) {
-	await importStyleShiftData(JSON.parse(text));
+	await importStyleShiftData(JSON.parse(text) as PersistedStyleShiftData);
 }
 
 /**
@@ -125,7 +134,7 @@ export function exportStyleShiftJsonText() {
  * @example
  * const data = await parseStyleShiftZip(myZipBlob);
  */
-export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
+export async function parseStyleShiftZip(zipFile: File | Blob): Promise<PersistedStyleShiftData> {
 	await loadJSZip();
 	if (!jszip) {
 		throw new Error("JSZip not loaded!");
@@ -136,12 +145,12 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 		createFolders: true,
 	});
 
-	let addOnStyleShiftItems: Category[] = [];
-	let currentSettings: any = null;
+	let addOnStyleShiftItems: PersistedCategory[] = [];
+	let currentSettings: PersistedCurrentSettings | null = null;
 
 	const settingsFile = loadedZip.file("currentSettings.json");
 	if (settingsFile) {
-		currentSettings = JSON.parse(await settingsFile.async("string"));
+		currentSettings = JSON.parse(await settingsFile.async("string")) as PersistedCurrentSettings;
 	}
 
 	let itemsBasePath = "";
@@ -180,13 +189,12 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 			if (!isNaN(indexPart)) categoryIndex = indexPart;
 		}
 
-		const categoryConfig =
-			loadedZip.file(`${categoryPathName}/config.json`) || loadedZip.file(`${categoryPathName}/Config.json`);
+		const categoryConfig = loadedZip.file(`${categoryPathName}/config.json`);
 
 		if (!categoryConfig) continue;
 
-		const categoryData = JSON.parse(await categoryConfig.async("string"));
-		const settings: Setting[] = [];
+		const categoryData = JSON.parse(await categoryConfig.async("string")) as PersistedCategory;
+		const settings: PersistedSetting[] = [];
 
 		const settingFolders: string[] = [];
 		const settingsOrderFile = loadedZip.file(`${categoryPathName}/order.json`);
@@ -219,11 +227,10 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 				if (!isNaN(indexPart)) settingIndex = indexPart;
 			}
 
-			const settingConfig =
-				loadedZip.file(`${settingPathName}/config.json`) || loadedZip.file(`${settingPathName}/Config.json`);
+			const settingConfig = loadedZip.file(`${settingPathName}/config.json`);
 			if (!settingConfig) continue;
 
-			const settingData = JSON.parse(await settingConfig.async("string")) || {};
+			const settingData = (JSON.parse(await settingConfig.async("string")) || {}) as PersistedSetting;
 
 			for (const filePath of Object.keys(loadedZip.files)) {
 				const isPropertyFile =
@@ -243,10 +250,11 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 		}
 
 		categoryData["settings"] = settings.filter((s) => s !== null);
+		assertNoLegacyPersistedFields(categoryData);
 		addOnStyleShiftItems[categoryIndex] = categoryData;
 	}
 
-	const styleshiftData: any = {
+	const styleshiftData: PersistedStyleShiftData = {
 		addOnStyleShiftItems: addOnStyleShiftItems.filter((c) => c !== null),
 	};
 

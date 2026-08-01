@@ -1,8 +1,4 @@
-import type {
-	PersistedCategory,
-	PersistedSetting,
-	SettingKind,
-} from "./styleshiftTypes";
+import type { PersistedCategory, PersistedSetting, PersistedSettings, SettingKind } from "./styleshiftTypes";
 
 export type {
 	JsonObject,
@@ -12,9 +8,14 @@ export type {
 	PersistedOption,
 	PersistedSetting,
 	PersistedSettings,
-	PersistedStorageData,
 	PersistedPreset,
 } from "./styleshiftTypes";
+
+export type PersistedCurrentSettings = PersistedSettings;
+export type PersistedStyleShiftData = {
+	currentSettings?: PersistedCurrentSettings;
+	addOnStyleShiftItems?: PersistedCategory[];
+};
 
 const LEGACY_FIELDS = ["Selector", "Highlight_color", "setup_"] as const;
 type LegacyField = (typeof LEGACY_FIELDS)[number];
@@ -69,6 +70,9 @@ export function assertCanonicalPersistedItems(
 				throw new TypeError(`${path}[${categoryIndex}].settings[${settingIndex}] must be a setting object.`);
 			}
 			assertNoLegacyPersistedFields(setting, `${path}[${categoryIndex}].settings[${settingIndex}]`);
+			if (!isPersistedSettingKind((setting as { type?: unknown }).type)) {
+				throw new TypeError(`${path}[${categoryIndex}].settings[${settingIndex}].type is not a supported setting type.`);
+			}
 		}
 	}
 }
@@ -78,22 +82,25 @@ export function isPersistedSetting(value: unknown): value is PersistedSetting {
 }
 
 export function isPersistedSettingKind(value: unknown): value is SettingKind {
-	return typeof value === "string" && [
-		"text",
-		"subText",
-		"button",
-		"checkbox",
-		"numberSlide",
-		"dropdown",
-		"color",
-		"textInput",
-		"imageInput",
-		"previewImage",
-		"custom",
-		"combineSetting",
-		"conditionSetting",
-		"keyboardShortcuts",
-		"group",
-		"selectorInput",
-	].includes(value);
+	return (
+		typeof value === "string" &&
+		[
+			"text",
+			"subText",
+			"button",
+			"checkbox",
+			"numberSlide",
+			"dropdown",
+			"color",
+			"textInput",
+			"imageInput",
+			"previewImage",
+			"custom",
+			"combineSetting",
+			"conditionSetting",
+			"keyboardShortcuts",
+			"group",
+			"selectorInput",
+		].includes(value)
+	);
 }
