@@ -118,12 +118,12 @@ async function openQuickCustomizeUI(selector: string, existingSetting?: Setting)
 	});
 
 	const originalClose = pickerWindow.closeWindowHandler;
-	pickerWindow.closeWindowHandler = () => {
+	pickerWindow.closeWindowHandler = async () => {
 		if (quickCustomizeComponent) {
 			unmount(quickCustomizeComponent);
 			quickCustomizeComponent = null;
 		}
-		originalClose();
+		await originalClose();
 		pickerWindow = null;
 	};
 }
