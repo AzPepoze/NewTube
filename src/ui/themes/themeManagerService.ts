@@ -7,20 +7,36 @@ import { mount, unmount } from "svelte";
 import LivePreviewBar from "./LivePreviewBar.svelte";
 import ThemeManager from "./ThemeManager.svelte";
 
-let activeThemeWindowInstance: any = null;
+interface ActiveThemeWindow {
+	windowInstance: any;
+	setTab?: (tab: "installed" | "store") => void;
+}
+
+let activeThemeWindowInstance: ActiveThemeWindow | null = null;
 
 /**
  * Opens the modern Theme Collection window.
  */
-export async function showThemeManager() {
+export async function showThemeManager(tab: "installed" | "store" = "installed") {
+	if (activeThemeWindowInstance) {
+		activeThemeWindowInstance.setTab?.(tab);
+		return;
+	}
+
 	const themeWindow = await createStyleShiftWindow({
 		title: "Theme Manager",
 		width: "80%",
 		height: "85%",
 		center: true,
+		onWindowClosed: () => {
+			activeThemeWindowInstance = null;
+		},
 	});
 
-	activeThemeWindowInstance = themeWindow;
+	const activeState: ActiveThemeWindow = {
+		windowInstance: themeWindow,
+	};
+	activeThemeWindowInstance = activeState;
 
 	// Style adjustments for the container to work better with grid
 	themeWindow.contentElement.style.padding = "20px";
@@ -30,6 +46,10 @@ export async function showThemeManager() {
 		ThemeManager,
 		{
 			closeWindow: themeWindow.closeWindowHandler,
+			initialTab: tab,
+			onRegisterSetTab: (setTabFn: (t: "installed" | "store") => void) => {
+				activeState.setTab = setTabFn;
+			},
 		},
 		themeWindow.contentElement,
 	);
@@ -47,8 +67,8 @@ export async function startLivePreviewMode(theme: Theme, isStoreItem = false, cl
 	// Close existing window if active
 	if (closeCurrentWindow) {
 		closeCurrentWindow();
-	} else if (activeThemeWindowInstance?.closeWindowHandler) {
-		activeThemeWindowInstance.closeWindowHandler();
+	} else if (activeThemeWindowInstance?.windowInstance?.closeWindowHandler) {
+		activeThemeWindowInstance.windowInstance.closeWindowHandler();
 	}
 
 	// Apply settings live without persisting to storage

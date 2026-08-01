@@ -5,5 +5,5 @@
 	"store_api": "https://api-newtube.azpepoze.com",
 	"store_url": "https://newtube.azpepoze.com/themes",
 	"store_discover": "https://newtube.azpepoze.com/discover",
-	"version": "6.0.8"
+	"version": "6.0.9"
 }

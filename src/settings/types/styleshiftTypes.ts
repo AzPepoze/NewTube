@@ -246,6 +246,7 @@ export type Setting = (
 			setupFunction?: string | Function;
 			setup_?: string | Function;
 			uiFunction?: string | Function;
+			transparent?: boolean;
 
 			//--------------
 

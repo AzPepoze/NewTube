@@ -10,6 +10,7 @@ export const fontsCategory: Category = {
 		{
 			type: "custom",
 			id: "FontManager",
+			transparent: true,
 			uiFunction: function (frame: HTMLElement) {
 				settingsUi.renderComponent(FontManager, { setting: this }, frame);
 			},

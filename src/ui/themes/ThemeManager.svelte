@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Icon from "@primitives/Icon.svelte";
+	import BasicSlider from "@ui/settings/components/primitives/BasicSlider.svelte";
 	import Button from "@ui/settings/components/controls/Button.svelte";
 	import Search from "@ui/settings/components/primitives/Search.svelte";
 	import CapsuleTabs from "@ui/window/components/CapsuleTabs.svelte";
@@ -10,11 +11,19 @@
 	import { ThemeManagerController } from "./ThemeManagerController.svelte";
 	import { startLivePreviewMode } from "./themeManagerService";
 
-	let { closeWindow }: { closeWindow?: () => void } = $props();
+	let {
+		closeWindow,
+		initialTab = "installed",
+		onRegisterSetTab,
+	}: {
+		closeWindow?: () => void;
+		initialTab?: "installed" | "store";
+		onRegisterSetTab?: (setTabFn: (tab: "installed" | "store") => void) => void;
+	} = $props();
 
 	const controller = new ThemeManagerController({ closeWindow: () => closeWindow?.() });
 
-	let currentView = $state<"installed" | "store">("installed");
+	let currentView = $state<"installed" | "store">((() => initialTab)());
 	let searchQuery = $state("");
 	let cardMinWidth = $state(240);
 
@@ -64,6 +73,9 @@
 	}
 
 	onMount(() => {
+		onRegisterSetTab?.((tab) => {
+			currentView = tab;
+		});
 		controller.loadThemes();
 		const storageListener = (_: any, area: string) => area === "local" && controller.refreshActiveTheme();
 		chrome.storage.onChanged.addListener(storageListener);
@@ -244,7 +256,7 @@
 			<label class="card-size-control" title="Adjust theme card size">
 				<Icon name="view_comfy" size={17} />
 				<span>Card size</span>
-				<input type="range" min="180" max="360" step="10" bind:value={cardMinWidth} />
+				<BasicSlider class="card-size-slider" min={180} max={360} step={10} bind:value={cardMinWidth} />
 				<span class="card-size-value">{cardMinWidth}px</span>
 			</label>
 			<Button
@@ -277,6 +289,7 @@
 	.styleshift-theme-manager {
 		display: flex;
 		flex-direction: column;
+		container-type: inline-size;
 		width: 100%;
 		height: 100%;
 		min-height: 520px;
@@ -378,9 +391,10 @@
 	}
 
 	.manager-footer {
-		display: flex;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto auto;
+		grid-template-areas: "left center right";
 		align-items: center;
-		justify-content: space-between;
 		gap: 20px;
 		padding: 12px;
 		margin-top: 20px;
@@ -388,7 +402,8 @@
 		position: relative;
 		border: 1px solid var(--fg-opacity-10);
 		border-radius: 16px;
-		background: var(--bg-main, #111);
+		background: linear-gradient(to bottom, var(--fg-opacity-05), var(--fg-opacity-02)), var(--bg-main, #111);
+		box-shadow: 0 -8px 24px var(--bg-overlay-10);
 
 		.actions-left,
 		.actions-right,
@@ -399,12 +414,13 @@
 		}
 
 		.actions-left {
-			flex: 1;
+			grid-area: left;
 			min-width: 0;
 			justify-content: flex-start;
 		}
 
 		.actions-center {
+			grid-area: center;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -488,6 +504,7 @@
 		}
 
 		.actions-right {
+			grid-area: right;
 			padding-left: 12px;
 			border-left: 1px solid var(--fg-opacity-10);
 			gap: 12px;
@@ -501,10 +518,9 @@
 			font-size: 12px;
 			white-space: nowrap;
 
-			input[type="range"] {
+			:global(.card-size-slider) {
 				width: 100px;
-				accent-color: var(--theme-0);
-				cursor: pointer;
+				margin: 0;
 			}
 
 			.card-size-value {
@@ -533,27 +549,52 @@
 			filter: none;
 		}
 
-		@media (max-width: 720px) {
+		@container (max-width: 1120px) {
+			grid-template-columns: minmax(0, 1fr) auto;
+			grid-template-areas:
+				"left center"
+				"right right";
+
+			.actions-left {
+				flex-wrap: wrap;
+			}
+
+			.actions-right {
+				justify-content: flex-end;
+				padding: 10px 0 0;
+				border-top: 1px solid var(--fg-opacity-10);
+				border-left: 0;
+			}
+		}
+
+		@container (max-width: 720px) {
+			grid-template-columns: 1fr;
+			grid-template-areas:
+				"left"
+				"center"
+				"right";
 			gap: 10px;
+
+			.actions-left,
+			.actions-center,
+			.actions-right {
+				justify-content: center;
+			}
 
 			:global(.footer-btn) {
 				padding: 0 11px !important;
 			}
 		}
 
-		@media (max-width: 580px) {
-			align-items: stretch;
-			flex-direction: column;
+		@media (max-width: 480px) {
+			.card-size-control {
+				width: 100%;
+				justify-content: center;
 
-			.actions-left,
-			.actions-right {
-				justify-content: flex-end;
-			}
-
-			.actions-right {
-				padding: 10px 0 0;
-				border-top: 1px solid var(--fg-opacity-10);
-				border-left: 0;
+				:global(.card-size-slider) {
+					flex: 1;
+					max-width: 180px;
+				}
 			}
 		}
 	}

@@ -5,12 +5,14 @@
 		step = 1,
 		value = $bindable(0),
 		onInput,
+		class: className = "",
 	}: {
 		min?: number;
 		max?: number;
 		step?: number;
 		value?: number;
 		onInput?: (val: number) => void;
+		class?: string;
 	} = $props();
 
 	function handleInput(e: Event) {
@@ -30,7 +32,7 @@
 	{step}
 	{value}
 	oninput={handleInput}
-	class="styleshift-number-slide"
+	class="styleshift-number-slide {className}"
 	style:--progress="{progress}%"
 />
 

@@ -39,6 +39,8 @@
 
 	let scale = $state(1);
 	let isHelpVisible = $state(false);
+	let helpTrigger = $state<HTMLDivElement>();
+	let helpTooltipSide = $state<"left" | "right">("left");
 
 	function handleClick(_e: MouseEvent | KeyboardEvent) {
 		scale = 0.95;
@@ -61,6 +63,18 @@
 	}
 
 	function showHelp() {
+		const triggerRect = helpTrigger?.getBoundingClientRect();
+		const groupRect = helpTrigger?.closest(".styleshift-settings-group")?.getBoundingClientRect();
+
+		if (triggerRect) {
+			const bounds = groupRect ?? new DOMRect(0, 0, window.innerWidth, window.innerHeight);
+			const tooltipWidth = 224;
+			const gap = 8;
+			const spaceOnLeft = triggerRect.left - bounds.left;
+			const spaceOnRight = bounds.right - triggerRect.right;
+
+			helpTooltipSide = spaceOnRight >= tooltipWidth + gap || spaceOnRight > spaceOnLeft ? "right" : "left";
+		}
 		isHelpVisible = true;
 	}
 
@@ -70,7 +84,10 @@
 
 	function handleHelpKeyDown(e: KeyboardEvent) {
 		if (e.key === "Enter") {
-			isHelpVisible = !isHelpVisible;
+			e.preventDefault();
+			e.stopPropagation();
+			if (isHelpVisible) hideHelp();
+			else showHelp();
 		}
 	}
 </script>
@@ -78,6 +95,7 @@
 <div
 	class="styleshift-button variant-{variant} layout-{layout} {className}"
 	class:has-icon={!!icon}
+	class:help-visible={isHelpVisible}
 	style:justify-content={justifyContent}
 	style:transform="scale({scale})"
 	style:--btn-color={color}
@@ -102,15 +120,21 @@
 	{#if showHelpIcon && description}
 		<div
 			class="help-trigger"
+			bind:this={helpTrigger}
 			onmouseenter={showHelp}
 			onmouseleave={hideHelp}
+			onclick={(e) => e.stopPropagation()}
 			onkeydown={handleHelpKeyDown}
 			role="button"
 			tabindex="0"
 		>
 			<Icon name="help_outline" size={20} />
 			{#if isHelpVisible}
-				<div class="styleshift-tooltip">
+				<div
+					class="styleshift-tooltip"
+					class:tooltip-left={helpTooltipSide === "left"}
+					class:tooltip-right={helpTooltipSide === "right"}
+				>
 					{description}
 				</div>
 			{/if}
@@ -156,6 +180,10 @@
 		}
 	}
 
+	.styleshift-button.help-visible {
+		z-index: 10;
+	}
+
 	@container settings-group (min-width: 520px) {
 		.layout-grid {
 			flex-direction: column;
@@ -181,6 +209,19 @@
 
 			:global(.styleshift-main-description .setting-description) {
 				display: none;
+			}
+
+			.help-trigger {
+				position: absolute;
+				top: 8px;
+				right: 8px;
+				margin-left: 0;
+			}
+
+			.styleshift-tooltip {
+				top: 50%;
+				bottom: auto;
+				transform: translateY(-50%);
 			}
 		}
 	}
@@ -228,8 +269,7 @@
 
 	.styleshift-tooltip {
 		position: absolute;
-		bottom: 125%;
-		right: 0;
+		top: 50%;
 		background: var(--bg-main);
 		border: 1px solid var(--border-subtle);
 		padding: 8px 12px;
@@ -240,29 +280,47 @@
 		box-shadow: 0 4px 15px var(--shadow-strong);
 		z-index: 100;
 		pointer-events: none;
-		animation: fadeIn 0.2s ease-out;
+		animation: tooltipFadeIn 180ms cubic-bezier(0.22, 1, 0.36, 1);
 		white-space: break-spaces;
 		line-height: 1.4;
 		text-align: left;
+		transform: translateY(-50%);
+
+		&.tooltip-left {
+			right: calc(100% + 8px);
+		}
+
+		&.tooltip-right {
+			left: calc(100% + 8px);
+		}
 
 		&::after {
 			content: "";
 			position: absolute;
-			top: 100%;
-			right: 12px;
+			top: 50%;
 			border: 6px solid transparent;
-			border-top-color: var(--bg-main);
+			transform: translateY(-50%);
+		}
+
+		&.tooltip-left::after {
+			left: 100%;
+			border-left-color: var(--bg-main);
+		}
+
+		&.tooltip-right::after {
+			right: 100%;
+			border-right-color: var(--bg-main);
 		}
 	}
 
-	@keyframes fadeIn {
+	@keyframes tooltipFadeIn {
 		from {
 			opacity: 0;
-			transform: translateY(5px);
+			transform: translateY(calc(-50% + 6px));
 		}
 		to {
 			opacity: 1;
-			transform: translateY(0);
+			transform: translateY(-50%);
 		}
 	}
 </style>

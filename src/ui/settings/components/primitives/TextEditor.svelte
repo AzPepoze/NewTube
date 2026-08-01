@@ -4,14 +4,16 @@
 		onInput?: (value: string) => void;
 		onBlur?: (value: string) => void;
 		className?: string;
+		placeholder?: string;
 	}
 
-	let { value = $bindable(""), onInput, onBlur, className = "" }: Props = $props();
+	let { value = $bindable(""), onInput, onBlur, className = "", placeholder = "" }: Props = $props();
 </script>
 
 <textarea
 	class="styleshift-text-editor {className}"
 	bind:value
+	{placeholder}
 	oninput={() => onInput?.(value)}
 	onblur={() => onBlur?.(value)}
 ></textarea>

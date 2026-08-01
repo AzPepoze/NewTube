@@ -2,6 +2,8 @@
 node_modules
 out
 devs
+.plan/
+.agents/
 
 test.json
 

@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { getAssetUrl } from "@ui/window/utils";
 	import { HOVER_PREVIEW_CONTEXT, hoverPreview, type HoverPreviewContext } from "@ui/settings/hoverPreview";
+	import { SETTINGS_SEARCH_QUERY } from "@ui/settings/searchContext";
 	import type { Snippet } from "svelte";
 	import { getContext } from "svelte";
 	import { getFlexAlign, getTextAlign } from "../../utils";
 	import Icon from "../primitives/Icon.svelte";
+	import HighlightedText from "./HighlightedText.svelte";
 
 	let {
 		name = "",
@@ -28,6 +30,8 @@
 	const flexAlign = $derived(getFlexAlign(align));
 	const previewContext = getContext<HoverPreviewContext | undefined>(HOVER_PREVIEW_CONTEXT);
 	const previewConfig = $derived(showHoverPreview ? previewContext?.resolve() : null);
+	const getSearchQuery = getContext<() => string | undefined>(SETTINGS_SEARCH_QUERY);
+	const searchQuery = $derived(getSearchQuery?.() ?? "");
 
 	function suppressPreviewActivation(event: Event) {
 		event.preventDefault();
@@ -46,9 +50,7 @@
 		<div class="setting-name" style:justify-content={flexAlign}>
 			{#if name.includes(".svg") || name.includes("data:image/svg+xml") || name.startsWith("chrome-extension://")}
 				<Icon name={getAssetUrl(name)} size={20} className="styleshift-description-icon" applyFilter={true} />
-			{:else}
-				{name}
-			{/if}
+			{:else}<HighlightedText text={name} query={searchQuery} />{/if}
 			{#if previewConfig}
 				<button
 					type="button"
@@ -67,13 +69,9 @@
 		</div>
 	{/if}
 	{#if description}
-		<div class="setting-description">
-			{description}
-		</div>
+		<div class="setting-description"><HighlightedText text={description} query={searchQuery} /></div>
 	{/if}
-	{#if text}
-		{text}
-	{/if}
+	{#if text}<HighlightedText {text} query={searchQuery} />{/if}
 	{#if children}
 		{@render children()}
 	{/if}
