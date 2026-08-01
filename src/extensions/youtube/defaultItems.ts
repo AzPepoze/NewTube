@@ -182,7 +182,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				color: "#2e16feff",
 				description: "View the source code, contribute, or check for updates on GitHub.",
 				fontSize: 15,
-				icon: "https://pbs.twimg.com/profile_images/1372304699601285121/5yBS6_3F_400x400.jpg",
+				icon: "assets/icons/github.svg",
 				id: "GithubButton",
 				name: "GitHub Repository",
 				align: "left",
