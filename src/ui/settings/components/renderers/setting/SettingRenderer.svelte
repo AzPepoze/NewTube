@@ -45,7 +45,7 @@
 	setContext(HOVER_PREVIEW_CONTEXT, previewContext);
 	setContext(SETTINGS_SEARCH_QUERY, () => highlight);
 
-	const textAlign = $derived(getTextAlign((setting as any).align));
+	const textAlign = $derived(getTextAlign("align" in setting ? setting.align : undefined));
 	const isVerticalSetting = $derived(
 		setting.type === "numberSlide" ||
 			setting.type === "color" ||

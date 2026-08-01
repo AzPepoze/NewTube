@@ -14,13 +14,31 @@ export type Category = {
 export type CategoryNameWithIcon = { icon: string; label: string };
 export type SeparateCategory = { isHeader: boolean; label: string };
 
+export type SettingValue = string | number | boolean | object | null;
+export type SettingAction = () => void;
+export type SettingValueCallback<T extends SettingValue = SettingValue> = (value: T) => void;
+export type SettingCssCallback = (value: SettingValue) => string;
+export type SettingRequirementValue = SettingValue | SettingValue[];
+export type SettingRequirements = Record<string, SettingRequirementValue>;
+
+export type QuickCustomizeMode = "basic" | "advanced";
+export type QuickCustomizeMetadata = {
+	basicStyles: Record<string, string>;
+	enabledStyles: Record<string, boolean>;
+};
+export type QuickCustomizeData = {
+	selector: string;
+	mode: QuickCustomizeMode;
+	metadata: QuickCustomizeMetadata;
+};
+
 export type Option = {
 	label: string;
 	value: string;
 	enableCss?: string;
 
-	enableFunction?: string | Function;
-	disableFunction?: string | Function;
+	enableFunction?: string | SettingAction;
+	disableFunction?: string | SettingAction;
 };
 
 export type Color_obj = {
@@ -34,8 +52,8 @@ export type BaseSetting = {
 		condition: boolean;
 		message?: string;
 	};
-	require?: Record<string, any>;
-	quickCustomize?: any;
+	require?: SettingRequirements;
+	quickCustomize?: QuickCustomizeData;
 };
 
 export enum SettingType {
@@ -95,7 +113,7 @@ export type Setting = (
 			color?: string;
 			fontSize?: number;
 
-			clickFunction?: string | Function;
+			clickFunction?: string | SettingAction;
 
 			editable?: boolean;
 	  }
@@ -109,14 +127,14 @@ export type Setting = (
 
 			constantCss?: string;
 
-			setupFunction?: string | Function;
-			updateFunction?: string | Function;
+			setupFunction?: string | SettingAction;
+			updateFunction?: string | SettingValueCallback<boolean>;
 
 			enableCss?: string;
-			enableFunction?: string | Function;
+			enableFunction?: string | SettingAction;
 
 			disableCss?: string;
-			disableFunction?: string | Function;
+			disableFunction?: string | SettingAction;
 
 			editable?: boolean;
 	  }
@@ -136,11 +154,11 @@ export type Setting = (
 
 			varCss?: string;
 
-			constantCss?: string | Function;
+			constantCss?: string | SettingCssCallback;
 
-			setupFunction?: string | Function;
+			setupFunction?: string | SettingAction;
 
-			updateFunction?: string | Function;
+			updateFunction?: string | SettingValueCallback<number>;
 
 			//--------------
 
@@ -158,9 +176,9 @@ export type Setting = (
 
 			constantCss?: string;
 
-			setupFunction?: string | Function;
+			setupFunction?: string | SettingAction;
 
-			updateFunction?: string | Function;
+			updateFunction?: string | SettingValueCallback<string>;
 
 			options: Option[];
 
@@ -181,11 +199,11 @@ export type Setting = (
 
 			varCss?: string;
 
-			constantCss?: string | Function;
+			constantCss?: string | SettingCssCallback;
 
-			setupFunction?: string | Function;
+			setupFunction?: string | SettingAction;
 
-			updateFunction?: string | Function;
+			updateFunction?: string | SettingValueCallback<string>;
 
 			//--------------
 
@@ -199,7 +217,7 @@ export type Setting = (
 
 			value: string;
 
-			updateFunction?: string | ((value: string) => void);
+			updateFunction?: string | SettingValueCallback<string>;
 
 			//--------------
 			editable?: boolean;
@@ -239,14 +257,14 @@ export type Setting = (
 			id: string;
 			name?: string;
 			description?: string;
-			value?: any;
+			value?: SettingValue;
 
 			//--------------
 
-			constantCss?: string | ((value: any) => string);
-			setupFunction?: string | Function;
-			setup_?: string | Function;
-			uiFunction?: string | Function;
+			constantCss?: string | SettingCssCallback;
+			setupFunction?: string | SettingAction;
+			setup_?: string | SettingAction;
+			uiFunction?: string | ((this: SettingByType<"custom">, frame: HTMLElement) => void);
 			transparent?: boolean;
 
 			//--------------
@@ -267,11 +285,11 @@ export type Setting = (
 			id?: string;
 			name?: string;
 			description?: string;
-			condition: { [key: string]: any };
+			condition: SettingRequirements;
 			enableCss?: string;
 			disableCss?: string;
-			enableFunction?: string | Function;
-			disableFunction?: string | Function;
+			enableFunction?: string | SettingAction;
+			disableFunction?: string | SettingAction;
 			editable?: boolean;
 	  }
 	| {
@@ -294,7 +312,7 @@ export type Setting = (
 			name: string;
 			description?: string;
 			value: string;
-			updateFunction?: string | ((value: string) => void);
+			updateFunction?: string | SettingValueCallback<string>;
 			editable?: boolean;
 	  }
 ) &

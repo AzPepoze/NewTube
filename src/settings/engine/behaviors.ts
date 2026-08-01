@@ -6,11 +6,15 @@ import { createStylesheet } from "../stylesheet/styleSheet";
 import { evaluateConditionAsync } from "./conditions";
 import { activeSettingsState } from "./functions";
 import { registerSettingListener } from "./listeners";
+import type { Option, Setting, SettingByType, SettingRequirements } from "../types/styleshiftTypes";
+
+type ScriptName = "setupFunction" | "updateFunction" | "enableFunction" | "disableFunction" | "setup_" | "uiFunction";
+type ScriptableSetting = (Setting | Option) & { id?: string };
 
 /**
  * Helper to execute a setting script if it exists.
  */
-function tryExecute(setting: any, scriptName: string) {
+function tryExecute(setting: ScriptableSetting | undefined, scriptName: ScriptName) {
 	if (setting && setting[scriptName]) {
 		logger.debug("settings", `Executing ${scriptName} for ${setting.id}`);
 		executeSettingScript(setting, scriptName);
@@ -20,15 +24,15 @@ function tryExecute(setting: any, scriptName: string) {
 /**
  * Helper to fetch the latest setting object from registry.
  */
-function getLatestSetting(setting: any) {
+function getLatestSetting<T extends Setting>(setting: T): T {
 	if (!setting?.id) return setting;
-	return getSettingById(setting.id) || setting;
+	return (getSettingById(setting.id) as T | undefined) || setting;
 }
 
 /**
  * Helper to initialize a setting's stylesheet and setup script.
  */
-function initBase(setting: any, needsStylesheet = true) {
+function initBase(setting: Setting, needsStylesheet = true) {
 	const stylesheet = needsStylesheet ? createStylesheet(setting.id) : null;
 	tryExecute(setting, "setupFunction");
 	return stylesheet;
@@ -38,7 +42,7 @@ function initBase(setting: any, needsStylesheet = true) {
  * Registry of initialization logic for different setting types.
  */
 export const SETTING_TYPE_BEHAVIORS = {
-	["checkbox"]: async function (setting: any) {
+	["checkbox"]: async function (setting: SettingByType<"checkbox">) {
 		const stylesheet = initBase(setting)!;
 
 		async function applyCheckboxUpdate() {
@@ -72,7 +76,7 @@ export const SETTING_TYPE_BEHAVIORS = {
 		return applyCheckboxUpdate;
 	},
 
-	["numberSlide"]: async function (setting: any) {
+	["numberSlide"]: async function (setting: SettingByType<"numberSlide">) {
 		const stylesheet = initBase(setting, !!(setting.constantCss || setting.varCss));
 
 		async function applySliderUpdate() {
@@ -94,7 +98,7 @@ export const SETTING_TYPE_BEHAVIORS = {
 		return applySliderUpdate;
 	},
 
-	["dropdown"]: async function (setting: any) {
+	["dropdown"]: async function (setting: SettingByType<"dropdown">) {
 		const stylesheet = initBase(setting)!;
 
 		async function applyDropdownUpdate() {
@@ -105,11 +109,11 @@ export const SETTING_TYPE_BEHAVIORS = {
 			// Disable the previous option
 			const previousValue = activeSettingsState[currentSetting.id];
 			const options = Array.isArray(currentSetting.options) ? currentSetting.options : [];
-			const previousOption = options.find((opt: any) => opt.value === previousValue);
+			const previousOption = options.find((opt) => opt.value === previousValue);
 			tryExecute(previousOption, "disableFunction");
 
 			activeSettingsState[currentSetting.id] = value;
-			const selectedOption = options.find((opt: any) => opt.value === value);
+			const selectedOption = options.find((opt) => opt.value === value);
 
 			// Enable the new option
 			tryExecute(selectedOption, "enableFunction");
@@ -122,7 +126,7 @@ export const SETTING_TYPE_BEHAVIORS = {
 		return applyDropdownUpdate;
 	},
 
-	["color"]: async function (setting: any) {
+	["color"]: async function (setting: SettingByType<"color">) {
 		const stylesheet = initBase(setting)!;
 
 		async function applyColorUpdate() {
@@ -141,7 +145,7 @@ export const SETTING_TYPE_BEHAVIORS = {
 		return applyColorUpdate;
 	},
 
-	["custom"]: async function (setting: any) {
+	["custom"]: async function (setting: SettingByType<"custom">) {
 		const stylesheet = initBase(setting, !!setting.constantCss);
 
 		async function applyCustomUpdate() {
@@ -162,7 +166,7 @@ export const SETTING_TYPE_BEHAVIORS = {
 		return applyCustomUpdate;
 	},
 
-	["combineSetting"]: async function (setting: any) {
+	["combineSetting"]: async function (setting: SettingByType<"combineSetting">) {
 		const stylesheet = initBase(setting)!;
 
 		async function applyCombinedUpdate() {
@@ -177,10 +181,10 @@ export const SETTING_TYPE_BEHAVIORS = {
 		return applyCombinedUpdate;
 	},
 
-	["conditionSetting"]: async function (setting: any) {
+	["conditionSetting"]: async function (setting: SettingByType<"conditionSetting">) {
 		const stylesheet = initBase(setting)!;
 
-		async function checkConditionsMet(cond: any): Promise<boolean> {
+		async function checkConditionsMet(cond: SettingRequirements): Promise<boolean> {
 			return await evaluateConditionAsync(cond);
 		}
 

@@ -3,21 +3,37 @@
 	import CodeEditor from "@editor/CodeEditor.svelte";
 	import Icon from "@primitives/Icon.svelte";
 	import { logger } from "@shared/logger";
+	import type { QuickCustomizeMetadata, QuickCustomizeMode } from "@settings/types/styleshiftTypes";
 	import { onDestroy, onMount } from "svelte";
 	import CapsuleTabs from "../window/components/CapsuleTabs.svelte";
 	import QuickControlRow from "./QuickControlRow.svelte";
 	import { QuickCustomizeController } from "./QuickCustomizeController.svelte";
 
+	type QuickCustomizeSaveData = {
+		selector: string;
+		css: string;
+		mode: QuickCustomizeMode;
+		name: string;
+		metadata: QuickCustomizeMetadata;
+	};
+	type QuickCustomizeInitialData = {
+		name: string;
+		mode: QuickCustomizeMode;
+		basicStyles: Record<string, string>;
+		enabledStyles: Record<string, boolean>;
+		rawCss?: string;
+	};
+
 	let {
 		selector = "",
 		onClose = () => {},
-		onSave = (_data: any) => {},
-		initialData = null as any,
+		onSave = (_data: QuickCustomizeSaveData) => {},
+		initialData = null as QuickCustomizeInitialData | null,
 	}: {
 		selector: string;
 		onClose: () => void;
-		onSave: (data: { selector: string; css: string; mode: string; name: string; metadata: any }) => void;
-		initialData?: { name: string; mode: string; basicStyles: any; enabledStyles: any; rawCss?: string } | null;
+		onSave: (data: QuickCustomizeSaveData) => void;
+		initialData?: QuickCustomizeInitialData | null;
 	} = $props();
 
 	const controller = new QuickCustomizeController({
