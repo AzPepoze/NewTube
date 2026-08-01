@@ -341,16 +341,30 @@ type PersistedExecutableSettingField =
 	| "constantCss"
 	| "uiFunction";
 
-type PersistedSettingMember<T extends SettingKind> = Omit<
-	SettingByType<T>,
-	PersistedExecutableSettingField | "options" | "require" | "quickCustomize" | (T extends "custom" ? "value" : never)
-> & {
+type PersistedSettingReplacedField<T extends SettingKind> =
+	PersistedExecutableSettingField | "options" | "require" | "quickCustomize" | (T extends "custom" ? "value" : never);
+
+type PersistedSettingBase<T extends SettingKind> = Omit<SettingByType<T>, PersistedSettingReplacedField<T>>;
+
+type PersistedExecutableSettingFields<T extends SettingKind> = {
 	[K in Extract<keyof SettingByType<T>, PersistedExecutableSettingField>]?: string;
-} & {
+};
+
+type PersistedSettingMetadata = {
 	require?: PersistedSettingRequirements;
 	quickCustomize?: QuickCustomizeData;
-} & (SettingByType<T> extends { options: Option[] } ? { options: PersistedOption[] } : {}) &
-	(T extends "custom" ? { value?: PersistedSettingValue } : {});
+};
+
+type PersistedSettingOptions<T extends SettingKind> =
+	SettingByType<T> extends { options: Option[] } ? { options: PersistedOption[] } : object;
+
+type PersistedCustomSettingValue<T extends SettingKind> = T extends "custom" ? { value?: PersistedSettingValue } : object;
+
+type PersistedSettingMember<T extends SettingKind> = PersistedSettingBase<T> &
+	PersistedExecutableSettingFields<T> &
+	PersistedSettingMetadata &
+	PersistedSettingOptions<T> &
+	PersistedCustomSettingValue<T>;
 
 export type PersistedSetting = {
 	[T in SettingKind]: PersistedSettingMember<T>;
