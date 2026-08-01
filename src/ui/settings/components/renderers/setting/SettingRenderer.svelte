@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { Category, Setting } from "@settings/types/styleshiftTypes";
-	import { highlight as highlightAction } from "@ui/settings/searchHighlight";
 	import { createHoverPreviewConfig, HOVER_PREVIEW_CONTEXT, type HoverPreviewContext } from "@ui/settings/hoverPreview";
 	import { onDestroy, setContext } from "svelte";
 	import { fade } from "svelte/transition";
 	import { addDrag, addDropTarget } from "@ui/settings/reorder";
+	import { SETTINGS_SEARCH_QUERY } from "@ui/settings/searchContext";
 	import { registerSettingUi, unregisterSettingUi } from "@ui/settings/settingsManager";
 	import { getTextAlign } from "@ui/settings/utils";
 	import Button from "@controls/Button.svelte";
@@ -43,6 +43,7 @@
 		resolve: () => createHoverPreviewConfig(setting, category, (status) => (previewStatus = status)),
 	};
 	setContext(HOVER_PREVIEW_CONTEXT, previewContext);
+	setContext(SETTINGS_SEARCH_QUERY, () => highlight);
 
 	const textAlign = $derived(getTextAlign((setting as any).align));
 	const isVerticalSetting = $derived(
@@ -59,15 +60,6 @@
 			addDrag(node, null, null, setting);
 		}
 	}
-
-	$effect(() => {
-		if (domNode) {
-			const actionInstance = highlightAction(domNode, highlight);
-			return () => {
-				actionInstance?.destroy?.();
-			};
-		}
-	});
 
 	$effect(() => {
 		if (controller.isDeveloperMode && domNode && domNode.parentElement) {
