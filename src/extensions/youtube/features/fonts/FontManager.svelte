@@ -51,6 +51,7 @@
 
 	async function init() {
 		fonts = await loadFonts(setting.id);
+		await handleDetectPageFonts();
 	}
 	init();
 </script>
@@ -58,8 +59,11 @@
 <div class="NEWTUBE-FontManager">
 	<!-- 1. Paste Section -->
 	<div class="section paste-section">
-		<Description name="Paste Section" description="Paste Google Fonts style or URL here." />
-		<TextEditor bind:value={pasteText} />
+		<Description name="Paste Section" description="Paste Google Fonts style or URL here." showHoverPreview={false} />
+		<TextEditor
+			bind:value={pasteText}
+			placeholder="@import url(https://fonts.googleapis.com/css2?family=Roboto&display=swap);"
+		/>
 		<div class="action-buttons-container">
 			<Button
 				setting={{
@@ -84,7 +88,11 @@
 
 	<!-- 2. Manage Section -->
 	<div class="section manage-section">
-		<Description name="Manage Section" description="Enable, reorder, or delete fonts from your library." />
+		<Description
+			name="Manage Section"
+			description="Enable, reorder, or delete fonts from your library."
+			showHoverPreview={false}
+		/>
 		{#if fonts.length > 0}
 			<div class="font-list">
 				{#each fonts as font, i (font.id)}
@@ -117,8 +125,6 @@
 									className="delete-btn"
 									size={20}
 								/>
-							{:else}
-								<div class="non-deletable-placeholder" title="Built-in default font cannot be removed">Built-in</div>
 							{/if}
 						</div>
 					</div>
@@ -209,15 +215,6 @@
 		display: flex;
 		align-items: center;
 		gap: 20px;
-	}
-
-	.non-deletable-placeholder {
-		font-size: 12px;
-		color: var(--fg-opacity-30, rgba(255, 255, 255, 0.3));
-		padding: 6px 10px;
-		background: var(--fg-opacity-03);
-		border-radius: 8px;
-		user-select: none;
 	}
 
 	.sort-buttons {

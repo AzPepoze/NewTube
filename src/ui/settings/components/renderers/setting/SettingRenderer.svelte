@@ -91,7 +91,10 @@
 		}
 	}}
 	padding={setting.type !== "button" && setting.type !== "subText"}
-	transparent={setting.type === "button" || setting.type === "subText" || setting.type === "text"}
+	transparent={setting.type === "button" ||
+		setting.type === "subText" ||
+		setting.type === "text" ||
+		(setting.type === "custom" && setting.transparent)}
 	vertical={isVerticalSetting}
 >
 	<div class="styleshift-setting-row-content" class:is-vertical={isVerticalSetting}>
