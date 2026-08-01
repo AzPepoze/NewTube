@@ -12,12 +12,24 @@ export type Category = {
 export type CategoryNameWithIcon = { icon: string; label: string };
 export type SeparateCategory = { isHeader: boolean; label: string };
 
-export type SettingValue = string | number | boolean | object | null;
+export type JsonPrimitive = string | number | boolean | null;
+export type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
+export type JsonObject = { [key: string]: JsonValue };
+
+export type SettingValue = JsonValue;
 export type SettingAction = () => void;
 export type SettingValueCallback<T extends SettingValue = SettingValue> = (value: T) => void;
 export type SettingCssCallback = (value: SettingValue) => string;
 export type SettingRequirementValue = SettingValue | SettingValue[];
 export type SettingRequirements = Record<string, SettingRequirementValue>;
+
+type PersistedExecutable<T> = T extends (...args: infer _Args) => infer _Return
+	? string
+	: T extends readonly (infer Item)[]
+		? PersistedExecutable<Item>[]
+		: T extends object
+			? { [Key in keyof T]: PersistedExecutable<T[Key]> }
+			: T;
 
 export type QuickCustomizeMode = "basic" | "advanced";
 export type QuickCustomizeMetadata = {
@@ -319,51 +331,19 @@ export type SettingKind = Setting["type"];
 export type SettingByType<T extends SettingKind> = Extract<Setting, { type: T }>;
 export type SettingField<T extends SettingKind> = Extract<keyof SettingByType<T>, string>;
 
-export type JsonPrimitive = string | number | boolean | null;
-export type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
-export type JsonObject = { [key: string]: JsonValue };
-
-export type PersistedSettingValue = JsonValue;
-export type PersistedSettingRequirementValue = PersistedSettingValue | PersistedSettingValue[];
-export type PersistedSettingRequirements = Record<string, PersistedSettingRequirementValue>;
-
-export type PersistedOption = Omit<Option, "enableFunction" | "disableFunction"> & {
-	enableFunction?: string;
-	disableFunction?: string;
-};
-
-type PersistedExecutableSettingField =
-	| "clickFunction"
-	| "setupFunction"
-	| "updateFunction"
-	| "enableFunction"
-	| "disableFunction"
-	| "constantCss"
-	| "setup_"
-	| "uiFunction";
-
-type PersistedSettingMember<T extends SettingKind> = Omit<
-	SettingByType<T>,
-	PersistedExecutableSettingField | "options" | "require" | "quickCustomize" | (T extends "custom" ? "value" : never)
-> & {
-	[K in Extract<keyof SettingByType<T>, PersistedExecutableSettingField>]?: string;
-} & {
-	require?: PersistedSettingRequirements;
-	quickCustomize?: QuickCustomizeData;
-} & (SettingByType<T> extends { options: Option[] } ? { options: PersistedOption[] } : {}) &
-	(T extends "custom" ? { value?: PersistedSettingValue } : {});
-
-export type PersistedSetting = {
-	[T in SettingKind]: PersistedSettingMember<T>;
-}[SettingKind];
-
-export type PersistedCategory = Omit<Category, "settings" | "editable" | "Highlight_color" | "Selector"> & {
-	settings: PersistedSetting[];
-	editable?: boolean;
-};
-
-export type PersistedCurrentSettings = Record<string, PersistedSettingValue>;
-export type PersistedStyleShiftData = {
-	currentSettings?: PersistedCurrentSettings;
+export type PersistedOption = PersistedExecutable<Option>;
+export type PersistedSetting = PersistedExecutable<Setting>;
+export type PersistedCategory = Omit<Category, "settings"> & { settings: PersistedSetting[] };
+export type PersistedSettings = Record<string, JsonValue>;
+export type PersistedStorageData = {
+	currentSettings?: PersistedSettings;
 	addOnStyleShiftItems?: PersistedCategory[];
+};
+export type PersistedPreset = PersistedSettings &
+	Partial<PersistedStorageData> & {
+		themeId?: string;
+		themeName?: string;
+	};
+export type RuntimeThemePayload = Omit<PersistedStorageData, "addOnStyleShiftItems"> & {
+	addOnStyleShiftItems?: Category[];
 };

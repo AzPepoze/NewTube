@@ -54,11 +54,13 @@ export async function validateAddOnItemsForJs(items: any[]): Promise<boolean> {
 		"constantCss",
 		"uiFunction",
 	];
-	const hasJs = items.some((item) =>
-		JS_PROPS.some((prop) => {
-			const script = item[prop];
-			return typeof script === "string" && script.trim() !== "";
-		}),
+	const hasJs = items.some((category) =>
+		category.settings.some((setting) =>
+			JS_PROPS.some((prop) => {
+				const script = setting[prop];
+				return typeof script === "string" && script.trim() !== "";
+			}),
+		),
 	);
 
 	if (hasJs) {
