@@ -107,7 +107,7 @@
 		{#if setting.type === "checkbox"}
 			<Checkbox {setting} disabled={isLocked} />
 		{:else if setting.type === "button"}
-			<Button {setting} {layout} showHoverPreview />
+			<Button {setting} {layout} showHelpIcon={layout === "grid"} showHoverPreview />
 		{:else if setting.type === "numberSlide"}
 			<Slider {setting} />
 		{:else if setting.type === "textInput"}
