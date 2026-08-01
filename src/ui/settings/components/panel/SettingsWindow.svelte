@@ -64,7 +64,7 @@
 			data-left="true"
 			style:width={`${controller.sidebarWidth}px`}
 		>
-			{#each controller.sidebarData as item, i (i)}
+			{#each controller.sidebarData as item, i (controller.isHeaderItem(item) ? item.label : getCategoryParts(item.category).text)}
 				{#if controller.isHeaderItem(item)}
 					<div
 						class="styleshift-sidebar-header"

@@ -47,7 +47,14 @@ export const topLeftIconCategory: Category = {
 				"Makes the default YouTube logo match your main theme color. This setting is ignored if a 'Custom Logo' is enabled.",
 			value: true,
 			enableCss: `
-                #logo-icon.ytd-topbar-logo-renderer .yt-spec-icon-shape-fill {
+                #logo-icon.ytd-topbar-logo-renderer path[fill="#FF0000"],
+                #logo-icon.ytd-topbar-logo-renderer path[fill="#FF0033"],
+                #logo-icon.ytd-topbar-logo-renderer path[fill="red"],
+                #logo-icon.ytd-topbar-logo-renderer path[fill="#F00"],
+                #logo-icon.ytd-topbar-logo-renderer [fill="#FF0000"],
+                #logo-icon.ytd-topbar-logo-renderer [fill="#FF0033"],
+                #logo-icon.ytd-topbar-logo-renderer [fill="red"],
+                #logo-icon.ytd-topbar-logo-renderer [fill="#F00"] {
                     fill: var(--nt-theme-color, #FF0000) !important;
                 }
             `,

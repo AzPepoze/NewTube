@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Category, SeparateCategory } from "@settings/types/styleshiftTypes";
+	import type { Category, SeparateCategory, Setting } from "@settings/types/styleshiftTypes";
 	import Title from "@ui/settings/components/primitives/Title.svelte";
 	import { getCategoryParts } from "@ui/window/utils";
 	import SettingRenderer from "@renderers/setting/SettingRenderer.svelte";
@@ -17,9 +17,17 @@
 	function isHeaderItem(item: Category | SeparateCategory): item is SeparateCategory {
 		return "isHeader" in item;
 	}
+
+	function getSettingKey(setting: Setting, index: number): string {
+		if (setting.id) return setting.id;
+		if ("name" in setting && setting.name) return setting.name;
+		if ("text" in setting && setting.text) return setting.text;
+		if ("html" in setting && setting.html) return setting.html;
+		return String(index);
+	}
 </script>
 
-{#each items as item, i (i)}
+{#each items as item (isHeaderItem(item) ? item.label : getCategoryParts(item.category).text)}
 	{#if isHeaderItem(item)}
 		<div class="styleshift-category-separator"></div>
 	{:else}
@@ -34,7 +42,7 @@
 				editable={category.editable}
 			/>
 			<div class="styleshift-settings-items" class:grid={category.layout === "grid"}>
-				{#each category.settings as setting, j (j)}
+				{#each category.settings as setting, j (getSettingKey(setting, j))}
 					<SettingRenderer {setting} {category} highlight={searchQuery} layout={category.layout} />
 				{/each}
 			</div>
