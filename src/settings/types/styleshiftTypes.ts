@@ -65,6 +65,7 @@ export type Setting = (
 			html: string;
 
 			align?: "left" | "center" | "right";
+			color?: string;
 			fontSize?: number;
 
 			editable?: boolean;
@@ -298,3 +299,7 @@ export type Setting = (
 	  }
 ) &
 	BaseSetting;
+
+export type SettingKind = Setting["type"];
+export type SettingByType<T extends SettingKind> = Extract<Setting, { type: T }>;
+export type SettingField<T extends SettingKind> = Extract<keyof SettingByType<T>, string>;

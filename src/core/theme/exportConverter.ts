@@ -1,16 +1,13 @@
 import type { Setting } from "@/settings/types/styleshiftTypes";
-import { styleshiftPropertyList, typeConvertTable } from "@settings/registry/defaultItems";
+import { getSettingExportFields, typeConvertTable } from "@settings/registry/defaultItems";
 
 export async function convertToExportSetting(
 	thisSetting: Setting,
 	createFileFunction: (fileName: string, fileData: string) => Promise<void>,
 ) {
-	const properties = styleshiftPropertyList[thisSetting.type];
-	if (properties) {
-		for (const thisProperty of properties) {
-			if ((thisProperty.includes("_css") || thisProperty.includes("_function")) && !(thisProperty in thisSetting)) {
-				thisSetting[thisProperty] = "";
-			}
+	for (const thisProperty of getSettingExportFields(thisSetting.type)) {
+		if ((thisProperty.includes("_css") || thisProperty.includes("_function")) && !(thisProperty in thisSetting)) {
+			(thisSetting as unknown as Record<string, unknown>)[thisProperty] = "";
 		}
 	}
 

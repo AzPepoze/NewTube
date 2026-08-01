@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { uiPreset } from "@settings/registry/defaultItems";
+	import { createSettingPreset, isSettingKind } from "@settings/registry/defaultItems";
 	import { addSetting } from "@settings/registry/items";
 	import Button from "../controls/Button.svelte";
 	import * as mainSettingUi from "../controls/controls";
@@ -12,20 +12,11 @@
 	const options = Object.keys(mainSettingUi).filter((key) => key !== "search");
 
 	async function handleSelect(selected: string) {
-		const preset = uiPreset.find((p) => p.type === selected);
-		if (preset) {
-			await addSetting(categorySettings, {
-				...preset,
-				editable: true,
-			});
-		} else {
-			await addSetting(categorySettings, {
-				type: selected,
-				id: `new_${selected}`,
-				name: `New ${selected}`,
-				editable: true,
-			} as any);
-		}
+		if (!isSettingKind(selected)) return;
+		await addSetting(categorySettings, {
+			...createSettingPreset(selected),
+			editable: true,
+		});
 	}
 </script>
 
