@@ -1,5 +1,5 @@
 import { convertToExportSetting } from "../src/core/theme/exportConverter";
-import { uiPreset } from "../src/settings/registry/defaultItems";
+import { createAllSettingPresets } from "../src/settings/registry/defaultItems";
 import * as fs from "fs-extra";
 import * as path from "path";
 import { SRC, BUILD, TEMPLATE, extensionConfig, ensureDir } from "./shared/paths";
@@ -60,7 +60,7 @@ function extractMetadata(content: string) {
 export async function buildTemplates() {
 	log.info("Generating UI Templates...");
 	ensureDir(SETTINGS_OUT_DIR);
-	for (const thisPreset of uiPreset) {
+	for (const thisPreset of createAllSettingPresets()) {
 		await createSettingFolder(SETTINGS_OUT_DIR, thisPreset);
 	}
 

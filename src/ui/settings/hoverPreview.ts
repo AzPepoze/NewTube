@@ -28,7 +28,7 @@ let pendingOwner: HTMLElement | undefined;
 let activeSession: HoverPreviewSession | undefined;
 
 function categorySelector(category: Category) {
-	return category.selector ?? category.Selector ?? "";
+	return category.selector ?? "";
 }
 
 export function resolveHoverPreviewSelectors(setting: Setting, category?: Category): string[] | null {

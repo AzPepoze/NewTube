@@ -192,7 +192,7 @@ export async function title(thisCategory: Category) {
 		thisCategory,
 		{
 			category: ["Category", frame],
-			Selector: "Selector",
+			selector: "Selector",
 			Rainbow: "Rainbow",
 		},
 		updateUi,

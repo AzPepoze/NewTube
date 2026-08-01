@@ -30,7 +30,7 @@
 		const propertyValue = setting[property];
 		const isBooleanValue = typeof propertyValue === "boolean" && (property === "value" || property === "rainbow");
 		const isColorValue =
-			property === "color" || property === "Highlight_color" || (property === "value" && setting.type === "color");
+			property === "color" || property === "highlightColor" || (property === "value" && setting.type === "color");
 		const isNumberValue =
 			property === "fontSize" ||
 			property === "min" ||

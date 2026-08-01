@@ -73,11 +73,11 @@ export function findExistCategory(category: Category) {
 function autoAddHightlight(array: (Category | { isHeader: boolean; label: string })[]) {
 	for (const item of array) {
 		const categoryObj = item as Category;
-		if (categoryObj.category && categoryObj.Highlight_color == null) {
+		if (categoryObj.category && categoryObj.highlightColor == null) {
 			const categoryName = typeof categoryObj.category === "string" ? categoryObj.category : categoryObj.category.label;
 			const getColorId = randomNumberInRange(0, highlightColors.length - 1, categoryName);
 			logger.debug("highlight", "random id", categoryName, getColorId);
-			categoryObj.Highlight_color = highlightColors[getColorId];
+			categoryObj.highlightColor = highlightColors[getColorId];
 		}
 	}
 }

@@ -2,6 +2,7 @@ import { loadJSZip, jszipInstance as jszip, saveAndRefreshAll } from "@core/runt
 import { initializeRequiredStorageStructures as setNullSave } from "@core/storage/maintenance";
 import { ALLOWED_STORAGE_KEYS, cachedStorageData as savedData } from "@core/storage/manager";
 import type { Category, Setting } from "@settings/types/styleshiftTypes";
+import { assertCanonicalPersistedItems } from "@settings/types/persistedSettings";
 import { logger } from "@shared/logger";
 
 import { createError, createNotification, createWarning } from "./notifications";
@@ -26,6 +27,8 @@ export async function importStyleShiftData(styleshiftData: object) {
 	});
 
 	try {
+		const addOnItems = (styleshiftData as { addOnStyleShiftItems?: unknown }).addOnStyleShiftItems;
+		if (addOnItems !== undefined) assertCanonicalPersistedItems(addOnItems);
 		for (const thisKey of ALLOWED_STORAGE_KEYS) {
 			savedData[thisKey] = styleshiftData[thisKey];
 		}
@@ -51,7 +54,7 @@ export async function importStyleShiftData(styleshiftData: object) {
 
 /**
  * Exports current add-on items and settings into a data object.
- * Cleans up internal properties (like Highlight_color, editable) before exporting.
+ * Cleans up internal properties (like highlightColor, editable) before exporting.
  *
  * @returns {any} The cleaned export data object.
  *
@@ -72,7 +75,7 @@ export function exportStyleShiftData() {
 
 	if (addOnItems) {
 		for (const thisCategory of addOnItems) {
-			delete thisCategory.Highlight_color;
+			delete thisCategory.highlightColor;
 			delete thisCategory.editable;
 
 			for (const thisSetting of thisCategory.settings) {

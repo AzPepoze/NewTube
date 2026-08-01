@@ -7,8 +7,6 @@ export type Category = {
 	editable?: boolean;
 	settings: Setting[];
 	highlightColor?: string;
-	Highlight_color?: string;
-	Selector?: string;
 };
 
 export type CategoryNameWithIcon = { icon: string; label: string };
@@ -263,7 +261,6 @@ export type Setting = (
 
 			constantCss?: string | SettingCssCallback;
 			setupFunction?: string | SettingAction;
-			setup_?: string | SettingAction;
 			uiFunction?: string | ((this: SettingByType<"custom">, frame: HTMLElement) => void);
 			transparent?: boolean;
 
@@ -321,3 +318,52 @@ export type Setting = (
 export type SettingKind = Setting["type"];
 export type SettingByType<T extends SettingKind> = Extract<Setting, { type: T }>;
 export type SettingField<T extends SettingKind> = Extract<keyof SettingByType<T>, string>;
+
+export type JsonPrimitive = string | number | boolean | null;
+export type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
+export type JsonObject = { [key: string]: JsonValue };
+
+export type PersistedSettingValue = JsonValue;
+export type PersistedSettingRequirementValue = PersistedSettingValue | PersistedSettingValue[];
+export type PersistedSettingRequirements = Record<string, PersistedSettingRequirementValue>;
+
+export type PersistedOption = Omit<Option, "enableFunction" | "disableFunction"> & {
+	enableFunction?: string;
+	disableFunction?: string;
+};
+
+type PersistedExecutableSettingField =
+	| "clickFunction"
+	| "setupFunction"
+	| "updateFunction"
+	| "enableFunction"
+	| "disableFunction"
+	| "constantCss"
+	| "setup_"
+	| "uiFunction";
+
+type PersistedSettingMember<T extends SettingKind> = Omit<
+	SettingByType<T>,
+	PersistedExecutableSettingField | "options" | "require" | "quickCustomize" | (T extends "custom" ? "value" : never)
+> & {
+	[K in Extract<keyof SettingByType<T>, PersistedExecutableSettingField>]?: string;
+} & {
+	require?: PersistedSettingRequirements;
+	quickCustomize?: QuickCustomizeData;
+} & (SettingByType<T> extends { options: Option[] } ? { options: PersistedOption[] } : {}) &
+	(T extends "custom" ? { value?: PersistedSettingValue } : {});
+
+export type PersistedSetting = {
+	[T in SettingKind]: PersistedSettingMember<T>;
+}[SettingKind];
+
+export type PersistedCategory = Omit<Category, "settings" | "editable" | "Highlight_color" | "Selector"> & {
+	settings: PersistedSetting[];
+	editable?: boolean;
+};
+
+export type PersistedCurrentSettings = Record<string, PersistedSettingValue>;
+export type PersistedStyleShiftData = {
+	currentSettings?: PersistedCurrentSettings;
+	addOnStyleShiftItems?: PersistedCategory[];
+};

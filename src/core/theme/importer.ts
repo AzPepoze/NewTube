@@ -16,6 +16,7 @@ import {
 import { applyTheme, saveTheme, type Theme } from "@core/theme/manager";
 import { triggerSettingsUpdateBatch } from "@settings/engine/functions";
 import { styleshiftCategoryList } from "@settings/registry/defaultItems";
+import { assertCanonicalPersistedItems } from "@settings/types/persistedSettings";
 import { updateStyleShiftItems } from "@settings/registry/items";
 import { logger } from "@shared/logger";
 import { showUserConfirmation } from "@ui/window/windowFactory";
@@ -35,6 +36,15 @@ export async function resolveRgbaFromStorage(colorId: string): Promise<string> {
 }
 
 export async function validateAddOnItemsForJs(items: any[]): Promise<boolean> {
+	try {
+		assertCanonicalPersistedItems(items);
+	} catch (error) {
+		await alertPrompt({
+			title: "Unsupported legacy setting data",
+			message: error instanceof Error ? error.message : String(error),
+		});
+		return false;
+	}
 	const JS_PROPS = [
 		"clickFunction",
 		"setupFunction",
@@ -45,7 +55,10 @@ export async function validateAddOnItemsForJs(items: any[]): Promise<boolean> {
 		"uiFunction",
 	];
 	const hasJs = items.some((item) =>
-		JS_PROPS.some((prop) => item[prop] && (typeof item[prop] === "function" || item[prop].trim() !== "")),
+		JS_PROPS.some((prop) => {
+			const script = item[prop];
+			return typeof script === "string" && script.trim() !== "";
+		}),
 	);
 
 	if (hasJs) {

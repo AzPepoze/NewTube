@@ -27,7 +27,7 @@
 						Category: "category",
 						Rainbow: "rainbow",
 						Selector: "selector",
-						"Highlight Color": "Highlight_color",
+						"Highlight Color": "highlightColor",
 					}
 				: {
 						Id: "id",

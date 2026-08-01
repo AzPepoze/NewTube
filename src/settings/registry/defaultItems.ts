@@ -206,7 +206,6 @@ export const settingDefinitions = {
 			"value",
 			"constantCss",
 			"setupFunction",
-			"setup_",
 			"uiFunction",
 			"transparent",
 			"editable",
@@ -280,10 +279,9 @@ export function getSettingExportFields<T extends SettingKind>(type: T): readonly
 	return settingDefinitions[type].exportFields as unknown as readonly SettingField<T>[];
 }
 
-/** @deprecated Use createSettingPreset() to receive a fresh setting object. */
-export const uiPreset: readonly Setting[] = Object.values(settingDefinitions).map((definition) =>
-	definition.createDefault(),
-);
+export function createAllSettingPresets(): readonly Setting[] {
+	return Object.values(settingDefinitions).map((definition) => definition.createDefault());
+}
 
 export const styleshiftCategoryList: Category = { category: "Category", selector: "", rainbow: false, settings: [] };
 

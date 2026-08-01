@@ -35,7 +35,7 @@ function categoryName(category: Category) {
 }
 
 function categorySelector(category: Category) {
-	return category.selector ?? category.Selector ?? "";
+	return category.selector ?? "";
 }
 
 function renderHighlightLabel(label: HTMLDivElement, categories: Category[]) {
@@ -52,7 +52,7 @@ function renderHighlightLabel(label: HTMLDivElement, categories: Category[]) {
 	);
 	const nextKeys = new Set<string>();
 	for (const category of categories) {
-		const key = `${categoryName(category)}\u0000${categorySelector(category)}\u0000${category.Highlight_color}`;
+		const key = `${categoryName(category)}\u0000${categorySelector(category)}\u0000${category.highlightColor}`;
 		nextKeys.add(key);
 		const existingChip = existingChips.get(key);
 		if (existingChip) {
@@ -63,7 +63,7 @@ function renderHighlightLabel(label: HTMLDivElement, categories: Category[]) {
 		chip.className = "styleshift-highlight-category styleshift-highlight-category-adding";
 		chip.dataset.categoryKey = key;
 		chip.textContent = categoryName(category);
-		chip.style.backgroundColor = `rgb(${category.Highlight_color})`;
+		chip.style.backgroundColor = `rgb(${category.highlightColor})`;
 		chips.append(chip);
 		chip.addEventListener("animationend", () => chip.classList.remove("styleshift-highlight-category-adding"), {
 			once: true,
@@ -179,10 +179,10 @@ function addHighlight(targetElement: HTMLElement, selectorValue: Category) {
 	const categories = [selectorValue];
 	targetElement.setAttribute("StyleShift-uniqueId", uniqueId);
 
-	const color = `rgba(${selectorValue.Highlight_color}`;
+	const color = `rgba(${selectorValue.highlightColor}`;
 	const highlighter = document.createElement("div");
 	highlighter.className = "styleshift-highlight";
-	highlighter.setAttribute("Selector", categorySelector(selectorValue));
+	highlighter.dataset.styleshiftSelector = categorySelector(selectorValue);
 	highlighter.style.background = `${color},0.3)`;
 	highlighter.style.borderColor = `${color},0.8)`;
 

@@ -8,7 +8,7 @@ import { activeSettingsState } from "./functions";
 import { registerSettingListener } from "./listeners";
 import type { Option, Setting, SettingByType, SettingRequirements } from "../types/styleshiftTypes";
 
-type ScriptName = "setupFunction" | "updateFunction" | "enableFunction" | "disableFunction" | "setup_" | "uiFunction";
+type ScriptName = "setupFunction" | "updateFunction" | "enableFunction" | "disableFunction" | "uiFunction";
 type ScriptableSetting = (Setting | Option) & { id?: string };
 
 /**

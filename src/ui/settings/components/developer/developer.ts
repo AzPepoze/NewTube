@@ -76,7 +76,7 @@ export async function configSubSection(parent, thisSetting, props) {
 }
 
 export async function selectorTextEditor(parent, thisCategory) {
-	const selectorTextEditor = await settingsUi.textEditor(thisCategory, "Selector");
+	const selectorTextEditor = await settingsUi.textEditor(thisCategory, "selector");
 	selectorTextEditor.textEditor.className += " styleshift-selector-text-editor";
 	selectorTextEditor.rearrangeValue(function (value: string) {
 		return rearrangeSelector(value);
