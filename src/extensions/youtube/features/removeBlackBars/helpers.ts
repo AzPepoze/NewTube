@@ -1,20 +1,8 @@
-export interface BarDetectionData {
-	verticalImgData: Uint8ClampedArray;
-	horizontalImgData?: Uint8ClampedArray;
-	videoHeight: number;
-	videoWidth?: number;
-	mode?: "vertical" | "horizontal" | "both";
-	threshold: number;
-	verticalR: number;
-	verticalG: number;
-	verticalB: number;
-	horizontalR?: number;
-	horizontalG?: number;
-	horizontalB?: number;
-	pixelBudget?: number;
-	currentLastHeight?: number;
-	currentLastWidth?: number;
-}
+import type { BarDetectionData, BarEdgeSamples, BarSample } from "./types";
+
+// ---------------------------------
+// Pixel comparison
+// ---------------------------------
 
 export function checkPixelDiff(
 	r1: number,
@@ -28,7 +16,11 @@ export function checkPixelDiff(
 	return Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2) > threshold;
 }
 
-export function calculateBarDimension(values: (number | "inf")[], currentLastValue: number): number {
+// ---------------------------------
+// Bar-size validation
+// ---------------------------------
+
+export function calculateBarDimension(values: BarSample[], currentLastValue: number): number {
 	const validValues = values.filter((v): v is number => typeof v === "number");
 	if (validValues.length < 3) return currentLastValue;
 
@@ -51,6 +43,26 @@ export function calculateBarDimension(values: (number | "inf")[], currentLastVal
 	return maxFreq >= 3 ? bestValue : currentLastValue;
 }
 
+function hasSimilarBarSize(values: BarSample[], expectedSize: number): boolean {
+	return values.some((value) => typeof value === "number" && Math.abs(value - expectedSize) <= 5);
+}
+
+export function calculatePairedBarDimension(samples: BarEdgeSamples, currentLastValue: number): number {
+	const startSize = calculateBarDimension(samples.start, -1);
+	const endSize = calculateBarDimension(samples.end, -1);
+	const candidates = [
+		startSize !== -1 && hasSimilarBarSize(samples.end, startSize) ? startSize : -1,
+		endSize !== -1 && hasSimilarBarSize(samples.start, endSize) ? endSize : -1,
+	];
+	const detectedSize = Math.max(...candidates);
+
+	return detectedSize === -1 ? currentLastValue : detectedSize;
+}
+
+// ---------------------------------
+// Vertical-bar detection (top/bottom)
+// ---------------------------------
+
 export async function detectVerticalBars(
 	verticalImgData: Uint8ClampedArray,
 	videoHeight: number,
@@ -60,8 +72,8 @@ export async function detectVerticalBars(
 	threshold: number,
 	pixelBudget?: number,
 	verticalCtx?: CanvasRenderingContext2D | null,
-): Promise<(number | "inf")[]> {
-	const heightsFound: (number | "inf")[] = [];
+): Promise<BarEdgeSamples> {
+	const heightsFound: BarEdgeSamples = { start: [], end: [] };
 	let pixelsChecked = 0;
 
 	const isDifferentVertical = (dataArray: Uint8ClampedArray, base: number) =>
@@ -109,15 +121,16 @@ export async function detectVerticalBars(
 			}
 		}
 
-		if (top !== -1 && bottom !== -1) {
-			heightsFound.push(Math.max(top, bottom));
-		} else {
-			heightsFound.push("inf");
-		}
+		heightsFound.start.push(top === -1 ? "inf" : top);
+		heightsFound.end.push(bottom === -1 ? "inf" : bottom);
 	}
 
 	return heightsFound;
 }
+
+// ---------------------------------
+// Horizontal-bar detection (left/right)
+// ---------------------------------
 
 export async function detectHorizontalBars(
 	horizontalImgData: Uint8ClampedArray,
@@ -128,8 +141,8 @@ export async function detectHorizontalBars(
 	threshold: number,
 	pixelBudget?: number,
 	horizontalCtx?: CanvasRenderingContext2D | null,
-): Promise<(number | "inf")[]> {
-	const widthsFound: (number | "inf")[] = [];
+): Promise<BarEdgeSamples> {
+	const widthsFound: BarEdgeSamples = { start: [], end: [] };
 	let pixelsChecked = 0;
 
 	const isDifferentHorizontal = (dataArray: Uint8ClampedArray, base: number) =>
@@ -177,15 +190,16 @@ export async function detectHorizontalBars(
 			}
 		}
 
-		if (left !== -1 && right !== -1) {
-			widthsFound.push(Math.max(left, right));
-		} else {
-			widthsFound.push("inf");
-		}
+		widthsFound.start.push(left === -1 ? "inf" : left);
+		widthsFound.end.push(right === -1 ? "inf" : right);
 	}
 
 	return widthsFound;
 }
+
+// ---------------------------------
+// Combined detection
+// ---------------------------------
 
 export async function detectBlackBars(
 	data: BarDetectionData,
@@ -225,7 +239,7 @@ export async function detectBlackBars(
 					pixelBudget,
 					verticalCtx,
 				)
-			: Promise.resolve([] as (number | "inf")[]),
+			: Promise.resolve({ start: [], end: [] } as BarEdgeSamples),
 		runHorizontal
 			? detectHorizontalBars(
 					horizontalImgData!,
@@ -237,11 +251,11 @@ export async function detectBlackBars(
 					pixelBudget,
 					horizontalCtx,
 				)
-			: Promise.resolve([] as (number | "inf")[]),
+			: Promise.resolve({ start: [], end: [] } as BarEdgeSamples),
 	]);
 
-	const heightResult = runVertical ? calculateBarDimension(heightsFound, currentLastHeight) : currentLastHeight;
-	const widthResult = runHorizontal ? calculateBarDimension(widthsFound, currentLastWidth) : currentLastWidth;
+	const heightResult = runVertical ? calculatePairedBarDimension(heightsFound, currentLastHeight) : currentLastHeight;
+	const widthResult = runHorizontal ? calculatePairedBarDimension(widthsFound, currentLastWidth) : currentLastWidth;
 
 	return { heightResult, widthResult };
 }

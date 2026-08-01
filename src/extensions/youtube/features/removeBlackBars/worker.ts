@@ -1,4 +1,5 @@
-import { type BarDetectionData, detectBlackBars } from "./helpers";
+import { detectBlackBars } from "./helpers";
+import type { BarDetectionData } from "./types";
 
 self.onmessage = async (e) => {
 	try {
