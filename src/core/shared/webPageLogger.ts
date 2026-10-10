@@ -7,13 +7,13 @@ import { categoryToLogStyle } from "@core/utils/logFormat";
  */
 export const logger = {
 	/**
-	 * Logs an informational message.
+	 * Logs an informational message. Use it for normal progress updates.
 	 *
-	 * @param {string} category - The log category (e.g., "dom", "runtime").
-	 * @param {...any[]} args - The values to log.
+	 * @param {string} category - The group label shown in the log, like "dom" or "runtime".
+	 * @param {...any[]} args - The message text, followed by any extra values to log.
 	 *
 	 * @example
-	 * logger.info("runtime", "Extension started");
+	 * logger.info("runtime", "StyleShift loaded on this page");
 	 */
 	info: (category: string, ...args: any[]) => {
 		if ((window as any).StyleShift?.logger?.info) {
@@ -29,13 +29,13 @@ export const logger = {
 	},
 
 	/**
-	 * Logs a warning message.
+	 * Logs a warning message. Use it when something looks wrong but your script can continue.
 	 *
-	 * @param {string} category - The log category.
-	 * @param {...any[]} args - The values to log.
+	 * @param {string} category - The group label shown in the log, like "dom" or "runtime".
+	 * @param {...any[]} args - The message text, followed by any extra values to log.
 	 *
 	 * @example
-	 * logger.warn("dom", "Element not found");
+	 * logger.warn("dom", "Player element not found yet");
 	 */
 	warn: (category: string, ...args: any[]) => {
 		if ((window as any).StyleShift?.logger?.warn) {
@@ -51,13 +51,13 @@ export const logger = {
 	},
 
 	/**
-	 * Logs an error message.
+	 * Logs an error message. Use it when a step fails and you want the details visible.
 	 *
-	 * @param {string} category - The log category.
-	 * @param {...any[]} args - The values to log.
+	 * @param {string} category - The group label shown in the log, like "dom" or "runtime".
+	 * @param {...any[]} args - The message text, followed by any extra values to log.
 	 *
 	 * @example
-	 * logger.error("api", "Failed to fetch settings", error);
+	 * logger.error("api", "Failed to save settings", error);
 	 */
 	error: (category: string, ...args: any[]) => {
 		if ((window as any).StyleShift?.logger?.error) {
@@ -73,13 +73,13 @@ export const logger = {
 	},
 
 	/**
-	 * Logs a debug message.
+	 * Logs a debug message. Use it for extra detail you only need while testing.
 	 *
-	 * @param {string} category - The log category.
-	 * @param {...any[]} args - The values to log.
+	 * @param {string} category - The group label shown in the log, like "dom" or "runtime".
+	 * @param {...any[]} args - The message text, followed by any extra values to log.
 	 *
 	 * @example
-	 * logger.debug("events", "Received message", msg);
+	 * logger.debug("events", "Received message", event.data);
 	 */
 	debug: (category: string, ...args: any[]) => {
 		if ((window as any).StyleShift?.logger?.debug) {
