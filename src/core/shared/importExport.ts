@@ -39,14 +39,14 @@ async function readOrderFile(loadedZip: any, path: string): Promise<string[] | n
 }
 
 /**
- * Imports StyleShift data from an object and updates the cached storage.
- * Shows a progress notification during the process.
+ * Applies settings and add-on items from a plain object, replacing the current data.
  *
- * @param {object} styleshiftData - The object containing StyleShift configuration data.
+ * @param {object} styleshiftData - Object with currentSettings and addOnStyleShiftItems to apply.
  * @returns {Promise<void>}
  *
  * @example
- * await importStyleShiftData(myConfigObject);
+ * const data = exportStyleShiftData();
+ * await importStyleShiftData(data);
  */
 export async function importStyleShiftData(styleshiftData: PersistedStyleShiftData) {
 	const notification = await createNotification({
@@ -99,14 +99,14 @@ export async function importStyleShiftData(styleshiftData: PersistedStyleShiftDa
 }
 
 /**
- * Exports current add-on items and settings into a data object.
- * Cleans up internal properties (like highlightColor, editable) before exporting.
+ * Collects the current settings and add-on items into a plain object you can save or share.
  *
- * @returns {any} The cleaned export data object.
+ * @returns {object} An object with currentSettings and addOnStyleShiftItems for export.
  *
  * @example
  * const data = exportStyleShiftData();
- * console.log(JSON.stringify(data));
+ * console.log(data.addOnStyleShiftItems.length);
+ * // result: { currentSettings: {...}, addOnStyleShiftItems: [...] }
  */
 export function exportStyleShiftData(): PersistedStyleShiftData {
 	const exportData: PersistedStyleShiftData = {};
@@ -140,40 +140,44 @@ export function exportStyleShiftData(): PersistedStyleShiftData {
 }
 
 /**
- * Imports StyleShift data from a JSON formatted string.
+ * Applies settings and add-on items from JSON text, such as text pasted or read from a file.
  *
- * @param {string} text - The JSON string to parse and import.
+ * @param {string} text - The JSON text with currentSettings and addOnStyleShiftItems.
  * @returns {Promise<void>}
  *
  * @example
- * await importStyleShiftJsonText('{"currentSettings": {}}');
+ * const json = '{"currentSettings": {"darkMode": true}}';
+ * await importStyleShiftJsonText(json);
  */
 export async function importStyleShiftJsonText(text: string) {
 	await importStyleShiftData(JSON.parse(text) as PersistedStyleShiftData);
 }
 
 /**
- * Exports StyleShift data as a prettified JSON string.
+ * Exports the current settings and add-on items as readable JSON text.
  *
- * @returns {string} The JSON string representation of the exported data.
+ * @returns {string} The data as a pretty-printed JSON string.
  *
  * @example
- * const jsonText = exportStyleShiftJsonText();
+ * const json = exportStyleShiftJsonText();
+ * localStorage.setItem("styleshift-backup", json);
+ * // result: a JSON string with currentSettings and addOnStyleShiftItems
  */
 export function exportStyleShiftJsonText() {
 	return JSON.stringify(exportStyleShiftData(), null, 2);
 }
 
 /**
- * Parses a StyleShift backup ZIP file into a structured data object.
- * This function extracts categories, settings, and property files from the ZIP.
+ * Reads a StyleShift backup ZIP and turns it into a data object, without applying it.
  *
- * @param {File | Blob} zipFile - The ZIP file to parse.
- * @returns {Promise<any>} A promise resolving to the parsed StyleShift data object.
- * @throws {Error} If JSZip is not loaded or the ZIP structure is invalid.
+ * @param {File | Blob} zipFile - The ZIP file or blob to read.
+ * @returns {Promise<object>} An object with currentSettings and addOnStyleShiftItems.
+ * @throws {Error} If JSZip is not loaded or the ZIP is not a StyleShift backup.
  *
  * @example
- * const data = await parseStyleShiftZip(myZipBlob);
+ * const data = await parseStyleShiftZip(file);
+ * console.log(data.addOnStyleShiftItems.length);
+ * // result: { currentSettings: {...}, addOnStyleShiftItems: [...] }
  */
 export async function parseStyleShiftZip(zipFile: File | Blob): Promise<PersistedStyleShiftData> {
 	await loadJSZip();
@@ -340,13 +344,14 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<Persiste
 }
 
 /**
- * Imports StyleShift data from a backup ZIP file and applies it to the extension immediately.
+ * Applies a StyleShift backup ZIP to the extension right away.
  *
- * @param {File | Blob} zipFile - The backup ZIP file.
+ * @param {File | Blob} zipFile - The ZIP file or blob to import.
  * @returns {Promise<void>}
  *
  * @example
- * await importStyleShiftZip(myZipFile);
+ * const input = document.querySelector("input[type=file]");
+ * await importStyleShiftZip(input.files[0]);
  */
 export async function importStyleShiftZip(zipFile: File | Blob) {
 	const styleshiftData = await parseStyleShiftZip(zipFile);

@@ -1,36 +1,34 @@
 import { showAlert, showSelection, showUserConfirmation, showUserPrompt } from "@ui/window/windowFactory";
 
 /**
- * Shows a custom confirmation dialog to the user.
+ * Asks the user to confirm an action and waits for their answer.
  *
- * @param {string} ask - The question or message to display.
- * @param {string} [title="Confirm Action"] - The title of the dialog.
- * @returns {Promise<boolean>} A promise that resolves to true if confirmed, false otherwise.
+ * @param {string} ask - The question to show the user.
+ * @param {string} title - The dialog title. Defaults to "Confirm Action".
+ * @returns {Promise<boolean>} True if the user confirms, false if they cancel.
  *
  * @example
- * const confirmed = await showUserConfirmationPrompt("Are you sure you want to delete this?");
- * if (confirmed) { // Proceed with deletion }
+ * const confirmed = await showUserConfirmationPrompt("Delete this theme?", "Delete Theme");
+ * if (confirmed) deleteTheme();
+ * // result: true if the user confirmed
  */
 export async function showUserConfirmationPrompt(ask: string, title: string = "Confirm Action") {
 	return await showUserConfirmation(ask, title);
 }
 
 /**
- * Shows a text input prompt window, supporting multiline input.
+ * Opens a multiline text box and returns what the user types.
  *
- * @param {Object} options - The prompt options.
- * @param {string} [options.title="Enter text"] - The title of the prompt window.
- * @param {string} [options.placeholder=""] - The placeholder text for the input.
- * @param {string} [options.content=""] - The initial content/value of the input.
- * @returns {Promise<string>} A promise that resolves to the entered text.
+ * @param {object} options - Prompt settings: title (default "Enter text"), placeholder, content.
+ * @returns {Promise<string>} The text the user entered.
  * @throws {Error} If the user cancels the prompt.
  *
  * @example
  * try {
- *   const text = await enterTextPrompt({ title: "Feedback", placeholder: "Type here..." });
- *   console.log("User input:", text);
- * } catch (e) {
- *   console.error(e.message); // "Canceled by the user"
+ *   const notes = await enterTextPrompt({ title: "Theme notes" });
+ *   // result: the text the user typed
+ * } catch (error) {
+ *   console.warn("Cancelled");
  * }
  */
 export async function enterTextPrompt({ title = "Enter text", placeholder = "", content = "" }) {
@@ -47,16 +45,15 @@ export async function enterTextPrompt({ title = "Enter text", placeholder = "", 
 }
 
 /**
- * Shows a stylish single-line text input prompt modal.
+ * Opens a single-line text box and returns what the user types.
  *
- * @param {Object} options - The prompt options.
- * @param {string} [options.title="Enter text"] - The title of the prompt.
- * @param {string} [options.placeholder=""] - The placeholder text.
- * @param {string} [options.value=""] - The initial value.
- * @returns {Promise<string | null>} A promise that resolves to the text or null if canceled.
+ * @param {object} options - Prompt settings: title (default "Enter text"), placeholder, value.
+ * @returns {Promise<string | null>} The entered text, or null if the user cancels.
  *
  * @example
  * const name = await enterPrompt({ title: "Profile Name", placeholder: "Enter name..." });
+ * if (name) console.log(name);
+ * // result: "Alex", or null if cancelled
  */
 export async function enterPrompt({ title = "Enter text", placeholder = "", value = "" }) {
 	return await showUserPrompt(title, placeholder, value);
@@ -76,17 +73,15 @@ export interface SelectionOptions {
 }
 
 /**
- * Shows a stylish selection modal with multiple options/buttons.
+ * Shows a list of buttons and waits for the user to pick one.
  *
- * @param {SelectionOptions} options - The selection options.
- * @returns {Promise<number | null>} A promise that resolves to the index of the selected button or null if canceled.
+ * @param {SelectionOptions} options - Selection settings: message, title, buttons, vertical.
+ * @returns {Promise<string | null>} The label of the chosen button, or null if the user cancels.
  *
  * @example
- * const choice = await chooseSelection({
- *   title: "Export Format",
- *   buttons: [{ label: "JSON" }, { label: "ZIP" }]
- * });
- * if (choice === 0) { // Export as JSON }
+ * const choice = await chooseSelection({ title: "Export Format", buttons: [{ label: "JSON" }] });
+ * if (choice === "JSON") exportStyleShiftJsonText();
+ * // result: "JSON", or null if cancelled
  */
 export async function chooseSelection({
 	message = "",
@@ -98,17 +93,14 @@ export async function chooseSelection({
 }
 
 /**
- * Shows a stylish alert dialog with an OK button.
+ * Shows a message with a single OK button and waits for the user to dismiss it.
  *
- * @param {Object} options - The alert options.
- * @param {string} [options.message=""] - The alert message.
- * @param {string} [options.title="Alert"] - The title of the alert.
- * @param {string} [options.okLabel="OK"] - The label for the OK button.
- * @param {string} [options.okColor="#7f5db7"] - The color for the OK button.
+ * @param {object} options - Alert settings: message, title, okLabel (default "OK"), okColor.
  * @returns {Promise<void>}
  *
  * @example
  * await alertPrompt({ message: "Settings saved successfully!", title: "Success" });
+ * // the call resolves when the user clicks OK
  */
 export async function alertPrompt({ message = "", title = "Alert", okLabel = "OK", okColor = "#7f5db7" }) {
 	return await showAlert(message, title, { okLabel, okColor });
