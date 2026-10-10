@@ -56,6 +56,12 @@ async function ensure<T>(fn: () => T | null | undefined, interval = 100): Promis
 
 /**
  * Gets the document body element, waiting if it's not yet available.
+ *
+ * @returns {Promise<HTMLElement>} The document body once it exists.
+ *
+ * @example
+ * const body = await getDocumentBody();
+ * // body: the page <body> element
  */
 export function getDocumentBody(): Promise<HTMLElement> {
 	return ensure(() => document.body);
@@ -63,6 +69,12 @@ export function getDocumentBody(): Promise<HTMLElement> {
 
 /**
  * Gets the document head element, waiting if it's not yet available.
+ *
+ * @returns {Promise<HTMLElement>} The document head once it exists.
+ *
+ * @example
+ * const head = await getDocumentHead();
+ * // head: the page <head> element
  */
 export function getDocumentHead(): Promise<HTMLElement> {
 	return ensure(() => document.head);

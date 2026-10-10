@@ -74,7 +74,16 @@ export async function getFile(type: string): Promise<File> {
 	});
 }
 
-/** Prompts the user to select one or more files, preserving picker order. */
+/**
+ * Prompts the user to select one or more files, preserving the order they were picked in.
+ *
+ * @param {string} type - The file type filter (e.g., ".json", "image/*").
+ * @returns {Promise<File[]>} The selected files in picker order.
+ *
+ * @example
+ * const files = await getFiles(".json");
+ * // files: [File, File]
+ */
 export async function getFiles(type: string): Promise<File[]> {
 	return new Promise((resolve, reject) => {
 		const input = document.createElement("input");
