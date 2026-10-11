@@ -47,6 +47,18 @@
 	let isLoading = $state(false);
 	let hasError = $state(false);
 
+	// A canvas keeps only the first frame, so GIFs render as an <img> to keep animating.
+	function isGifSource(url: string) {
+		if (url.startsWith("data:")) return url.startsWith("data:image/gif");
+		return url.split(/[?#]/)[0].toLowerCase().endsWith(".gif");
+	}
+
+	const isAnimatedGif = $derived(isGifSource(currentSrc));
+
+	$effect(() => {
+		if (currentSrc) hasError = false;
+	});
+
 	async function updateDynamicPreview() {
 		if (!settingIds) return;
 
@@ -196,11 +208,23 @@
 				<div class="styleshift-no-image">Failed to load preview</div>
 			{/if}
 
-			<canvas
-				bind:this={canvas}
-				class="styleshift-preview-canvas"
-				style:display={isVisible && !isLoading && !hasError ? "block" : "none"}
-			></canvas>
+			{#if isAnimatedGif}
+				{#if isVisible && !hasError}
+					<img
+						src={getAssetUrl(currentSrc)}
+						alt="Preview"
+						class="styleshift-preview-animated"
+						decoding="async"
+						onerror={() => (hasError = true)}
+					/>
+				{/if}
+			{:else}
+				<canvas
+					bind:this={canvas}
+					class="styleshift-preview-canvas"
+					style:display={isVisible && !isLoading && !hasError ? "block" : "none"}
+				></canvas>
+			{/if}
 		{/if}
 	{:else}
 		<div class="styleshift-no-image">No image selected</div>
@@ -289,6 +313,15 @@
 			scale 0.1s ease-out,
 			translate 0.1s ease-out,
 			clip-path 0.1s ease-out;
+	}
+
+	.styleshift-preview-animated {
+		display: block;
+		max-width: 100%;
+		max-height: 600px;
+		width: auto;
+		height: auto;
+		object-fit: contain;
 	}
 
 	.styleshift-preview-canvas {
