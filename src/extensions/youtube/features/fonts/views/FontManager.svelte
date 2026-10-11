@@ -2,7 +2,6 @@
 	import type { Setting } from "@settings/types/styleshiftTypes";
 	import Button from "@controls/Button.svelte";
 	import Checkbox from "@controls/Checkbox.svelte";
-	import Description from "@base/Description.svelte";
 	import IconButton from "@base/IconButton.svelte";
 	import TextEditor from "@base/TextEditor.svelte";
 	import { showUserConfirmation } from "@ui/window/windowFactory";
@@ -16,6 +15,8 @@
 	} from "../fontService";
 
 	let { setting }: { setting: Extract<Setting, { type: "custom" }> } = $props();
+
+	const PREVIEW_TEXT = "Pack my box with five dozen liquor jugs";
 
 	let fonts = $state<FontEntry[]>([]);
 	let pasteText = $state("");
@@ -56,6 +57,15 @@
 		await saveFonts(setting, fonts);
 	}
 
+	// Position among enabled fonts, which is the order the page uses as its fallback stack.
+	function getLoadOrder(list: FontEntry[], index: number): number {
+		return list.slice(0, index).filter((font) => font.enabled).length + 1;
+	}
+
+	function getPreviewFamily(font: FontEntry): string | undefined {
+		return font.isDefault ? undefined : `"${font.fontName}", system-ui`;
+	}
+
 	async function init() {
 		fonts = await loadFonts(setting.id);
 		await handleDetectPageFonts();
@@ -64,90 +74,81 @@
 </script>
 
 <div class="NEWTUBE-FontManager">
-	<!-- 1. Paste Section -->
-	<div class="section paste-section">
-		<Description name="Paste Section" description="Paste Google Fonts style or URL here." showHoverPreview={false} />
+	<div class="add-bar">
+		<p class="helper">Paste a Google Fonts link or @import.</p>
 		<TextEditor
 			bind:value={pasteText}
 			placeholder="@import url(https://fonts.googleapis.com/css2?family=Roboto&display=swap);"
 		/>
-		<div class="action-buttons-container">
+		<div class="add-actions">
 			<Button
 				setting={{
 					type: "button",
-					name: "Add Font",
+					name: "Add font",
 					color: "#7f5db7",
 					align: "center",
 					clickFunction: handleAdd,
 				}}
 			/>
-			<Button
-				setting={{
-					type: "button",
-					name: "Detect Page Fonts",
-					color: "#4a6fa5",
-					align: "center",
-					clickFunction: handleDetectPageFonts,
-				}}
-			/>
+			<button type="button" class="text-action" onclick={handleDetectPageFonts}>Detect page fonts</button>
 		</div>
 	</div>
 
-	<!-- 2. Manage Section -->
-	<div class="section manage-section">
-		<Description
-			name="Manage Section"
-			description="Enable, reorder, or delete fonts from your library."
-			showHoverPreview={false}
-		/>
-		{#if fonts.length > 0}
-			<div class="font-list">
-				{#each fonts as font, i (font.id)}
-					<div class="font-item" class:is-default={font.isDefault}>
-						<div class="sort-buttons">
-							<IconButton icon="arrowUp" onClick={() => handleMove(i, "up")} className="sort-btn" size={14} />
-							<IconButton icon="arrowDown" onClick={() => handleMove(i, "down")} className="sort-btn" size={14} />
-						</div>
-						<div class="font-info">
+	{#if fonts.length > 0}
+		<div class="font-list">
+			{#each fonts as font, i (font.id)}
+				<div class="font-item" class:is-default={font.isDefault} class:is-enabled={font.enabled}>
+					<div class="reorder">
+						<IconButton icon="arrowUp" onClick={() => handleMove(i, "up")} className="sort-btn" size={14} />
+						<IconButton icon="arrowDown" onClick={() => handleMove(i, "down")} className="sort-btn" size={14} />
+					</div>
+					<div class="font-info">
+						<div class="name-row">
 							<span class="name">{font.fontName}</span>
 							{#if font.isDefault}
 								<span class="default-badge">Built-in</span>
 							{/if}
 						</div>
-						<div class="actions">
-							<Checkbox
-								setting={{
-									type: "checkbox",
-									id: "", // Empty ID to use bind:value and avoid global storage
-									name: "",
-									value: font.enabled,
-									updateFunction: () => handleToggle(font.id),
-								}}
-								bind:value={font.enabled}
-							/>
-							{#if !font.isDefault}
+						<span class="sample" style:font-family={getPreviewFamily(font)}>{PREVIEW_TEXT}</span>
+					</div>
+					<div class="actions">
+						{#if font.enabled}
+							<span class="order" title="Load order">{getLoadOrder(fonts, i)}</span>
+						{/if}
+						{#if !font.isDefault}
+							<div class="delete-slot">
 								<IconButton
 									icon="delete"
 									onClick={() => handleRemove(font.id, font.fontName)}
 									className="delete-btn"
 									size={20}
 								/>
-							{/if}
-						</div>
+							</div>
+						{/if}
+						<Checkbox
+							setting={{
+								type: "checkbox",
+								id: "", // Empty ID to use bind:value and avoid global storage
+								name: "",
+								value: font.enabled,
+								updateFunction: () => handleToggle(font.id),
+							}}
+							bind:value={font.enabled}
+						/>
 					</div>
-				{/each}
-			</div>
-		{:else}
-			<div class="empty-state">No fonts added yet.</div>
-		{/if}
-	</div>
+				</div>
+			{/each}
+		</div>
+	{:else}
+		<div class="empty-state">No fonts yet. Add one above.</div>
+	{/if}
 </div>
 
 <style lang="scss">
 	.NEWTUBE-FontManager {
 		display: flex;
 		flex-direction: column;
-		gap: 30px;
+		gap: 24px;
 		padding: 5px;
 		width: 100%;
 		box-sizing: border-box;
@@ -157,123 +158,231 @@
 		}
 	}
 
-	.section {
+	.add-bar {
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
+		gap: 10px;
+		padding: 16px;
+		background: var(--fg-opacity-03);
+		border: 1px solid var(--fg-opacity-08);
+		border-radius: 14px;
 	}
 
-	.action-buttons-container {
+	.helper {
+		margin: 0;
+		font-size: 13px;
+		color: var(--fg-opacity-60);
+	}
+
+	.add-actions {
 		display: flex;
-		gap: 10px;
-		margin-top: 5px;
+		align-items: center;
+		gap: 16px;
+		flex-wrap: wrap;
+
 		:global(.styleshift-button) {
-			padding: 12px !important;
+			padding: 10px 18px !important;
+		}
+	}
+
+	.text-action {
+		background: none;
+		border: none;
+		padding: 6px 2px;
+		font: inherit;
+		font-size: 13px;
+		color: var(--theme-0-text);
+		cursor: pointer;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+
+		&:focus-visible {
+			outline: 2px solid var(--theme-0-light);
+			outline-offset: 2px;
+			border-radius: 4px;
 		}
 	}
 
 	.font-list {
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
+		gap: 8px;
 	}
 
 	.font-item {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
-		padding: 15px 20px;
-		background: var(--fg-opacity-05);
-		border-radius: 15px;
-		border: 1px solid var(--fg-opacity-10);
-		transition: all 0.2s;
-		gap: 15px;
+		gap: 14px;
+		padding: 12px 16px;
+		background: var(--setting-frame-bg);
+		border: 1px solid var(--fg-opacity-08);
+		border-radius: 12px;
+		transition:
+			background 0.2s,
+			border-color 0.2s;
 
-		&.is-default {
-			background: var(--fg-opacity-03);
-			border-color: var(--fg-opacity-08);
+		&:hover {
+			background: var(--fg-opacity-05);
+		}
+
+		&.is-enabled {
+			box-shadow: inset 3px 0 0 var(--theme-0);
+		}
+
+		&:focus-within {
+			border-color: var(--theme-0-30);
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			transition: none;
+		}
+	}
+
+	.reorder {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		opacity: 0.6;
+		transition: opacity 0.2s;
+
+		.font-item:hover &,
+		.font-item:focus-within & {
+			opacity: 1;
+		}
+
+		:global(.sort-btn) {
+			padding: 2px !important;
+			height: 22px !important;
+			width: 28px !important;
+			background: transparent;
+			border: 1px solid var(--fg-opacity-10);
+			border-radius: 6px;
 		}
 	}
 
 	.font-info {
 		display: flex;
-		align-items: center;
-		gap: 10px;
+		flex-direction: column;
+		gap: 4px;
 		flex: 1;
+		min-width: 0;
+	}
 
-		.name {
-			font-size: 16px;
-			font-weight: 600;
-			color: white;
-		}
+	.name-row {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
 
-		.default-badge {
-			font-size: 11px;
-			font-weight: 500;
-			padding: 2px 8px;
-			background: var(--fg-opacity-10);
-			border: 1px solid var(--fg-opacity-15);
-			border-radius: 10px;
-			color: var(--fg-opacity-70);
-		}
+	.name {
+		font-size: 18px;
+		font-weight: 600;
+		color: var(--fg-opacity-100);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.sample {
+		font-size: 14px;
+		color: var(--fg-opacity-60);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.default-badge {
+		font-size: 11px;
+		font-weight: 500;
+		padding: 2px 8px;
+		background: var(--fg-opacity-08);
+		border-radius: 10px;
+		color: var(--fg-opacity-70);
 	}
 
 	.actions {
 		display: flex;
 		align-items: center;
-		gap: 20px;
+		gap: 14px;
+		flex-shrink: 0;
 	}
 
-	.sort-buttons {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-		margin-right: 5px;
+	.order {
+		min-width: 24px;
+		text-align: center;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+		font-size: 12px;
+		font-weight: 700;
+		color: var(--theme-1);
+	}
 
-		:global(.sort-btn) {
-			padding: 4px !important;
-			height: 24px !important;
+	.delete-slot {
+		display: flex;
+		width: 0;
+		overflow: hidden;
+		flex-shrink: 0;
+		transition: width 0.2s;
+
+		.font-item:hover &,
+		.font-item:focus-within & {
+			width: 32px;
+		}
+
+		@media (hover: none) {
+			width: 32px;
+		}
+
+		:global(.delete-btn) {
+			padding: 6px !important;
+			height: 32px !important;
 			width: 32px !important;
-			background: var(--fg-opacity-05);
-			border: 1px solid var(--fg-opacity-10);
-			border-radius: 6px;
-			opacity: 0.8;
+			flex-shrink: 0;
+			background: transparent;
+			border: 1px solid transparent;
+			border-radius: 8px;
 
 			&:hover {
-				opacity: 1;
-				background: var(--fg-opacity-10);
-				border-color: var(--fg-opacity-20);
+				background: rgba(255, 0, 0, 0.15);
+				border-color: rgba(255, 0, 0, 0.3);
 			}
+		}
+
+		:global(button:focus-visible) {
+			outline-offset: -2px;
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			transition: none;
 		}
 	}
 
-	:global(.delete-btn) {
-		padding: 6px !important;
-		height: 36px !important;
-		width: 36px !important;
-		background: rgba(255, 0, 0, 0.1);
-		border-radius: 10px;
-		border: 1px solid rgba(255, 0, 0, 0.2);
-		transition: all 0.2s;
-
-		&:hover {
-			background: rgba(255, 0, 0, 0.2);
-			border-color: rgba(255, 0, 0, 0.4);
-			transform: scale(1.1);
-		}
+	.font-item :global(button:focus-visible) {
+		outline: 2px solid var(--theme-0-light);
+		outline-offset: 2px;
 	}
 
 	.empty-state {
-		padding: 20px;
+		padding: 24px;
 		text-align: center;
-		color: var(--fg-opacity-20);
-		background: var(--fg-opacity-02);
-		border: 1px dashed var(--fg-opacity-10);
-		border-radius: 15px;
-		font-style: italic;
+		font-size: 14px;
+		color: var(--fg-opacity-50);
+		border: 1px dashed var(--fg-opacity-15);
+		border-radius: 12px;
 	}
 
 	:global(.styleshift-text-editor) {
-		min-height: 100px !important;
+		min-height: 44px !important;
+		transition: min-height 0.2s;
+	}
+
+	.add-bar:focus-within :global(.styleshift-text-editor) {
+		min-height: 96px !important;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		:global(.styleshift-text-editor),
+		.reorder {
+			transition: none;
+		}
 	}
 </style>
