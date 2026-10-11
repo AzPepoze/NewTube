@@ -39,6 +39,15 @@
 	const step = $derived(setting.step ?? 1);
 	const unit = $derived(setting.unit ?? "");
 
+	// 0 to 1 position of the value, used to place the fill and the bubble.
+	function getRatio(current: number, low: number, high: number) {
+		if (high === low) return 0;
+		return Math.min(1, Math.max(0, ((Number(current) || 0) - low) / (high - low)));
+	}
+
+	const ratio = $derived(getRatio(value, min, max));
+	const trackStyle = $derived(`--p: ${ratio * 100}%; --ratio: ${ratio};`);
+
 	async function handleUpdate() {
 		if (setting.id) {
 			await setAndSave(setting, value);
@@ -82,16 +91,23 @@
 		</div>
 	</div>
 
-	<input
-		type="range"
-		class="styleshift-slider-range"
-		{min}
-		{max}
-		{step}
-		bind:value
-		oninput={handleInput}
-		onchange={handleChange}
-	/>
+	<div class="styleshift-slider-track" style={trackStyle}>
+		<span class="styleshift-slider-bubble">{value}{unit}</span>
+		<div class="styleshift-slider-line">
+			<div class="styleshift-slider-fill"></div>
+		</div>
+		<input
+			type="range"
+			class="styleshift-slider-range"
+			aria-label={name}
+			{min}
+			{max}
+			{step}
+			bind:value
+			oninput={handleInput}
+			onchange={handleChange}
+		/>
+	</div>
 </div>
 
 <style lang="scss">
@@ -145,64 +161,147 @@
 		color: white;
 	}
 
-	.styleshift-slider-range {
-		--slider-thumb-size: 15px;
-		--slider-thumb-radius: calc(var(--slider-thumb-size) / 2);
+	/* Room above the track for the value bubble. */
+	.styleshift-slider-track {
+		position: relative;
+		display: flex;
+		align-items: center;
+		height: 28px;
+		margin-top: 26px;
+	}
 
+	.styleshift-slider-line {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 50%;
+		transform: translateY(-50%);
+		height: 14px;
+		border-radius: 999px;
+		background: var(--fg-opacity-20);
+		box-shadow: inset 0 0 0 1px var(--fg-opacity-10);
+		overflow: hidden;
+	}
+
+	.styleshift-slider-fill {
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		width: var(--p);
+		border-radius: 999px;
+		background-color: var(--theme-0);
+		background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.3) 0 8px, transparent 8px 16px);
+		box-shadow: 0 0 10px var(--theme-0);
+		background-size: 23px 23px;
+		animation: styleshift-slider-stripes 0.8s linear infinite;
+		transition: width 0.12s ease-out;
+	}
+
+	@keyframes styleshift-slider-stripes {
+		to {
+			background-position: 23px 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.styleshift-slider-fill {
+			animation: none;
+		}
+	}
+
+	.styleshift-slider-bubble {
+		position: absolute;
+		bottom: 100%;
+		left: calc(9px + (100% - 18px) * var(--ratio));
+		transform: translate(-50%, -4px);
+		padding: 3px 8px;
+		border-radius: 8px;
+		background: var(--theme-0);
+		color: #ffffff;
+		font-size: 12px;
+		font-weight: 700;
+		line-height: 1.4;
+		text-align: center;
+		white-space: nowrap;
+		opacity: 0;
+		pointer-events: none;
+		transition:
+			opacity 0.15s,
+			transform 0.15s;
+
+		&::after {
+			content: "";
+			position: absolute;
+			top: 100%;
+			left: 50%;
+			transform: translateX(-50%);
+			border: 5px solid transparent;
+			border-top-color: var(--theme-0);
+		}
+	}
+
+	.styleshift-slider-track:is(:hover, :focus-within, :active) .styleshift-slider-bubble {
+		opacity: 1;
+		transform: translate(-50%, -8px);
+	}
+
+	.styleshift-slider-range {
+		position: relative;
+		width: 100%;
+		height: 28px;
+		margin: 0;
 		appearance: none;
 		-webkit-appearance: none;
-		width: 100%;
-		height: 15px;
-		border-radius: 20px;
-		background: var(--slider-track);
+		background: transparent;
+		cursor: pointer;
 		outline: none;
-		overflow: hidden;
-		transition: all 0.2s;
-		filter: brightness(1) drop-shadow(1px 1px 4px var(--bg-overlay-40));
-		margin-top: 10px;
-
-		&:hover {
-			filter: brightness(1.3) drop-shadow(1px 1px 4px var(--bg-overlay-40));
-		}
 
 		&::-webkit-slider-runnable-track {
-			height: 15px;
-			background: var(--slider-track);
-			border-radius: 20px;
+			height: 28px;
+			background: transparent;
+		}
+
+		&::-moz-range-track {
+			height: 28px;
+			background: transparent;
 		}
 
 		&::-webkit-slider-thumb {
 			-webkit-appearance: none;
 			appearance: none;
-			width: var(--slider-thumb-size);
-			height: var(--slider-thumb-size);
-			background-color: white;
+			width: 18px;
+			height: 18px;
+			margin-top: 5px;
 			border-radius: 50%;
-			border: 2px solid var(--theme-0);
-			cursor: pointer;
-			box-shadow: -2000px 0 0 calc(2000px + var(--slider-thumb-radius)) var(--theme-0);
-		}
-
-		&::-moz-range-track {
-			height: 15px;
-			background: var(--slider-track);
-			border-radius: 20px;
-		}
-
-		&::-moz-range-progress {
-			height: 15px;
-			background: var(--theme-0);
-			border-radius: 20px 0 0 20px;
+			background: #ffffff;
+			border: 0;
+			box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+			transition:
+				transform 0.15s ease,
+				box-shadow 0.15s ease;
 		}
 
 		&::-moz-range-thumb {
-			width: var(--slider-thumb-size);
-			height: var(--slider-thumb-size);
-			background-color: white;
+			width: 18px;
+			height: 18px;
 			border-radius: 50%;
-			border: 2px solid var(--theme-0);
-			cursor: pointer;
-			box-sizing: border-box;
+			background: #ffffff;
+			border: 0;
+			box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+			transition: transform 0.15s ease;
+		}
+
+		&:focus-visible::-webkit-slider-thumb {
+			box-shadow: 0 0 0 4px rgba(127, 93, 183, 0.5);
+		}
+
+		&:active::-webkit-slider-thumb {
+			transform: scale(1.2);
+		}
+
+		&:active::-moz-range-thumb {
+			transform: scale(1.2);
 		}
 	}
 </style>
