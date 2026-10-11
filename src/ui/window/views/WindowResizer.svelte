@@ -238,17 +238,30 @@
 		transition: opacity 0.2s;
 		opacity: 0;
 
-		/* Edges glow as bars */
+		/* Edges glow as bars that fade out at both ends */
+		&.n,
+		&.s {
+			--edge-dir: right;
+		}
+		&.e,
+		&.w {
+			--edge-dir: bottom;
+		}
+
 		&.n,
 		&.s,
 		&.e,
 		&.w {
 			&:hover,
 			&.active {
-				background: var(--glow-color);
-				box-shadow:
-					0 0 10px var(--glow-color),
-					0 0 20px var(--glow-color);
+				background: linear-gradient(
+					to var(--edge-dir),
+					transparent,
+					var(--glow-color) 25%,
+					var(--glow-color) 75%,
+					transparent
+				);
+				filter: drop-shadow(0 0 6px var(--glow-color));
 				opacity: 1;
 				z-index: 102;
 			}
