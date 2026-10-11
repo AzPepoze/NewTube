@@ -29,22 +29,6 @@
 			clearSearch();
 		}
 	}
-
-	// Focus shortcut listener
-	$effect(() => {
-		function onGlobalKeyDown(e: KeyboardEvent) {
-			if (
-				e.key === "/" &&
-				document.activeElement?.tagName !== "INPUT" &&
-				document.activeElement?.tagName !== "TEXTAREA"
-			) {
-				e.preventDefault();
-				inputEl?.focus();
-			}
-		}
-		window.addEventListener("keydown", onGlobalKeyDown);
-		return () => window.removeEventListener("keydown", onGlobalKeyDown);
-	});
 </script>
 
 <div class="styleshift-search-wrapper" class:is-focused={isFocused}>
