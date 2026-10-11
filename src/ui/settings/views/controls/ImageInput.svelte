@@ -4,12 +4,10 @@
 	import { triggerSettingUpdate } from "@settings/engine/functions";
 	import type { Setting } from "@settings/types/styleshiftTypes";
 	import { setAndSave } from "@ui/settings/settingsApi";
-	import { getAssetUrl } from "@ui/window/utils";
 	import { showUserConfirmation } from "@ui/window/windowFactory";
-	import Button from "../controls/Button.svelte";
 	import PreviewImage from "../controls/PreviewImage.svelte";
 	import Description from "../base/Description.svelte";
-	const uploadIcon = "assets/icons/upload.svg";
+	import Icon from "../base/Icon.svelte";
 
 	let {
 		setting,
@@ -191,76 +189,54 @@
 		<Description name={setting.name} description={setting.description} />
 	</div>
 
-	<div class="styleshift-image-input-controls">
-		<div
-			class="styleshift-upload-zone"
-			class:dragging={isDragging}
-			onclick={() => fileInput?.click()}
-			ondragover={handleDragOver}
-			ondragleave={handleDragLeave}
-			ondrop={handleDrop}
-			role="button"
-			tabindex="0"
-			onkeydown={(e) => e.key === "Enter" && fileInput?.click()}
-			title="Click or Drag & Drop image to upload"
-		>
-			<img class="styleshift-upload-icon" src={getAssetUrl(uploadIcon)} alt="Upload" />
-			<span class="styleshift-upload-text">Upload</span>
-		</div>
-
+	<div
+		class="styleshift-image-source"
+		class:dragging={isDragging}
+		ondragover={handleDragOver}
+		ondragleave={handleDragLeave}
+		ondrop={handleDrop}
+		role="group"
+	>
+		<Icon name="link" size={18} className="styleshift-image-source-icon" />
+		<input
+			type="text"
+			value={inputValue}
+			placeholder={inputPlaceholder}
+			oninput={handleUrlInput}
+			class="styleshift-url-input"
+			aria-label="Image URL"
+		/>
 		<input type="file" bind:this={fileInput} onchange={handleFileChange} accept="image/*" style="display: none;" />
-
-		<div class="styleshift-url-input-wrapper">
-			<input
-				type="text"
-				value={inputValue}
-				placeholder={inputPlaceholder}
-				oninput={handleUrlInput}
-				class="styleshift-url-input"
-			/>
-		</div>
+		<button
+			type="button"
+			class="styleshift-upload-button"
+			onclick={() => fileInput?.click()}
+			title="Upload an image, or drag and drop one here"
+		>
+			<Icon name="upload" size={16} />
+			<span>Upload</span>
+		</button>
 	</div>
 
 	{#if value}
-		<div class="styleshift-image-preview-wrapper">
+		<div class="styleshift-image-preview-card">
 			<PreviewImage src={value} />
-			{#if fileName}
-				<span class="styleshift-file-name" title={fileName}>{fileName}</span>
-			{/if}
-			<div class="styleshift-button-center-wrapper">
-				<Button
-					setting={{
-						type: "button",
-						name: "View Original Image",
-						color: "#ffffff",
-						fontSize: 11,
-						clickFunction: openImage,
-					}}
-					style="padding: 5px 12px; width: auto; height: 26px;"
-				/>
-				<Button
-					setting={{
-						type: "button",
-						name: "Remove",
-						color: "#ff4444",
-						fontSize: 11,
-						clickFunction: removeImage,
-					}}
-					style="padding: 5px 12px; width: auto; height: 26px;"
-				/>
+			<div class="styleshift-image-preview-bar">
+				<span class="styleshift-image-preview-name" title={fileName}>{fileName || "Image"}</span>
+				<div class="styleshift-image-preview-actions">
+					<button type="button" class="styleshift-preview-action" title="View original image" onclick={openImage}>
+						<Icon name="open_in_new" size={18} />
+					</button>
+					<button type="button" class="styleshift-preview-action danger" title="Remove image" onclick={removeImage}>
+						<Icon name="delete" size={18} />
+					</button>
+				</div>
 			</div>
 		</div>
 	{/if}
 </div>
 
 <style lang="scss">
-	.styleshift-button-center-wrapper {
-		display: flex;
-		justify-content: center;
-		gap: 10px;
-		width: 100%;
-		margin-top: 5px;
-	}
 	.styleshift-image-input-header {
 		display: flex;
 		padding-left: 10px;
@@ -270,114 +246,148 @@
 		margin-bottom: 10px;
 	}
 
-	.styleshift-file-name {
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--font-color);
-		background: var(--fg-opacity-05);
-		padding: 8px 20px;
-		border-radius: 20px;
-		max-width: 92%;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		margin-top: 10px;
-		border: 1px solid var(--fg-opacity-10);
-		box-shadow: 0 4px 15px var(--bg-overlay-30);
-	}
-
-	.styleshift-image-input-controls {
+	.styleshift-image-source {
 		display: flex;
-		gap: 15px;
 		align-items: center;
+		gap: 8px;
 		width: 100%;
+		height: 44px;
+		padding: 0 5px 0 14px;
 		box-sizing: border-box;
-	}
-
-	.styleshift-upload-zone {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 4px;
-		width: 80px;
-		height: 80px;
-		background: var(--fg-opacity-05);
-		border: 1px dashed var(--fg-opacity-20);
-		border-radius: 15px;
-		cursor: pointer;
-		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-		flex-shrink: 0;
-		position: relative;
-		overflow: hidden;
-
-		&:hover,
-		&.dragging {
-			border-color: var(--theme-0);
-			background: var(--theme-0-10);
-			transform: translateY(-2px);
-		}
-
-		&.dragging {
-			transform: scale(1.05);
-			box-shadow: 0 0 20px var(--theme-0-30);
-		}
-	}
-
-	.styleshift-upload-icon {
-		width: 28px;
-		height: 28px;
-		opacity: 0.7;
-		filter: drop-shadow(0 2px 4px var(--bg-overlay-20));
-		transition: all 0.2s;
-
-		.styleshift-upload-zone:hover & {
-			opacity: 1;
-			transform: translateY(-2px);
-		}
-	}
-
-	.styleshift-upload-text {
-		font-size: 11px;
-		font-weight: 500;
-		opacity: 0.6;
-	}
-
-	.styleshift-url-input-wrapper {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.styleshift-url-input {
-		width: 100%;
-		padding: 8px 15px;
+		border-radius: 14px;
 		background: var(--bg-overlay-30);
-		border: 1px grey solid;
-		border-radius: 20px;
-		color: var(--font-color);
-		font-size: 13px;
-		outline: none;
-		transition: all 0.2s;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		box-sizing: border-box;
+		border: 1px solid var(--fg-opacity-10);
+		transition:
+			border-color 0.2s,
+			background 0.2s,
+			box-shadow 0.2s;
 
-		&:focus {
+		&:focus-within,
+		&.dragging {
 			border-color: var(--theme-0);
 			background: var(--bg-overlay-50);
 		}
+
+		&.dragging {
+			box-shadow: 0 0 20px var(--theme-0-30);
+		}
+
+		:global(.styleshift-image-source-icon) {
+			flex-shrink: 0;
+			opacity: 0.5;
+		}
+	}
+
+	.styleshift-url-input {
+		flex: 1;
+		min-width: 0;
+		height: 100%;
+		padding: 0;
+		background: transparent;
+		border: none;
+		color: var(--font-color);
+		font-size: 13px;
+		outline: none;
 
 		&::placeholder {
 			color: var(--fg-opacity-30);
 		}
 	}
 
-	.styleshift-image-preview-wrapper {
-		margin-top: 15px;
-		width: 100%;
+	.styleshift-upload-button {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		flex-shrink: 0;
+		height: 34px;
+		padding: 0 14px;
+		border-radius: 10px;
+		border: 1px solid var(--theme-0);
+		background: var(--theme-0-10);
+		color: var(--font-color);
+		font-size: 12px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+
+		&:hover {
+			background: var(--theme-0);
+			color: #ffffff;
+		}
+	}
+
+	.styleshift-image-preview-card {
 		display: flex;
 		flex-direction: column;
+		width: 100%;
+		margin-top: 15px;
+		border-radius: 16px;
+		overflow: hidden;
+		border: 1px solid var(--fg-opacity-10);
+		background: var(--bg-overlay-40);
+		box-shadow: 0 10px 30px var(--bg-overlay-30);
+
+		/* The preview's own frame would double up inside the card. */
+		:global(.styleshift-preview-image-container.preset-default) {
+			min-width: 0;
+			max-height: none;
+			width: 100%;
+			border: none;
+			border-radius: 0;
+			box-shadow: none;
+			background: transparent;
+		}
+	}
+
+	.styleshift-image-preview-bar {
+		display: flex;
 		align-items: center;
-		gap: 8px;
+		gap: 10px;
+		padding: 8px 8px 8px 16px;
+		border-top: 1px solid var(--fg-opacity-10);
+		background: linear-gradient(to right, var(--theme-0-10), transparent);
+	}
+
+	.styleshift-image-preview-name {
+		flex: 1;
+		min-width: 0;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--font-color);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.styleshift-image-preview-actions {
+		display: flex;
+		gap: 6px;
+		flex-shrink: 0;
+	}
+
+	.styleshift-preview-action {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 34px;
+		height: 34px;
+		padding: 0;
+		border-radius: 50%;
+		border: 1px solid var(--fg-opacity-10);
+		background: var(--fg-opacity-05);
+		color: var(--font-color);
+		cursor: pointer;
+		transition: all 0.2s;
+
+		&:hover {
+			border-color: var(--theme-0);
+			background: var(--theme-0-10);
+		}
+
+		&.danger:hover {
+			border-color: #f44336;
+			background: rgba(244, 67, 54, 0.15);
+			color: #f44336;
+		}
 	}
 </style>
