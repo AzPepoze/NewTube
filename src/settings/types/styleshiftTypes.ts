@@ -55,6 +55,8 @@ export type BaseSetting = {
 		message?: string;
 	};
 	require?: SettingRequirements;
+	/** Hide the setting instead of showing a warning while `require` is unmet. */
+	hideWhenUnmet?: boolean;
 	quickCustomize?: QuickCustomizeData;
 };
 

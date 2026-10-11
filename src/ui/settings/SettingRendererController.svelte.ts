@@ -25,6 +25,7 @@ export class SettingRendererController {
 	#developerModeOn = $state(false);
 	isDeveloperMode = $derived(this.#developerModeOn && (this.setting?.editable ?? false));
 	requirementsMet = $state(true);
+	isHidden = $derived(Boolean(this.setting?.hideWhenUnmet) && !this.requirementsMet);
 	conditionsMet = $state(true);
 	requiredSettings = $state<Record<string, { name: string; value: any; type: string; options?: any }>>({});
 	listeners = new SvelteMap<string, (val: any) => void>();
@@ -35,6 +36,8 @@ export class SettingRendererController {
 
 	constructor(setting: Setting) {
 		this.setting = setting;
+		// Hidden until init() reads the required values, so the setting never flashes.
+		this.requirementsMet = !setting.hideWhenUnmet;
 		registerSettingListener("developerMode", this.#onDeveloperModeChange);
 		this.init();
 	}

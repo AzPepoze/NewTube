@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { Category, Setting } from "@settings/types/styleshiftTypes";
 	import { createHoverPreviewConfig, HOVER_PREVIEW_CONTEXT, type HoverPreviewContext } from "@ui/settings/hoverPreview";
-	import { onDestroy, setContext } from "svelte";
+	import { onDestroy, setContext, tick, untrack } from "svelte";
 	import { fade } from "svelte/transition";
+	import { sleep } from "@/core/shared/utilities";
 	import { addDrag, addDropTarget } from "@ui/settings/reorder";
 	import { SETTINGS_SEARCH_QUERY } from "@ui/settings/searchContext";
 	import { registerSettingUi, unregisterSettingUi } from "@ui/settings/settingsManager";
@@ -37,7 +38,16 @@
 	} = $props();
 
 	const controller = $derived(new SettingRendererController(setting));
+	const HIDE_DURATION_MS = 250;
 	let domNode = $state<HTMLElement | null>(null);
+	// Stays mounted while the hide animation plays, so the setting can collapse first.
+	let isMounted = $state(false);
+	let isCollapsing = $state(false);
+	let collapsedHeight = $state<number | null>(null);
+	let collapsedGap = $state(0);
+	const collapseStyle = $derived(
+		collapsedHeight === null ? "" : `max-height: ${collapsedHeight}px; --collapse-gap: ${collapsedGap}px;`,
+	);
 	let previewStatus = $state("");
 	const previewContext: HoverPreviewContext = {
 		resolve: () => createHoverPreviewConfig(setting, category, (status) => (previewStatus = status)),
@@ -54,6 +64,39 @@
 			setting.type === "keyboardShortcuts" ||
 			setting.type === "conditionSetting",
 	);
+
+	$effect(() => {
+		if (!controller.isHidden) {
+			isMounted = true;
+			untrack(() => resetCollapse());
+			return;
+		}
+		if (isMounted) untrack(() => collapseThenUnmount());
+	});
+
+	function resetCollapse() {
+		isCollapsing = false;
+		collapsedHeight = null;
+		collapsedGap = 0;
+	}
+
+	function getParentRowGap(node: HTMLElement) {
+		const parent = node.parentElement;
+		return parent ? parseFloat(getComputedStyle(parent).rowGap) || 0 : 0;
+	}
+
+	async function collapseThenUnmount() {
+		// Pin the height and gap first, so the next style change animates from them.
+		collapsedHeight = domNode?.offsetHeight ?? null;
+		collapsedGap = domNode ? getParentRowGap(domNode) : 0;
+		await tick();
+		if (domNode) void domNode.offsetHeight;
+		isCollapsing = true;
+
+		await sleep(HIDE_DURATION_MS);
+		if (controller.isHidden) isMounted = false;
+		else resetCollapse();
+	}
 
 	function dragAction(node: HTMLElement) {
 		if (controller.isDeveloperMode) {
@@ -75,139 +118,145 @@
 	});
 </script>
 
-<SettingFrame
-	id={setting.id}
-	type={setting.type}
-	className="{controller.isDeveloperMode ? 'developer-mode' : ''} {isLocked
-		? 'styleshift-setting-hard-locked'
-		: ''} {!controller.requirementsMet ? 'styleshift-setting-requirement-warning' : ''}"
-	style="{controller.isDeveloperMode && setting.type !== 'subText' && setting.type !== 'text'
-		? 'gap: 10px;'
-		: ''} {isLocked || !controller.requirementsMet ? 'flex-direction: column; align-items: stretch;' : ''}"
-	useAction={(node) => {
-		domNode = node;
-		if (setting.id && node.parentElement) {
-			registerSettingUi(setting.id, node.parentElement, node);
-		}
-	}}
-	padding={setting.type !== "button" && setting.type !== "subText"}
-	transparent={setting.type === "button" ||
-		setting.type === "subText" ||
-		setting.type === "text" ||
-		(setting.type === "custom" && setting.transparent)}
-	vertical={isVerticalSetting}
->
-	<div class="styleshift-setting-row-content">
-		{#if controller.isDeveloperMode}
-			<div class="styleshift-setting-slot drag-slot">
-				<div class="styleshift-setting-slot-inner">
-					<button class="styleshift-config-button drag-handle" use:dragAction>
-						<Icon name="drag" size={16} />
-					</button>
+{#if isMounted}
+	<SettingFrame
+		id={setting.id}
+		type={setting.type}
+		className="{controller.isDeveloperMode ? 'developer-mode' : ''} {isLocked
+			? 'styleshift-setting-hard-locked'
+			: ''} {!controller.requirementsMet ? 'styleshift-setting-requirement-warning' : ''} {isCollapsing
+			? 'is-collapsing'
+			: ''}"
+		style="{controller.isDeveloperMode && setting.type !== 'subText' && setting.type !== 'text'
+			? 'gap: 10px;'
+			: ''} {isLocked || !controller.requirementsMet
+			? 'flex-direction: column; align-items: stretch;'
+			: ''} {collapseStyle}"
+		useAction={(node) => {
+			domNode = node;
+			if (setting.id && node.parentElement) {
+				registerSettingUi(setting.id, node.parentElement, node);
+			}
+		}}
+		padding={setting.type !== "button" && setting.type !== "subText"}
+		transparent={setting.type === "button" ||
+			setting.type === "subText" ||
+			setting.type === "text" ||
+			(setting.type === "custom" && setting.transparent)}
+		vertical={isVerticalSetting}
+	>
+		<div class="styleshift-setting-row-content">
+			{#if controller.isDeveloperMode}
+				<div class="styleshift-setting-slot drag-slot">
+					<div class="styleshift-setting-slot-inner">
+						<button class="styleshift-config-button drag-handle" use:dragAction>
+							<Icon name="drag" size={16} />
+						</button>
+					</div>
 				</div>
-			</div>
-		{/if}
+			{/if}
 
-		<div class="styleshift-setting-main" class:is-vertical={isVerticalSetting}>
-			{#if setting.type === "checkbox"}
-				<Checkbox {setting} disabled={isLocked} />
-			{:else if setting.type === "button"}
-				<Button {setting} {layout} showHelpIcon={layout === "grid"} showHoverPreview />
-			{:else if setting.type === "numberSlide"}
-				<Slider {setting} />
-			{:else if setting.type === "textInput"}
-				<TextInput {setting} />
-			{:else if setting.type === "color"}
-				<ColorPicker {setting} />
-			{:else if setting.type === "dropdown"}
-				<Dropdown {setting} inline />
-			{:else if setting.type === "text"}
-				<Text html={setting.html} fontSize={setting.fontSize} {textAlign} />
-			{:else if setting.type === "subText"}
-				<Text
-					text={setting.text}
-					fontSize={setting.fontSize}
-					color={setting.color}
-					{textAlign}
-					className="styleshift-setting-sub-title"
-				/>
-			{:else if setting.type === "imageInput"}
-				<ImageInput {setting} />
-			{:else if setting.type === "previewImage"}
-				<PreviewImage
-					src={controller.value}
-					title={setting.title}
-					preset={setting.preset}
-					settingIds={setting.settingIds}
-				/>
-			{:else if setting.type === "custom"}
-				<div use:controller.customSettingAction></div>
-			{:else if setting.type === "combineSetting"}
-				<Description name={setting.name} description={setting.description} />
-			{:else if setting.type === "conditionSetting"}
-				<div style="display: flex; flex-direction: column; width: 100%; gap: 5px;">
-					<Description name={setting.name} description={setting.description} />
-					<ConditionStatus
-						conditionsMet={controller.conditionsMet}
-						condition={setting.condition}
-						requiredSettings={controller.requiredSettings}
+			<div class="styleshift-setting-main" class:is-vertical={isVerticalSetting}>
+				{#if setting.type === "checkbox"}
+					<Checkbox {setting} disabled={isLocked} />
+				{:else if setting.type === "button"}
+					<Button {setting} {layout} showHelpIcon={layout === "grid"} showHoverPreview />
+				{:else if setting.type === "numberSlide"}
+					<Slider {setting} />
+				{:else if setting.type === "textInput"}
+					<TextInput {setting} />
+				{:else if setting.type === "color"}
+					<ColorPicker {setting} />
+				{:else if setting.type === "dropdown"}
+					<Dropdown {setting} inline />
+				{:else if setting.type === "text"}
+					<Text html={setting.html} fontSize={setting.fontSize} {textAlign} />
+				{:else if setting.type === "subText"}
+					<Text
+						text={setting.text}
+						fontSize={setting.fontSize}
+						color={setting.color}
+						{textAlign}
+						className="styleshift-setting-sub-title"
 					/>
+				{:else if setting.type === "imageInput"}
+					<ImageInput {setting} />
+				{:else if setting.type === "previewImage"}
+					<PreviewImage
+						src={controller.value}
+						title={setting.title}
+						preset={setting.preset}
+						settingIds={setting.settingIds}
+					/>
+				{:else if setting.type === "custom"}
+					<div use:controller.customSettingAction></div>
+				{:else if setting.type === "combineSetting"}
+					<Description name={setting.name} description={setting.description} />
+				{:else if setting.type === "conditionSetting"}
+					<div style="display: flex; flex-direction: column; width: 100%; gap: 5px;">
+						<Description name={setting.name} description={setting.description} />
+						<ConditionStatus
+							conditionsMet={controller.conditionsMet}
+							condition={setting.condition}
+							requiredSettings={controller.requiredSettings}
+						/>
+					</div>
+				{:else if setting.type === "keyboardShortcuts"}
+					<div use:controller.keyboardShortcutsAction></div>
+				{:else if setting.type === "selectorInput"}
+					<Selector {setting} />
+				{/if}
+			</div>
+
+			{#if controller.isDeveloperMode || setting.quickCustomize}
+				<div class="styleshift-setting-slot actions-slot">
+					<div class="styleshift-setting-slot-inner">
+						<div class="styleshift-config-actions">
+							{#if setting.quickCustomize}
+								<button
+									class="styleshift-config-button quick-edit"
+									title="Edit in Quick Customize"
+									onclick={() => controller.handleQuickEdit()}
+								>
+									<Icon name="brush" size={16} color="var(--fg-opacity-100)" />
+								</button>
+							{/if}
+
+							{#if controller.isDeveloperMode}
+								<button class="styleshift-config-button edit" onclick={() => controller.handleEdit()}>
+									<Icon name="edit" size={16} />
+								</button>
+							{/if}
+
+							{#if controller.isDeveloperMode || setting.quickCustomize}
+								<button
+									class="styleshift-config-button delete"
+									title="Remove setting"
+									onclick={() => controller.handleDelete()}
+								>
+									<Icon name="delete" size={16} />
+								</button>
+							{/if}
+						</div>
+					</div>
 				</div>
-			{:else if setting.type === "keyboardShortcuts"}
-				<div use:controller.keyboardShortcutsAction></div>
-			{:else if setting.type === "selectorInput"}
-				<Selector {setting} />
 			{/if}
 		</div>
 
-		{#if controller.isDeveloperMode || setting.quickCustomize}
-			<div class="styleshift-setting-slot actions-slot">
-				<div class="styleshift-setting-slot-inner">
-					<div class="styleshift-config-actions">
-						{#if setting.quickCustomize}
-							<button
-								class="styleshift-config-button quick-edit"
-								title="Edit in Quick Customize"
-								onclick={() => controller.handleQuickEdit()}
-							>
-								<Icon name="brush" size={16} color="var(--fg-opacity-100)" />
-							</button>
-						{/if}
-
-						{#if controller.isDeveloperMode}
-							<button class="styleshift-config-button edit" onclick={() => controller.handleEdit()}>
-								<Icon name="edit" size={16} />
-							</button>
-						{/if}
-
-						{#if controller.isDeveloperMode || setting.quickCustomize}
-							<button
-								class="styleshift-config-button delete"
-								title="Remove setting"
-								onclick={() => controller.handleDelete()}
-							>
-								<Icon name="delete" size={16} />
-							</button>
-						{/if}
-					</div>
-				</div>
+		<WarningSection
+			{isLocked}
+			lockMessage={setting.lock?.message}
+			requirementsMet={controller.requirementsMet}
+			require={setting.require}
+			requiredSettings={controller.requiredSettings}
+		/>
+		{#if previewStatus}
+			<div class="styleshift-hover-preview-status" aria-live="polite" transition:fade={{ duration: 160 }}>
+				{previewStatus}
 			</div>
 		{/if}
-	</div>
-
-	<WarningSection
-		{isLocked}
-		lockMessage={setting.lock?.message}
-		requirementsMet={controller.requirementsMet}
-		require={setting.require}
-		requiredSettings={controller.requiredSettings}
-	/>
-	{#if previewStatus}
-		<div class="styleshift-hover-preview-status" aria-live="polite" transition:fade={{ duration: 160 }}>
-			{previewStatus}
-		</div>
-	{/if}
-</SettingFrame>
+	</SettingFrame>
+{/if}
 
 <style lang="scss">
 	.styleshift-setting-row-content {
@@ -245,6 +294,21 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		pointer-events: none;
+	}
+
+	/* A negative bottom margin cancels the parent gap that follows the frame, so removing it does not jump. */
+	:global(.styleshift-setting-frame.is-collapsing) {
+		max-height: 0 !important;
+		padding-top: 0 !important;
+		padding-bottom: 0 !important;
+		margin-bottom: calc(-1 * var(--collapse-gap, 0px)) !important;
+		opacity: 0;
+		overflow: hidden;
+		transition:
+			max-height 0.25s ease,
+			padding 0.25s ease,
+			margin 0.25s ease,
+			opacity 0.2s ease !important;
 	}
 
 	:global(.styleshift-setting-frame.styleshift-setting-hard-locked .styleshift-setting-row-content) {
