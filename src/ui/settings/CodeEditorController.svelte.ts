@@ -1,4 +1,5 @@
 import { codemirrorInstance, globalMetadataCache } from "@/core/runtime/controller";
+import { splitDetail } from "@ui/docs/apiReferenceData";
 import { logger } from "@/shared/logger";
 import { buildReadonlyExtensions } from "./codeEditorExtensions";
 
@@ -26,18 +27,17 @@ function splitTopLevel(text: string): string[] {
 
 /** Breaks a signature such as `({ a = 1, b }) => any` into one parameter per line. */
 function formatSignatureLines(detail: string): string[] {
-	const closeIndex = detail.lastIndexOf(") =>");
-	if (closeIndex === -1) return [detail];
+	const { params, returns } = splitDetail(detail);
+	if (!params.startsWith("(")) return [detail];
 
-	const params = detail.slice(1, closeIndex);
-	const returnType = detail.slice(closeIndex + 1);
-	const isObjectParam = params.startsWith("{") && params.endsWith("}");
-	const items = splitTopLevel(isObjectParam ? params.slice(1, -1) : params);
+	const inner = params.slice(1, -1);
+	const isObjectParam = inner.startsWith("{") && inner.endsWith("}");
+	const items = splitTopLevel(isObjectParam ? inner.slice(1, -1) : inner);
 	if (items.length === 0) return [detail];
 
 	const opening = isObjectParam ? "({" : "(";
 	const closing = isObjectParam ? "})" : ")";
-	return [opening, ...items.map((item) => `  ${item},`), `${closing}${returnType}`];
+	return [opening, ...items.map((item) => `  ${item},`), `${closing} => ${returns}`];
 }
 
 export interface CodeEditorOptions {
