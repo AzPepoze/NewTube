@@ -1,7 +1,7 @@
 // @ts-nocheck -- Bun's test globals are not part of the extension TypeScript program.
 import { expect, test } from "bun:test";
 import {
-	callStubFor,
+	kindSummaryFor,
 	tokenizeType,
 	fileLabelFor,
 	filterFunctions,
@@ -11,6 +11,7 @@ import {
 	parseParamBody,
 	parseReturnsBody,
 	signatureFor,
+	splitDetail,
 	splitSignature,
 	splitTagBody,
 } from "../../../src/ui/docs/apiReferenceData";
@@ -199,15 +200,29 @@ test("type tokens recognize keywords, literals, and nested braces", () => {
 	expect(shape.map((token) => token.text).join("")).toBe("{ x: number; y: 2 }");
 });
 
-test("call stub lists top-level parameter names", () => {
-	expect(callStubFor({ label: "getScrollParent", detail: "(element: HTMLElement | null) => any" })).toBe(
-		"getScrollParent(element)",
+test("detail splits after the parameter list, not at an arrow inside a type", () => {
+	expect(splitDetail("(cb: (x: number) => void, ...rest: any[]) => any")).toEqual({
+		params: "(cb: (x: number) => void, ...rest: any[])",
+		returns: "any",
+	});
+	expect(splitDetail("(options: { close: () => void; }) => Promise<void>")).toEqual({
+		params: "(options: { close: () => void; })",
+		returns: "Promise<void>",
+	});
+	expect(splitDetail("() => Promise<any>")).toEqual({ params: "()", returns: "Promise<any>" });
+});
+
+test("signature keeps callback and object return types intact", () => {
+	const entry = {
+		label: "createNotification",
+		detail: "(options: { title?: string; }) => Promise<{ close: () => void; }>",
+	};
+	expect(signatureFor(entry)).toBe(
+		"function createNotification(options: { title?: string; }): Promise<{ close: () => void; }>;",
 	);
-	expect(callStubFor({ label: "pick", detail: "(map: Record<string, number>, key?: string) => void" })).toBe(
-		"pick(map, key)",
-	);
-	expect(callStubFor({ label: "wrap", detail: "(cb: (x: number) => void, ...rest: any[]) => any" })).toBe(
-		"wrap(cb, rest)",
-	);
-	expect(callStubFor({ label: "waitDocumentLoaded", detail: "() => Promise<any>" })).toBe("waitDocumentLoaded()");
+});
+
+test("kind summaries exist for known kinds and are empty for unknown ones", () => {
+	expect(kindSummaryFor("checkbox")).toBe("A switch for a true or false value.");
+	expect(kindSummaryFor("notAKind")).toBe("");
 });

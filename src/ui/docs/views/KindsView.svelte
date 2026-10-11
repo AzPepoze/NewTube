@@ -5,7 +5,7 @@
 	import ResizeBar from "@ui/shared/views/ResizeBar.svelte";
 	import SidebarScrollLayout from "@ui/shared/views/SidebarScrollLayout.svelte";
 	import SettingRenderer from "@ui/settings/views/setting/SettingRenderer.svelte";
-	import type { ApiKindGroup } from "../apiReferenceData";
+	import { kindSummaryFor, type ApiKindGroup } from "../apiReferenceData";
 	import type { SidebarResize } from "../sidebarResize.svelte";
 	import { openKindJson } from "../playground.svelte";
 	import DocEntry from "./DocEntry.svelte";
@@ -47,7 +47,12 @@
 			{#each group.kinds as kind (String(kind.type))}
 				{@const kindType = String(kind.type)}
 				{@const kindJson = JSON.stringify(kind, null, 2)}
+				{@const summary = kindSummaryFor(kindType)}
 				<DocEntry anchor={`kind:${kindType}`} title={kindType} tag={group.category}>
+					{#if summary}
+						<p class="doc-summary">{summary}</p>
+					{/if}
+
 					<h3 class="doc-sub">Preview</h3>
 					<div class="doc-preview">
 						<SettingRenderer setting={kind} />

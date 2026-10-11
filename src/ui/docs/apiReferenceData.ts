@@ -30,9 +30,36 @@ export interface ParsedApiDoc {
 
 const UNKNOWN_FILE = "unknown";
 
+export interface SplitDetail {
+	params: string;
+	returns: string;
+}
+
+/** Splits "(params) => Return" after the parameter list, so arrows inside types stay in place. */
+export function splitDetail(detail: string): SplitDetail {
+	const paramsEnd = findParamsEnd(detail);
+	if (paramsEnd === -1) return { params: detail, returns: "any" };
+	return { params: detail.slice(0, paramsEnd + 1), returns: detail.slice(paramsEnd + ") => ".length) };
+}
+
+/** Index of the ")" that closes the "(" at position 0, or -1. */
+function findParamsEnd(detail: string): number {
+	if (!detail.startsWith("(")) return -1;
+	let depth = 0;
+	for (let i = 0; i < detail.length; i++) {
+		if (detail[i] === "(") depth++;
+		else if (detail[i] === ")") {
+			depth--;
+			if (depth === 0) return i;
+		}
+	}
+	return -1;
+}
+
 /** Formats an entry the way the generated .d.ts declares it. */
 export function signatureFor(entry: ApiFunctionDoc): string {
-	return `function ${entry.label}${entry.detail.replace(" => ", ": ")};`;
+	const { params, returns } = splitDetail(entry.detail);
+	return `function ${entry.label}${params}: ${returns};`;
 }
 
 export interface SplitSignature {
@@ -191,6 +218,29 @@ const KIND_CATEGORIES: Array<{ category: string; types: string[] }> = [
 ];
 
 const HIDDEN_KIND_TYPES = new Set(["keyboardShortcuts"]);
+
+const KIND_SUMMARIES: Record<string, string> = {
+	text: "Shows a line of text, with optional alignment, color, and font size.",
+	subText: "Shows smaller text under a setting, for hints and extra detail.",
+	button: "Runs an action when clicked, such as calling a function.",
+	checkbox: "A switch for a true or false value.",
+	numberSlide: "A slider for a number value.",
+	dropdown: "Lets the user pick one value from a list of options.",
+	color: "A color picker. Can show an alpha (transparency) slider.",
+	textInput: "A text box for a text value.",
+	imageInput: "Lets the user choose an image file, up to a size limit.",
+	previewImage: "Shows a preview of an image, using a preset layout such as banner or avatar.",
+	custom: "A setting drawn by your own code. Use it when no other kind fits.",
+	combineSetting: "Groups several settings and runs one update when any of them change.",
+	conditionSetting: "Turns CSS or functions on and off, based on a condition.",
+	group: "A heading that groups the settings below it.",
+	selectorInput: "A text box for a CSS selector that targets page elements.",
+};
+
+/** Plain-language summary for a setting kind, or an empty string when none is written. */
+export function kindSummaryFor(type: string): string {
+	return KIND_SUMMARIES[type] ?? "";
+}
 
 /** Groups setting kinds into fixed categories, unknown types land in Other. Hidden kinds are skipped. */
 export function groupKindsByCategory<T extends { type: string }>(kinds: readonly T[]): ApiKindGroup<T>[] {
