@@ -1,14 +1,29 @@
 import { convertToExportSetting } from "../src/core/theme/exportConverter";
 import { createAllSettingPresets } from "../src/settings/registry/defaultItems";
+import { signatureFor } from "../src/ui/docs/apiReferenceData";
 import * as fs from "fs-extra";
 import * as path from "path";
-import { SRC, BUILD, TEMPLATE, extensionConfig, ensureDir } from "./shared/paths";
+import ts from "typescript";
+import { SRC, BUILD, TEMPLATE, ROOT, extensionConfig, ensureDir } from "./shared/paths";
 import { log } from "./shared/logger";
 
 const SETTINGS_OUT_DIR = path.join(TEMPLATE, "settings");
 const PROD_TYPES_DIR = path.join(BUILD, "types");
 const TYPE_FILE_NAME = `${extensionConfig.name}.d.ts`;
 const METADATA_FILE_NAME = `${extensionConfig.name}-Metadata.json`;
+const TSCONFIG_PATH = path.join(ROOT, "tsconfig.json");
+const TYPE_FORMAT_FLAGS = ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope;
+const VOID_RETURN = /\) => (Promise<void>|void)$/;
+
+export interface MetadataEntry {
+	label: string;
+	type: "function";
+	file: string;
+	detail: string;
+	info: string;
+}
+
+type ExportedFunction = ts.FunctionDeclaration & { name: ts.Identifier };
 
 async function createSettingFolder(categoryFolderPath: string, thisSetting: any) {
 	const settingFolderName = thisSetting.type.toLowerCase().replace(/\s+/g, "-");
@@ -23,45 +38,124 @@ async function createSettingFolder(categoryFolderPath: string, thisSetting: any)
 	fs.writeFileSync(path.join(settingsFolderPath, "config.json"), JSON.stringify(thisSetting, null, 2));
 }
 
-function normalizeParams(rawParams: string): string {
-	return rawParams.replace(/\s+/g, " ").trim();
+function createCheckedProgram(filePaths: string[]): ts.Program {
+	const config = ts.readConfigFile(TSCONFIG_PATH, ts.sys.readFile);
+	const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, ROOT);
+	return ts.createProgram(filePaths, parsed.options);
 }
 
-function extractMetadata(content: string, fileName: string) {
-	const metadata: any[] = [];
-	const regex = /\/\*\*((?:(?!\*\/)[\s\S])*?)\*\/[\s\r\n]*export\s+(async\s+)?function\s+(\w+)\s*\(([\s\S]*?)\)/g;
-	let match;
-	while ((match = regex.exec(content)) !== null) {
-		const [_full, jsdoc, isAsync, name, rawParams] = match;
-		const params = normalizeParams(rawParams);
-		metadata.push({
-			label: name,
+function isExported(fn: ts.FunctionDeclaration): boolean {
+	return ts.getModifiers(fn)?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword) ?? false;
+}
+
+function exportedFunctions(sourceFile: ts.SourceFile): ExportedFunction[] {
+	return sourceFile.statements.filter(
+		(statement): statement is ExportedFunction =>
+			ts.isFunctionDeclaration(statement) && statement.name !== undefined && isExported(statement),
+	);
+}
+
+/** Uses the written annotation when present, otherwise the type the checker infers. */
+function typeText(annotation: ts.TypeNode | undefined, sourceFile: ts.SourceFile, inferred: () => string): string {
+	const text = annotation ? annotation.getText(sourceFile) : inferred();
+	return text.replace(/\s+/g, " ").trim();
+}
+
+function inferredTypeOf(node: ts.Node, checker: ts.TypeChecker): string {
+	return checker.typeToString(checker.getTypeAtLocation(node), undefined, TYPE_FORMAT_FLAGS);
+}
+
+/** Destructured parameters are named "options" so the signature stays readable. */
+function paramDeclaration(param: ts.ParameterDeclaration, sourceFile: ts.SourceFile, checker: ts.TypeChecker): string {
+	const name = ts.isIdentifier(param.name) ? param.name.text : "options";
+	const rest = param.dotDotDotToken ? "..." : "";
+	const optional = param.questionToken || param.initializer ? "?" : "";
+	const type = typeText(param.type, sourceFile, () => inferredTypeOf(param, checker));
+	return `${rest}${name}${optional}: ${type}`;
+}
+
+function functionDetail(fn: ExportedFunction, sourceFile: ts.SourceFile, checker: ts.TypeChecker): string {
+	const params = fn.parameters.map((param) => paramDeclaration(param, sourceFile, checker)).join(", ");
+	const returnType = typeText(fn.type, sourceFile, () =>
+		checker.typeToString(checker.getSignatureFromDeclaration(fn)!.getReturnType(), undefined, TYPE_FORMAT_FLAGS),
+	);
+	return `(${params}) => ${returnType}`;
+}
+
+/** Strips the comment delimiters and leading stars from a JSDoc block. */
+function cleanJsDoc(raw: string): string {
+	return raw
+		.replace(/\*\/$/, "")
+		.replace(/^\/\*\*/, "")
+		.replace(/^\s*\* ?/gm, "")
+		.trim();
+}
+
+function functionInfo(fn: ExportedFunction, sourceFile: ts.SourceFile): string {
+	const doc = ts.getJSDocCommentsAndTags(fn).filter(ts.isJSDoc).at(-1);
+	return doc ? cleanJsDoc(doc.getText(sourceFile)) : "";
+}
+
+function metadataFor(sourceFile: ts.SourceFile, checker: ts.TypeChecker): MetadataEntry[] {
+	return exportedFunctions(sourceFile).map(
+		(fn): MetadataEntry => ({
+			label: fn.name.text,
 			type: "function",
-			file: fileName,
-			detail: `(${params}) => ${isAsync ? "Promise<any>" : "any"}`,
-			info: jsdoc
-				.replace(/\*\/$/, "")
-				.replace(/^\/\*\*/, "")
-				.replace(/^\s*\* ?/gm, "")
-				.trim(),
-		});
-	}
-
-	const simpleRegex = /(?!\/\*\*[\s\S]*?)\bexport\s+(async\s+)?function\s+(\w+)\s*\(([\s\S]*?)\)/g;
-	while ((match = simpleRegex.exec(content)) !== null) {
-		const [_, isAsync, name, rawParams] = match;
-		const params = normalizeParams(rawParams);
-		if (!metadata.find((m) => m.label === name)) {
-			metadata.push({
-				label: name,
-				type: "function",
-				file: fileName,
-				detail: `(${params}) => ${isAsync ? "Promise<any>" : "any"}`,
-			});
-		}
-	}
-	return metadata;
+			file: path.basename(sourceFile.fileName),
+			detail: functionDetail(fn, sourceFile, checker),
+			info: functionInfo(fn, sourceFile),
+		}),
+	);
 }
+
+/** Reads the exported functions of the given files, using the TypeScript checker for types. */
+export function extractMetadata(filePaths: string[]): MetadataEntry[] {
+	const program = createCheckedProgram(filePaths);
+	const checker = program.getTypeChecker();
+	return filePaths.flatMap((filePath) => {
+		const sourceFile = program.getSourceFile(filePath);
+		return sourceFile ? metadataFor(sourceFile, checker) : [];
+	});
+}
+
+/** The text before the first @tag line. */
+function summaryOf(info: string): string {
+	const lines = info.split("\n");
+	const tagStart = lines.findIndex((line) => line.trim().startsWith("@"));
+	const summaryLines = tagStart === -1 ? lines : lines.slice(0, tagStart);
+	return summaryLines.join(" ").trim();
+}
+
+function missingDocParts(entry: MetadataEntry): string[] {
+	const missing: string[] = [];
+	if (!summaryOf(entry.info)) missing.push("a summary");
+	if (!entry.info.includes("@example")) missing.push("@example");
+	if (!VOID_RETURN.test(entry.detail) && !entry.info.includes("@returns")) missing.push("@returns");
+	return missing;
+}
+
+function warnMissingDocs(entry: MetadataEntry) {
+	const missing = missingDocParts(entry);
+	if (missing.length) log.warn(`${entry.label} (${entry.file}) is missing ${missing.join(", ")}`);
+}
+
+/** Functions that live on the page world object, so they are not in a source file. */
+const STORAGE_ENTRIES: MetadataEntry[] = [
+	{
+		label: "setValue",
+		type: "function",
+		file: "webPage.ts",
+		detail: "(id: string, value: any) => void",
+		info: `Sets a value in the ${extensionConfig.name} storage.\n\n@param {string} id - The storage key.\n@param {any} value - The value to save.\n\n@example\nsetValue("myCounter", 3);`,
+	},
+	{
+		label: "getValue",
+		type: "function",
+		file: "webPage.ts",
+		detail: "(id: string) => any",
+		info: `Gets a value from the ${extensionConfig.name} storage.\n\n@param {string} id - The storage key.\n@returns {any} The saved value, or undefined when the key was never set.\n\n@example\nconst counter = getValue("myCounter");`,
+	},
+];
 
 export async function buildTemplates() {
 	log.info("Generating UI Templates...");
@@ -72,8 +166,6 @@ export async function buildTemplates() {
 
 	log.info("Generating Type Definitions...");
 	const sharedFunctionsDir = path.join(SRC, "core/shared");
-	const sharedUtilitiesDir = path.join(SRC, "shared");
-	const coreUtilsDir = path.join(SRC, "core/utils");
 	const commDir = path.join(SRC, "core/communication");
 
 	const sourceFiles = [
@@ -83,38 +175,19 @@ export async function buildTemplates() {
 		path.join(sharedFunctionsDir, "dialogs.ts"),
 		path.join(sharedFunctionsDir, "importExport.ts"),
 		path.join(sharedFunctionsDir, "webPageLogger.ts"),
-		path.join(sharedUtilitiesDir, "utilities.ts"),
-		path.join(coreUtilsDir, "colorConversion.ts"),
+		path.join(sharedFunctionsDir, "utilities.ts"),
+		path.join(sharedFunctionsDir, "colorConversion.ts"),
 		path.join(commDir, "webPage.ts"),
 	];
 
-	let allMetadata: any[] = [];
-	for (const filePath of sourceFiles) {
-		if (fs.existsSync(filePath)) {
-			const content = fs.readFileSync(filePath, "utf-8");
-			allMetadata = [...allMetadata, ...extractMetadata(content, path.basename(filePath))];
-		}
-	}
-
-	allMetadata.push(
-		{
-			label: "setValue",
-			type: "function",
-			file: "webPage.ts",
-			detail: "(id: string, value: any) => void",
-			info: `Sets a value in the ${extensionConfig.name} storage.`,
-		},
-		{
-			label: "getValue",
-			type: "function",
-			file: "webPage.ts",
-			detail: "(id: string) => any",
-			info: `Gets a value from the ${extensionConfig.name} storage.`,
-		},
-	);
+	const missingSourceFiles = sourceFiles.filter((filePath) => !fs.existsSync(filePath));
+	missingSourceFiles.forEach((filePath) => log.warn(`API source file not found: ${filePath}`));
+	const allMetadata = extractMetadata(sourceFiles.filter((filePath) => fs.existsSync(filePath)));
+	allMetadata.forEach(warnMissingDocs);
+	allMetadata.push(...STORAGE_ENTRIES);
 
 	const combinedSignatures = allMetadata
-		.map((m) => `    /** ${m.info || m.label} */\n    function ${m.label}${m.detail.replace(" => ", ": ")};`)
+		.map((m) => `    /** ${summaryOf(m.info) || m.label} */\n    ${signatureFor(m)}`)
 		.join("\n");
 
 	const dTsContent = `/**\n * ${extensionConfig.name} Global API\n */\ndeclare global {\n${combinedSignatures}\n}\nexport {};`;
