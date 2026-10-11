@@ -23,10 +23,11 @@
 	import { TUTORIAL_STEPS, hasSpotlight, needsDeveloperMode, requiresSettingsPanel } from "./tutorialSteps";
 	import { isThemeManagerOpen } from "@ui/themes/themeManagerService";
 	import { markTutorialSeen } from "./tutorialStorage";
+	import type { ShortcutMap } from "./tutorialShortcuts";
 	import { getRootValue } from "@core/storage/manager";
 	import { registerSettingListener, unregisterSettingListener } from "@settings/engine/functions";
 
-	let { onClose = () => {} }: { onClose?: () => void } = $props();
+	let { onClose = () => {}, shortcuts }: { onClose?: () => void; shortcuts: ShortcutMap } = $props();
 
 	const CLOSE_ANIMATION_MS = 200;
 
@@ -50,7 +51,6 @@
 	const currentStep = $derived(TUTORIAL_STEPS[currentIndex]);
 	const isFirstStep = $derived(currentIndex === 0);
 	const isLastStep = $derived(currentIndex === TUTORIAL_STEPS.length - 1);
-	const tierLabel = $derived(currentStep.tier === "core" ? "Core" : "Optional");
 
 	const devGateFailed = $derived(needsDeveloperMode(currentStep) && !isDeveloperMode);
 	const canProceed = $derived((currentIndex !== 0 || isPanelOpen) && !devGateFailed);
@@ -66,8 +66,9 @@
 	function attachTargetClickListener(target: HTMLElement) {
 		detachTargetClickListener();
 		if (currentStep.try) {
+			// The target's own click already starts the mode; starting it again here would stop it.
 			const handler = () => {
-				void handleTry();
+				enterTrial();
 			};
 			target.addEventListener("click", handler, { once: true });
 			activeTargetClickListener = { target, handler };
@@ -216,10 +217,14 @@
 		requestAnimationFrame(() => updatePosition());
 	}
 
-	async function handleTry() {
+	function enterTrial() {
 		isTrialMode = true;
 		trialSawManagerOpen = false;
 		requestAnimationFrame(() => updatePosition());
+	}
+
+	async function handleTry() {
+		enterTrial();
 		await runStepTry(currentStep);
 	}
 
@@ -334,8 +339,8 @@
 		step={currentStep}
 		steps={TUTORIAL_STEPS}
 		index={currentIndex}
+		{shortcuts}
 		trialMode={isTrialMode}
-		{tierLabel}
 		{canProceed}
 		{isFirstStep}
 		{isLastStep}
@@ -352,7 +357,6 @@
 		onBack={handleBack}
 		onNext={handleNext}
 		onClose={close}
-		onGoTo={goTo}
 		onReopen={handleReopen}
 	/>
 </div>

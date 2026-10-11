@@ -1,13 +1,15 @@
 <script lang="ts">
 	import Icon from "@base/Icon.svelte";
+	import type { ShortcutMap } from "../tutorialShortcuts";
 	import type { TutorialStep } from "../tutorialSteps";
+	import StepVisual from "./StepVisual.svelte";
 
 	let {
 		step,
 		steps,
 		index,
+		shortcuts,
 		trialMode,
-		tierLabel,
 		canProceed,
 		isFirstStep,
 		isLastStep,
@@ -25,14 +27,13 @@
 		onBack,
 		onNext,
 		onClose,
-		onGoTo,
 		onReopen,
 	}: {
 		step: TutorialStep;
 		steps: TutorialStep[];
 		index: number;
+		shortcuts: ShortcutMap;
 		trialMode: boolean;
-		tierLabel: string;
 		canProceed: boolean;
 		isFirstStep: boolean;
 		isLastStep: boolean;
@@ -50,9 +51,10 @@
 		onBack: () => void;
 		onNext: () => void;
 		onClose: () => void;
-		onGoTo: (index: number) => void;
 		onReopen: () => void;
 	} = $props();
+
+	const progressPercent = $derived(((index + 1) / steps.length) * 100);
 </script>
 
 <aside
@@ -66,9 +68,9 @@
 >
 	<header class="card-header">
 		<div class="header-left">
-			<span class="step-tier" class:trial={trialMode}>
-				{trialMode ? "Trial Mode" : tierLabel}
-			</span>
+			{#if trialMode}
+				<span class="step-tier trial">Trial Mode</span>
+			{/if}
 			<span class="step-count">{index + 1} / {steps.length}</span>
 		</div>
 		<button class="card-close" aria-label="Close tutorial" onclick={onClose}>
@@ -93,6 +95,14 @@
 		{:else}
 			<h2 class="step-title">{step.title}</h2>
 			<p class="step-text">{step.body}</p>
+
+			{#if step.visual}
+				<StepVisual visual={step.visual} {shortcuts} />
+			{/if}
+
+			{#if step.shortcut}
+				<StepVisual visual={{ kind: "keys", items: [step.shortcut] }} {shortcuts} />
+			{/if}
 
 			{#if step.bullets.length}
 				<ul class="step-bullets">
@@ -152,16 +162,15 @@
 		<footer class="card-footer">
 			<button class="nav-btn" onclick={onBack} disabled={isFirstStep}>Back</button>
 
-			<div class="nav-dots" role="tablist" aria-label="Tour steps">
-				{#each steps as dotStep, dotIndex (dotStep.id)}
-					<button
-						class="dot"
-						class:active={dotIndex === index}
-						class:done={dotIndex < index}
-						aria-label="Go to step {dotIndex + 1}"
-						onclick={() => onGoTo(dotIndex)}
-					></button>
-				{/each}
+			<div
+				class="progress"
+				role="progressbar"
+				aria-label="Tutorial progress"
+				aria-valuemin={1}
+				aria-valuemax={steps.length}
+				aria-valuenow={index + 1}
+			>
+				<div class="progress-fill" style="width: {progressPercent}%"></div>
 			</div>
 
 			<button
@@ -428,36 +437,19 @@
 		}
 	}
 
-	.nav-dots {
-		display: flex;
-		align-items: center;
-		gap: 6px;
+	.progress {
+		flex: 1;
+		height: 6px;
+		border-radius: 999px;
+		background: var(--fg-opacity-15);
+		overflow: hidden;
 	}
 
-	.dot {
-		width: 8px;
-		height: 8px;
-		padding: 0;
-		border-radius: 50%;
-		border: none;
-		background: var(--fg-opacity-15);
-		cursor: pointer;
-		transition:
-			background 180ms ease,
-			transform 180ms ease;
-
-		&:hover {
-			background: var(--fg-opacity-35);
-		}
-
-		&.active {
-			background: var(--accent);
-			transform: scale(1.25);
-		}
-
-		&.done {
-			background: color-mix(in srgb, var(--accent) 50%, transparent);
-		}
+	.progress-fill {
+		height: 100%;
+		border-radius: inherit;
+		background: var(--accent);
+		transition: width 220ms cubic-bezier(0.2, 0, 0, 1);
 	}
 
 	.nav-btn {

@@ -1,3 +1,5 @@
+import type { ShortcutCommand } from "./tutorialShortcuts";
+
 export type TutorialTier = "core" | "optional";
 
 export const PANEL_CATEGORY = {
@@ -19,6 +21,17 @@ export interface TutorialChoice {
 	declineToId?: string;
 }
 
+export interface KeyHint {
+	command: ShortcutCommand;
+	label: string;
+}
+
+/** Small diagram shown under the step text instead of a paragraph. */
+export type TutorialVisual =
+	| { kind: "keys"; items: KeyHint[] }
+	| { kind: "flow"; items: string[] }
+	| { kind: "layout" };
+
 export interface TutorialStep {
 	id: string;
 	tier: TutorialTier;
@@ -26,6 +39,8 @@ export interface TutorialStep {
 	accent: string;
 	body: string;
 	bullets: string[];
+	visual?: TutorialVisual;
+	shortcut?: KeyHint;
 	panelCategory?: string;
 	actionLabel?: string;
 	targetSelector?: string;
@@ -62,88 +77,43 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
 		tier: "core",
 		title: "Open the panel",
 		accent: "#7f5db7",
-		body: "Click the ✦ button at the top-right of YouTube. The StyleShift panel opens on the right, with a sidebar to switch between sections.",
-		bullets: ["Shortcut: Alt+Shift+X also opens the panel"],
+		body: "Click the ✦ button at the top-right of YouTube.",
+		bullets: [],
+		visual: { kind: "keys", items: [{ command: "toggle_settings", label: "Also opens it" }] },
 		targetSelector: "#NEWTUBESET",
 		show: {},
 		actionLabel: "Open the panel",
 	},
 	{
-		id: "meet-panel",
+		id: "panel-tour",
 		tier: "core",
 		title: "Your settings panel",
 		accent: "#38bdf8",
-		body: "Everything lives in this panel. Pick a section on the left, change its settings on the right.",
+		body: "Pick a section on the left. Change its settings on the right.",
 		bullets: [],
+		visual: { kind: "layout" },
 		targetSelector: ".styleshift-settings-main",
-		panelCategory: PANEL_CATEGORY.quickPalette,
-	},
-	{
-		id: "panel-sidebar",
-		tier: "core",
-		title: "The sidebar",
-		accent: "#f472b6",
-		body: "Each row jumps to a settings group. Headers split them into sections like Video Experience and Visual Style.",
-		bullets: [],
-		targetSelector: ".styleshift-sidebar",
-		panelCategory: PANEL_CATEGORY.quickPalette,
-	},
-	{
-		id: "panel-content",
-		tier: "core",
-		title: "The main area",
-		accent: "#a3e635",
-		body: "The selected section opens here. Longer sections scroll, so keep going down.",
-		bullets: [],
-		targetSelector: ".styleshift-settings-list",
 		panelCategory: PANEL_CATEGORY.quickPalette,
 	},
 	{
 		id: "panel-search",
 		tier: "core",
-		title: "Search everything",
+		title: "Search",
 		accent: "#fb923c",
-		body: "Type here to filter every setting instantly, no matter which section it lives in.",
-		bullets: ["Press / anywhere to jump straight to search"],
+		body: "Click the box and type to filter every setting.",
+		bullets: [],
 		targetSelector: ".styleshift-search-wrapper",
 		panelCategory: PANEL_CATEGORY.quickPalette,
-	},
-	{
-		id: "keyboard-shortcuts",
-		tier: "core",
-		title: "Keyboard shortcuts",
-		accent: "#4caf50",
-		body: "Four keys run the show: Alt+Shift+Z toggles, X opens the panel, C customizes, A flips Developer Mode.",
-		bullets: ["Change them in your browser's extension shortcut settings"],
-		targetSelector: "#KeyboardShortcuts",
-		panelCategory: PANEL_CATEGORY.extensionSettings,
-		show: {
-			panelCategory: PANEL_CATEGORY.extensionSettings,
-		},
-		actionLabel: "Show Extension's settings",
-	},
-	{
-		id: "themes-store",
-		tier: "core",
-		title: "Themes and the store",
-		accent: "#ff6d6d",
-		body: "Themes opens your saved themes. Its Store tab browses the online store. Get downloads a theme, and Save keeps it in your collection.",
-		bullets: ["Share Your Theme uploads your own theme to the store"],
-		targetSelector: "#OpenThemeManagerButton",
-		panelCategory: PANEL_CATEGORY.quickPalette,
-		show: {
-			panelCategory: PANEL_CATEGORY.quickPalette,
-		},
-		try: "themeManager",
-		actionLabel: "Show Themes",
 	},
 	{
 		id: "customize-element",
 		tier: "core",
 		title: "Customize Elements",
 		accent: "#3eadad",
-		body: "In Quick Palette, click Customize Elements, then hover the page. Matching parts light up. Click one and its settings open beside it, so you can toggle them right away.",
-		bullets: ["Shortcut: Alt+Shift+C turns it on or off"],
+		body: "Hover the page, click a part, then edit it.",
+		bullets: [],
+		shortcut: { command: "toggle_customize", label: "Turn it on or off" },
+		visual: { kind: "flow", items: ["Hover", "Click", "Edit"] },
 		targetSelector: "#StyleShiftToggleCustomize",
 		panelCategory: PANEL_CATEGORY.quickPalette,
 		show: {
@@ -157,8 +127,9 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
 		tier: "core",
 		title: "Quick Customize",
 		accent: "#e45eff",
-		body: "In Quick Palette, click Quick Customize, then click an element on the page. A window opens where you name it and style it. Save adds it under Custom Elements.",
-		bullets: ["Find it in the Quick Palette section"],
+		body: "Click an element, style it, then save.",
+		bullets: ["Saves appear under Custom Elements"],
+		visual: { kind: "flow", items: ["Click", "Style", "Save"] },
 		targetSelector: "#StyleShiftQuickCustomize",
 		panelCategory: PANEL_CATEGORY.quickPalette,
 		show: {
@@ -168,17 +139,70 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
 		actionLabel: "Show Quick Palette",
 	},
 	{
+		id: "themes-store",
+		tier: "core",
+		title: "Themes and the store",
+		accent: "#ff6d6d",
+		body: "Get a theme from the store, then save it to your collection.",
+		bullets: ["Share Your Theme uploads yours"],
+		visual: { kind: "flow", items: ["Store", "Get", "Save"] },
+		targetSelector: "#OpenThemeManagerButton",
+		panelCategory: PANEL_CATEGORY.quickPalette,
+		show: {
+			panelCategory: PANEL_CATEGORY.quickPalette,
+		},
+		try: "themeManager",
+		actionLabel: "Show Themes",
+	},
+	{
+		id: "save-export",
+		tier: "core",
+		title: "Auto-save, export and import",
+		accent: "#1932ff",
+		body: "Settings save as you change them. No Save button needed.",
+		bullets: ["Export copies your setup", "Import loads one back in"],
+		targetSelector: "#ImportDataButton",
+		panelCategory: PANEL_CATEGORY.importExport,
+		show: {
+			panelCategory: PANEL_CATEGORY.importExport,
+		},
+		actionLabel: "Show Import / Export",
+	},
+	{
+		id: "keyboard-shortcuts",
+		tier: "core",
+		title: "Keyboard shortcuts",
+		accent: "#4caf50",
+		body: "Four keys do the main work.",
+		bullets: ["Change them in your browser's extension shortcut settings"],
+		visual: {
+			kind: "keys",
+			items: [
+				{ command: "toggle_enable", label: "Toggle StyleShift" },
+				{ command: "toggle_settings", label: "Open panel" },
+				{ command: "toggle_customize", label: "Customize" },
+				{ command: "toggle_dev_mode", label: "Developer Mode" },
+			],
+		},
+		targetSelector: "#KeyboardShortcuts",
+		panelCategory: PANEL_CATEGORY.extensionSettings,
+		show: {
+			panelCategory: PANEL_CATEGORY.extensionSettings,
+		},
+		actionLabel: "Show Extension's settings",
+	},
+	{
 		id: "dev-bridge",
 		tier: "core",
-		title: "Want to explore Developer Mode?",
+		title: "Explore Developer Mode?",
 		accent: "#8b7cf6",
-		body: "Those clicks touched real settings. Developer Mode is the hard manual way: build, code, pack.",
+		body: "Build your own settings, styles and exports.",
 		bullets: [],
 		panelCategory: PANEL_CATEGORY.extensionSettings,
 		spotlight: false,
 		choice: {
-			acceptLabel: "We need to go deeper!",
-			declineLabel: "I'm fine",
+			acceptLabel: "Go deeper",
+			declineLabel: "Not now",
 		},
 	},
 	{
@@ -186,8 +210,9 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
 		tier: "core",
 		title: "Developer Mode",
 		accent: "#ffb020",
-		body: "Turn on the Developer Mode checkbox. It unlocks the + buttons, the pencil, and the trash icon.",
-		bullets: ["Shortcut: Alt+Shift+A flips it anytime"],
+		body: "Turn it on to unlock the +, pencil and trash icons.",
+		bullets: [],
+		shortcut: { command: "toggle_dev_mode", label: "Flip it anytime" },
 		targetSelector: "#developerMode",
 		panelCategory: PANEL_CATEGORY.extensionSettings,
 		show: {
@@ -201,8 +226,8 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
 		tier: "core",
 		title: "Add a category",
 		accent: "#22d3ee",
-		body: "Use the sidebar + to add a category. It lands under ADD-ON and stays editable.",
-		bullets: ["Categories you add can be reordered and removed"],
+		body: "Click + in the sidebar. It lands under ADD-ON.",
+		bullets: ["You can reorder or remove it"],
 		targetSelector: ".styleshift-add-category-button",
 		panelCategory: PANEL_CATEGORY.quickPalette,
 		show: {
@@ -216,8 +241,8 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
 		tier: "core",
 		title: "Add a setting",
 		accent: "#2dd4bf",
-		body: "Inside your ADD-ON category, use its + button to pick a kind. It lands editable.",
-		bullets: ["Pencil edits a setting, trash deletes it"],
+		body: "Inside ADD-ON, click + and pick a kind.",
+		bullets: ["Pencil edits, trash deletes"],
 		targetSelector: ".styleshift-add-setting-button-wrapper",
 		panelCategory: PANEL_CATEGORY.quickPalette,
 		show: {
@@ -231,31 +256,14 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
 		tier: "core",
 		title: "Code it and pack it",
 		accent: "#f43f5e",
-		body: "Code settings by hand: pair CSS/JS with a config.json, then export it.",
-		bullets: [
-			"Scope: Build-in, Add-ons, or Both",
-			"Output: Clipboard or ZIP",
-			"The API Reference window lists every function and setting kind",
-		],
+		body: "Write CSS and JS with a config.json, then export.",
+		bullets: ["Scope: Built-in, Add-ons or Both", "Output: Clipboard or ZIP"],
+		visual: { kind: "flow", items: ["Code", "Export", "ZIP"] },
 		targetSelector: "#ExportDataButton",
 		panelCategory: PANEL_CATEGORY.importExport,
 		show: {
 			docs: true,
 		},
 		actionLabel: "Open API Reference",
-	},
-	{
-		id: "save-export",
-		tier: "core",
-		title: "Auto-save, export and import",
-		accent: "#1932ff",
-		body: "Settings save as you change them, so there is no Save button for them. Export Data copies your setup. Import Data loads one back in.",
-		bullets: ["To keep a whole look as a theme, use Save in the Themes window"],
-		targetSelector: "#ImportDataButton",
-		panelCategory: PANEL_CATEGORY.importExport,
-		show: {
-			panelCategory: PANEL_CATEGORY.importExport,
-		},
-		actionLabel: "Show Import / Export",
 	},
 ];

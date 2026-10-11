@@ -4,6 +4,7 @@ import { applyThemeToElement } from "@ui/themes/theme";
 import { showUserConfirmation } from "@ui/window/windowFactory";
 import { mount, unmount } from "svelte";
 import { closeMainSettingsPanel } from "./tutorialNavigation";
+import { loadShortcuts } from "./tutorialShortcuts";
 import TutorialOverlay from "./TutorialOverlay.svelte";
 
 let activeInstance: ReturnType<typeof mount> | null = null;
@@ -33,10 +34,12 @@ export async function openTutorialOverlay(): Promise<void> {
 	await applyThemeToElement(wrapper);
 	(await getDocumentBody()).appendChild(wrapper);
 
+	const shortcuts = await loadShortcuts();
+
 	activeWrapper = wrapper;
 	activeInstance = mount(TutorialOverlay, {
 		target: wrapper,
-		props: { onClose: closeTutorialOverlay },
+		props: { onClose: closeTutorialOverlay, shortcuts },
 	});
 }
 

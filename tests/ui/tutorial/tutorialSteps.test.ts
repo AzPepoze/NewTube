@@ -1,10 +1,22 @@
 import { expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { shortcutKeys, type ShortcutMap } from "../../../src/ui/tutorial/tutorialShortcuts";
 import {
 	PANEL_CATEGORY,
 	TUTORIAL_STEPS,
 	hasSpotlight,
 	requiresSettingsPanel,
 } from "../../../src/ui/tutorial/tutorialSteps";
+
+function emptyShortcuts(): ShortcutMap {
+	return {
+		toggle_enable: undefined,
+		toggle_settings: undefined,
+		toggle_customize: undefined,
+		toggle_dev_mode: undefined,
+	};
+}
 
 test("every step has a unique id", () => {
 	const ids = TUTORIAL_STEPS.map((step) => step.id);
@@ -99,9 +111,7 @@ test("only panel-anchored steps require the settings panel", () => {
 	const required = new Set(TUTORIAL_STEPS.filter((step) => requiresSettingsPanel(step)).map((step) => step.id));
 	expect(required.has("open-panel")).toBe(false);
 	const panelStepIds = [
-		"meet-panel",
-		"panel-sidebar",
-		"panel-content",
+		"panel-tour",
 		"panel-search",
 		"quick-customize",
 		"customize-element",
@@ -115,33 +125,70 @@ test("only panel-anchored steps require the settings panel", () => {
 	}
 });
 
-test("orientation steps tour the panel right after opening it", () => {
+test("hands-on steps come right after the panel tour", () => {
 	const ids = TUTORIAL_STEPS.map((step) => step.id);
-	expect(ids.slice(0, 10)).toEqual([
-		"open-panel",
-		"meet-panel",
-		"panel-sidebar",
-		"panel-content",
-		"panel-search",
-		"keyboard-shortcuts",
-		"themes-store",
-		"customize-element",
-		"quick-customize",
-		"dev-bridge",
-	]);
+	expect(ids.slice(0, 5)).toEqual(["open-panel", "panel-tour", "panel-search", "customize-element", "quick-customize"]);
 });
 
-test("use-existing comes before create-new, dev block follows both", () => {
+test("export step comes before the developer bridge, so declining keeps it", () => {
 	const ids = TUTORIAL_STEPS.map((step) => step.id);
-	expect(ids.slice(7, 14)).toEqual([
-		"customize-element",
-		"quick-customize",
+	expect(ids.indexOf("save-export")).toBeLessThan(ids.indexOf("dev-bridge"));
+});
+
+test("dev block follows the developer bridge", () => {
+	const ids = TUTORIAL_STEPS.map((step) => step.id);
+	expect(ids.slice(ids.indexOf("dev-bridge"))).toEqual([
 		"dev-bridge",
 		"developer-mode",
 		"dev-add-category",
 		"dev-add-setting",
 		"dev-code-zip",
 	]);
+});
+
+test("every step has a short body and at most two bullets", () => {
+	for (const step of TUTORIAL_STEPS) {
+		const words = step.body.split(/\s+/).filter(Boolean).length;
+		expect(words).toBeLessThanOrEqual(12);
+		expect(step.bullets.length).toBeLessThanOrEqual(2);
+	}
+});
+
+test("visuals carry the data their kind needs", () => {
+	for (const step of TUTORIAL_STEPS) {
+		const visual = step.visual;
+		if (!visual) continue;
+		if (visual.kind === "keys") {
+			expect(visual.items.length).toBeGreaterThan(0);
+			for (const item of visual.items) {
+				expect(item.label.length).toBeGreaterThan(0);
+			}
+		} else if (visual.kind === "flow") {
+			expect(visual.items.length).toBeGreaterThan(1);
+		}
+	}
+});
+
+test("every shortcut command used by the tour exists in the manifest", () => {
+	const manifest = JSON.parse(readFileSync(join(import.meta.dir, "../../../src/entrypoints/manifest.json"), "utf8"));
+	const manifestCommands = Object.keys(manifest.commands);
+	const usedCommands: string[] = [];
+	for (const step of TUTORIAL_STEPS) {
+		if (step.shortcut) usedCommands.push(step.shortcut.command);
+		for (const item of step.visual?.kind === "keys" ? step.visual.items : []) {
+			usedCommands.push(item.command);
+		}
+	}
+	expect(usedCommands.length).toBeGreaterThan(0);
+	for (const command of usedCommands) {
+		expect(manifestCommands).toContain(command);
+	}
+});
+
+test("shortcut keys are split from the browser's binding string", () => {
+	const shortcuts = { ...emptyShortcuts(), toggle_settings: "Alt+Shift+X" };
+	expect(shortcutKeys(shortcuts, "toggle_settings")).toEqual(["Alt", "Shift", "X"]);
+	expect(shortcutKeys(shortcuts, "toggle_customize")).toEqual([]);
 });
 
 test("dev block is core and the code step opens the docs", () => {
@@ -185,11 +232,11 @@ test("choice branches carry labels and resolve to a later step", () => {
 
 test("dev bridge asks about dev mode and ends the tutorial when declined", () => {
 	const bridge = TUTORIAL_STEPS.find((step) => step.id === "dev-bridge");
-	expect(bridge?.title).toBe("Want to explore Developer Mode?");
+	expect(bridge?.title).toBe("Explore Developer Mode?");
 	expect(bridge?.spotlight).toBe(false);
 	expect(bridge ? hasSpotlight(bridge) : true).toBe(false);
-	expect(bridge?.choice?.acceptLabel).toBe("We need to go deeper!");
-	expect(bridge?.choice?.declineLabel).toBe("I'm fine");
+	expect(bridge?.choice?.acceptLabel).toBe("Go deeper");
+	expect(bridge?.choice?.declineLabel).toBe("Not now");
 	expect(bridge?.choice?.declineToId).toBeUndefined();
 });
 
