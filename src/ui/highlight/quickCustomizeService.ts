@@ -1,15 +1,23 @@
 import { logger } from "@shared/logger";
 import { openSelectorPicker } from "./selectorPicker";
 import { mount, unmount } from "svelte";
-import QuickCustomize from "./QuickCustomize.svelte";
-import { addCategory, addSetting, getAddOnItems } from "@settings/registry/items";
+import QuickCustomize from "./views/QuickCustomize.svelte";
+import { addCategory, addSettingToCategory, getAddOnItems } from "@settings/registry/items";
+import { getCategoryLabel } from "@settings/registry/category";
+import { saveAndRefreshAll } from "@core/runtime/controller";
 import { createUniqueId } from "@/core/shared/utilities";
 import { createStyleShiftWindow } from "../window/windowFactory";
+import type { QuickCustomizeData, Setting } from "@settings/types/styleshiftTypes";
 
-let quickCustomizeComponent: any = null;
-let pickerWindow: any = null;
+let quickCustomizeComponent: ReturnType<typeof mount> | null = null;
+let pickerWindow: Awaited<ReturnType<typeof createStyleShiftWindow>> | null = null;
 
-export async function startQuickCustomize(existingSetting?: any) {
+type QuickCustomizeSaveData = QuickCustomizeData & {
+	css: string;
+	name: string;
+};
+
+export async function startQuickCustomize(existingSetting?: Setting) {
 	if (existingSetting) {
 		openQuickCustomizeUI(existingSetting.quickCustomize?.selector || "", existingSetting);
 		return;
@@ -28,15 +36,15 @@ export async function startQuickCustomize(existingSetting?: any) {
 	);
 }
 
-async function openQuickCustomizeUI(selector: string, existingSetting?: any) {
+async function openQuickCustomizeUI(selector: string, existingSetting?: Setting) {
 	if (pickerWindow) {
 		pickerWindow.closeWindowHandler();
 	}
 
 	pickerWindow = await createStyleShiftWindow({
-		title: existingSetting ? `Edit: ${existingSetting.name}` : "Quick Customize",
-		width: "480px",
-		height: "640px",
+		title: existingSetting && "name" in existingSetting ? `Edit: ${existingSetting.name}` : "Quick Customize",
+		width: "680px",
+		height: "680px",
 		center: true,
 	});
 
@@ -44,48 +52,45 @@ async function openQuickCustomizeUI(selector: string, existingSetting?: any) {
 		target: pickerWindow.contentElement,
 		props: {
 			selector,
-			initialData: existingSetting
-				? {
-						name: existingSetting.name,
-						mode: existingSetting.quickCustomize?.mode || "basic",
-						basicStyles: existingSetting.quickCustomize?.metadata?.basicStyles,
-						enabledStyles: existingSetting.quickCustomize?.metadata?.enabledStyles,
-						rawCss: existingSetting.enableCss,
-					}
-				: null,
+			initialData:
+				existingSetting && "name" in existingSetting
+					? {
+							name: existingSetting.name,
+							mode: existingSetting.quickCustomize?.mode || "basic",
+							basicStyles: existingSetting.quickCustomize?.metadata?.basicStyles ?? {},
+							enabledStyles: existingSetting.quickCustomize?.metadata?.enabledStyles ?? {},
+							rawCss: "enableCss" in existingSetting ? existingSetting.enableCss : undefined,
+						}
+					: null,
 			onClose: () => {
 				pickerWindow.closeWindowHandler();
 			},
-			onSave: async (data: { selector: string; css: string; mode: string; name: string; metadata: any }) => {
+			onSave: async (data: QuickCustomizeSaveData) => {
 				logger.info("QuickCustomize", "Saving customization", data);
 
-				if (existingSetting) {
+				if (existingSetting && "name" in existingSetting) {
 					existingSetting.name = data.name;
-					existingSetting.enableCss = data.css;
+					if ("enableCss" in existingSetting) existingSetting.enableCss = data.css;
 					existingSetting.quickCustomize = {
 						selector: data.selector,
 						mode: data.mode,
 						metadata: data.metadata,
 					};
 					// Trigger update in storage/engine
-					await addSetting([], existingSetting);
+					await saveAndRefreshAll();
 				} else {
 					const categoryName = "Custom Elements";
 					let addOnItems = getAddOnItems();
-					let customCategory = addOnItems.find(
-						(c) => (typeof c.category === "string" ? c.category : c.category.label) === categoryName,
-					);
+					let customCategory = addOnItems.find((c) => getCategoryLabel(c) === categoryName);
 
 					if (!customCategory) {
 						await addCategory(categoryName);
 						addOnItems = getAddOnItems();
-						customCategory = addOnItems.find(
-							(c) => (typeof c.category === "string" ? c.category : c.category.label) === categoryName,
-						);
+						customCategory = addOnItems.find((c) => getCategoryLabel(c) === categoryName);
 					}
 
 					if (customCategory) {
-						const newSetting = {
+						const newSetting: Setting = {
 							id: `custom_${createUniqueId(8)}`,
 							name: data.name,
 							description: `Custom styles for selector: ${data.selector}`,
@@ -100,7 +105,7 @@ async function openQuickCustomizeUI(selector: string, existingSetting?: any) {
 							editable: true,
 						};
 
-						await addSetting(customCategory.settings, newSetting);
+						await addSettingToCategory(customCategory, newSetting);
 						logger.info("QuickCustomize", "New setting added", newSetting);
 					}
 				}
@@ -111,12 +116,12 @@ async function openQuickCustomizeUI(selector: string, existingSetting?: any) {
 	});
 
 	const originalClose = pickerWindow.closeWindowHandler;
-	pickerWindow.closeWindowHandler = () => {
+	pickerWindow.closeWindowHandler = async () => {
 		if (quickCustomizeComponent) {
 			unmount(quickCustomizeComponent);
 			quickCustomizeComponent = null;
 		}
-		originalClose();
+		await originalClose();
 		pickerWindow = null;
 	};
 }

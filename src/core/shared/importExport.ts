@@ -1,23 +1,54 @@
 import { loadJSZip, jszipInstance as jszip, saveAndRefreshAll } from "@core/runtime/controller";
 import { initializeRequiredStorageStructures as setNullSave } from "@core/storage/maintenance";
 import { ALLOWED_STORAGE_KEYS, cachedStorageData as savedData } from "@core/storage/manager";
-import type { Category, Setting } from "@settings/types/styleshiftTypes";
+import { fromPersistedCategory, toPersistedCategory } from "@core/theme/exportConverter";
+import type {
+	PersistedCategory,
+	PersistedCurrentSettings,
+	PersistedSetting,
+	PersistedStyleShiftData,
+} from "@settings/types/persistedSettings";
+import { assertCanonicalPersistedItems, assertNoLegacyPersistedFields } from "@settings/types/persistedSettings";
 import { logger } from "@shared/logger";
 
 import { createError, createNotification, createWarning } from "./notifications";
 import { deepClone, sleep } from "./utilities";
 
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+	return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function parseJsonWithContext<T>(text: string, sourceName: string): T {
+	try {
+		return JSON.parse(text) as T;
+	} catch (error) {
+		const reason = error instanceof Error ? error.message : String(error);
+		throw new Error(`"${sourceName}" is not valid JSON: ${reason}`);
+	}
+}
+
+async function readOrderFile(loadedZip: any, path: string): Promise<string[] | null> {
+	const orderFile = loadedZip.file(path);
+	if (!orderFile) return null;
+
+	const order = parseJsonWithContext<unknown>(await orderFile.async("string"), path);
+	if (!Array.isArray(order) || order.some((entry) => typeof entry !== "string")) {
+		throw new Error(`"${path}" must be an array of names.`);
+	}
+	return order;
+}
+
 /**
- * Imports StyleShift data from an object and updates the cached storage.
- * Shows a progress notification during the process.
+ * Applies settings and add-on items from a plain object, replacing the current data.
  *
- * @param {object} styleshiftData - The object containing StyleShift configuration data.
+ * @param {object} styleshiftData - Object with currentSettings and addOnStyleShiftItems to apply.
  * @returns {Promise<void>}
  *
  * @example
- * await importStyleShiftData(myConfigObject);
+ * const data = exportStyleShiftData();
+ * await importStyleShiftData(data);
  */
-export async function importStyleShiftData(styleshiftData: object) {
+export async function importStyleShiftData(styleshiftData: PersistedStyleShiftData) {
 	const notification = await createNotification({
 		icon: "sync",
 		title: "StyleShift - Importing data",
@@ -26,8 +57,26 @@ export async function importStyleShiftData(styleshiftData: object) {
 	});
 
 	try {
+		if (!isPlainObject(styleshiftData)) {
+			throw new Error("Import data must be an object with currentSettings and/or addOnStyleShiftItems.");
+		}
+
+		assertNoLegacyPersistedFields(styleshiftData);
+		const addOnItems = styleshiftData.addOnStyleShiftItems;
+		if (addOnItems !== undefined) {
+			if (!Array.isArray(addOnItems)) {
+				throw new Error("addOnStyleShiftItems must be an array of categories.");
+			}
+			assertCanonicalPersistedItems(addOnItems);
+		}
+		const currentSettings = styleshiftData.currentSettings;
+		if (currentSettings !== undefined && !isPlainObject(currentSettings)) {
+			throw new Error("currentSettings must be an object of setting values.");
+		}
 		for (const thisKey of ALLOWED_STORAGE_KEYS) {
-			savedData[thisKey] = styleshiftData[thisKey];
+			const value = styleshiftData[thisKey as keyof PersistedStyleShiftData];
+			savedData[thisKey] =
+				thisKey === "addOnStyleShiftItems" && Array.isArray(value) ? value.map(fromPersistedCategory) : value;
 		}
 
 		await setNullSave();
@@ -50,21 +99,25 @@ export async function importStyleShiftData(styleshiftData: object) {
 }
 
 /**
- * Exports current add-on items and settings into a data object.
- * Cleans up internal properties (like Highlight_color, editable) before exporting.
+ * Collects the current settings and add-on items into a plain object you can save or share.
  *
- * @returns {any} The cleaned export data object.
+ * @returns {object} An object with currentSettings and addOnStyleShiftItems for export.
  *
  * @example
  * const data = exportStyleShiftData();
- * console.log(JSON.stringify(data));
+ * console.log(data.addOnStyleShiftItems.length);
+ * // result: { currentSettings: {...}, addOnStyleShiftItems: [...] }
  */
-export function exportStyleShiftData() {
-	const exportData: any = {};
+export function exportStyleShiftData(): PersistedStyleShiftData {
+	const exportData: PersistedStyleShiftData = {};
 
 	for (const thisKey of ALLOWED_STORAGE_KEYS) {
 		if (savedData[thisKey]) {
-			exportData[thisKey] = deepClone(savedData[thisKey]);
+			if (thisKey === "addOnStyleShiftItems") {
+				exportData.addOnStyleShiftItems = savedData[thisKey].map(toPersistedCategory);
+			} else {
+				exportData.currentSettings = deepClone(savedData[thisKey]) as PersistedCurrentSettings;
+			}
 		}
 	}
 
@@ -72,8 +125,8 @@ export function exportStyleShiftData() {
 
 	if (addOnItems) {
 		for (const thisCategory of addOnItems) {
-			delete thisCategory.Highlight_color;
-			delete thisCategory.editable;
+			delete (thisCategory as Record<string, unknown>).highlightColor;
+			delete (thisCategory as Record<string, unknown>).editable;
 
 			for (const thisSetting of thisCategory.settings) {
 				delete thisSetting.editable;
@@ -87,78 +140,94 @@ export function exportStyleShiftData() {
 }
 
 /**
- * Imports StyleShift data from a JSON formatted string.
+ * Applies settings and add-on items from JSON text, such as text pasted or read from a file.
  *
- * @param {string} text - The JSON string to parse and import.
+ * @param {string} text - The JSON text with currentSettings and addOnStyleShiftItems.
  * @returns {Promise<void>}
  *
  * @example
- * await importStyleShiftJsonText('{"currentSettings": {}}');
+ * const json = '{"currentSettings": {"darkMode": true}}';
+ * await importStyleShiftJsonText(json);
  */
 export async function importStyleShiftJsonText(text: string) {
-	await importStyleShiftData(JSON.parse(text));
+	await importStyleShiftData(JSON.parse(text) as PersistedStyleShiftData);
 }
 
 /**
- * Exports StyleShift data as a prettified JSON string.
+ * Exports the current settings and add-on items as readable JSON text.
  *
- * @returns {string} The JSON string representation of the exported data.
+ * @returns {string} The data as a pretty-printed JSON string.
  *
  * @example
- * const jsonText = exportStyleShiftJsonText();
+ * const json = exportStyleShiftJsonText();
+ * localStorage.setItem("styleshift-backup", json);
+ * // result: a JSON string with currentSettings and addOnStyleShiftItems
  */
 export function exportStyleShiftJsonText() {
 	return JSON.stringify(exportStyleShiftData(), null, 2);
 }
 
 /**
- * Parses a StyleShift backup ZIP file into a structured data object.
- * This function extracts categories, settings, and property files from the ZIP.
+ * Reads a StyleShift backup ZIP and turns it into a data object, without applying it.
  *
- * @param {File | Blob} zipFile - The ZIP file to parse.
- * @returns {Promise<any>} A promise resolving to the parsed StyleShift data object.
- * @throws {Error} If JSZip is not loaded or the ZIP structure is invalid.
+ * @param {File | Blob} zipFile - The ZIP file or blob to read.
+ * @returns {Promise<object>} An object with currentSettings and addOnStyleShiftItems.
+ * @throws {Error} If JSZip is not loaded or the ZIP is not a StyleShift backup.
  *
  * @example
- * const data = await parseStyleShiftZip(myZipBlob);
+ * const data = await parseStyleShiftZip(file);
+ * console.log(data.addOnStyleShiftItems.length);
+ * // result: { currentSettings: {...}, addOnStyleShiftItems: [...] }
  */
-export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
+export async function parseStyleShiftZip(zipFile: File | Blob): Promise<PersistedStyleShiftData> {
 	await loadJSZip();
 	if (!jszip) {
 		throw new Error("JSZip not loaded!");
 	}
 	const zip = new (jszip as any)();
 
-	const loadedZip = await zip.loadAsync(zipFile, {
-		createFolders: true,
-	});
+	const archiveName = (zipFile as File)?.name || "archive.zip";
+	let loadedZip: any;
+	try {
+		loadedZip = await zip.loadAsync(zipFile, {
+			createFolders: true,
+		});
+	} catch (error) {
+		const reason = error instanceof Error ? error.message : String(error);
+		throw new Error(`Could not read "${archiveName}" as a ZIP file: ${reason}`);
+	}
 
-	let addOnStyleShiftItems: Category[] = [];
-	let currentSettings: any = null;
+	const fileNames = Object.keys(loadedZip.files);
+
+	let addOnStyleShiftItems: PersistedCategory[] = [];
+	let currentSettings: PersistedCurrentSettings | null = null;
 
 	const settingsFile = loadedZip.file("currentSettings.json");
 	if (settingsFile) {
-		currentSettings = JSON.parse(await settingsFile.async("string"));
+		const parsed = parseJsonWithContext<unknown>(await settingsFile.async("string"), "currentSettings.json");
+		if (!isPlainObject(parsed)) {
+			throw new Error('"currentSettings.json" must contain an object of setting values.');
+		}
+		currentSettings = parsed as PersistedCurrentSettings;
 	}
 
 	let itemsBasePath = "";
-	if (Object.keys(loadedZip.files).some((f) => f.startsWith("addOnStyleShiftItems/"))) {
+	if (fileNames.some((f) => f.startsWith("addOnStyleShiftItems/"))) {
 		itemsBasePath = "addOnStyleShiftItems/";
 	}
 
 	const categoryFolders: string[] = [];
-	const categoriesOrderFile = loadedZip.file(`${itemsBasePath}order.json`);
+	const orderedCategories = await readOrderFile(loadedZip, `${itemsBasePath}order.json`);
 
-	if (categoriesOrderFile) {
-		const order = JSON.parse(await categoriesOrderFile.async("string")) as string[];
-		for (const name of order) {
+	if (orderedCategories) {
+		for (const name of orderedCategories) {
 			const path = `${itemsBasePath}${name}/`;
 			if (loadedZip.files[path]) {
 				categoryFolders.push(path);
 			}
 		}
 	} else {
-		const folders = Object.keys(loadedZip.files).filter((path) => {
+		const folders = fileNames.filter((path) => {
 			const pathArray = path.split("/");
 			const depth = itemsBasePath ? 2 : 1;
 			return path.startsWith(itemsBasePath) && pathArray.length === depth + 1 && pathArray[depth] === "";
@@ -177,27 +246,32 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 			if (!isNaN(indexPart)) categoryIndex = indexPart;
 		}
 
-		const categoryConfig =
-			loadedZip.file(`${categoryPathName}/config.json`) || loadedZip.file(`${categoryPathName}/Config.json`);
+		const categoryConfig = loadedZip.file(`${categoryPathName}/config.json`);
 
 		if (!categoryConfig) continue;
 
-		const categoryData = JSON.parse(await categoryConfig.async("string"));
-		const settings: Setting[] = [];
+		const parsedCategory = parseJsonWithContext<unknown>(
+			await categoryConfig.async("string"),
+			`${categoryPathName}/config.json`,
+		);
+		if (!isPlainObject(parsedCategory)) {
+			throw new Error(`"${categoryPathName}/config.json" must contain a category object.`);
+		}
+		const categoryData = parsedCategory as PersistedCategory;
+		const settings: PersistedSetting[] = [];
 
 		const settingFolders: string[] = [];
-		const settingsOrderFile = loadedZip.file(`${categoryPathName}/order.json`);
+		const orderedSettings = await readOrderFile(loadedZip, `${categoryPathName}/order.json`);
 
-		if (settingsOrderFile) {
-			const order = JSON.parse(await settingsOrderFile.async("string")) as string[];
-			for (const name of order) {
+		if (orderedSettings) {
+			for (const name of orderedSettings) {
 				const path = `${categoryPathName}/${name}/`;
 				if (loadedZip.files[path]) {
 					settingFolders.push(path);
 				}
 			}
 		} else {
-			const folders = Object.keys(loadedZip.files).filter((path) => {
+			const folders = fileNames.filter((path) => {
 				const pathArray = path.split("/");
 				const depth = categoryPathName.split("/").length;
 				return path.startsWith(`${categoryPathName}/`) && pathArray.length === depth + 2 && pathArray[depth + 1] === "";
@@ -216,34 +290,43 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 				if (!isNaN(indexPart)) settingIndex = indexPart;
 			}
 
-			const settingConfig =
-				loadedZip.file(`${settingPathName}/config.json`) || loadedZip.file(`${settingPathName}/Config.json`);
+			const settingConfig = loadedZip.file(`${settingPathName}/config.json`);
 			if (!settingConfig) continue;
 
-			const settingData = JSON.parse(await settingConfig.async("string")) || {};
+			const parsedSetting = parseJsonWithContext<unknown>(
+				await settingConfig.async("string"),
+				`${settingPathName}/config.json`,
+			);
+			if (!isPlainObject(parsedSetting)) {
+				throw new Error(`"${settingPathName}/config.json" must contain a setting object.`);
+			}
+			const settingData = parsedSetting as PersistedSetting;
 
-			for (const filePath of Object.keys(loadedZip.files)) {
+			for (const filePath of fileNames) {
 				const isPropertyFile =
 					filePath.startsWith(settingPath) &&
 					!filePath.endsWith("/") &&
 					!filePath.toLowerCase().endsWith("/config.json") &&
 					!filePath.toLowerCase().endsWith("/order.json");
 
-				if (isPropertyFile) {
-					const fileName = filePath.split("/").pop() || "";
-					const propertyName = fileName.slice(0, fileName.lastIndexOf("."));
-					settingData[propertyName] = await loadedZip.file(filePath).async("string");
-				}
+				if (!isPropertyFile) continue;
+
+				const fileName = filePath.split("/").pop() || "";
+				const propertyName = fileName.slice(0, fileName.lastIndexOf("."));
+				const propertyFile = loadedZip.file(filePath);
+				if (!propertyName || !propertyFile) continue;
+				settingData[propertyName] = await propertyFile.async("string");
 			}
 
 			settings[settingIndex] = settingData;
 		}
 
 		categoryData["settings"] = settings.filter((s) => s !== null);
+		assertNoLegacyPersistedFields(categoryData);
 		addOnStyleShiftItems[categoryIndex] = categoryData;
 	}
 
-	const styleshiftData: any = {
+	const styleshiftData: PersistedStyleShiftData = {
 		addOnStyleShiftItems: addOnStyleShiftItems.filter((c) => c !== null),
 	};
 
@@ -251,17 +334,24 @@ export async function parseStyleShiftZip(zipFile: File | Blob): Promise<any> {
 		styleshiftData.currentSettings = currentSettings;
 	}
 
+	if (!currentSettings && styleshiftData.addOnStyleShiftItems.length === 0) {
+		throw new Error(
+			`"${archiveName}" is not a NewTube theme archive: no currentSettings.json or addOnStyleShiftItems were found.`,
+		);
+	}
+
 	return styleshiftData;
 }
 
 /**
- * Imports StyleShift data from a backup ZIP file and applies it to the extension immediately.
+ * Applies a StyleShift backup ZIP to the extension right away.
  *
- * @param {File | Blob} zipFile - The backup ZIP file.
+ * @param {File | Blob} zipFile - The ZIP file or blob to import.
  * @returns {Promise<void>}
  *
  * @example
- * await importStyleShiftZip(myZipFile);
+ * const input = document.querySelector("input[type=file]");
+ * await importStyleShiftZip(input.files[0]);
  */
 export async function importStyleShiftZip(zipFile: File | Blob) {
 	const styleshiftData = await parseStyleShiftZip(zipFile);

@@ -26,6 +26,9 @@
 	--theme-success-10: rgba(0, 200, 81, 0.1);
 	--theme-success-20: rgba(0, 200, 81, 0.2);
 	--theme-success-50: rgba(0, 200, 81, 0.5);
+	--theme-info: #a7ffff;
+	--theme-warning-15: rgba(255, 187, 51, 0.15);
+	--theme-error-30: rgba(255, 68, 68, 0.3);
 
 	/* --- Default Dark Theme --- */
 	--bg-main: rgba(43, 43, 43, 1);
@@ -37,6 +40,7 @@
 	--font-color-dim: rgba(255, 255, 255, 0.5);
 	--border-color: rgba(255, 255, 255, 0.08);
 	--shadow-color: rgba(0, 0, 0, 0.5);
+	--icon-filter: brightness(0) invert(1);
 
 	/* --- Content / Foreground Opacity Scale --- */
 	--fg-opacity-02: rgba(255, 255, 255, 0.02);
@@ -45,6 +49,7 @@
 	--fg-opacity-06: rgba(255, 255, 255, 0.06);
 	--fg-opacity-08: rgba(255, 255, 255, 0.08);
 	--fg-opacity-10: rgba(255, 255, 255, 0.1);
+	--fg-opacity-12: rgba(255, 255, 255, 0.12);
 	--fg-opacity-15: rgba(255, 255, 255, 0.15);
 	--fg-opacity-17: rgba(255, 255, 255, 0.17);
 	--fg-opacity-20: rgba(255, 255, 255, 0.2);
@@ -68,6 +73,8 @@
 	--bg-overlay-40: rgba(0, 0, 0, 0.4);
 	--bg-overlay-50: rgba(0, 0, 0, 0.5);
 	--bg-overlay-60: rgba(0, 0, 0, 0.6);
+	--bg-overlay-80: rgba(0, 0, 0, 0.8);
+	--bg-overlay-90: rgba(0, 0, 0, 0.9);
 
 	/* --- Semantic Aliases (Explain themselves) --- */
 	--text-primary: var(--fg-opacity-100);
@@ -99,22 +106,54 @@
 	--category-left-title-text-color: var(--text-primary);
 	--category-left-title-text-color-hover: var(--theme-1);
 	--category-left-title-text-color-selected: var(--bg-main);
+	--sidebar-selected-bg: #ffffff;
+	--sidebar-selected-fg: #000000;
+	--sidebar-selected-control-bg: #000000;
+	--sidebar-selected-control-bg-hover: #333333;
+	--sidebar-selected-control-fg: #ffffff;
 
 	--text-editor-bg: var(--bg-main);
 	--setting-frame-bg: var(--fg-opacity-10);
 	--checkbox-bg: #979797;
 	--slider-track: #969696;
 
+	/* --- Component Defaults (overridden per-instance) --- */
+	--btn-color: #ffffff;
+	--theme-color: var(--theme-0);
+	--direction: right;
+	--theme-card-min-width: 240px;
+
+	/* --- Notifications & Callouts --- */
+	--noti-success: #4caf50;
+	--noti-warning: #ff9800;
+	--noti-error: #f44336;
+
+	--callout-warning: #ffd08a;
+	--callout-warning-bg: rgba(255, 208, 138, 0.1);
+	--callout-warning-border: rgba(255, 208, 138, 0.45);
+	--callout-error: #ff9e9e;
+	--callout-error-bg: rgba(255, 158, 158, 0.1);
+	--callout-error-border: rgba(255, 158, 158, 0.45);
+
 	/* --- Dynamic --- */
 	--window-bg: var(--bg-main);
 	--window-blur: none;
 	--window-saturate: saturate(100%);
+
+	/* --- Code syntax (dracula palette) --- */
+	--code-keyword: #ff79c6;
+	--code-type: #8be9fd;
+	--code-string: #f1fa8c;
+	--code-number: #bd93f9;
+	--code-punct: rgba(248, 248, 242, 0.6);
+	--modal-blur: 0px;
 }
 
 .styleshift-main[data-transparent="true"] {
 	--window-bg: rgba(43, 43, 43, 0.8);
-	--window-blur: blur(var(--setting-bg-blur-amount, 10px));
+	--window-blur: blur(var(--setting-bg-blur-amount));
 	--window-saturate: saturate(180%);
+	--modal-blur: 10px;
 
 	--bg-surface: rgba(255, 255, 255, 0.05);
 }
@@ -126,6 +165,11 @@
 
 .styleshift-main[data-theme="light"] {
 	--bg-main: rgb(248, 248, 250);
+	--code-keyword: #c2185b;
+	--code-type: #00758a;
+	--code-string: #7a6000;
+	--code-number: #6a1b9a;
+	--code-punct: rgba(0, 0, 0, 0.55);
 	--bg-surface: rgba(0, 0, 0, 0.03);
 	--bg-surface-hover: rgba(0, 0, 0, 0.06);
 	--bg-input: rgb(255, 255, 255);
@@ -133,6 +177,7 @@
 	--font-color-dim: rgba(0, 0, 0, 0.5);
 	--border-color: rgba(0, 0, 0, 0.08);
 	--shadow-color: rgba(0, 0, 0, 0.1);
+	--icon-filter: none;
 
 	/* Full Foreground Opacity Scale for Light Mode (Dark values) */
 	--fg-opacity-02: rgba(0, 0, 0, 0.02);
@@ -141,6 +186,7 @@
 	--fg-opacity-06: rgba(0, 0, 0, 0.06);
 	--fg-opacity-08: rgba(0, 0, 0, 0.08);
 	--fg-opacity-10: rgba(0, 0, 0, 0.05);
+	--fg-opacity-12: rgba(0, 0, 0, 0.12);
 	--fg-opacity-15: rgba(0, 0, 0, 0.1);
 	--fg-opacity-17: rgba(0, 0, 0, 0.12);
 	--fg-opacity-20: rgba(0, 0, 0, 0.1);
@@ -164,6 +210,8 @@
 	--bg-overlay-40: rgba(255, 255, 255, 0.4);
 	--bg-overlay-50: rgba(255, 255, 255, 0.5);
 	--bg-overlay-60: rgba(255, 255, 255, 0.6);
+	--bg-overlay-80: rgba(255, 255, 255, 0.8);
+	--bg-overlay-90: rgba(255, 255, 255, 0.9);
 
 	--bg-element-muted: #e0e0e0;
 	--bg-element-muted-strong: #bdbdbd;
@@ -174,11 +222,19 @@
 	/* --- Refined Light Theme Accents --- */
 	--theme-1: #d81b60; /* Darker pink for better visibility on light background */
 
-	--category-title-bg: radial-gradient(at center top, #ffffff, var(--fg-opacity-05));
+	--category-title-bg: #ffffff;
 	--category-title-text-color: var(--text-primary);
 
 	--category-left-title-bg-selected: var(--fg-opacity-10);
 	--category-left-title-text-color-selected: var(--theme-0);
 
 	--shadow-color: rgba(0, 0, 0, 0.08);
+
+	/* Callout accents need more contrast on light surfaces */
+	--callout-warning: #c77700;
+	--callout-warning-bg: rgba(199, 119, 0, 0.12);
+	--callout-warning-border: rgba(199, 119, 0, 0.4);
+	--callout-error: #d64545;
+	--callout-error-bg: rgba(214, 69, 69, 0.12);
+	--callout-error-border: rgba(214, 69, 69, 0.4);
 }

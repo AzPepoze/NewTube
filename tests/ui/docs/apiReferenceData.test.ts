@@ -1,0 +1,228 @@
+// @ts-nocheck -- Bun's test globals are not part of the extension TypeScript program.
+import { expect, test } from "bun:test";
+import {
+	kindSummaryFor,
+	tokenizeType,
+	fileLabelFor,
+	filterFunctions,
+	groupFunctionsByFile,
+	groupKindsByCategory,
+	parseDocTags,
+	parseParamBody,
+	parseReturnsBody,
+	signatureFor,
+	splitDetail,
+	splitSignature,
+	splitTagBody,
+} from "../../../src/ui/docs/apiReferenceData";
+
+const ENTRIES = [
+	{
+		label: "copyToClipboard",
+		detail: "(text: string) => void",
+		info: "Copies text.",
+		file: "extensionHelpers.ts",
+	},
+	{
+		label: "openSettingPage",
+		detail: "() => void",
+		info: "Opens settings.\n@example openSettingPage();",
+		file: "extensionHelpers.ts",
+	},
+	{
+		label: "saveRootValue",
+		detail: "(key: string, value: any) => Promise<void>",
+		info: "Saves.",
+		file: "manager.ts",
+	},
+];
+
+test("signature formats like a declaration", () => {
+	expect(signatureFor(ENTRIES[0])).toBe("function copyToClipboard(text: string): void;");
+	expect(signatureFor(ENTRIES[2])).toBe("function saveRootValue(key: string, value: any): Promise<void>;");
+});
+
+test("groups preserve file order", () => {
+	const groups = groupFunctionsByFile(ENTRIES);
+	expect(groups.map((group) => group.file)).toEqual(["extensionHelpers.ts", "manager.ts"]);
+	expect(groups[0].functions.map((fn) => fn.label)).toEqual(["copyToClipboard", "openSettingPage"]);
+});
+
+test("groups unfiled entries under unknown", () => {
+	const groups = groupFunctionsByFile([{ label: "x", detail: "() => void" }]);
+	expect(groups[0].file).toBe("unknown");
+});
+
+test("filter matches label, signature, info, and file", () => {
+	expect(filterFunctions(ENTRIES, "clipboard").map((fn) => fn.label)).toEqual(["copyToClipboard"]);
+	expect(filterFunctions(ENTRIES, "promise").map((fn) => fn.label)).toEqual(["saveRootValue"]);
+	expect(filterFunctions(ENTRIES, "manager").map((fn) => fn.label)).toEqual(["saveRootValue"]);
+	expect(filterFunctions(ENTRIES, "  ").length).toBe(3);
+});
+
+test("doc tags split summary from examples", () => {
+	const parsed = parseDocTags("Opens settings.\n@example openSettingPage();\n@example openSettingPage(1);");
+	expect(parsed.summary).toBe("Opens settings.");
+	expect(parsed.examples).toEqual(["openSettingPage();", "openSettingPage(1);"]);
+});
+
+test("other tags are kept as notes", () => {
+	const parsed = parseDocTags("Does things.\n@param id the id\n@example go();");
+	expect(parsed.summary).toBe("Does things.");
+	expect(parsed.tags).toEqual([{ tag: "@param", body: "id the id" }]);
+	expect(parsed.examples).toEqual(["go();"]);
+});
+
+test("doc without tags is all summary", () => {
+	const parsed = parseDocTags("Copies text.");
+	expect(parsed.summary).toBe("Copies text.");
+	expect(parsed.examples).toEqual([]);
+	expect(parsed.tags).toEqual([]);
+});
+
+test("missing doc parses empty", () => {
+	expect(parseDocTags()).toEqual({ summary: "", examples: [], tags: [] });
+});
+
+test("signature splits into name and rest", () => {
+	expect(splitSignature("function copyToClipboard(text: string): void;")).toEqual({
+		name: "copyToClipboard",
+		rest: "(text: string): void;",
+	});
+	expect(splitSignature("not a signature")).toEqual({ name: "", rest: "not a signature" });
+});
+
+test("tag body splits leading type from text", () => {
+	expect(splitTagBody("{string} value - The raw selector string.")).toEqual({
+		type: "{string}",
+		text: "value - The raw selector string.",
+	});
+	expect(splitTagBody("just text")).toEqual({ type: null, text: "just text" });
+});
+
+test("file labels speak human", () => {
+	expect(fileLabelFor("domHelpers.ts")).toBe("Page & DOM");
+	expect(fileLabelFor("extensionHelpers.ts")).toBe("Extension");
+	expect(fileLabelFor("notifications.ts")).toBe("Notifications");
+	expect(fileLabelFor("dialogs.ts")).toBe("Dialogs");
+	expect(fileLabelFor("importExport.ts")).toBe("Import & Export");
+	expect(fileLabelFor("webPageLogger.ts")).toBe("Logging");
+	expect(fileLabelFor("utilities.ts")).toBe("Utilities");
+	expect(fileLabelFor("colorConversion.ts")).toBe("Color");
+	expect(fileLabelFor("webPage.ts")).toBe("Theme Variables");
+	expect(fileLabelFor("manager.ts")).toBe("Storage");
+	expect(fileLabelFor("unknown")).toBe("Other");
+	expect(fileLabelFor("myUtil.ts")).toBe("My Util");
+});
+
+test("param tags split name, type and text", () => {
+	expect(parseParamBody("{HTMLElement | null} element - The starting element.")).toEqual({
+		name: "element",
+		type: "HTMLElement | null",
+		text: "The starting element.",
+	});
+	expect(parseParamBody("count The number of items.")).toEqual({
+		name: "count",
+		type: null,
+		text: "The number of items.",
+	});
+});
+
+test("returns tags split type and text", () => {
+	expect(parseReturnsBody("{string} The label.")).toEqual({ name: "", type: "string", text: "The label." });
+});
+
+test("nested braces stay inside the type", () => {
+	expect(parseReturnsBody("{{ x: number; y: number }} An object with coordinates.")).toEqual({
+		name: "",
+		type: "{ x: number; y: number }",
+		text: "An object with coordinates.",
+	});
+	expect(parseParamBody("{{ x: number }} point - The origin.")).toEqual({
+		name: "point",
+		type: "{ x: number }",
+		text: "The origin.",
+	});
+});
+
+test("keyboardShortcuts is hidden from setting kinds", () => {
+	const groups = groupKindsByCategory([{ type: "button" }, { type: "keyboardShortcuts" }]);
+	expect(groups.flatMap((group) => group.kinds.map((kind) => kind.type))).toEqual(["button"]);
+});
+
+test("kinds group into fixed categories in order", () => {
+	const kinds = [
+		{ type: "button" },
+		{ type: "text" },
+		{ type: "checkbox" },
+		{ type: "group" },
+		{ type: "custom" },
+		{ type: "mystery" },
+	];
+	const groups = groupKindsByCategory(kinds);
+	expect(groups.map((group) => group.category)).toEqual([
+		"Display",
+		"Input",
+		"Action",
+		"Structure",
+		"Advanced",
+		"Other",
+	]);
+	expect(groups[0].kinds.map((kind) => kind.type)).toEqual(["text"]);
+	expect(groups[1].kinds.map((kind) => kind.type)).toEqual(["checkbox"]);
+	expect(groups[2].kinds.map((kind) => kind.type)).toEqual(["button"]);
+	expect(groups[5].kinds.map((kind) => kind.type)).toEqual(["mystery"]);
+});
+
+test("kind groups skip empty categories", () => {
+	const groups = groupKindsByCategory([{ type: "button" }]);
+	expect(groups.map((group) => group.category)).toEqual(["Action"]);
+});
+
+test("type tokens keep the text and label each piece", () => {
+	const tokens = tokenizeType("Promise<Object>");
+	expect(tokens.map((token) => token.text).join("")).toBe("Promise<Object>");
+	expect(tokens.map((token) => [token.text, token.kind])).toEqual([
+		["Promise", "name"],
+		["<", "punct"],
+		["Object", "name"],
+		[">", "punct"],
+	]);
+});
+
+test("type tokens recognize keywords, literals, and nested braces", () => {
+	const union = tokenizeType('"info" | null');
+	expect(union.map((token) => token.kind)).toEqual(["string", "plain", "punct", "plain", "keyword"]);
+
+	const shape = tokenizeType("{ x: number; y: 2 }");
+	expect(shape.find((token) => token.text === "number")?.kind).toBe("keyword");
+	expect(shape.find((token) => token.text === "2")?.kind).toBe("number");
+	expect(shape.map((token) => token.text).join("")).toBe("{ x: number; y: 2 }");
+});
+
+test("detail splits after the parameter list, not at an arrow inside a type", () => {
+	expect(splitDetail("(cb: (x: number) => void, ...rest: any[]) => any")).toEqual({
+		params: "(cb: (x: number) => void, ...rest: any[])",
+		returns: "any",
+	});
+	expect(splitDetail("(options: { close: () => void; }) => Promise<void>")).toEqual({
+		params: "(options: { close: () => void; })",
+		returns: "Promise<void>",
+	});
+	expect(splitDetail("() => Promise<any>")).toEqual({ params: "()", returns: "Promise<any>" });
+});
+
+test("signature keeps callback and object return types intact", () => {
+	const entry = {
+		label: "createNotification",
+		detail: "(options: { title?: string; }) => Promise<{ close: () => void; }>",
+	};
+	expect(signatureFor(entry)).toBe(
+		"function createNotification(options: { title?: string; }): Promise<{ close: () => void; }>;",
+	);
+});
+
+test("kind summaries exist for known kinds and are empty for unknown ones", () => {
+	expect(kindSummaryFor("checkbox")).toBe("A switch for a true or false value.");
+	expect(kindSummaryFor("notAKind")).toBe("");
+});

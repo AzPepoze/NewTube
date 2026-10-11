@@ -1,6 +1,7 @@
 import { createUniqueId } from "@/core/shared/utilities";
 import { waitDocumentLoaded } from "@core/shared/domHelpers";
 import { getStyleShiftItems } from "@settings/registry/items";
+import { getCategoryLabel } from "@settings/registry/category";
 import { type Category } from "@settings/types/styleshiftTypes";
 import { createEditorUi, editorUi } from "@ui/window/editor";
 import { showUserConfirmation } from "@ui/window/windowFactory";
@@ -30,12 +31,8 @@ let labelResizeAnimation: Animation | undefined;
 let pointerX = 0;
 let pointerY = 0;
 
-function categoryName(category: Category) {
-	return typeof category.category === "string" ? category.category : category.category.label;
-}
-
 function categorySelector(category: Category) {
-	return category.selector ?? category.Selector ?? "";
+	return category.selector ?? "";
 }
 
 function renderHighlightLabel(label: HTMLDivElement, categories: Category[]) {
@@ -52,7 +49,7 @@ function renderHighlightLabel(label: HTMLDivElement, categories: Category[]) {
 	);
 	const nextKeys = new Set<string>();
 	for (const category of categories) {
-		const key = `${categoryName(category)}\u0000${categorySelector(category)}\u0000${category.Highlight_color}`;
+		const key = `${getCategoryLabel(category)}\u0000${categorySelector(category)}\u0000${category.highlightColor}`;
 		nextKeys.add(key);
 		const existingChip = existingChips.get(key);
 		if (existingChip) {
@@ -62,8 +59,8 @@ function renderHighlightLabel(label: HTMLDivElement, categories: Category[]) {
 		const chip = document.createElement("span");
 		chip.className = "styleshift-highlight-category styleshift-highlight-category-adding";
 		chip.dataset.categoryKey = key;
-		chip.textContent = categoryName(category);
-		chip.style.backgroundColor = `rgb(${category.Highlight_color})`;
+		chip.textContent = getCategoryLabel(category);
+		chip.style.backgroundColor = `rgb(${category.highlightColor})`;
 		chips.append(chip);
 		chip.addEventListener("animationend", () => chip.classList.remove("styleshift-highlight-category-adding"), {
 			once: true,
@@ -179,10 +176,10 @@ function addHighlight(targetElement: HTMLElement, selectorValue: Category) {
 	const categories = [selectorValue];
 	targetElement.setAttribute("StyleShift-uniqueId", uniqueId);
 
-	const color = `rgba(${selectorValue.Highlight_color}`;
+	const color = `rgba(${selectorValue.highlightColor}`;
 	const highlighter = document.createElement("div");
 	highlighter.className = "styleshift-highlight";
-	highlighter.setAttribute("Selector", categorySelector(selectorValue));
+	highlighter.dataset.styleshiftSelector = categorySelector(selectorValue);
 	highlighter.style.background = `${color},0.3)`;
 	highlighter.style.borderColor = `${color},0.8)`;
 
@@ -326,7 +323,7 @@ export async function startHighlighter() {
 	await waitDocumentLoaded();
 	if (runningCustomize) showExitHint();
 	highlightLayer = document.createElement("div");
-	highlightLayer.className = "styleshift-highlight-layer";
+	highlightLayer.className = "styleshift-highlight-layer styleshift-main";
 	highlightLabel = document.createElement("div");
 	highlightLabel.className = "styleshift-highlight-label";
 	highlightLayer.append(highlightLabel);

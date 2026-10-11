@@ -36,6 +36,7 @@ export const backgroundCategory: Category = {
 		{
 			type: "subText",
 			text: "Image & Thumbnail Mode",
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
 		},
 		{
@@ -46,6 +47,7 @@ export const backgroundCategory: Category = {
 				"Upload or paste a URL for your custom background image. This image will be placed behind all YouTube content.",
 			value: "https://cdn.wallpapersafari.com/74/55/4dgN3G.jpg",
 			maxFileSize: 5000000,
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: "Image" },
 		},
 
@@ -57,6 +59,7 @@ export const backgroundCategory: Category = {
 				"Applies a color overlay on top of your background image or as a solid background color if no image is used. Useful for improving readability.",
 			value: "#000000ae",
 			varCss: "--nt-bg-main",
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: ["Image", "Solid"] },
 		},
 		{
@@ -70,6 +73,7 @@ export const backgroundCategory: Category = {
 			max: 50,
 			step: 1,
 			varCss: "--nt-bg-blur-amount",
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
 		},
 		{
@@ -81,6 +85,7 @@ export const backgroundCategory: Category = {
 			min: 0,
 			max: 500,
 			step: 5,
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
 		},
 		{
@@ -92,6 +97,7 @@ export const backgroundCategory: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
 		},
 		{
@@ -103,6 +109,7 @@ export const backgroundCategory: Category = {
 			min: 0,
 			max: 100,
 			step: 1,
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
 		},
 		{
@@ -113,25 +120,30 @@ export const backgroundCategory: Category = {
 			value: false,
 			enableCss: `:root { --nt-bg-repeat: repeat; }`,
 			disableCss: `:root { --nt-bg-repeat: no-repeat; }`,
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: ["Image", "Thumbnail"] },
 		},
 
 		{
 			type: "subText",
 			text: "YouTube Video Mode",
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: "YouTube" },
 		},
 
 		{
 			type: "button",
 			id: "YouTubeSetCurrentVideoAsBackground",
-			name: "🎬 Set Current Video as Background",
+			name: "Set Current Video as Background",
 			description:
 				"Click this button while viewing a YouTube video to automatically extract and set it as your background",
+			icon: "ondemand_video",
+			iconSize: 20,
 			clickFunction: setCurrentVideoAsBackground,
 			color: "#FF0000",
 			fontSize: 14,
 			align: "center",
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: "YouTube" },
 		},
 
@@ -142,6 +154,7 @@ export const backgroundCategory: Category = {
 			description:
 				"Paste the full embed URL from YouTube's share feature. (Recommended to use the Set Current Video button)",
 			value: "",
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: "YouTube" },
 		},
 		{
@@ -150,6 +163,7 @@ export const backgroundCategory: Category = {
 			name: "Mute",
 			description: "Keep the YouTube video muted. Muting is required for autoplay to work in most browsers.",
 			value: true,
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: "YouTube" },
 		},
 		{
@@ -158,6 +172,7 @@ export const backgroundCategory: Category = {
 			name: "Show Controls",
 			description: "Display the YouTube player controls. If disabled, the player will be minimal and less intrusive.",
 			value: false,
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: "YouTube" },
 		},
 		{
@@ -171,6 +186,7 @@ export const backgroundCategory: Category = {
 			max: 100,
 			step: 1,
 			varCss: "--nt-bg-youtube-opacity",
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: "YouTube" },
 		},
 		{
@@ -183,6 +199,7 @@ export const backgroundCategory: Category = {
 			max: 50,
 			step: 1,
 			varCss: "--nt-bg-youtube-blur",
+			hideWhenUnmet: true,
 			require: { EnableBackground: true, BackgroundMode: "YouTube" },
 		},
 	],

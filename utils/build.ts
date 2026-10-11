@@ -1,10 +1,11 @@
 import { spawnSync } from "child_process";
+import * as fs from "fs-extra";
 import { buildExtension } from "./builder-extension";
 import { buildModules } from "./builder-modules";
 import { buildRelease } from "./builder-release";
 import { buildTemplates } from "./builder-template";
 import { log } from "./shared/logger";
-import { extensionConfig, getBinaryPath, ROOT } from "./shared/paths";
+import { BUILD, extensionConfig, getBinaryPath, ROOT } from "./shared/paths";
 
 const args = process.argv.slice(2);
 const isProduction = args.includes("--production") || args.includes("--release");
@@ -15,6 +16,8 @@ async function main() {
 	const startTime = Date.now();
 
 	try {
+		fs.emptyDirSync(BUILD);
+
 		// 1. Build CSS
 		log.step("Building CSS...");
 		const sassResult = spawnSync(

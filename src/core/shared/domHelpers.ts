@@ -2,13 +2,15 @@ import { sleep } from "./utilities";
 import { logger } from "./webPageLogger";
 
 /**
- * Checks if an element is currently scrollable (either vertically or horizontally).
+ * Checks whether an element can scroll, so you can decide if it needs scroll handling.
  *
- * @param {HTMLElement} element - The element to check.
- * @returns {boolean} True if the element is scrollable, false otherwise.
+ * @param {HTMLElement} element - The element to inspect; it should already be on the page.
+ * @returns {boolean} True when the element can scroll, otherwise false.
  *
  * @example
- * const scrollable = isScrollable(document.querySelector(".content"));
+ * const feed = document.querySelector("#contents");
+ * const scrollable = isScrollable(feed);
+ * // result: true
  */
 export function isScrollable(element: HTMLElement): boolean {
 	const hasVerticalScrollbar = element.scrollHeight > element.clientHeight;
@@ -17,13 +19,15 @@ export function isScrollable(element: HTMLElement): boolean {
 }
 
 /**
- * Gets the nearest scrollable parent of an element by traversing up the DOM tree.
+ * Finds the nearest ancestor that can scroll, so you can attach listeners to the right element.
  *
- * @param {HTMLElement | null} element - The starting element.
- * @returns {HTMLElement | null} The nearest scrollable parent element, or document.body if none found.
+ * @param {HTMLElement | null} element - The element to start from; pass null to get null back.
+ * @returns {HTMLElement | null} The scrollable ancestor, or document.body when there is none.
  *
  * @example
- * const parent = getScrollParent(document.querySelector(".child"));
+ * const video = await waitForElement(".html5-video-player");
+ * const scroller = getScrollParent(video);
+ * // result: the scrollable container around the player
  */
 export function getScrollParent(element: HTMLElement | null): HTMLElement | null {
 	if (!element) {
@@ -55,27 +59,42 @@ async function ensure<T>(fn: () => T | null | undefined, interval = 100): Promis
 }
 
 /**
- * Gets the document body element, waiting if it's not yet available.
+ * Returns the page body element, waiting until it exists. Use it in scripts that run early.
+ *
+ * @returns {Promise<HTMLElement>} The page body element, once it is available.
+ *
+ * @example
+ * const body = await getDocumentBody();
+ * body.classList.add("styleshift-ready");
+ * // result: the <body> element with your class added
  */
 export function getDocumentBody(): Promise<HTMLElement> {
 	return ensure(() => document.body);
 }
 
 /**
- * Gets the document head element, waiting if it's not yet available.
+ * Returns the page head element, waiting until it exists. Use it to add styles or meta tags.
+ *
+ * @returns {Promise<HTMLElement>} The page head element, once it is available.
+ *
+ * @example
+ * const head = await getDocumentHead();
+ * head.append(styleTag);
+ * // result: the <head> element now holding your style
  */
 export function getDocumentHead(): Promise<HTMLElement> {
 	return ensure(() => document.head);
 }
 
 /**
- * Executes a callback once when a specific target element is removed from the DOM.
+ * Runs your callback the first time an element leaves the page, then stops watching it.
  *
- * @param {HTMLElement} targetElement - The element to monitor for removal.
- * @param {Function} callback - The function to execute upon removal.
+ * @param {HTMLElement} targetElement - The element you want to watch for removal from the page.
+ * @param {Function} callback - The function to run once when the element is removed.
  *
  * @example
- * onceElementRemove(myElement, () => console.log("Element is gone!"));
+ * const banner = await waitForElement("#promo-banner");
+ * onceElementRemove(banner, () => removeMyPanel());
  */
 export function onceElementRemove(targetElement: HTMLElement, callback: Function): void {
 	const observer = new MutationObserver((mutationsList, observer) => {
@@ -96,13 +115,15 @@ export function onceElementRemove(targetElement: HTMLElement, callback: Function
 }
 
 /**
- * Gets the center X and Y coordinates of an element relative to the viewport.
+ * Gets the on-screen center of an element, so you can line up a tooltip or overlay with it.
  *
- * @param {HTMLElement} element - The element to calculate the center for.
- * @returns {{ x: number; y: number }} An object containing the center x and y coordinates.
+ * @param {HTMLElement} element - The element to measure; its position is read as it looks now.
+ * @returns {{ x: number; y: number }} The horizontal (x) and vertical (y) center in pixels.
  *
  * @example
- * const { x, y } = getElementCenterPosition(myButton);
+ * const player = await waitForElement("#movie_player");
+ * const { x, y } = getElementCenterPosition(player);
+ * // result: { x: 640, y: 360 }
  */
 export function getElementCenterPosition(element: HTMLElement): { x: number; y: number } {
 	const rect = element.getBoundingClientRect();
@@ -116,13 +137,14 @@ export function getElementCenterPosition(element: HTMLElement): { x: number; y: 
 }
 
 /**
- * Waits for the document.readyState to become "complete".
+ * Waits until the page has fully loaded, so later code can find elements that appear at the end.
  *
- * @returns {Promise<number>} A promise that resolves (with 0) when the document is fully loaded.
+ * @returns {Promise<number>} Resolves with 0 once the page is fully loaded.
  *
  * @example
  * await waitDocumentLoaded();
- * console.log("Page fully loaded!");
+ * console.log("YouTube is ready");
+ * // result: 0, logged after the page finishes loading
  */
 export async function waitDocumentLoaded(): Promise<number> {
 	while (document.readyState !== "complete") {
@@ -132,40 +154,43 @@ export async function waitDocumentLoaded(): Promise<number> {
 }
 
 /**
- * Gets the current domain from the window location origin (e.g., "youtube.com").
+ * Gets the site domain from the address bar, so you can save settings per site.
  *
- * @returns {string} The current domain.
+ * @returns {string} The last two parts of the hostname, for example "youtube.com".
  *
  * @example
- * const domain = getCurrentDomain(); // e.g., "google.com"
+ * const domain = getCurrentDomain();
+ * // result: "youtube.com" on a YouTube page
  */
 export function getCurrentDomain(): string {
 	return window.location.hostname.split(".").slice(-2).join(".");
 }
 
 /**
- * Rearranges a CSS selector string by removing extra whitespace and adding newlines after commas for readability.
+ * Tidies a CSS selector by trimming extra spaces and giving each part its own line.
  *
- * @param {string} value - The raw selector string.
- * @returns {string} The formatted selector string.
+ * @param {string} value - The selector text to tidy, such as ".a, .b .c".
+ * @returns {string} The same selector with single spaces and one part per line.
  *
  * @example
  * const formatted = rearrangeSelector(".a, .b  .c");
- * // Result: ".a,\n.b .c"
+ * // result: ".a,\n.b .c"
  */
 export function rearrangeSelector(value: string): string {
 	return value.replace(/\s+/g, " ").replace(/\n/g, "").replace(/, /g, ",").replace(/,/g, ",\n");
 }
 
 /**
- * Waits for an element matching the selector to appear in the DOM, with an optional timeout.
+ * Waits for an element that matches a selector to appear, so late-loading parts are safe to use.
  *
- * @param {string} selector - The CSS selector to search for.
- * @param {number} [timeout] - The maximum time to wait in milliseconds.
- * @returns {Promise<HTMLElement | null>} A promise that resolves to the element or null if the timeout is reached.
+ * @param {string} selector - The CSS selector to look for, such as "#movie_player".
+ * @param {number} [timeout] - Milliseconds to wait before giving up; omit it to wait forever.
+ * @returns {Promise<HTMLElement | null>} The matching element, or null when the time runs out.
  *
  * @example
- * const btn = await waitForElement("#submit-btn", 5000);
+ * const player = await waitForElement("#movie_player", 10000);
+ * player.classList.add("styleshift-active");
+ * // result: the player element, or null after 10 seconds
  */
 export async function waitForElement(selector: string, timeout?: number): Promise<HTMLElement | null> {
 	try {
@@ -184,13 +209,14 @@ export async function waitForElement(selector: string, timeout?: number): Promis
 }
 
 /**
- * Gets all current URL search parameters as a key-value object.
+ * Reads the page URL query string as an object, so you can act on a specific video or search.
  *
- * @returns {{ [key: string]: string }} An object containing the URL parameters.
+ * @returns {{ [key: string]: string }} An object of parameter names and their text values.
  *
  * @example
  * const params = getCurrentUrlParameters();
- * console.log(params.id); // value of ?id=...
+ * const videoId = params.v;
+ * // result: "dQw4w9WgXcQ" from watch?v=dQw4w9WgXcQ
  */
 export function getCurrentUrlParameters(): { [key: string]: string } {
 	const searchParams = new URL(window.location.href).searchParams;

@@ -7,20 +7,40 @@ export type Category = {
 	editable?: boolean;
 	settings: Setting[];
 	highlightColor?: string;
-	Highlight_color?: string;
-	Selector?: string;
 };
 
 export type CategoryNameWithIcon = { icon: string; label: string };
 export type SeparateCategory = { isHeader: boolean; label: string };
+
+export type JsonPrimitive = string | number | boolean | null;
+export type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
+export type JsonObject = { [key: string]: JsonValue };
+
+export type SettingValue = JsonValue;
+export type SettingAction = () => void;
+export type SettingValueCallback<T extends SettingValue = SettingValue> = (value: T) => void;
+export type SettingCssCallback = (value: SettingValue) => string;
+export type SettingRequirementValue = SettingValue | SettingValue[];
+export type SettingRequirements = Record<string, SettingRequirementValue>;
+
+export type QuickCustomizeMode = "basic" | "advanced";
+export type QuickCustomizeMetadata = {
+	basicStyles: Record<string, string>;
+	enabledStyles: Record<string, boolean>;
+};
+export type QuickCustomizeData = {
+	selector: string;
+	mode: QuickCustomizeMode;
+	metadata: QuickCustomizeMetadata;
+};
 
 export type Option = {
 	label: string;
 	value: string;
 	enableCss?: string;
 
-	enableFunction?: string | Function;
-	disableFunction?: string | Function;
+	enableFunction?: string | SettingAction;
+	disableFunction?: string | SettingAction;
 };
 
 export type Color_obj = {
@@ -34,8 +54,10 @@ export type BaseSetting = {
 		condition: boolean;
 		message?: string;
 	};
-	require?: Record<string, any>;
-	quickCustomize?: any;
+	require?: SettingRequirements;
+	/** Hide the setting instead of showing a warning while `require` is unmet. */
+	hideWhenUnmet?: boolean;
+	quickCustomize?: QuickCustomizeData;
 };
 
 export enum SettingType {
@@ -65,6 +87,7 @@ export type Setting = (
 			html: string;
 
 			align?: "left" | "center" | "right";
+			color?: string;
 			fontSize?: number;
 
 			editable?: boolean;
@@ -94,7 +117,7 @@ export type Setting = (
 			color?: string;
 			fontSize?: number;
 
-			clickFunction?: string | Function;
+			clickFunction?: string | SettingAction;
 
 			editable?: boolean;
 	  }
@@ -108,14 +131,14 @@ export type Setting = (
 
 			constantCss?: string;
 
-			setupFunction?: string | Function;
-			updateFunction?: string | Function;
+			setupFunction?: string | SettingAction;
+			updateFunction?: string | SettingValueCallback<boolean>;
 
 			enableCss?: string;
-			enableFunction?: string | Function;
+			enableFunction?: string | SettingAction;
 
 			disableCss?: string;
-			disableFunction?: string | Function;
+			disableFunction?: string | SettingAction;
 
 			editable?: boolean;
 	  }
@@ -135,11 +158,11 @@ export type Setting = (
 
 			varCss?: string;
 
-			constantCss?: string | Function;
+			constantCss?: string | SettingCssCallback;
 
-			setupFunction?: string | Function;
+			setupFunction?: string | SettingAction;
 
-			updateFunction?: string | Function;
+			updateFunction?: string | SettingValueCallback<number>;
 
 			//--------------
 
@@ -157,9 +180,9 @@ export type Setting = (
 
 			constantCss?: string;
 
-			setupFunction?: string | Function;
+			setupFunction?: string | SettingAction;
 
-			updateFunction?: string | Function;
+			updateFunction?: string | SettingValueCallback<string>;
 
 			options: Option[];
 
@@ -180,11 +203,11 @@ export type Setting = (
 
 			varCss?: string;
 
-			constantCss?: string | Function;
+			constantCss?: string | SettingCssCallback;
 
-			setupFunction?: string | Function;
+			setupFunction?: string | SettingAction;
 
-			updateFunction?: string | Function;
+			updateFunction?: string | SettingValueCallback<string>;
 
 			//--------------
 
@@ -198,7 +221,7 @@ export type Setting = (
 
 			value: string;
 
-			updateFunction?: string | ((value: string) => void);
+			updateFunction?: string | SettingValueCallback<string>;
 
 			//--------------
 			editable?: boolean;
@@ -238,14 +261,13 @@ export type Setting = (
 			id: string;
 			name?: string;
 			description?: string;
-			value?: any;
+			value?: SettingValue;
 
 			//--------------
 
-			constantCss?: string | ((value: any) => string);
-			setupFunction?: string | Function;
-			setup_?: string | Function;
-			uiFunction?: string | Function;
+			constantCss?: string | SettingCssCallback;
+			setupFunction?: string | SettingAction;
+			uiFunction?: string | ((this: SettingByType<"custom">, frame: HTMLElement) => void);
 			transparent?: boolean;
 
 			//--------------
@@ -266,11 +288,11 @@ export type Setting = (
 			id?: string;
 			name?: string;
 			description?: string;
-			condition: { [key: string]: any };
+			condition: SettingRequirements;
 			enableCss?: string;
 			disableCss?: string;
-			enableFunction?: string | Function;
-			disableFunction?: string | Function;
+			enableFunction?: string | SettingAction;
+			disableFunction?: string | SettingAction;
 			editable?: boolean;
 	  }
 	| {
@@ -293,8 +315,79 @@ export type Setting = (
 			name: string;
 			description?: string;
 			value: string;
-			updateFunction?: string | ((value: string) => void);
+			updateFunction?: string | SettingValueCallback<string>;
 			editable?: boolean;
 	  }
 ) &
 	BaseSetting;
+
+export type SettingKind = Setting["type"];
+export type SettingByType<T extends SettingKind> = Extract<Setting, { type: T }>;
+export type SettingField<T extends SettingKind> = Extract<keyof SettingByType<T>, string>;
+
+export type PersistedSettingValue = JsonValue;
+export type PersistedSettingRequirementValue = PersistedSettingValue | PersistedSettingValue[];
+export type PersistedSettingRequirements = Record<string, PersistedSettingRequirementValue>;
+
+export type PersistedOption = Omit<Option, "enableFunction" | "disableFunction"> & {
+	enableFunction?: string;
+	disableFunction?: string;
+};
+
+type PersistedExecutableSettingField =
+	| "clickFunction"
+	| "setupFunction"
+	| "updateFunction"
+	| "enableFunction"
+	| "disableFunction"
+	| "constantCss"
+	| "uiFunction";
+
+type PersistedSettingReplacedField<T extends SettingKind> =
+	| PersistedExecutableSettingField
+	| "options"
+	| "require"
+	| "quickCustomize"
+	| (T extends "custom" ? "value" : never);
+
+type PersistedSettingBase<T extends SettingKind> = Omit<SettingByType<T>, PersistedSettingReplacedField<T>>;
+
+type PersistedExecutableSettingFields<T extends SettingKind> = {
+	[K in Extract<keyof SettingByType<T>, PersistedExecutableSettingField>]?: string;
+};
+
+type PersistedSettingMetadata = {
+	require?: PersistedSettingRequirements;
+	quickCustomize?: QuickCustomizeData;
+};
+
+type PersistedSettingOptions<T extends SettingKind> =
+	SettingByType<T> extends { options: Option[] } ? { options: PersistedOption[] } : object;
+
+type PersistedCustomSettingValue<T extends SettingKind> = T extends "custom"
+	? { value?: PersistedSettingValue }
+	: object;
+
+type PersistedSettingMember<T extends SettingKind> = PersistedSettingBase<T> &
+	PersistedExecutableSettingFields<T> &
+	PersistedSettingMetadata &
+	PersistedSettingOptions<T> &
+	PersistedCustomSettingValue<T>;
+
+export type PersistedSetting = {
+	[T in SettingKind]: PersistedSettingMember<T>;
+}[SettingKind];
+
+export type PersistedCategory = Omit<Category, "settings" | "editable" | "highlightColor"> & {
+	settings: PersistedSetting[];
+};
+
+export type PersistedSettings = Record<string, JsonValue>;
+export type PersistedStyleShiftData = {
+	currentSettings?: PersistedSettings;
+	addOnStyleShiftItems?: PersistedCategory[];
+};
+export type PersistedPreset = PersistedStyleShiftData & {
+	themeId?: string;
+	themeName?: string;
+};

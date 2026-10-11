@@ -4,8 +4,8 @@ import { applyTheme as applyThemeManager, saveTheme as saveThemeManager, type Th
 import { settingsUi } from "@ui/settings/settingsApi";
 import { createStyleShiftWindow } from "@ui/window/windowFactory";
 import { mount, unmount } from "svelte";
-import LivePreviewBar from "./LivePreviewBar.svelte";
-import ThemeManager from "./ThemeManager.svelte";
+import LivePreviewBar from "./views/LivePreviewBar.svelte";
+import ThemeManager from "./views/ThemeManager.svelte";
 
 interface ActiveThemeWindow {
 	windowInstance: any;
@@ -13,6 +13,21 @@ interface ActiveThemeWindow {
 }
 
 let activeThemeWindowInstance: ActiveThemeWindow | null = null;
+
+export function isThemeManagerOpen(): boolean {
+	return activeThemeWindowInstance !== null;
+}
+
+/**
+ * Closes the Theme Collection window if open. Used to end the tutorial trial.
+ */
+export function closeThemeManager(): void {
+	try {
+		activeThemeWindowInstance?.windowInstance?.closeWindowHandler?.();
+	} finally {
+		activeThemeWindowInstance = null;
+	}
+}
 
 /**
  * Opens the modern Theme Collection window.
@@ -112,7 +127,7 @@ export async function startLivePreviewMode(theme: Theme, isStoreItem = false, cl
 	});
 }
 
-import ThemePreviewOverlay from "./ThemePreviewOverlay.svelte";
+import ThemePreviewOverlay from "./views/ThemePreviewOverlay.svelte";
 
 /**
  * Mounts ThemePreviewOverlay directly to document.body at top level outside any window container.

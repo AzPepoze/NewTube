@@ -1,6 +1,6 @@
 import { type Category } from "@settings/types/styleshiftTypes";
 import { settingsUi } from "@ui/settings/settingsApi";
-import FontManager from "../features/fonts/FontManager.svelte";
+import FontManager from "../features/fonts/views/FontManager.svelte";
 import { FONT_SELECTOR } from "./selectors";
 
 export const fontsCategory: Category = {
@@ -16,7 +16,10 @@ export const fontsCategory: Category = {
 			},
 			constantCss: (value) => {
 				if (!Array.isArray(value)) return "";
-				const enabledFonts = value.filter((f) => f && f.enabled && f.fontName);
+				const enabledFonts = value.filter(
+					(f): f is { enabled: boolean; fontName: string; importUrl?: string } =>
+						!!f && typeof f === "object" && !Array.isArray(f) && f.enabled === true && typeof f.fontName === "string",
+				);
 				if (enabledFonts.length === 0) return "";
 
 				// Deduplicate imports by URL

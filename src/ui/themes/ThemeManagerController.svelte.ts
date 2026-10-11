@@ -1,4 +1,5 @@
-import { SvelteSet } from "svelte/reactivity";
+import { logger } from "@/shared/logger";
+import { SvelteMap, SvelteSet } from "svelte/reactivity";
 import { enterPrompt } from "@core/shared/dialogs";
 import { createNotification } from "@core/shared/notifications";
 import { getRootValue, persistCachedDataToStorage } from "@core/storage/manager";
@@ -11,7 +12,7 @@ import {
 	saveTheme as saveThemeManager,
 	type Theme,
 } from "@core/theme/manager";
-import { STYLESHIFT_STORE_API_URL } from "@core/theme/config";
+import { STYLESHIFT_STORE_API_URL, STYLESHIFT_STORE_ORIGINS, STYLESHIFT_STORE_URL } from "@core/theme/config";
 import {
 	extractListFromResponse,
 	extractPaginationFromResponse,
@@ -19,6 +20,98 @@ import {
 	normalizeStoreThemePayload,
 	type Tag,
 } from "@core/theme/parser";
+
+export type CreatorProfile = {
+	id: string;
+	displayName: string;
+	avatarUrl: string;
+	profileUrl: string;
+};
+
+const CREATOR_PROFILE_CACHE_TTL = 5 * 60 * 1000;
+const creatorProfileCache = new SvelteMap<string, { profile: CreatorProfile; expiresAt: number }>();
+const creatorProfileRequests = new SvelteMap<string, Promise<CreatorProfile | null>>();
+
+function asNonEmptyString(value: unknown): string {
+	if (typeof value !== "string") return "";
+	const trimmed = value.trim();
+	return trimmed ? trimmed : "";
+}
+
+function isHttpUrl(value: unknown): value is string {
+	if (!asNonEmptyString(value)) return false;
+	try {
+		const url = new URL(value as string);
+		return url.protocol === "http:" || url.protocol === "https:";
+	} catch {
+		return false;
+	}
+}
+
+function unwrapStoreUser(data: unknown): Record<string, unknown> | null {
+	if (!data || typeof data !== "object" || Array.isArray(data)) return null;
+	const root = data as Record<string, unknown>;
+	if (root.user && typeof root.user === "object" && !Array.isArray(root.user)) {
+		return root.user as Record<string, unknown>;
+	}
+	return root;
+}
+
+function resolveStoreOrigin(): string {
+	const configured = asNonEmptyString(STYLESHIFT_STORE_ORIGINS?.[0]).replace(/\/$/, "");
+	if (configured) return configured;
+	try {
+		return new URL(STYLESHIFT_STORE_URL).origin;
+	} catch {
+		return "";
+	}
+}
+
+function parseCreatorProfile(data: unknown, ownerId: string): CreatorProfile | null {
+	const user = unwrapStoreUser(data);
+	if (!user || user.id !== ownerId) return null;
+
+	const origin = resolveStoreOrigin();
+	if (!origin) return null;
+
+	return {
+		id: ownerId,
+		displayName: asNonEmptyString(user.name) || asNonEmptyString(user.displayName) || `@${ownerId.slice(0, 8)}`,
+		avatarUrl: isHttpUrl(user.avatarUrl) ? user.avatarUrl : "",
+		profileUrl: `${origin}/profile?userId=${encodeURIComponent(ownerId)}`,
+	};
+}
+
+async function fetchCreatorProfile(ownerId: string): Promise<CreatorProfile | null> {
+	const res = await fetch(`${STYLESHIFT_STORE_API_URL}/users/profile?userId=${encodeURIComponent(ownerId)}`);
+	if (!res.ok) return null;
+	return parseCreatorProfile(await res.json(), ownerId);
+}
+
+async function getCreatorProfile(ownerId: string): Promise<CreatorProfile | null> {
+	const cached = creatorProfileCache.get(ownerId);
+	if (cached && cached.expiresAt > Date.now()) return cached.profile;
+
+	const inFlight = creatorProfileRequests.get(ownerId);
+	if (inFlight) return inFlight;
+
+	const request = fetchCreatorProfile(ownerId)
+		.then((profile) => {
+			if (profile) creatorProfileCache.set(ownerId, { profile, expiresAt: Date.now() + CREATOR_PROFILE_CACHE_TTL });
+			return profile;
+		})
+		.catch(() => null)
+		.finally(() => {
+			creatorProfileRequests.delete(ownerId);
+		});
+	creatorProfileRequests.set(ownerId, request);
+	return request;
+}
+
+function collectOwnerIds(themes: Theme[]): string[] {
+	const ownerIds = themes.map((theme) => theme.ownerId).filter((ownerId): ownerId is string => Boolean(ownerId));
+	return [...new SvelteSet(ownerIds)];
+}
 
 async function parseResponseError(res: Response): Promise<string> {
 	try {
@@ -52,6 +145,7 @@ export class ThemeManagerController {
 
 	availableTags = $state<Tag[]>([]);
 	selectedTag = $state<string>("");
+	creatorProfiles = $state<Record<string, CreatorProfile>>({});
 
 	private backupSettings: any = null;
 	private originalActiveTheme: string | null = null;
@@ -68,9 +162,21 @@ export class ThemeManagerController {
 
 	async loadThemes() {
 		this.themes = (await getRootValue("themes")) || [];
+		void this.loadCreatorProfiles(this.themes);
 		this.backupSettings = JSON.parse(JSON.stringify(await getRootValue("currentSettings")));
 		this.originalActiveTheme = await getRootValue("activeTheme");
 		await this.refreshActiveTheme();
+	}
+
+	private async loadCreatorProfiles(themes: Theme[]) {
+		const ownerIds = collectOwnerIds(themes);
+		const profiles = await Promise.all(ownerIds.map((ownerId) => getCreatorProfile(ownerId)));
+		const next = { ...this.creatorProfiles };
+		for (const [index, ownerId] of ownerIds.entries()) {
+			const profile = profiles[index];
+			if (profile) next[ownerId] = profile;
+		}
+		this.creatorProfiles = next;
 	}
 
 	async refreshActiveTheme() {
@@ -85,7 +191,7 @@ export class ThemeManagerController {
 				this.availableTags = await res.json();
 			}
 		} catch (e) {
-			console.error("Failed to fetch store tags", e);
+			logger.error("store", "Failed to fetch store tags", e);
 		}
 	}
 
@@ -124,6 +230,7 @@ export class ThemeManagerController {
 					}
 
 					this.storeTotal = pagination.total;
+					void this.loadCreatorProfiles(mappedItems);
 					this.hasMoreStore = pagination.hasMore;
 					this.storeError = null;
 				}
@@ -131,7 +238,7 @@ export class ThemeManagerController {
 				this.storeError = await parseResponseError(res);
 			}
 		} catch (e) {
-			console.error("Store fetch failed", e);
+			logger.error("store", "Store fetch failed", e);
 			this.storeError = e instanceof Error && e.message ? e.message : "Check your connection and try again.";
 		} finally {
 			this.isLoadingStore = false;
@@ -158,6 +265,7 @@ export class ThemeManagerController {
 					const items = extractListFromResponse(data);
 					const pagination = extractPaginationFromResponse(data, items.length);
 					this.storeThemes = items.map((t) => normalizeStoreThemePayload(t));
+					void this.loadCreatorProfiles(this.storeThemes);
 					this.storeTotal = pagination.total;
 					this.hasMoreStore = pagination.hasMore;
 					this.storeError = null;
@@ -166,7 +274,7 @@ export class ThemeManagerController {
 				this.storeError = await parseResponseError(res);
 			}
 		} catch (e) {
-			console.error("Store page fetch failed", e);
+			logger.error("store", "Store page fetch failed", e);
 			this.storeError = e instanceof Error && e.message ? e.message : "Check your connection and try again.";
 		} finally {
 			this.isLoadingStore = false;
@@ -265,6 +373,10 @@ export class ThemeManagerController {
 	async openStore() {
 		const { openThemeStore } = await import("@core/theme/storeIntegration");
 		openThemeStore();
+	}
+
+	submitTheme() {
+		void import("@core/theme/storeIntegration").then(({ openThemeSubmitPage }) => openThemeSubmitPage());
 	}
 
 	async importTheme() {

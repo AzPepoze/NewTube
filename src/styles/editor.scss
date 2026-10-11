@@ -155,7 +155,7 @@
 
 			&:hover {
 				.styleshift-config-button,
-				.styleshift-config-actions-overlay {
+				.styleshift-config-actions {
 					opacity: 1;
 					pointer-events: all;
 				}
@@ -165,24 +165,62 @@
 		// Hide buttons while dragging
 		&[draging] {
 			.styleshift-config-button,
-			.styleshift-config-actions-overlay {
+			.styleshift-config-actions {
 				opacity: 0 !important;
 				pointer-events: none !important;
 			}
 		}
 
-		.styleshift-config-actions-overlay {
+		// The row widens sideways on hover; the margin and padding cancel out, so the content keeps its place.
+		.styleshift-setting-row-content {
+			transition:
+				margin 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+				padding 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+
+		&:not([draging])
+			.styleshift-setting-frame:is(:hover, :focus-within)
+			> .styleshift-setting-row-content:has(.styleshift-setting-slot) {
+			margin-inline: -24px;
+			padding-inline: 24px;
+		}
+
+		// Slots sit in the side space the row opens on hover.
+		.styleshift-setting-slot {
 			position: absolute;
-			right: -16px;
 			top: 50%;
-			transform: translateY(-50%);
+			z-index: 1;
+			opacity: 0;
+			visibility: hidden;
+			transition:
+				transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+				opacity 0.2s ease,
+				visibility 0.25s;
+
+			&.drag-slot {
+				left: 0;
+				transform: translate(-8px, -50%);
+			}
+
+			&.actions-slot {
+				right: 0;
+				transform: translate(8px, -50%);
+			}
+		}
+
+		&:not([draging]) .styleshift-setting-frame:is(:hover, :focus-within) .styleshift-setting-slot {
+			opacity: 1;
+			visibility: visible;
+			transform: translate(0, -50%);
+		}
+
+		.styleshift-config-actions {
 			display: flex;
 			flex-direction: column;
 			gap: 5px;
 			opacity: 0;
 			transition: all 0.2s;
 			pointer-events: none;
-			z-index: 10;
 		}
 
 		.styleshift-config-button {
@@ -203,19 +241,10 @@
 			transform-origin: center;
 
 			&.drag-handle {
-				position: absolute;
-				left: -16px;
-				top: 50%;
-				transform: translateY(-50%);
 				cursor: grab;
-				z-index: 10;
 
 				&:active {
 					cursor: grabbing;
-				}
-
-				&:hover {
-					transform: translateY(-50%) scale(1.1);
 				}
 			}
 
@@ -254,13 +283,20 @@
 			box-sizing: border-box;
 			pointer-events: none;
 			margin-block: -5px;
+			transform: translateX(-24px);
 			transition: all 0.3s ease-out;
 
 			&.show {
+				min-height: 40px;
 				border: 2px dashed var(--fg-opacity-40);
 				background: var(--fg-opacity-05);
 				opacity: 1;
 				margin-block: 0px;
+				transform: translateX(0);
+			}
+
+			&.leaving {
+				transform: translateX(24px);
 			}
 		}
 
@@ -309,12 +345,12 @@
 .styleshift-hover-preview-outline {
 	position: fixed;
 	box-sizing: border-box;
-	border: 2px solid var(--theme-0, #659aff);
+	border: 2px solid var(--nt-theme-color);
 	border-radius: 6px;
-	background: color-mix(in srgb, var(--theme-0, #659aff) 12%, transparent);
+	background: color-mix(in srgb, var(--nt-theme-color) 12%, transparent);
 	box-shadow:
 		0 0 0 1px rgba(0, 0, 0, 0.45),
-		0 0 12px var(--theme-0, #659aff);
+		0 0 12px var(--nt-theme-color);
 	pointer-events: none;
 	animation: styleshift-preview-show 160ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
@@ -356,8 +392,8 @@
 	pointer-events: auto;
 
 	&:hover {
-		background: var(--theme-success-20, rgba(0, 200, 81, 0.2)) !important;
-		border-color: var(--theme-success, #00c851) !important;
+		background: var(--theme-success-20) !important;
+		border-color: var(--theme-success) !important;
 	}
 }
 

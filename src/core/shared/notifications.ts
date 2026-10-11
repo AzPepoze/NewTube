@@ -1,25 +1,21 @@
 import { mount, unmount } from "svelte";
 
 import { logger } from "@shared/logger";
-import Icon from "@ui/settings/components/primitives/Icon.svelte";
+import Icon from "@base/Icon.svelte";
 import { settingsUi } from "@ui/settings/settingsApi";
 import { globalNotificationContainer, playUiAnimation } from "@ui/window/windowFactory";
 
 /**
- * Creates and displays a stylish notification in the extension's UI.
+ * Shows a short notification in the extension's UI to tell the user something.
  *
- * @param {Object} options - The notification options.
- * @param {string | null} [options.icon=null] - The name of the material icon to display.
- * @param {string} [options.iconColor=""] - The CSS color for the icon.
- * @param {string} [options.title="StyleShift"] - The title of the notification.
- * @param {string} [options.content=""] - The text content of the notification.
- * @param {number} [options.timeout=3000] - Duration in ms before auto-closing (0 for manual close, -1 for persistent).
- * @returns {Promise<Object>} An object containing methods to control the notification (setIcon, setIconColor, setContent, setTitle, close).
+ * @param {object} options - Notification: icon, iconColor, title, content, timeout and variant.
+ * @returns {Promise<object>} Handle: setIcon, setIconColor, setContent, setTitle, close.
  *
  * @example
- * const notification = await createNotification({ title: "Update", content: "Settings saved!" });
- * // Later...
- * notification.close();
+ * const toast = await createNotification({ title: "Update", content: "Settings saved!" });
+ * toast.setContent("Saved to your profile!");
+ * toast.close();
+ * // result: a handle to update or close the notification
  */
 export async function createNotification({
 	icon = null,
@@ -27,11 +23,15 @@ export async function createNotification({
 	title = "StyleShift",
 	content = "",
 	timeout = 3000,
+	variant = "info",
 }) {
 	logger.info("extension", title, content);
 
 	const notificationFrame = await settingsUi.settingFrame(true, false, { x: false, y: true });
 	notificationFrame.classList.add("styleshift-notification");
+	if (variant !== "info") {
+		notificationFrame.classList.add(`styleshift-notification-${variant}`);
+	}
 	setTimeout(() => globalNotificationContainer.append(notificationFrame), 1);
 
 	let iconUi: any = null;
@@ -80,7 +80,7 @@ export async function createNotification({
 	if (timeout === 0) {
 		const closeUi = await settingsUi.settingFrame(true, false, { x: true, y: true });
 		closeUi.className += " styleshift-notification-close";
-		closeUi.textContent = "X";
+		closeUi.textContent = "✕";
 		closeUi.onclick = close;
 		notificationFrame.append(closeUi);
 	}
@@ -100,17 +100,18 @@ export async function createNotification({
 }
 
 /**
- * Creates and displays an error notification.
+ * Shows a red error notification that closes itself after ten seconds.
  *
- * @param {any} content - The error message or error object to display.
- * @returns {Promise<Object>} The notification controller object.
+ * @param {any} content - The error or message to show. A thrown object uses its message.
+ * @returns {Promise<object>} Handle: setIcon, setIconColor, setContent, setTitle, close.
  *
  * @example
  * try {
- *   // ...
- * } catch (e) {
- *   await createError(e);
+ *   await importStyleShiftJsonText(json);
+ * } catch (error) {
+ *   await createError(error);
  * }
+ * // result: a red error toast that closes after ten seconds
  */
 export async function createError(content: any) {
 	return await createNotification({
@@ -119,17 +120,19 @@ export async function createError(content: any) {
 		title: "StyleShift Error",
 		content: typeof content === "object" ? content.message : String(content),
 		timeout: 10000,
+		variant: "error",
 	});
 }
 
 /**
- * Creates and displays a warning notification.
+ * Shows an orange warning notification that closes itself after five seconds.
  *
- * @param {string} content - The warning message to display.
- * @returns {Promise<Object>} The notification controller object.
+ * @param {string} content - The warning message to show.
+ * @returns {Promise<object>} Handle: setIcon, setIconColor, setContent, setTitle, close.
  *
  * @example
- * await createWarning("Unsupported feature detected.");
+ * await createWarning("This theme needs YouTube's dark mode.");
+ * // result: an orange warning toast
  */
 export async function createWarning(content: string) {
 	return await createNotification({
@@ -138,17 +141,19 @@ export async function createWarning(content: string) {
 		title: "StyleShift Warning",
 		content: content,
 		timeout: 5000,
+		variant: "warning",
 	});
 }
 
 /**
- * Creates and displays a success notification.
+ * Shows a green success notification that closes itself after three seconds.
  *
- * @param {string} content - The success message to display.
- * @returns {Promise<Object>} The notification controller object.
+ * @param {string} content - The success message to show.
+ * @returns {Promise<object>} Handle: setIcon, setIconColor, setContent, setTitle, close.
  *
  * @example
- * await createSuccess("Changes applied successfully!");
+ * await createSuccess("Theme applied!");
+ * // result: a green success toast
  */
 export async function createSuccess(content: string) {
 	return await createNotification({
@@ -157,5 +162,6 @@ export async function createSuccess(content: string) {
 		title: "StyleShift",
 		content: content,
 		timeout: 3000,
+		variant: "success",
 	});
 }

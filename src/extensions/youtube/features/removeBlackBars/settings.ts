@@ -1,8 +1,13 @@
 import { getUserSetting } from "@core/storage/manager";
+import type { BlackBarMode } from "./types";
+
+// ---------------------------------
+// Current settings
+// ---------------------------------
 
 export const settings = {
 	enabled: false,
-	mode: "vertical" as "vertical" | "horizontal" | "both",
+	mode: "vertical" as BlackBarMode,
 	debugCanvas: false,
 	debugInfo: false,
 	lazyCheck: false,
@@ -11,6 +16,10 @@ export const settings = {
 	worker: true,
 	disableFullscreen: false,
 };
+
+// ---------------------------------
+// Settings loading
+// ---------------------------------
 
 export async function loadInitialSettings() {
 	settings.enabled = await getUserSetting("RemoveBlackBars");

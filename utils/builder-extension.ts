@@ -253,6 +253,8 @@ export async function buildExtension() {
 
 		// 6. Distribution
 		log.info("Deploying to distribution folders...");
+		fs.emptyDirSync(DIST_CHROMIUM);
+		fs.emptyDirSync(DIST_FIREFOX);
 		fs.copySync(BUILD, DIST_CHROMIUM);
 		fs.copySync(BUILD, DIST_FIREFOX);
 

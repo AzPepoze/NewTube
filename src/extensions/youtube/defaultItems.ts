@@ -1,15 +1,54 @@
 import { openSettingPage } from "@core/shared/extensionHelpers";
+import { createError, createNotification, createSuccess, createWarning } from "@core/shared/notifications";
 import { showExtensionUpdateNotification } from "@core/shared/versionUpdate";
 import { exportThemeWithSelection } from "@core/theme/exporter";
 import { exportCurrentSettingsObject, importThemeWorkflow } from "@core/theme/importer";
-import { checkAndUpdateTheme, openThemeStore } from "@core/theme/storeIntegration";
+import { checkAndUpdateTheme, openThemeStore, openThemeSubmitPage } from "@core/theme/storeIntegration";
 import { getAddOnItems } from "@settings/registry/items";
 import { type Category, type SeparateCategory } from "@settings/types/styleshiftTypes";
 import { toggleCustomize } from "@ui/highlight/highlight";
 import { startQuickCustomize } from "@ui/highlight/quickCustomizeService";
+import { openApiReference } from "@ui/docs/apiReferenceService";
+import { openTutorialOverlay } from "@ui/tutorial/tutorialService";
+import { playCelebration } from "@ui/tutorial/celebrationService";
 import { showThemeManager } from "@ui/themes/themeManagerService";
+import { showAlert, showSelection, showUserConfirmation, showUserPrompt } from "@ui/window/windowFactory";
 import { showTryImportOldNPreset } from "./dangerzone";
+import { copyDiagnosticsToClipboard, exportDiagnosticsFile } from "./features/diagnostics/export";
 import { showWelcome } from "./welcome";
+
+const diagnosticsLinkStyle = [
+	"display: inline-flex",
+	"align-items: center",
+	"padding: 8px 18px",
+	"border-radius: 999px",
+	"background: var(--theme-0)",
+	"color: #ffffff",
+	"font-weight: 700",
+	"text-decoration: none",
+].join("; ");
+const diagnosticsIntroHtml = `
+<div style="display: flex; flex-direction: column; gap: 14px; width: 100%;">
+	<p style="margin: 0;">
+		<b>Create a report</b> so I can find and fix your problem faster.
+	</p>
+	<div>
+		<b>The report includes:</b>
+		<ul style="margin: 6px 0 0; padding-left: 18px; line-height: 1.7;">
+			<li>Your layout, styling, settings and browser info</li>
+			<li>No video titles, comments or account details</li>
+			<li>Nothing is sent automatically</li>
+		</ul>
+	</div>
+	<div>
+		<b>Then send it to me:</b>
+		<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;">
+			<a href="https://discord.gg/BgxvVqap4G" target="_blank" rel="noopener noreferrer" style="${diagnosticsLinkStyle}">Discord</a>
+			<a href="https://github.com/AzPepoze/NewTube/issues" target="_blank" rel="noopener noreferrer" style="${diagnosticsLinkStyle}">GitHub issue</a>
+		</div>
+	</div>
+</div>
+`;
 
 const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 	{ isHeader: true, label: "Extension" },
@@ -76,6 +115,17 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				icon: "storefront",
 			},
 			{
+				clickFunction: openThemeSubmitPage,
+				type: "button",
+				id: "ShareThemeButton",
+				name: "Share Your Theme",
+				description: "Submit your current setup to the NewTube store and share it with everyone.",
+				fontSize: 15,
+				color: "#ffb020",
+				align: "left",
+				icon: "ios_share",
+			},
+			{
 				clickFunction: startQuickCustomize,
 				type: "button",
 				id: "StyleShiftQuickCustomize",
@@ -98,6 +148,39 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				icon: "highlight_alt",
 			},
 			{
+				clickFunction: openTutorialOverlay,
+				type: "button",
+				id: "StyleShiftTutorialButton",
+				name: "Tutorial",
+				description: "Learn how Developer Mode, Quick Customize and Customize Element work together.",
+				fontSize: 15,
+				color: "#ffb020",
+				align: "left",
+				icon: "school",
+			},
+			{
+				id: "ApiReferenceButton",
+				name: "API Reference",
+				description: "Browse every built-in function and setting kind with copyable examples.",
+				type: "button",
+				color: "#2196f3",
+				fontSize: 15,
+				clickFunction: openApiReference,
+				align: "center",
+				icon: "menu_book",
+			},
+			{
+				clickFunction: () => playCelebration({ title: "Yay!", message: "Yay!", yayLabel: "Yay!" }),
+				type: "button",
+				id: "StyleShiftCelebrate",
+				name: "Yay!",
+				description: "Fire the confetti cannons, just for fun.",
+				fontSize: 15,
+				color: "#8b7cf6",
+				align: "left",
+				icon: "celebration",
+			},
+			{
 				clickFunction: openSettingPage,
 				color: "#646464ff",
 				description: "Opens the full-page settings dashboard in a new tab.",
@@ -111,7 +194,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 		],
 	},
 	{
-		category: { icon: "settings", label: "Extention's settings" },
+		category: { icon: "settings", label: "Extension's settings" },
 		settings: [
 			{
 				type: "subText",
@@ -182,7 +265,7 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				color: "#2e16feff",
 				description: "View the source code, contribute, or check for updates on GitHub.",
 				fontSize: 15,
-				icon: "https://pbs.twimg.com/profile_images/1372304699601285121/5yBS6_3F_400x400.jpg",
+				icon: "assets/icons/github.svg",
 				id: "GithubButton",
 				name: "GitHub Repository",
 				align: "left",
@@ -203,26 +286,6 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				name: "Keyboard Shortcuts",
 				description: "View all available keyboard shortcuts for quick access.",
 				type: "keyboardShortcuts",
-			},
-			{
-				id: "ShowWelcomePage",
-				name: "Show Welcome Page",
-				description: "Replay NewTube's welcome tour.",
-				clickFunction: showWelcome,
-				type: "button",
-				color: "#7f5db7",
-				align: "left",
-				icon: "waving_hand",
-			},
-			{
-				id: "TestVersionUpdateNotification",
-				name: "Test Version Update Notification",
-				description: "Show a preview notification for extension updates.",
-				clickFunction: showExtensionUpdateNotification,
-				type: "button",
-				color: "#7f5db7",
-				align: "left",
-				icon: "system_update",
 			},
 		],
 	},
@@ -270,6 +333,199 @@ const defaultStyleShiftItems: (Category | SeparateCategory)[] = [
 				icon: "file_open",
 				align: "center",
 				type: "button",
+			},
+		],
+	},
+	{
+		category: { icon: "science", label: "Test" },
+		settings: [
+			{
+				type: "subText",
+				fontSize: 14,
+				align: "center",
+				text: "Notification tests",
+			},
+			{
+				type: "button",
+				id: "TestNotificationButton",
+				name: "Test Notification",
+				description: "Fires a standard notification with an icon.",
+				clickFunction: () =>
+					createNotification({
+						icon: "notifications",
+						iconColor: "#7f5db7",
+						title: "Test Notification",
+						content: "This is a test notification.",
+						timeout: 5000,
+					}),
+				color: "#7f5db7",
+				fontSize: 15,
+				align: "left",
+				icon: "notifications",
+			},
+			{
+				type: "button",
+				id: "TestSuccessNotificationButton",
+				name: "Test Success",
+				description: "Fires a success notification.",
+				clickFunction: () => createSuccess("Test success message."),
+				color: "#4caf50",
+				fontSize: 15,
+				align: "left",
+				icon: "check_circle",
+			},
+			{
+				type: "button",
+				id: "TestWarningNotificationButton",
+				name: "Test Warning",
+				description: "Fires a warning notification.",
+				clickFunction: () => createWarning("Test warning message."),
+				color: "#ff9800",
+				fontSize: 15,
+				align: "left",
+				icon: "warning",
+			},
+			{
+				type: "button",
+				id: "TestErrorNotificationButton",
+				name: "Test Error",
+				description: "Fires an error notification.",
+				clickFunction: () => createError("Test error message."),
+				color: "#f44336",
+				fontSize: 15,
+				align: "left",
+				icon: "error",
+			},
+			{
+				type: "button",
+				id: "TestPersistentNotificationButton",
+				name: "Test Persistent",
+				description: "Fires a notification without auto-close (closes with the X).",
+				clickFunction: () =>
+					createNotification({
+						icon: "push_pin",
+						iconColor: "#2196f3",
+						title: "Persistent Notification",
+						content: "This notification stays until you close it.",
+						timeout: 0,
+					}),
+				color: "#2196f3",
+				fontSize: 15,
+				align: "left",
+				icon: "push_pin",
+			},
+			{
+				type: "subText",
+				fontSize: 14,
+				align: "center",
+				text: "Prompt tests",
+			},
+			{
+				type: "button",
+				id: "TestAlertButton",
+				name: "Test Alert",
+				description: "Opens an alert dialog with one OK button.",
+				clickFunction: () => showAlert("This is a test alert.", "Test Alert"),
+				color: "#7f5db7",
+				fontSize: 15,
+				align: "left",
+				icon: "info",
+			},
+			{
+				type: "button",
+				id: "TestConfirmButton",
+				name: "Test Confirm",
+				description: "Opens a confirm dialog with Confirm and Cancel.",
+				clickFunction: () => showUserConfirmation("This is a test confirmation.", "Test Confirm"),
+				color: "#4caf50",
+				fontSize: 15,
+				align: "left",
+				icon: "help",
+			},
+			{
+				type: "button",
+				id: "TestSelectionButton",
+				name: "Test Selection",
+				description: "Opens a selection dialog with several choices.",
+				clickFunction: () =>
+					showSelection("Pick one option.", "Test Selection", [
+						{ label: "Option A", description: "The first choice." },
+						{ label: "Option B", description: "The second choice." },
+					]),
+				color: "#ff9800",
+				fontSize: 15,
+				align: "left",
+				icon: "list",
+			},
+			{
+				type: "button",
+				id: "TestPromptButton",
+				name: "Test Prompt",
+				description: "Opens a text prompt dialog.",
+				clickFunction: () => showUserPrompt("Test Prompt", "Type something...", ""),
+				color: "#2196f3",
+				fontSize: 15,
+				align: "left",
+				icon: "edit_note",
+			},
+			{
+				type: "subText",
+				fontSize: 14,
+				align: "center",
+				text: "Tours and updates",
+			},
+			{
+				id: "ShowWelcomePage",
+				name: "Show Welcome Page",
+				description: "Replay NewTube's welcome tour.",
+				clickFunction: showWelcome,
+				type: "button",
+				color: "#7f5db7",
+				align: "left",
+				icon: "waving_hand",
+			},
+			{
+				id: "TestVersionUpdateNotification",
+				name: "Test Version Update Notification",
+				description: "Show a preview notification for extension updates.",
+				clickFunction: showExtensionUpdateNotification,
+				type: "button",
+				color: "#7f5db7",
+				align: "left",
+				icon: "system_update",
+			},
+		],
+	},
+	{
+		category: { icon: "bug_report", label: "Diagnostics" },
+		settings: [
+			{
+				type: "text",
+				html: diagnosticsIntroHtml,
+				fontSize: 13,
+				align: "left",
+			},
+			{
+				type: "button",
+				id: "CopySupportReportButton",
+				name: "Copy support report",
+				description: "Copies the report to your clipboard.",
+				clickFunction: copyDiagnosticsToClipboard,
+				color: "#7f5db7",
+				fontSize: 15,
+				align: "left",
+				icon: "content_copy",
+			},
+			{
+				type: "button",
+				id: "SaveSupportReportButton",
+				name: "Save support report",
+				description: "Downloads the report as a .json file.",
+				clickFunction: exportDiagnosticsFile,
+				color: "#3eadad",
+				fontSize: 15,
+				align: "left",
+				icon: "download",
 			},
 		],
 	},

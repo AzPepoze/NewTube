@@ -1,0 +1,77 @@
+<script lang="ts">
+	import type { CategoryNameWithIcon } from "@settings/types/styleshiftTypes";
+	import LeftTitle from "./LeftTitle.svelte";
+
+	let {
+		category,
+		selected = false,
+		isDeveloperMode = false,
+		editable = false,
+		onSelect = () => {},
+		onMove = null,
+		action = (() => {}) as (node: HTMLElement, arg: any) => void,
+		actionArg = undefined,
+		style = "",
+		flat = false,
+	}: {
+		category: string | CategoryNameWithIcon;
+		selected?: boolean;
+		isDeveloperMode?: boolean;
+		editable?: boolean;
+		onSelect?: () => void;
+		onMove?: ((direction: "up" | "down") => void) | null;
+		action?: (node: HTMLElement, arg: any) => void;
+		actionArg?: any;
+		style?: string;
+		flat?: boolean;
+	} = $props();
+
+	let settled = $state(false);
+
+	function handleEntryEnd(event: AnimationEvent) {
+		if (event.target === event.currentTarget) settled = true;
+	}
+</script>
+
+<button
+	class="styleshift-sidebar-item-wrapper"
+	class:settled
+	{style}
+	onclick={onSelect}
+	onanimationend={handleEntryEnd}
+	use:action={actionArg}
+>
+	<LeftTitle {category} {selected} {isDeveloperMode} {editable} {onMove} {flat} />
+</button>
+
+<style lang="scss">
+	@keyframes sidebar-animation {
+		from {
+			opacity: 0;
+			transform: translateX(-10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+
+	.styleshift-sidebar-item-wrapper {
+		background: transparent;
+		border: none;
+		padding: 0;
+		text-align: left;
+		cursor: pointer;
+		width: 100%;
+		display: block;
+		animation: sidebar-animation 0.2s both;
+
+		&.settled {
+			animation: none;
+		}
+
+		:global(.skip-animation) & {
+			animation: none;
+		}
+	}
+</style>
