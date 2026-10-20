@@ -1,6 +1,6 @@
 import { IS_FIREFOX } from "@core/index";
 import { type Category } from "@settings/types/styleshiftTypes";
-import { setupVideoAnimations } from "../features/video/animations";
+import { disableVideoAnimations, setupVideoAnimations } from "../features/video/animations";
 import { setupAutoTheater } from "../features/video/general";
 import { disableAutoPip, enableAutoExitPip, enableAutoPip } from "../features/video/pip";
 import { PLAYER_SELECTOR } from "./selectors";
@@ -37,6 +37,7 @@ export const videoPlayerCategory: Category = {
 				"Replaces standard YouTube volume and play/pause indicators with modern, high-quality animated versions.",
 			value: true,
 			enableFunction: setupVideoAnimations,
+			disableFunction: disableVideoAnimations,
 			enableCss: `
 				.newtube-vol-indicator {
 					position: absolute;
