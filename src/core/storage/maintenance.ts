@@ -8,6 +8,7 @@ import {
 } from "@core/storage/manager";
 import { getStyleShiftAddOnItems } from "@extensions/youtube/addOnItems";
 import { defaultSetting } from "@extensions/youtube/defaultSettings";
+import { mergeBundledPresets } from "@extensions/youtube/presets";
 import { getSettingsList } from "@settings/registry/items";
 import { logger } from "@shared/logger";
 
@@ -107,6 +108,17 @@ export async function performStorageGarbageCollection(): Promise<void> {
 }
 
 /**
+ * Adds the bundled presets once, so a preset the user deletes does not come back.
+ */
+export async function seedBundledPresets(): Promise<boolean> {
+	if (await getRootValue("presetsSeeded")) return false;
+
+	await saveRootValue("themes", mergeBundledPresets(await getRootValue("themes")), true);
+	await saveRootValue("presetsSeeded", true, true);
+	return true;
+}
+
+/**
  * Initializes critical storage keys if they are missing.
  */
 export async function initializeRequiredStorageStructures(): Promise<void> {
@@ -117,8 +129,7 @@ export async function initializeRequiredStorageStructures(): Promise<void> {
 		structuralChangesMade = true;
 	}
 
-	if ((await getRootValue("themes")) == null) {
-		await saveRootValue("themes", {}, true);
+	if (await seedBundledPresets()) {
 		structuralChangesMade = true;
 	}
 

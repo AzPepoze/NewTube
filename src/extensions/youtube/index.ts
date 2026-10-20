@@ -36,5 +36,5 @@ export async function appBootstrap() {
  * Provides optional external storage keys to the StyleShift storage manager.
  */
 export function getOptionalExternalStorageKeys(): string[] {
-	return ["themes", "welcomeShown", "activeTheme", "lastSeenVersion"];
+	return ["themes", "welcomeShown", "activeTheme", "lastSeenVersion", "presetsSeeded"];
 }

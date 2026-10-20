@@ -10,7 +10,7 @@ export type Theme = {
 	themeId: string;
 	themeName: string;
 	ownerId?: string;
-	currentSettings?: { [key: string]: string };
+	currentSettings?: { [key: string]: string | number | boolean };
 	addOnStyleShiftItems?: any[];
 	images?: string[];
 	coverImage?: string;

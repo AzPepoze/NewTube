@@ -23,6 +23,7 @@ import {
 	initializeDefaultAddOnItems,
 	performStorageGarbageCollection,
 	populateMissingDefaultSettings,
+	seedBundledPresets,
 } from "./storage/maintenance";
 import { getRootValue, initializeStorageConnection, persistCachedDataToStorage } from "./storage/manager";
 import { EXTENSION_BASE_URL, IS_FIREFOX, IS_IN_EXTENSION_SETTINGS_PAGE, currentContextDomain } from "./shared/context";
@@ -106,6 +107,7 @@ async function bootstrapExtension(): Promise<void> {
 	await injectMaterialIconsStyles();
 	await updateStyleShiftItems();
 	await populateMissingDefaultSettings();
+	await seedBundledPresets();
 
 	// Theme listeners
 	registerSettingListener("EnableAppLightTheme", syncAllThemes, true);
