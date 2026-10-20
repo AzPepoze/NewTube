@@ -30,6 +30,11 @@ export const videoControlPanelCategory: Category = {
 					padding-bottom: var(--nt-player-below-space, 70px) !important;
 				}
 
+				/* Single column does not push the details down with the player padding. */
+				${DETACH_CONTROLS_RATIO_SELECTOR} ytd-watch-flexy[is-single-column] #below {
+					margin-top: calc(var(--nt-player-below-space, 70px) + var(--nt-video-bottom-space, 0px)) !important;
+				}
+
 				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytTheaterModeContainer} {
 					margin-bottom: var(--nt-player-below-space, 70px) !important;
 				}
