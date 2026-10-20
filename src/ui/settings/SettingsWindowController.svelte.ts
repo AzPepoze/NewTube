@@ -3,6 +3,7 @@ import { shiftCategory } from "@settings/registry/category";
 import { getAddOnItems } from "@settings/registry/items";
 import type { Category, SeparateCategory } from "@settings/types/styleshiftTypes";
 import { addDrag, addDropTarget, clearDropTargets, removeDropTarget } from "@ui/settings/reorder";
+import { searchSettings } from "@ui/settings/searchMatch";
 import { getCategoryParts } from "@ui/window/utils";
 
 export interface SettingsWindowProps {
@@ -124,18 +125,11 @@ export class SettingsWindowController {
 	}
 
 	#applySearch(categories: (Category | SeparateCategory)[]) {
-		const query = this.searchQuery.toLowerCase();
-
 		return categories
 			.map((item) => {
 				if (this.isHeaderItem(item)) return item;
 
-				const matches = item.settings.filter((s: any) => {
-					const name = s.name?.toLowerCase() || "";
-					const desc = s.description?.toLowerCase() || "";
-					return name.includes(query) || desc.includes(query);
-				});
-
+				const matches = searchSettings(this.searchQuery, item.settings, this.#categoryLabel(item));
 				return { ...item, settings: matches };
 			})
 			.filter((item) => this.isHeaderItem(item) || item.settings.length > 0);
