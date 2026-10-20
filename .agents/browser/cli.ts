@@ -12,22 +12,32 @@ export interface CliOptions {
 	browser: BrowserName;
 	url: string;
 	out: string | undefined;
+	width: number | undefined;
 }
 
 const BROWSERS: BrowserName[] = ["chromium", "firefox"];
 
 /** Parses `<command> [positional...] [--browser x] [--url x] [--out x]`. Throws on unknown browsers. */
 export function parseArgs(argv: string[]): CliOptions {
-	const options: CliOptions = { command: undefined, positional: [], browser: "chromium", url: YOUTUBE_URL, out: undefined };
+	const options: CliOptions = {
+		command: undefined,
+		positional: [],
+		browser: "chromium",
+		url: YOUTUBE_URL,
+		out: undefined,
+		width: undefined,
+	};
 	for (let index = 0; index < argv.length; index++) {
 		const arg = argv[index];
-		if (arg === "--browser" || arg === "--url" || arg === "--out") {
+		if (arg === "--browser" || arg === "--url" || arg === "--out" || arg === "--width") {
 			const value = argv[++index];
 			if (value === undefined) throw new Error(`${arg} needs a value`);
 			if (arg === "--browser") {
-				if (!BROWSERS.includes(value as BrowserName)) throw new Error(`Unknown browser "${value}". Use chromium or firefox.`);
+				if (!BROWSERS.includes(value as BrowserName))
+					throw new Error(`Unknown browser "${value}". Use chromium or firefox.`);
 				options.browser = value as BrowserName;
 			} else if (arg === "--url") options.url = value;
+			else if (arg === "--width") options.width = Number(value);
 			else options.out = value;
 		} else if (options.command === undefined) {
 			options.command = arg;
@@ -57,6 +67,7 @@ async function main(argv: string[]): Promise<number> {
 		const out = options.out ?? path.join(SHOTS_DIR, `shot-${browser}.png`);
 		mkdirSync(path.dirname(out), { recursive: true });
 		await withBrowser(browser, async (driver) => {
+			if (options.width) await driver.setViewport(options.width, 1080);
 			await driver.goto(options.url);
 			await sleep(2000);
 			await driver.screenshot(out);
@@ -69,6 +80,7 @@ async function main(argv: string[]): Promise<number> {
 		const expression = positional.join(" ");
 		expect(expression, "an expression to evaluate");
 		const value = await withBrowser(browser, async (driver) => {
+			if (options.width) await driver.setViewport(options.width, 1080);
 			await driver.goto(options.url);
 			await sleep(2000);
 			return driver.evaluate(expression);
@@ -79,9 +91,12 @@ async function main(argv: string[]): Promise<number> {
 
 	if (command === "scenario") {
 		const name = positional[0] as ScenarioName;
-		if (!(name in SCENARIOS)) throw new Error(`Unknown scenario "${name}". Use one of: ${Object.keys(SCENARIOS).join(", ")}.`);
+		if (!(name in SCENARIOS))
+			throw new Error(`Unknown scenario "${name}". Use one of: ${Object.keys(SCENARIOS).join(", ")}.`);
 		const files = await withBrowser(browser, (driver) => SCENARIOS[name](driver));
-		console.log(`scenario ${name} passed on ${browser}. Screenshots: ${files.map((f) => path.join(SHOTS_DIR, f)).join(", ")}`);
+		console.log(
+			`scenario ${name} passed on ${browser}. Screenshots: ${files.map((f) => path.join(SHOTS_DIR, f)).join(", ")}`,
+		);
 		return 0;
 	}
 
@@ -89,7 +104,7 @@ async function main(argv: string[]): Promise<number> {
 		[
 			"Usage:",
 			"  bun .agents/browser/cli.ts shot [--browser chromium|firefox] [--url URL] [--out FILE]",
-			"  bun .agents/browser/cli.ts eval \"<js>\" [--browser ...] [--url URL]",
+			'  bun .agents/browser/cli.ts eval "<js>" [--browser ...] [--url URL]',
 			"  bun .agents/browser/cli.ts scenario home|welcome|themes [--browser ...]",
 			`Ports: chromium ${PORTS.chromium}, firefox ${PORTS.firefox}. Build first with bun run build.`,
 		].join("\n"),

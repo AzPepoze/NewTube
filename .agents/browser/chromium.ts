@@ -8,7 +8,8 @@ const EXTENSION_DIR = path.join(REPO, "out/dist/chromium");
 
 /** Starts a throwaway headless Chromium with the built extension loaded. Returns the stop function. */
 export async function launchChromium(): Promise<() => Promise<void>> {
-	if (await portOpen(PORTS.chromium)) throw new Error(`Port ${PORTS.chromium} is already in use. Close the other browser first.`);
+	if (await portOpen(PORTS.chromium))
+		throw new Error(`Port ${PORTS.chromium} is already in use. Close the other browser first.`);
 
 	const profile = freshProfileDir("chromium");
 	const proc = Bun.spawn(
@@ -37,7 +38,9 @@ export async function launchChromium(): Promise<() => Promise<void>> {
 
 /** Connects to the first page tab over CDP. Dark YouTube via its preference cookie. */
 export async function connectChromium(): Promise<Driver> {
-	const created = await (await fetch(`http://127.0.0.1:${PORTS.chromium}/json/new?about:blank`, { method: "PUT" })).json();
+	const created = await (
+		await fetch(`http://127.0.0.1:${PORTS.chromium}/json/new?about:blank`, { method: "PUT" })
+	).json();
 	const ws = new WebSocket(created.webSocketDebuggerUrl);
 	await new Promise((resolve, reject) => {
 		ws.onopen = resolve;
@@ -77,6 +80,9 @@ export async function connectChromium(): Promise<Driver> {
 			const result = await send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true });
 			if (result.exceptionDetails) throw new Error(`Page script failed: ${result.exceptionDetails.text}`);
 			return result.result?.value as T;
+		},
+		async setViewport(width, height) {
+			await send("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: false });
 		},
 		async screenshot(file) {
 			const shot = await send("Page.captureScreenshot", { format: "png" });

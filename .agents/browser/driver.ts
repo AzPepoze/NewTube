@@ -2,6 +2,7 @@
 export interface Driver {
 	goto(url: string): Promise<void>;
 	evaluate<T = unknown>(expression: string): Promise<T>;
+	setViewport(width: number, height: number): Promise<void>;
 	screenshot(path: string): Promise<void>;
 	close(): Promise<void>;
 }

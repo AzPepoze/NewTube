@@ -8,7 +8,8 @@ const WEB_EXT = path.join(REPO, "node_modules/.bin/web-ext");
 
 /** Starts headless Firefox through web-ext (fresh temp profile) with the built extension installed. */
 export async function launchFirefox(): Promise<() => Promise<void>> {
-	if (await portOpen(PORTS.firefox)) throw new Error(`Port ${PORTS.firefox} is already in use. Close the other browser first.`);
+	if (await portOpen(PORTS.firefox))
+		throw new Error(`Port ${PORTS.firefox} is already in use. Close the other browser first.`);
 
 	const proc = Bun.spawn(
 		[
@@ -34,9 +35,11 @@ export async function launchFirefox(): Promise<() => Promise<void>> {
 	return async () => {
 		proc.kill();
 		await proc.exited;
-			// web-ext leaves the Firefox process running, so stop it through its debug-port argument.
-			const firefoxPids = Bun.spawnSync(["pgrep", "-f", `remote-debugging-port=${PORTS.firefox}`]).stdout.toString().trim();
-			for (const pid of firefoxPids.split("\n").filter(Boolean)) process.kill(Number(pid));
+		// web-ext leaves the Firefox process running, so stop it through its debug-port argument.
+		const firefoxPids = Bun.spawnSync(["pgrep", "-f", `remote-debugging-port=${PORTS.firefox}`])
+			.stdout.toString()
+			.trim();
+		for (const pid of firefoxPids.split("\n").filter(Boolean)) process.kill(Number(pid));
 	};
 }
 
@@ -97,6 +100,9 @@ export async function connectFirefox(): Promise<Driver> {
 			});
 			if (result.type === "exception") throw new Error(`Page script failed: ${result.exceptionDetails?.text}`);
 			return unwrap(result) as T;
+		},
+		async setViewport(width, height) {
+			await send("browsingContext.setViewport", { context, viewport: { width, height } });
 		},
 		async screenshot(file) {
 			const shot = await send("browsingContext.captureScreenshot", { context });

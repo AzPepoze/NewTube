@@ -16,32 +16,32 @@ Drive the built extension in a real browser and look at the result. Local tool i
 
 Run from the repo root.
 
-| Command | What it does |
-|---|---|
-| `bun .agents/browser/cli.ts shot --browser chromium` | Screenshot YouTube home into `out/shots/shot-chromium.png` |
-| `bun .agents/browser/cli.ts eval "document.title" --browser firefox` | Run a page expression, print the JSON result |
-| `bun .agents/browser/cli.ts scenario home --browser chromium` | Home page screenshot |
-| `bun .agents/browser/cli.ts scenario welcome --browser firefox` | First-run welcome: every step, then the tutorial prompt |
-| `bun .agents/browser/cli.ts scenario themes --browser chromium` | Theme Manager: 13 presets listed, every card renders the mock |
+| Command                                                              | What it does                                                  |
+| -------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `bun .agents/browser/cli.ts shot --browser chromium`                 | Screenshot YouTube home into `out/shots/shot-chromium.png`    |
+| `bun .agents/browser/cli.ts eval "document.title" --browser firefox` | Run a page expression, print the JSON result                  |
+| `bun .agents/browser/cli.ts scenario home --browser chromium`        | Home page screenshot                                          |
+| `bun .agents/browser/cli.ts scenario welcome --browser firefox`      | First-run welcome: every step, then the tutorial prompt       |
+| `bun .agents/browser/cli.ts scenario themes --browser chromium`      | Theme Manager: 13 presets listed, every card renders the mock |
 
 `--browser` defaults to `chromium`. `--url` changes the page for `shot` and `eval`.
 
 ## How it works
 
-| Browser | Launch | Control |
-|---|---|---|
+| Browser  | Launch                                                                                   | Control                               |
+| -------- | ---------------------------------------------------------------------------------------- | ------------------------------------- |
 | Chromium | Direct headless launch with `--load-extension`, fresh profile in `out/browser-profiles/` | Chrome DevTools Protocol on port 9222 |
-| Firefox | `web-ext run` (installs the add-on in a temp profile), headless | WebDriver BiDi on port 9223 |
+| Firefox  | `web-ext run` (installs the add-on in a temp profile), headless                          | WebDriver BiDi on port 9223           |
 
 Each run starts from a clean profile, so the first-run welcome shows every time. The tool closes its browser when done.
 
 ## Scenarios
 
-| Scenario | Checks |
-|---|---|
-| `home` | StyleShift button is on the page |
-| `welcome` | Confirm, welcome steps, Next on the look step, tutorial prompt |
-| `themes` | Settings > Themes opens Theme Manager; each preset name shown; each card has a mock |
+| Scenario  | Checks                                                                              |
+| --------- | ----------------------------------------------------------------------------------- |
+| `home`    | StyleShift button is on the page                                                    |
+| `welcome` | Confirm, welcome steps, Next on the look step, tutorial prompt                      |
+| `themes`  | Settings > Themes opens Theme Manager; each preset name shown; each card has a mock |
 
 Screenshots land in `out/shots/`. Read them to judge the layout.
 

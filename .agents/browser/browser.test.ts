@@ -13,7 +13,16 @@ describe("parseArgs", () => {
 	});
 
 	test("reads --browser, --url and --out wherever they appear", () => {
-		const options = parseArgs(["scenario", "--browser", "firefox", "welcome", "--out", "a.png", "--url", "https://x.test/"]);
+		const options = parseArgs([
+			"scenario",
+			"--browser",
+			"firefox",
+			"welcome",
+			"--out",
+			"a.png",
+			"--url",
+			"https://x.test/",
+		]);
 
 		expect(options.command).toBe("scenario");
 		expect(options.positional).toEqual(["welcome"]);
