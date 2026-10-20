@@ -112,6 +112,7 @@ async function bootstrapExtension(): Promise<void> {
 	// Theme listeners
 	registerSettingListener("EnableAppLightTheme", syncAllThemes, true);
 	registerSettingListener("EnableSettingsBackgroundBlur", syncAllThemes, true);
+	registerSettingListener("SettingsBackgroundBlurAmount", syncAllThemes, true);
 	registerSettingListener(
 		"developerMode",
 		async (isDev) => {
