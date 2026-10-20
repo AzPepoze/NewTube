@@ -30,11 +30,12 @@ export function closeThemeManager(): void {
 }
 
 /**
- * Opens the modern Theme Collection window.
+ * Opens the modern Theme Collection window. `onClose` runs when it closes.
  */
-export async function showThemeManager(tab: "installed" | "store" = "installed") {
+export async function showThemeManager(tab: "installed" | "store" = "installed", onClose?: () => void) {
 	if (activeThemeWindowInstance) {
 		activeThemeWindowInstance.setTab?.(tab);
+		onClose?.();
 		return;
 	}
 
@@ -45,6 +46,7 @@ export async function showThemeManager(tab: "installed" | "store" = "installed")
 		center: true,
 		onWindowClosed: () => {
 			activeThemeWindowInstance = null;
+			onClose?.();
 		},
 	});
 

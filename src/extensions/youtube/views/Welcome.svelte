@@ -1,68 +1,137 @@
 <script lang="ts">
+	import { showThemeManager } from "@ui/themes/themeManagerService";
 	import { onMount } from "svelte";
 	import { backOut, quintOut } from "svelte/easing";
 	import { fade, fly, scale } from "svelte/transition";
+	import ConfettiOverlay from "../../../ui/tutorial/tour/ConfettiOverlay.svelte";
 	import WelcomeButton from "./WelcomeButton.svelte";
 	import WelcomeHeading from "./WelcomeHeading.svelte";
 	import WelcomeLogo from "./WelcomeLogo.svelte";
-	import ConfettiOverlay from "../../../ui/tutorial/tour/ConfettiOverlay.svelte";
 
 	let { onDone }: { onDone: () => void } = $props();
 
 	let visible = $state(false);
-	let step = $state(1);
+	let stepIndex = $state(0);
+	let themeWindowOpen = $state(false);
+
+	/** `showPage` steps drop the background so the real YouTube page shows through. */
+	const steps = [
+		{ render: hello, showPage: false },
+		{ render: look, showPage: true },
+		{ render: support, showPage: false },
+	];
+	const currentStep = $derived(steps[stepIndex]);
 
 	onMount(() => {
 		visible = true;
 	});
 
-	function nextStep() {
-		step += 1;
+	function next() {
+		if (stepIndex === steps.length - 1) {
+			finish();
+			return;
+		}
+		stepIndex += 1;
 	}
 
-	function close() {
+	function back() {
+		stepIndex = Math.max(stepIndex - 1, 0);
+	}
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (themeWindowOpen) return;
+		if (event.key === "ArrowRight") next();
+		if (event.key === "ArrowLeft") back();
+	}
+
+	/** Hides the welcome while the Theme window is open. It fades back in when the window closes. */
+	function openThemeWindow() {
+		themeWindowOpen = true;
+		void showThemeManager("installed", () => {
+			themeWindowOpen = false;
+		});
+	}
+
+	function finish() {
 		visible = false;
 		setTimeout(onDone, 500);
 	}
 </script>
 
-{#if visible}
-	<div class="Welcome-Overlay styleshift-main" transition:fade={{ duration: 1000 }}>
-		<div class="Glow-Effect"></div>
-		<ConfettiOverlay mode="rain" />
+<svelte:window onkeydown={handleKeydown} />
+
+{#snippet hello()}
+	<div class="Step-Container">
+		<div class="Visual-Panel Branding-Panel" in:fly|global={{ x: -30, duration: 1000, delay: 300, easing: backOut }}>
+			<WelcomeLogo />
+		</div>
+		<div class="Copy-Panel" in:fly|global={{ x: 30, duration: 1000, delay: 500, easing: backOut }}>
+			<WelcomeHeading text="Welcome to StyleShift" level="h1" variant="main" />
+			<p class="Lead">Make YouTube look the way you like. Setup takes about a minute.</p>
+			<WelcomeButton label="YAY!" onClick={next} withMemes />
+		</div>
+	</div>
+{/snippet}
+
+{#snippet look()}
+	<div class="Look-Step">
+		<WelcomeHeading text="Pick your look" />
+		<p class="Lead">Open the theme window to try a look on YouTube. Keep it to save it.</p>
+		<WelcomeButton label="Open themes" onClick={openThemeWindow} variant="highlight" />
+	</div>
+{/snippet}
+
+{#snippet support()}
+	<div class="Step-Container">
+		<div class="Visual-Panel Branding-Panel" in:fly|global={{ x: -30, duration: 800, easing: backOut }}>
+			<WelcomeLogo />
+		</div>
+		<div class="Copy-Panel" in:fly|global={{ x: 30, duration: 800, delay: 300, easing: backOut }}>
+			<WelcomeHeading text="Enjoy your new experience!" />
+			<p class="Lead">
+				StyleShift is a free, open-source project. If you enjoy it, please consider supporting its development!
+			</p>
+			<p class="Secondary-Text">If you run into any issues, please report them on GitHub.</p>
+			<WelcomeButton label="Next" onClick={next} variant="highlight" />
+		</div>
+	</div>
+{/snippet}
+
+{#if visible && !themeWindowOpen}
+	<div
+		class="Welcome-Overlay styleshift-main"
+		class:Show-Page={currentStep.showPage}
+		transition:fade={{ duration: 400 }}
+	>
+		{#if !currentStep.showPage}
+			<ConfettiOverlay mode="rain" />
+		{/if}
 		<div
 			class="Welcome-Content-Wrapper"
 			in:scale={{ start: 0.7, duration: 2500, easing: quintOut }}
 			out:scale={{ start: 0.9, duration: 400 }}
 		>
 			<div class="Welcome-Content">
-				{#if step === 1}
-					<div class="Step-Container" out:fade={{ duration: 400 }}>
-						<div
-							class="Visual-Panel Branding-Panel"
-							in:fly|global={{ x: -30, duration: 1000, delay: 300, easing: backOut }}
-						>
-							<WelcomeLogo />
-						</div>
-						<div class="Copy-Panel" in:fly|global={{ x: 30, duration: 1000, delay: 500, easing: backOut }}>
-							<WelcomeHeading text="Welcome to NewTube" level="h1" variant="main" />
-							<WelcomeButton label="YAY!" onClick={nextStep} withMemes />
-						</div>
+				{#key stepIndex}
+					<div class="Step" in:fade={{ duration: 450, delay: 200 }} out:fade={{ duration: 200 }}>
+						{@render currentStep.render()}
 					</div>
-				{:else}
-					<div class="Step-Container" in:fade={{ duration: 600, delay: 200 }}>
-						<div class="Visual-Panel Branding-Panel" in:fly|global={{ x: -30, duration: 800, easing: backOut }}>
-							<WelcomeLogo />
-						</div>
-						<div class="Copy-Panel" in:fly|global={{ x: 30, duration: 800, delay: 300, easing: backOut }}>
-							<WelcomeHeading text="Enjoy your new experience!" />
-							<p class="Lead">
-								NewTube is a free, open-source project. If you enjoy using it, please consider supporting its
-								development to help me keep improving the experience for everyone!
-							</p>
-							<p class="Secondary-Text">If you encounter any issues, please report them on GitHub.</p>
-							<WelcomeButton label="Let's GO!!!" onClick={close} variant="highlight" withMemes />
-						</div>
+				{/key}
+			</div>
+		</div>
+		<div class="Footer">
+			<div class="Footer-Start" class:Invisible={stepIndex === 0}>
+				<WelcomeButton label="Back" onClick={back} variant="secondary" />
+			</div>
+			<div class="Dots">
+				{#each steps as _, index (index)}
+					<span class="Dot" class:Active={index === stepIndex}></span>
+				{/each}
+			</div>
+			<div class="Footer-End">
+				{#if currentStep.showPage}
+					<div transition:fade={{ duration: 300 }}>
+						<WelcomeButton label="Next" onClick={next} variant="highlight" />
 					</div>
 				{/if}
 			</div>
@@ -83,20 +152,26 @@
 		color: var(--font-color);
 		font-family: "Inter", system-ui, sans-serif;
 		background-color: var(--bg-welcome);
+		transition: background-color 0.6s ease;
+	}
+	/* The grid is a layer of its own so it can fade out. */
+	.Welcome-Overlay::before {
+		content: "";
+		position: absolute;
+		inset: 0;
 		background-image:
 			linear-gradient(to right, var(--fg-opacity-03) 1px, transparent 1px),
 			linear-gradient(to bottom, var(--fg-opacity-03) 1px, transparent 1px);
 		background-size: 40px 40px;
-	}
-
-	.Glow-Effect {
-		position: absolute;
-		width: 150%;
-		height: 150%;
-		z-index: 2;
+		transition: opacity 0.6s ease;
 		pointer-events: none;
-		background: radial-gradient(circle at center, var(--theme-0-12) 0%, transparent 60%);
-		animation: pulseGlow 8s infinite alternate ease-in-out;
+	}
+	/* The real page shows through while the user tests a look. */
+	.Welcome-Overlay.Show-Page {
+		background-color: transparent;
+	}
+	.Welcome-Overlay.Show-Page::before {
+		opacity: 0;
 	}
 
 	.Welcome-Content-Wrapper {
@@ -105,11 +180,18 @@
 	}
 	.Welcome-Content {
 		position: relative;
-		min-height: min(620px, calc(100vh - 40px));
+		min-height: min(560px, calc(100vh - 140px));
 	}
-	.Step-Container {
+	.Step {
 		position: absolute;
 		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.Step-Container {
+		width: 100%;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		gap: clamp(32px, 6vw, 80px);
@@ -159,15 +241,60 @@
 		font-size: 15px;
 	}
 
-	@keyframes pulseGlow {
-		from {
-			transform: scale(1);
-			opacity: 0.4;
-		}
-		to {
-			transform: scale(1.3);
-			opacity: 0.7;
-		}
+	.Look-Step {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 20px;
+		text-align: center;
+		text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+	}
+	.Look-Step .Lead {
+		color: var(--fg-opacity-80);
+	}
+
+	/* One bottom row: Back on the left, dots in the middle, Next on the right. */
+	.Footer {
+		position: fixed;
+		left: 24px;
+		right: 24px;
+		bottom: 24px;
+		z-index: 20;
+		height: 56px;
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+	}
+	.Footer-Start {
+		justify-self: start;
+		display: flex;
+		align-items: center;
+	}
+	.Footer-Start.Invisible {
+		visibility: hidden;
+	}
+	.Footer-End {
+		justify-self: end;
+		display: flex;
+		align-items: center;
+	}
+	.Dots {
+		display: flex;
+		gap: 8px;
+	}
+	.Dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--fg-opacity-20);
+		transition:
+			width 0.3s ease,
+			background 0.3s ease;
+	}
+	.Dot.Active {
+		width: 24px;
+		border-radius: 999px;
+		background: var(--theme-0-12);
 	}
 
 	@media (max-width: 760px) {
@@ -199,12 +326,6 @@
 		}
 		.Lead {
 			font-size: 16px;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.Glow-Effect {
-			animation: none;
 		}
 	}
 </style>

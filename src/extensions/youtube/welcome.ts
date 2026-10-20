@@ -6,12 +6,20 @@ import Welcome from "./views/Welcome.svelte";
 
 let welcomeOpen = false;
 
+/** Closes every open StyleShift window through its own close button, so each one cleans up. */
+function closeAllWindows(): void {
+	document
+		.querySelectorAll<HTMLElement>(".styleshift-window-container .control-btn.close")
+		.forEach((closeButton) => closeButton.click());
+}
+
 function mountWelcome(onDone?: () => void | Promise<void>): void {
 	if (welcomeOpen) return;
 
+	closeAllWindows();
 	welcomeOpen = true;
 	const target = document.createElement("div");
-	target.id = "NewTube-Welcome-Root";
+	target.id = "StyleShift-Welcome-Root";
 	document.body.appendChild(target);
 
 	let component: ReturnType<typeof mount>;
