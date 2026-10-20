@@ -3,7 +3,8 @@
 	import Icon from "@base/Icon.svelte";
 	import IconButton from "@base/IconButton.svelte";
 	import { fade } from "svelte/transition";
-	import ThemePreviewUi from "./ThemePreviewUi.svelte";
+	import YoutubeHomePreview from "./YoutubeHomePreview.svelte";
+	import { getPreviewColors } from "../previewColors";
 	import { openThemePreviewOverlay } from "../themeManagerService";
 
 	let {
@@ -54,11 +55,10 @@
 				if (typeof img === "string" && img && !list.includes(img)) list.push(img);
 			}
 		}
-		if (preview.bgImg && !list.includes(preview.bgImg)) {
-			list.push(preview.bgImg);
-		}
 		return list;
 	});
+
+	let previewColors = $derived(getPreviewColors(rawTheme?.currentSettings));
 
 	function handleMouseEnter() {
 		isHovered = true;
@@ -131,7 +131,13 @@
 		tabindex="0"
 	>
 		{#if isActive}
-			<div class="active-badge">ACTIVE</div>
+			<div class="active-badge" role="img" aria-label="Active theme">
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path class="check" d="M6.5 12.5l3.5 3.5 7.5-8" />
+					<path class="sparkle" d="M19 1.5l.7 1.8 1.8.7-1.8.7L19 6.5l-.7-1.8-1.8-.7 1.8-.7z" />
+					<path class="sparkle sparkle-delayed" d="M4.5 18.5l.5 1.2 1.2.5-1.2.5-.5 1.2-.5-1.2-1.2-.5 1.2-.5z" />
+				</svg>
+			</div>
 		{/if}
 
 		{#if isStoreItem && isInstalled}
@@ -159,7 +165,7 @@
 				{:else}
 					<div class="slideshow-track">
 						<div class="slide-item default-mockup">
-							<ThemePreviewUi />
+							<YoutubeHomePreview colors={previewColors} backgroundImage={preview.bgImg} />
 						</div>
 					</div>
 				{/if}
@@ -326,6 +332,8 @@
 
 		&:hover,
 		&:focus-within {
+			z-index: 5;
+
 			.theme-card {
 				border-color: var(--fg-opacity-20);
 				box-shadow: 0 8px 25px var(--shadow-color);
@@ -364,20 +372,53 @@
 
 		&.active {
 			border: 2px solid var(--theme-0);
-			box-shadow: 0 0 15px var(--theme-0);
+
+			animation: active-glow 2.4s ease-in-out infinite;
 
 			.active-badge {
 				position: absolute;
-				top: 10px;
-				right: 10px;
+				top: 8px;
+				right: 8px;
+				width: 28px;
+				height: 28px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 50%;
 				background: var(--theme-0);
 				color: var(--fg-opacity-100);
-				padding: 4px 8px;
-				border-radius: 6px;
-				font-size: 10px;
-				font-weight: 800;
 				z-index: 10;
 				box-shadow: 0 2px 8px var(--shadow-color);
+				animation: badge-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+
+				svg {
+					width: 22px;
+					height: 22px;
+					overflow: visible;
+					fill: none;
+					stroke: currentColor;
+					stroke-linecap: round;
+					stroke-linejoin: round;
+				}
+
+				.check {
+					stroke-width: 2.4;
+					stroke-dasharray: 16;
+					stroke-dashoffset: 16;
+					animation: check-draw 0.45s ease-out 0.35s forwards;
+				}
+
+				.sparkle {
+					fill: currentColor;
+					stroke: none;
+					transform-box: fill-box;
+					transform-origin: center;
+					animation: sparkle-twinkle 2.2s ease-in-out infinite;
+				}
+
+				.sparkle-delayed {
+					animation-delay: 1.1s;
+				}
 			}
 		}
 
@@ -433,6 +474,65 @@
 	@keyframes spin {
 		to {
 			transform: rotate(360deg);
+		}
+	}
+
+	@keyframes active-glow {
+		0%,
+		100% {
+			box-shadow: 0 0 10px color-mix(in srgb, var(--theme-0) 35%, transparent);
+		}
+		50% {
+			box-shadow: 0 0 24px color-mix(in srgb, var(--theme-0) 75%, transparent);
+		}
+	}
+
+	@keyframes check-draw {
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+
+	@keyframes sparkle-twinkle {
+		0%,
+		100% {
+			transform: scale(0.2) rotate(0deg);
+			opacity: 0;
+		}
+		30% {
+			transform: scale(1) rotate(45deg);
+			opacity: 1;
+		}
+		60% {
+			transform: scale(0.4) rotate(90deg);
+			opacity: 0.4;
+		}
+	}
+
+	@keyframes badge-pop {
+		0% {
+			opacity: 0;
+			transform: scale(0.4) translateY(-6px);
+		}
+		60% {
+			opacity: 1;
+			transform: scale(1.12);
+		}
+		100% {
+			transform: scale(1);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.theme-card.active,
+		.theme-card.active .active-badge,
+		.theme-card.active .active-badge .sparkle {
+			animation: none;
+		}
+
+		.theme-card.active .active-badge .check {
+			animation: none;
+			stroke-dashoffset: 0;
 		}
 	}
 
@@ -634,12 +734,14 @@
 	}
 
 	.card-actions-drawer {
-		position: relative;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
 		z-index: 1;
 		margin-top: -24px;
 		padding: 32px 12px 10px;
-		background: var(--bg-overlay-80);
-		backdrop-filter: blur(12px);
+		background: color-mix(in srgb, #000 80%, var(--bg-main));
 		border-radius: 0 0 16px 16px;
 		border: 1px solid var(--fg-opacity-10);
 		border-top: none;

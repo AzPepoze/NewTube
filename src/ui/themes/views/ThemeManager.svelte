@@ -343,7 +343,8 @@
 	}
 
 	.theme-grid {
-		padding-bottom: 20px;
+		/* Room for the card actions that open under the last row. */
+		padding-bottom: 96px;
 		overflow-y: auto;
 		padding-right: 5px;
 		flex: 1;
