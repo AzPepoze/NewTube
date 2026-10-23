@@ -9,10 +9,6 @@ function setBlurAmount(element: HTMLElement, amount: number) {
 	element.style.setProperty("--setting-bg-blur-amount", `${amount}px`);
 }
 
-/**
- * Applies the current theme, transparency and blur settings to a specific element.
- * @param element The HTMLElement to apply attributes to.
- */
 export async function applyThemeToElement(element: HTMLElement) {
 	const isLightTheme = await getFromStorage("EnableAppLightTheme");
 	const isTransparent = await getFromStorage("EnableSettingsBackgroundBlur");
@@ -23,9 +19,6 @@ export async function applyThemeToElement(element: HTMLElement) {
 	setBlurAmount(element, blurAmount);
 }
 
-/**
- * Synchronizes theme, transparency and blur attributes across all active .styleshift-main elements.
- */
 export async function syncAllThemes() {
 	const elements = document.querySelectorAll<HTMLElement>(".styleshift-main");
 

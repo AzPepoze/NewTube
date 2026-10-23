@@ -14,13 +14,11 @@ export interface CodeMirrorFacade {
 	css: (options?: any) => any;
 }
 
-/** True for languages highlighted with the JavaScript grammar (JSON included). */
 export function isJsLanguage(language: string): boolean {
 	const lang = language.toLowerCase();
 	return lang === "javascript" || lang === "js" || lang === "json";
 }
 
-/** Minimal extensions for a non-editable, syntax-highlighted code display. */
 export function buildReadonlyExtensions(cm: CodeMirrorFacade, language: string): any[] {
 	const extensions = [
 		cm.dracula,

@@ -8,10 +8,8 @@ export function getAssetUrl(path: string): string {
 	if (!path) return "";
 	if (path.includes("://") || path.startsWith("data:")) return path;
 
-	// Remove leading slash if present
 	let cleanPath = path.startsWith("/") ? path.slice(1) : path;
 
-	// Mapping for specific shortcuts
 	const shortcuts: Record<string, string> = {
 		"icon/": "assets/branding/",
 		"128.png": "assets/branding/128.png",
@@ -23,7 +21,6 @@ export function getAssetUrl(path: string): string {
 		}
 	}
 
-	// Automatically prefix with 'assets/' if not already prefixed with a known root directory
 	const rootDirectories = ["assets/", "modules/", "types/", "setting/"];
 	const isRootPath = rootDirectories.some((dir) => cleanPath.startsWith(dir));
 
@@ -49,7 +46,7 @@ export function getCategoryParts(category: string | CategoryNameWithIcon) {
 		};
 	}
 
-	// Fallback to emoji parsing for backward compatibility
+	// Older categories store the icon as a leading emoji.
 	const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Emoji})/u;
 	const match = String(category).match(emojiRegex);
 	if (match) {

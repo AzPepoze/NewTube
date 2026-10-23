@@ -253,7 +253,6 @@
 		color: var(--fg-opacity-80);
 	}
 
-	/* One bottom row: Back on the left, dots in the middle, Next on the right. */
 	.Footer {
 		position: fixed;
 		left: 24px;

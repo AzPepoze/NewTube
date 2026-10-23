@@ -75,7 +75,6 @@ export function setupAudioVisualizer() {
 		const bufferLength = analyser.frequencyBinCount;
 		const dataArray = new Uint8Array(bufferLength);
 
-		// Cap logic
 		const capYPositions: number[] = [];
 		const capHeight = 2;
 		const capStyle = "#fff";
@@ -92,38 +91,31 @@ export function setupAudioVisualizer() {
 			let x = 0;
 
 			for (let i = 0; i < bufferLength; i++) {
-				// Calculate bar height, scaling it to look nice
 				// Value is 0-255
 				let barHeight = (dataArray[i] * dataArray[i]) / 500;
 				if (barHeight < 0) barHeight = 0;
 
-				// Initialize cap position
 				if (capYPositions.length < bufferLength) {
 					capYPositions.push(barHeight);
 				}
 
 				const currentCapY = capYPositions[i];
 
-				// Draw Cap
 				canvasCtx.fillStyle = capStyle;
 
 				if (barHeight < currentCapY) {
-					// Drop cap (Gravity)
 					capYPositions[i] = Math.max(0, currentCapY - 1.5);
 					canvasCtx.fillRect(x, canvas.height - capYPositions[i], barWidth, capHeight);
 				} else {
-					// Push cap up
 					capYPositions[i] = barHeight;
 					canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, capHeight);
 				}
 
-				// Draw Bar with Gradient
 				const gradient = canvasCtx.createLinearGradient(0, canvas.height, 0, canvas.height - barHeight);
 				gradient.addColorStop(0, "rgba(255, 255, 255, 0.2)");
 				gradient.addColorStop(1, "rgba(255, 255, 255, 0.8)");
 				canvasCtx.fillStyle = gradient;
 
-				// Draw bar slightly below cap
 				canvasCtx.fillRect(x, canvas.height - barHeight + capHeight + 4, barWidth, barHeight);
 
 				x += barWidth + 1;

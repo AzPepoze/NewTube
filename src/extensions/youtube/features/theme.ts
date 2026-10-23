@@ -16,7 +16,6 @@ const state = {
 function getSortedPalette(palette: [number, number, number][]) {
 	function calScore(color: [number, number, number]) {
 		const hsv = rgbToHsv({ r: color[0], g: color[1], b: color[2] });
-		// score = (s * 1.5) + (v / 100 * 100) -> using 0-100 scale
 		const score = hsv.s * 1.5 + hsv.v;
 		return score;
 	}
@@ -96,8 +95,6 @@ export function enableThemeByVideo() {
 			return;
 		}
 
-		// Use mqdefault first, try maxres if possible?
-		// Actually legacy used maxresdefault then 0.jpg as fallback
 		const thumbUrl = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
 
 		try {
@@ -115,9 +112,8 @@ export function enableThemeByVideo() {
 
 			let color = await getSampleColor(img);
 
-			// Grayscale check: if r == g == b, it might be a black frame or weird thumb
+			// A grayscale thumbnail may be a placeholder; try a video frame instead.
 			if (color[0] === color[1] && color[1] === color[2]) {
-				// Try first frame thumb
 				img.src = `https://i.ytimg.com/vi/${videoId}/0.jpg`;
 				await new Promise((resolve) => {
 					img.onload = resolve;
@@ -126,7 +122,6 @@ export function enableThemeByVideo() {
 				color = await getSampleColor(img);
 			}
 
-			// Legacy Normalization
 			const maxVal = Math.max(color[0], color[1], color[2]);
 			const getAdd = 255 - maxVal;
 			color = [color[0] + getAdd, color[1] + getAdd, color[2] + getAdd];
@@ -136,7 +131,6 @@ export function enableThemeByVideo() {
 
 			const setProp = (name: string, val: string, priority?: string) => body.style.setProperty(name, val, priority);
 
-			// HSV Adjustments
 			const hsv = rgbToHsv({ r: color[0], g: color[1], b: color[2] });
 			hsv.s *= 1.5;
 			if (hsv.s > 60) hsv.s = 60;
@@ -154,7 +148,6 @@ export function enableThemeByVideo() {
 			setProp("--nt-theme-shadow", themeRgba(0.5));
 			setProp("--nt-theme-control-panel-button-group", themeRgba(0.2));
 
-			// Derived Colors
 			const timeBgHsv = { ...hsv, v: hsv.v * 0.4 };
 			const timeBgRgb = hsvToRgb(timeBgHsv);
 			setProp("--nt-timestamp-bg", `rgba(${timeBgRgb.r}, ${timeBgRgb.g}, ${timeBgRgb.b}, 0.8)`);
@@ -171,7 +164,6 @@ export function enableThemeByVideo() {
 			const textRgb = hsvToRgb(textHsv);
 			setProp("--nt-text-primary", `rgba(${textRgb.r}, ${textRgb.g}, ${textRgb.b}, 1)`, "important");
 
-			// Background Background
 			const bgHsv = { ...hsv, v: hsv.v * 0.15 };
 			const bgRgb = hsvToRgb(bgHsv);
 			const isSolid = await getUserSetting("EnableSolidThemeByVideo");
@@ -184,7 +176,6 @@ export function enableThemeByVideo() {
 			setProp("--nt-bg-main", `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${bgOpacity})`);
 			setProp("--nt-topbar-bg", `var(--nt-bg-main)`);
 
-			// Timeline
 			const timelineHsv = { ...hsv, v: hsv.v * 0.4 };
 			const timelineRgb = hsvToRgb(timelineHsv);
 			setProp("--nt-timeline-bg", `rgba(${timelineRgb.r}, ${timelineRgb.g}, ${timelineRgb.b}, 1)`);
@@ -193,18 +184,14 @@ export function enableThemeByVideo() {
 			const loadedRgb = hsvToRgb(loadedHsv);
 			setProp("--nt-timeline-load", `rgba(${loadedRgb.r}, ${loadedRgb.g}, ${loadedRgb.b}, 1)`);
 
-			// Live Badge & Control Panel
 			setProp("--nt-thumbnail-live-badge-bg", themeRgba(1));
 			setProp("--nt-thumbnail-live-badge-text", `rgba(${textRgb.r}, ${textRgb.g}, ${textRgb.b}, 1)`, "important");
 			setProp("--nt-control-panel-icon-color", `rgba(${textRgb.r}, ${textRgb.g}, ${textRgb.b}, 1)`, "important");
 
-			// Control Panel
 			const cpHsv = { ...hsv, v: hsv.v * 0.2 };
 			const cpRgb = hsvToRgb(cpHsv);
 			setProp("--nt-player-bg", `rgba(${cpRgb.r}, ${cpRgb.g}, ${cpRgb.b}, 0.7)`);
-		} catch (_e) {
-			// logger.warn("theme", "Theme extraction failed", e);
-		}
+		} catch (_e) {}
 	};
 
 	updateTheme();

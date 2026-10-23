@@ -42,7 +42,6 @@
 		if (!urlStr) return "";
 		if (urlStr.startsWith("data:")) return "Stored Image (Base64)";
 		try {
-			// Try to parse as URL
 			const urlStrSafe = urlStr.includes("://") ? urlStr : "http://" + urlStr;
 			const url = new URL(urlStrSafe);
 			const name = url.pathname.split("/").pop();

@@ -1,7 +1,3 @@
-/**
- * Formats a requirement or condition value into a human-readable string.
- * Used by WarningSection and ConditionStatus components.
- */
 export function formatRequirementValue(
 	type: string | undefined,
 	targetValue: any,

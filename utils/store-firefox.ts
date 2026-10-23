@@ -15,7 +15,7 @@ async function storeFirefox() {
 	console.log(`Starting Firefox Add-ons upload from: ${sourceDir}`);
 
 	try {
-		// Using bun x to ensure we use the project's web-ext version
+		// Use the project's web-ext version.
 		const args = [
 			"x",
 			"web-ext",

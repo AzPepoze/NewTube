@@ -16,12 +16,10 @@ export function parseLegacyColor(hexColor?: string, opacityVal?: number): string
 	if (!trimmed.startsWith("#")) return null;
 
 	if (trimmed.length === 9) {
-		// Already #RRGGBBAA
 		return trimmed;
 	}
 
 	if (trimmed.length === 7) {
-		// #RRGGBB
 		const opacity = typeof opacityVal === "number" ? Math.min(Math.max(opacityVal, 0), 100) : 100;
 		const alphaHex = Math.round(opacity * 2.55)
 			.toString(16)
@@ -39,46 +37,37 @@ export function mapOldNPresetToNewSettings(oldPreset: Record<string, any>): Reco
 	const mappedSettings: Record<string, any> = {};
 
 	const directKeyMap: Record<string, string> = {
-		// Background settings
 		BGIMG: "BackgroundImageUrl",
-		// Video Automation
 		AutoTheater: "EnableAutoTheaterMode",
 		FullTheater: "EnableFullTheaterMode",
 		AutoPIP: "EnableAutoPictureInPicture",
 		AutoEXPIP: "EnableAutoExitPictureInPicture",
 		RemoveAmbient: "AutoRemoveAmbientMode",
-		// Extension controls
 		EnableButton: "enableExtension",
 		Realtime: "enableRealtimeExtension",
-		// Custom CSS and Scripts
 		CUSTOM: "CustomCss",
 		ADDCUSTOM: "AdditionalCustomCss",
 		ADDScript: "AdditionalCustomScript",
 		EnaCUSCSS: "EnableCustomCss",
 		EnaADDCSS: "EnableAdditionalCustomCss",
-		// Blur & Borders
 		BlurAm: "GlobalBlurAmount",
 		BlurWhat: "BlurTargetSelection",
 		Border: "GlobalBorderSize",
 		HoverBorder: "HoverBorderSize",
 		Edge: "GlobalCornerRadius",
 		PlayerEdge: "GlobalCornerRadius",
-		// Top-Left Icon
 		IconURL: "TopLeftIconImageUrl",
 		CustomIcon: "EnableCustomTopLeftIcon",
 		IconFill: "EnableTopLeftIconSyncTheme",
-		// Layout & Enhancement
 		CenterMedia: "EnableVideoCentering",
 	};
 
-	// Map direct non-color keys
 	for (const [oldKey, newKey] of Object.entries(directKeyMap)) {
 		if (oldKey in oldPreset && oldPreset[oldKey] !== undefined) {
 			mappedSettings[newKey] = oldPreset[oldKey];
 		}
 	}
 
-	// Legacy Color Mappings: Base Key -> New Setting ID
 	const colorMap: Record<string, string> = {
 		Theme: "MainThemeColor",
 		ThemeThr: "TransparentThemeColor",
@@ -123,7 +112,7 @@ export function mapOldNPresetToNewSettings(oldPreset: Record<string, any>): Reco
 		}
 	}
 
-	// Retain 100% of raw keys from oldPreset to guarantee no data is lost
+	// Keep unmapped legacy keys so migration preserves custom settings.
 	for (const [key, value] of Object.entries(oldPreset)) {
 		mappedSettings[key] = value;
 	}

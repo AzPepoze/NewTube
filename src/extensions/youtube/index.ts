@@ -11,9 +11,7 @@ import { checkAndShowUpdateNotification } from "@core/shared/versionUpdate";
  */
 export function shouldEnableExtension(): boolean {
 	const origin = window.location.origin;
-	// Don't run extension logic on the store site
 	if (validateOrigin(origin)) {
-		// Still init website integration so the store communicates properly
 		initWebsiteIntegration();
 		return false;
 	}

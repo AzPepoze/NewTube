@@ -30,22 +30,12 @@ import { getRootValue, initializeStorageConnection, persistCachedDataToStorage }
 import { EXTENSION_BASE_URL, IS_FIREFOX, IS_IN_EXTENSION_SETTINGS_PAGE, currentContextDomain } from "./shared/context";
 export { EXTENSION_BASE_URL, IS_FIREFOX, IS_IN_EXTENSION_SETTINGS_PAGE, currentContextDomain };
 
-//-------------------------------------------------------
-// Configuration & State
-//-------------------------------------------------------
-
 export const EXTENSION_VERSION = chrome.runtime.getManifest().version;
 export let isExtensionReady = false;
 
 export const styleshiftContainer: HTMLElement = document.createElement("div");
 styleshiftContainer.className = "StyleShift-Station";
 styleshiftContainer.style.display = "none";
-
-/*
--------------------------------------------------------
- Core Lifecycle Functions
--------------------------------------------------------
-*/
 
 export async function refreshExtensionState(): Promise<void> {
 	logger.info("lifecycle", "Refreshing extension state...");
@@ -95,14 +85,12 @@ async function bootstrapExtension(): Promise<void> {
 
 	await getDocumentHead();
 
-	// StyleShift container
 	setTimeout(async () => {
 		(await getDocumentBody()).append(styleshiftContainer);
 	}, 1);
 
 	await injectPageScripts();
 
-	// Components
 	await synchronizeAvailableFunctions();
 	await createStylesheetHolder();
 	await injectMaterialIconsStyles();
@@ -111,7 +99,6 @@ async function bootstrapExtension(): Promise<void> {
 	await seedBundledPresets();
 	await refreshBundledPresets();
 
-	// Theme listeners
 	registerSettingListener("EnableAppLightTheme", syncAllThemes, true);
 	registerSettingListener("EnableSettingsBackgroundBlur", syncAllThemes, true);
 	registerSettingListener("SettingsBackgroundBlurAmount", syncAllThemes, true);
@@ -156,12 +143,6 @@ async function bootstrapExtension(): Promise<void> {
 		appBootstrap();
 	}
 }
-
-/*
--------------------------------------------------------
- Execution & Event Handling
--------------------------------------------------------
-*/
 
 try {
 	bootstrapExtension();

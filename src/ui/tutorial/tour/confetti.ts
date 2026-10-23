@@ -84,7 +84,6 @@ export function createRainPiece(
 	};
 }
 
-/** Advances one confetti piece by a single frame. */
 export function stepConfetto(particle: Confetto): void {
 	particle.vy += particle.gravity;
 	if (particle.maxFall !== undefined) particle.vy = Math.min(particle.vy, particle.maxFall);

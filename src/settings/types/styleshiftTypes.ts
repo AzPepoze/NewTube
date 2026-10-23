@@ -154,8 +154,6 @@ export type Setting = (
 			value: number;
 			unit?: string;
 
-			//--------------
-
 			varCss?: string;
 
 			constantCss?: string | SettingCssCallback;
@@ -163,8 +161,6 @@ export type Setting = (
 			setupFunction?: string | SettingAction;
 
 			updateFunction?: string | SettingValueCallback<number>;
-
-			//--------------
 
 			editable?: boolean;
 	  }
@@ -176,8 +172,6 @@ export type Setting = (
 
 			value: string;
 
-			//--------------
-
 			constantCss?: string;
 
 			setupFunction?: string | SettingAction;
@@ -185,8 +179,6 @@ export type Setting = (
 			updateFunction?: string | SettingValueCallback<string>;
 
 			options: Option[];
-
-			//--------------
 
 			editable?: boolean;
 	  }
@@ -199,8 +191,6 @@ export type Setting = (
 
 			value: string;
 
-			//--------------
-
 			varCss?: string;
 
 			constantCss?: string | SettingCssCallback;
@@ -208,8 +198,6 @@ export type Setting = (
 			setupFunction?: string | SettingAction;
 
 			updateFunction?: string | SettingValueCallback<string>;
-
-			//--------------
 
 			editable?: boolean;
 	  }
@@ -223,7 +211,6 @@ export type Setting = (
 
 			updateFunction?: string | SettingValueCallback<string>;
 
-			//--------------
 			editable?: boolean;
 	  }
 	| {
@@ -235,7 +222,6 @@ export type Setting = (
 			value: string;
 			maxFileSize: number;
 
-			//--------------
 			editable?: boolean;
 	  }
 	| {
@@ -263,14 +249,10 @@ export type Setting = (
 			description?: string;
 			value?: SettingValue;
 
-			//--------------
-
 			constantCss?: string | SettingCssCallback;
 			setupFunction?: string | SettingAction;
 			uiFunction?: string | ((this: SettingByType<"custom">, frame: HTMLElement) => void);
 			transparent?: boolean;
-
-			//--------------
 
 			editable?: boolean;
 	  }

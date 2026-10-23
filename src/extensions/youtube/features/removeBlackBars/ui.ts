@@ -108,7 +108,6 @@ export async function createDebugCanvas() {
 	const videoHeight = video.videoHeight;
 	const videoWidth = video.videoWidth;
 
-	// Vertical Debug Canvas (Left side)
 	if (settings.mode === "vertical" || settings.mode === "both") {
 		if (!state.verticalCanvas) {
 			state.verticalCanvas = document.createElement("canvas");
@@ -134,7 +133,6 @@ export async function createDebugCanvas() {
 			state.verticalCanvas.style.height = `${videoRect.height}px`;
 		}
 
-		// Align with video element position
 		if (state.verticalCanvas.style.top !== video.style.top) state.verticalCanvas.style.top = video.style.top;
 		if (state.verticalCanvas.style.left !== video.style.left) state.verticalCanvas.style.left = video.style.left;
 
@@ -143,7 +141,6 @@ export async function createDebugCanvas() {
 		state.verticalCanvas.style.display = "none";
 	}
 
-	// Horizontal Debug Canvas (Top side)
 	if (settings.mode === "horizontal" || settings.mode === "both") {
 		if (!state.horizontalCanvas) {
 			state.horizontalCanvas = document.createElement("canvas");
@@ -169,7 +166,6 @@ export async function createDebugCanvas() {
 			state.horizontalCanvas.style.width = `${videoRect.width}px`;
 		}
 
-		// Align with video element position
 		if (state.horizontalCanvas.style.top !== video.style.top) state.horizontalCanvas.style.top = video.style.top;
 		if (state.horizontalCanvas.style.left !== video.style.left) state.horizontalCanvas.style.left = video.style.left;
 
@@ -278,7 +274,6 @@ export async function applyCrop(barHeight: number, totalHeight: number, barWidth
 
 	videoContainer.style.transform = "";
 
-	// 1. Vertical crop (top & bottom black bars)
 	if ((mode === "vertical" || mode === "both") && barHeight > 10 && totalHeight > 0) {
 		const contentHeight = totalHeight - barHeight * 2;
 		const scaleY = contentHeight / totalHeight;
@@ -287,7 +282,6 @@ export async function applyCrop(barHeight: number, totalHeight: number, barWidth
 		videoContainer.style.setProperty("height", "100%", "important");
 	}
 
-	// 2. Horizontal crop (left & right black bars)
 	if ((mode === "horizontal" || mode === "both") && barWidth > 10 && totalWidth > 0) {
 		const contentWidth = totalWidth - barWidth * 2;
 		const scaleX = contentWidth / totalWidth;

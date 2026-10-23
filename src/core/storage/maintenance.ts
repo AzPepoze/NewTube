@@ -89,7 +89,6 @@ export async function performStorageGarbageCollection(): Promise<void> {
 	const activeSettingIds = Object.keys(getSettingsList());
 	const userSettings = cachedStorageData["currentSettings"];
 
-	// Remove obsolete user settings
 	for (const key of Object.keys(userSettings)) {
 		if (!activeSettingIds.includes(key) || EXTERNAL_STORAGE_KEYS.includes(key)) {
 			logger.info(
@@ -101,7 +100,6 @@ export async function performStorageGarbageCollection(): Promise<void> {
 		}
 	}
 
-	// Remove obsolete root keys
 	for (const key of Object.keys(cachedStorageData)) {
 		if (key !== "currentSettings" && !EXTERNAL_STORAGE_KEYS.includes(key)) {
 			logger.info("maintenance", "Removing obsolete root key:", key);

@@ -12,7 +12,6 @@ export async function injectSettingsButton() {
 		return;
 	}
 
-	// Avoid duplicate injection
 	if (document.getElementById("NEWTUBESET")) return;
 
 	const btn = document.createElement("button");
@@ -21,7 +20,6 @@ export async function injectSettingsButton() {
 	btn.setAttribute("aria-label", "NewTube Settings");
 	btn.title = "NewTube Settings";
 
-	// Match legacy style exactly
 	btn.style.cssText = `
 		display: inline-flex;
 		align-items: center;

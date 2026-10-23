@@ -13,7 +13,6 @@
 		animation: logoFloat 4s ease-in-out infinite;
 	}
 
-	/* White glow behind the logo. */
 	.logo-halo::before {
 		content: "";
 		position: absolute;

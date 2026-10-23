@@ -1,10 +1,8 @@
 import { YOUTUBE_DIAGNOSTIC_SELECTORS } from "./selectors";
 import type { ComputedStyleSnapshot, CssSnapshot } from "./types";
 
-/** The injected stylesheet id attribute used by the extension's stylesheet holder. */
 const INJECTED_STYLESHEET_SELECTOR = "style[STYLESHIFT_style_sheet_id]";
 
-/** A small, layout-relevant subset of computed properties. */
 export const COMPUTED_STYLE_PROPERTIES = [
 	"display",
 	"position",
@@ -27,7 +25,6 @@ export function measureTextBytes(text: string): number {
 	}
 }
 
-/** Reads the extension's active injected CSS (the generated `<style>` text). */
 export function readInjectedCss(root: ParentNode = document): string {
 	return Array.from(root.querySelectorAll(INJECTED_STYLESHEET_SELECTOR))
 		.map((element) => element.textContent ?? "")

@@ -9,10 +9,7 @@ export const CATEGORY_PALETTE = [
 	"#a7d1ff", // Blue
 ];
 
-/**
- * Generates a consistent CSS style for a given log category.
- * This is self-contained to avoid circular dependencies and work in all contexts.
- */
+/** Keep this dependency-free so page scripts and extension code can share log colors. */
 export function categoryToLogStyle(category: string): string {
 	if (category.toUpperCase() === "STORAGE") {
 		return "color: #ffca28; font-weight: bold;";

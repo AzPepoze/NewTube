@@ -24,7 +24,6 @@ export async function createStyleShiftWindow({
 	blurToggle = false,
 	onWindowClosed = null as (() => void) | null,
 }) {
-	// Ensure developer tools are ready if mode is enabled
 	if (await getRootValue("developerMode")) {
 		await initializeDeveloperEnvironment();
 	}

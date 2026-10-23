@@ -32,7 +32,6 @@ export async function applyPropertyUpdate(
 	const { updateUI, customCallback } = options;
 	let finalValue = newValue;
 
-	// JSON parsing for object properties
 	if (typeof setting[property] === "object" && setting[property] !== null && typeof newValue === "string") {
 		try {
 			finalValue = JSON.parse(newValue);
@@ -43,7 +42,6 @@ export async function applyPropertyUpdate(
 		}
 	}
 
-	// Change detection
 	const isObject = typeof finalValue === "object" && finalValue !== null;
 	const hasChanged = isObject
 		? JSON.stringify(setting[property]) !== JSON.stringify(finalValue)
@@ -54,7 +52,6 @@ export async function applyPropertyUpdate(
 	const oldId = setting.id;
 	setting[property] = finalValue;
 
-	// Handle ID rename migration
 	if (property === "id" && oldId !== finalValue) {
 		logger.debug("config", `Setting ID changing from ${oldId} to ${finalValue}, migrating...`);
 

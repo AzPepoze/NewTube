@@ -54,7 +54,7 @@
 
 			if (dir.includes("e")) {
 				newWidth = Math.max(minWidth, startWidth + dx);
-				// Boundary check: right side can go off-screen but leave 10%
+				// Keep at least 10% of the window visible.
 				if (newLeft + newWidth < minVisibleWidth) {
 					newWidth = minVisibleWidth - newLeft;
 				}
@@ -68,7 +68,7 @@
 					newWidth = minWidth;
 					newLeft = startLeft + (startWidth - minWidth);
 				}
-				// Boundary check: left side can go off-screen but leave 10%
+				// Keep at least 10% of the window visible.
 				const rightEdge = startLeft + startWidth;
 				if (newLeft > rightEdge - minVisibleWidth) {
 					newLeft = rightEdge - minVisibleWidth;
@@ -78,7 +78,7 @@
 
 			if (dir.includes("s")) {
 				newHeight = Math.max(minHeight, startHeight + dy);
-				// Boundary check: bottom side can go off-screen but leave 10%
+				// Keep at least 10% of the window visible.
 				if (newTop + newHeight < minVisibleHeight) {
 					newHeight = minVisibleHeight - newTop;
 				}
@@ -92,7 +92,7 @@
 					newHeight = minHeight;
 					newTop = startTop + (startHeight - minHeight);
 				}
-				// Boundary check: top side cannot go off-screen (keep title bar)
+				// Keep the title bar on-screen.
 				if (newTop < 0) {
 					newTop = 0;
 					newHeight = startHeight + startTop;
@@ -100,13 +100,11 @@
 			}
 
 			if (aspectRatio > 0) {
-				// Keep aspect ratio
 				if (dir === "e" || dir === "w") {
 					newHeight = newWidth / aspectRatio;
 				} else if (dir === "s" || dir === "n") {
 					newWidth = newHeight * aspectRatio;
 				} else {
-					// Corners
 					const currentRatio = newWidth / newHeight;
 					if (currentRatio > aspectRatio) {
 						newWidth = newHeight * aspectRatio;
@@ -115,7 +113,6 @@
 					}
 				}
 
-				// Adjust position if resizing from north or west
 				if (dir.includes("n")) {
 					newTop = startTop + (startHeight - newHeight);
 				}
@@ -162,7 +159,6 @@
 </script>
 
 <div class="styleshift-window-resizer" role="presentation">
-	<!-- Edge handles -->
 	<div
 		class="handle n"
 		class:active={activeDir === "n"}
@@ -188,7 +184,6 @@
 		role="presentation"
 	></div>
 
-	<!-- Corner handles -->
 	<div
 		class="handle nw"
 		class:active={activeDir === "nw"}
@@ -238,7 +233,6 @@
 		transition: opacity 0.2s;
 		opacity: 0;
 
-		/* Edges glow as bars that fade out at both ends */
 		&.n,
 		&.s {
 			--edge-dir: right;
@@ -295,7 +289,6 @@
 			cursor: ew-resize;
 		}
 
-		/* Corners glow as long gradient border segments instead of filled balls */
 		&.nw,
 		&.ne,
 		&.se,

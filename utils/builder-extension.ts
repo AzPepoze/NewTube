@@ -166,7 +166,6 @@ export async function buildExtension() {
 		ensureDir(path.join(BUILD, "assets/fonts"));
 		ensureDir(path.join(BUILD, "modules"));
 
-		// 1. Background script
 		log.info("Building background script...");
 		await esbuild.build({
 			entryPoints: [path.join(ENTRYPOINTS, "background.ts")],
@@ -177,7 +176,6 @@ export async function buildExtension() {
 			alias: esbuildAliases,
 		});
 
-		// 2. Shared & Communication Functions
 		log.info("Processing shared and communication functions...");
 		const sharedEntryTs = path.join(TEMP, "shared_entry.ts");
 		const sharedBundledJs = path.join(TEMP, "shared_bundled.js");
@@ -196,11 +194,9 @@ export async function buildExtension() {
 			globalName: "SharedScope",
 		});
 
-		// 3. Build-in.js
 		const buildInContent = await generateBuildInFunctions();
 		await fs.writeFile(path.join(BUILD, "build-in.js"), buildInContent, "utf8");
 
-		// 4. Main script bundle
 		const mainScriptName = `${extensionConfig.name.toLowerCase()}.js`;
 		log.info(`Bundling main script: ${mainScriptName}`);
 		await esbuild.build({
@@ -221,7 +217,6 @@ export async function buildExtension() {
 			assetNames: "assets/[name]",
 		});
 
-		// 5. Assets and Extension files
 		log.info("Copying assets and extension files...");
 		fs.copySync(ENTRYPOINTS, BUILD, {
 			filter: (src) => !path.relative(ENTRYPOINTS, src).startsWith("modules") && !src.endsWith(".ts"),
@@ -251,7 +246,6 @@ export async function buildExtension() {
 			}
 		}
 
-		// 6. Distribution
 		log.info("Deploying to distribution folders...");
 		fs.emptyDirSync(DIST_CHROMIUM);
 		fs.emptyDirSync(DIST_FIREFOX);

@@ -7,7 +7,6 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-/** Parses a diagnostics .json file, rejecting anything that is not a usable report. */
 export function parseDiagnosticsReport(text: string): DiagnosticsReport {
 	const parsed = JSON.parse(text) as DiagnosticsReport;
 	if (!isPlainObject(parsed)) {

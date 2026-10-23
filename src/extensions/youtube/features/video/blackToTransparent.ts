@@ -67,7 +67,6 @@ function initWebGL() {
 		return false;
 	}
 
-	// Try WebGL 2 first, then fallback to WebGL 1
 	gl =
 		(canvas.getContext("webgl2", { alpha: true, premultipliedAlpha: false }) as WebGL2RenderingContext) ||
 		(canvas.getContext("webgl", { alpha: true, premultipliedAlpha: false }) as unknown as WebGL2RenderingContext);

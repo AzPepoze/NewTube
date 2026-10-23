@@ -3,7 +3,6 @@
 		container,
 		activeEntry,
 	}: {
-		/** Scroll area that holds the doc entries. */
 		container: HTMLElement | null;
 		activeEntry: string;
 	} = $props();

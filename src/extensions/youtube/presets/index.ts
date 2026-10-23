@@ -13,7 +13,6 @@ function createPreset(slug: string, name: string, overrides: PresetOverrides): T
 	};
 }
 
-/** Solid background settings, shared by most presets. */
 function solidBackground(color: string): PresetOverrides {
 	return {
 		EnableBackground: true,
@@ -162,7 +161,6 @@ export const PRESET_THEMES: Theme[] = [
 	}),
 ];
 
-/** Adds the bundled presets missing from the saved list. The user's own themes stay first. */
 export function mergeBundledPresets(savedThemes: unknown): Theme[] {
 	const themes: Theme[] = Array.isArray(savedThemes) ? savedThemes : [];
 	const savedIds = new Set(themes.map((theme) => theme.themeId));

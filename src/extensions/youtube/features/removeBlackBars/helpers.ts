@@ -1,9 +1,5 @@
 import type { BarDetectionData, BarEdgeSamples, BarSample } from "./types";
 
-// ---------------------------------
-// Pixel comparison
-// ---------------------------------
-
 export function checkPixelDiff(
 	r1: number,
 	g1: number,
@@ -15,10 +11,6 @@ export function checkPixelDiff(
 ) {
 	return Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2) > threshold;
 }
-
-// ---------------------------------
-// Bar-size validation
-// ---------------------------------
 
 export function calculateBarDimension(values: BarSample[], currentLastValue: number): number {
 	const validValues = values.filter((v): v is number => typeof v === "number");
@@ -59,10 +51,6 @@ export function calculatePairedBarDimension(samples: BarEdgeSamples, currentLast
 	return detectedSize === -1 ? currentLastValue : detectedSize;
 }
 
-// ---------------------------------
-// Vertical-bar detection (top/bottom)
-// ---------------------------------
-
 export async function detectVerticalBars(
 	verticalImgData: Uint8ClampedArray,
 	videoHeight: number,
@@ -93,7 +81,7 @@ export async function detectVerticalBars(
 		let top = -1;
 		let bottom = -1;
 
-		// Top scan (skip first 5 pixels)
+		// Skip the outermost 5 pixels when scanning from the top.
 		for (let i = 5; i < videoHeight / 2; i++) {
 			pixelsChecked++;
 			if (isDifferentVertical(verticalImgData, (i * 5 + x) * 4)) {
@@ -107,7 +95,7 @@ export async function detectVerticalBars(
 			}
 		}
 
-		// Bottom scan (skip last 5 pixels)
+		// Skip the outermost 5 pixels when scanning from the bottom.
 		for (let i = videoHeight - 5; i > videoHeight / 2; i--) {
 			pixelsChecked++;
 			if (isDifferentVertical(verticalImgData, (i * 5 + x) * 4)) {
@@ -127,10 +115,6 @@ export async function detectVerticalBars(
 
 	return heightsFound;
 }
-
-// ---------------------------------
-// Horizontal-bar detection (left/right)
-// ---------------------------------
 
 export async function detectHorizontalBars(
 	horizontalImgData: Uint8ClampedArray,
@@ -162,7 +146,7 @@ export async function detectHorizontalBars(
 		let left = -1;
 		let right = -1;
 
-		// Left scan (skip first 5 pixels)
+		// Skip the outermost 5 pixels when scanning from the left.
 		for (let i = 5; i < videoWidth / 2; i++) {
 			pixelsChecked++;
 			if (isDifferentHorizontal(horizontalImgData, (y * videoWidth + i) * 4)) {
@@ -176,7 +160,7 @@ export async function detectHorizontalBars(
 			}
 		}
 
-		// Right scan (skip last 5 pixels)
+		// Skip the outermost 5 pixels when scanning from the right.
 		for (let i = videoWidth - 5; i > videoWidth / 2; i--) {
 			pixelsChecked++;
 			if (isDifferentHorizontal(horizontalImgData, (y * videoWidth + i) * 4)) {
@@ -196,10 +180,6 @@ export async function detectHorizontalBars(
 
 	return widthsFound;
 }
-
-// ---------------------------------
-// Combined detection
-// ---------------------------------
 
 export async function detectBlackBars(
 	data: BarDetectionData,

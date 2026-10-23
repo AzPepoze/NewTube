@@ -15,7 +15,6 @@ async function storeChrome() {
 
 	console.log(`Starting Chrome Web Store upload for extension: ${extensionId}`);
 
-	// 1. Exchange Refresh Token for Access Token
 	console.log("Refreshing access token...");
 	const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
 		method: "POST",
@@ -36,7 +35,6 @@ async function storeChrome() {
 	const { access_token: accessToken } = (await tokenResponse.json()) as { access_token: string };
 	console.log("Access token acquired.");
 
-	// 2. Upload the ZIP file
 	console.log(`Uploading ${filePath}...`);
 	const fileBuffer = readFileSync(filePath);
 	const boundary = `----NewTube${crypto.randomUUID()}`;
@@ -63,7 +61,6 @@ async function storeChrome() {
 
 	console.log("Upload successful.");
 
-	// 3. Publish the item
 	console.log("Publishing extension...");
 	const publishUrl = `https://chromewebstore.googleapis.com/v2/publishers/${publisherId}/items/${extensionId}:publish`;
 

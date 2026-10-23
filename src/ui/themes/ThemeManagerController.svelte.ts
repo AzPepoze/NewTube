@@ -120,9 +120,7 @@ async function parseResponseError(res: Response): Promise<string> {
 			const msg = data.message || data.error || data.detail || data.msg;
 			if (typeof msg === "string" && msg.trim()) return msg;
 		}
-	} catch {
-		// Response was not JSON
-	}
+	} catch {}
 	if (res.statusText) {
 		return `Server error (${res.status}): ${res.statusText}`;
 	}

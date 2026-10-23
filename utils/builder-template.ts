@@ -82,7 +82,6 @@ function functionDetail(fn: ExportedFunction, sourceFile: ts.SourceFile, checker
 	return `(${params}) => ${returnType}`;
 }
 
-/** Strips the comment delimiters and leading stars from a JSDoc block. */
 function cleanJsDoc(raw: string): string {
 	return raw
 		.replace(/\*\/$/, "")
@@ -108,7 +107,6 @@ function metadataFor(sourceFile: ts.SourceFile, checker: ts.TypeChecker): Metada
 	);
 }
 
-/** Reads the exported functions of the given files, using the TypeScript checker for types. */
 export function extractMetadata(filePaths: string[]): MetadataEntry[] {
 	const program = createCheckedProgram(filePaths);
 	const checker = program.getTypeChecker();
@@ -118,7 +116,6 @@ export function extractMetadata(filePaths: string[]): MetadataEntry[] {
 	});
 }
 
-/** The text before the first @tag line. */
 function summaryOf(info: string): string {
 	const lines = info.split("\n");
 	const tagStart = lines.findIndex((line) => line.trim().startsWith("@"));

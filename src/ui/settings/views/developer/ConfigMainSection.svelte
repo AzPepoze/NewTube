@@ -46,7 +46,6 @@
 			property === "step" ||
 			(property === "value" && setting.type === "numberSlide");
 
-		// Helper to create update function with optional custom callback
 		const createUpdateFunc = (prop: string) => (val: any) =>
 			handlePropertyUpdate(prop, val, typeof update === "function" ? update : undefined);
 
@@ -132,7 +131,6 @@
 	function renderEditor(node: HTMLElement, params: { title: string; property: string; update: any }) {
 		const { title, property, update } = params;
 		(async () => {
-			// Pre-process object properties to string for the editor
 			const tempObj = { ...setting };
 			if (typeof tempObj[property] === "object" && tempObj[property] !== null) {
 				tempObj[property] = JSON.stringify(tempObj[property], null, 2);

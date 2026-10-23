@@ -5,11 +5,9 @@ import { type Setting } from "@settings/types/styleshiftTypes";
 import { logger } from "@shared/logger";
 import { getAllStyleShiftSettings } from "../registry/items";
 
-// Internal modules
 import { SETTING_TYPE_BEHAVIORS } from "./behaviors";
 import { settingInitializers, settingUpdateListeners } from "./listeners";
 
-// Re-exports
 export * from "./behaviors";
 export * from "./conditions";
 export * from "./listeners";
@@ -68,7 +66,6 @@ export async function reactivateAllSettings() {
 		if (setting.id === "Themes") continue;
 		triggerSettingUpdate(setting.id, true);
 	}
-	// Note: initializeAllActiveSettings is re-exported from listeners
 	const { initializeAllActiveSettings } = await import("./listeners");
 	await initializeAllActiveSettings();
 	logger.info("settings", "All settings re-activated.");

@@ -93,13 +93,11 @@ async function runCheck() {
 
 	const startTime = Date.now();
 
-	// Step 1: Sequential auto-fix
 	if (shouldRunFix) {
 		runTaskSync("prettier", ["--write", "."], "Prettier - Auto-formatting code");
 		runTaskSync("eslint", ["--fix", "src", "utils"], "ESLint - Auto-fixing issues");
 	}
 
-	// Step 2: Parallel checks
 	const parallelTasks: Promise<void>[] = [];
 
 	if (shouldRunSvelte) {

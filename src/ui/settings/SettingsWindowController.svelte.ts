@@ -16,20 +16,17 @@ export interface SettingsWindowProps {
 }
 
 export class SettingsWindowController {
-	// State
 	searchQuery = $state("");
 	leftSidebar = $state<HTMLElement | null>(null);
 	activeCategoryLabel = $state("");
 	sidebarWidth = $state(200);
 
-	// Props reference
 	#props: SettingsWindowProps;
 
 	constructor(props: SettingsWindowProps) {
 		this.#props = props;
 	}
 
-	// Derived data
 	internalData = $derived.by(() => {
 		return this.#filterAndProcess(this.#props.internalSettings, this.#props.externalSettings, true);
 	});
@@ -60,7 +57,6 @@ export class SettingsWindowController {
 		return result;
 	});
 
-	// Helpers
 	isHeaderItem(item: Category | SeparateCategory): item is SeparateCategory {
 		return "isHeader" in item;
 	}
@@ -135,7 +131,6 @@ export class SettingsWindowController {
 			.filter((item) => this.isHeaderItem(item) || item.settings.length > 0);
 	}
 
-	// Actions
 	async moveCategory(category: Category, direction: "up" | "down") {
 		if (shiftCategory(getAddOnItems(), category, direction)) await saveAndRefreshAll();
 	}

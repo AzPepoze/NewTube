@@ -22,7 +22,6 @@ export const fontsCategory: Category = {
 				);
 				if (enabledFonts.length === 0) return "";
 
-				// Deduplicate imports by URL
 				const uniqueUrls = [
 					...new Set(
 						enabledFonts
@@ -32,7 +31,6 @@ export const fontsCategory: Category = {
 				];
 				const imports = uniqueUrls.length > 0 ? uniqueUrls.map((url) => `@import url('${url}');`).join("\n") : "";
 
-				// Generate font stack.
 				const fontStack = enabledFonts
 					.map((f) =>
 						f.fontName

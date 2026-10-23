@@ -16,7 +16,6 @@ interface ContentScriptMessage {
 	args?: string;
 }
 
-// Handle extension commands
 chrome.commands.onCommand.addListener(async (command: string) => {
 	logger.info("command", `Command "${command}" triggered`);
 	const queryOptions = { active: true, lastFocusedWindow: true };
@@ -38,7 +37,6 @@ async function execFunction(execText: string): Promise<void> {
 		// Setup Trusted Types policies first (self-contained)
 		const win = window as any;
 		if (win.trustedTypes && win.trustedTypes.createPolicy) {
-			// Create TrustedScript policy
 			if (!win.__styleshift_script_policy) {
 				try {
 					win.__styleshift_script_policy = win.trustedTypes.createPolicy("styleshift-script-policy", {
@@ -49,7 +47,6 @@ async function execFunction(execText: string): Promise<void> {
 				}
 			}
 
-			// Create TrustedHTML policy
 			if (!win.__styleshift_html_policy) {
 				try {
 					win.__styleshift_html_policy = win.trustedTypes.createPolicy("styleshift-html-policy", {
@@ -63,7 +60,6 @@ async function execFunction(execText: string): Promise<void> {
 
 		const script = document.createElement("script");
 
-		// Use TrustedScript policy if available
 		if (win.__styleshift_script_policy && win.__styleshift_script_policy.createScript) {
 			script.textContent = win.__styleshift_script_policy.createScript(execText);
 		} else {
@@ -80,16 +76,12 @@ async function execFunction(execText: string): Promise<void> {
 		}
 		try {
 			new Function(execText)();
-		} catch (_e) {
-			// Silent fail
-		}
+		} catch (_e) {}
 	}
 }
 
-// Listen for messages from content scripts
 chrome.runtime.onMessage.addListener(
 	(recivedMsg: ContentScriptMessage, sender: chrome.runtime.MessageSender, sendResponse) => {
-		// Log errors at error level, others at info level
 		if (recivedMsg.Command === "workerError" || recivedMsg.error) {
 			logger.error("message", recivedMsg);
 		} else {
@@ -199,7 +191,7 @@ async function handleMessage(recivedMsg: ContentScriptMessage, sender: chrome.ru
 							resolve(commands || []);
 						}
 					});
-					// Safety timeout in case callback never fires
+					// Stop waiting if the callback never fires.
 					setTimeout(() => {
 						if (!resolved) {
 							logger.warn("message", "getCommands timeout - resolving with empty array");

@@ -71,7 +71,6 @@ export function validateDomains(domains: string[]): boolean {
 	return domains.every(validateDomain);
 }
 
-// Apply theme to domain storage
 export async function applyThemeToDomainStorage(
 	domain: string,
 	themeId: string,
@@ -103,7 +102,6 @@ export async function applyThemeToDomainStorage(
 	logger.info("themeManager", `Theme applied to domain: ${domain}`);
 }
 
-// Delete theme from storage
 export async function deleteThemeFromStorage(themeId: string): Promise<void> {
 	const themes = (await getRootValue("themes")) || [];
 	if (!Array.isArray(themes)) {
@@ -117,7 +115,6 @@ export async function deleteThemeFromStorage(themeId: string): Promise<void> {
 	logger.info("themeManager", `Theme removed from registry: ${themeId}`);
 }
 
-// Fetch theme from API
 export async function fetchThemeFromApi(themeId: string): Promise<Theme | null> {
 	try {
 		const res = await fetch(`${STYLESHIFT_STORE_API_URL}/themes/${themeId}`);
@@ -136,7 +133,6 @@ export async function fetchThemeFromApi(themeId: string): Promise<Theme | null> 
 	}
 }
 
-// Save theme
 export async function saveTheme(
 	name: string,
 	data: Theme,
@@ -175,7 +171,6 @@ export async function saveTheme(
 	}
 }
 
-// Apply theme
 export async function applyTheme(id: string, name: string, targetDomain: string): Promise<boolean> {
 	if (!validateDomain(targetDomain)) return false;
 
@@ -201,7 +196,6 @@ export async function applyTheme(id: string, name: string, targetDomain: string)
 	}
 }
 
-// Update theme
 export async function updateTheme(id: string, name: string, latestData: Theme, targetDomain: string): Promise<boolean> {
 	if (!validateDomain(targetDomain)) return false;
 
@@ -242,7 +236,6 @@ export async function recordThemeDownload(themeId: string): Promise<void> {
 	}
 }
 
-// Install theme
 export async function installTheme(id: string, name: string, targetDomains: string[]): Promise<boolean> {
 	if (!validateDomains(targetDomains)) return false;
 
@@ -273,7 +266,6 @@ export async function installTheme(id: string, name: string, targetDomains: stri
 	}
 }
 
-// Delete theme
 export async function deleteTheme(id: string, name: string, targetDomain: string): Promise<boolean> {
 	if (!validateDomain(targetDomain)) return false;
 
@@ -293,7 +285,6 @@ export async function deleteTheme(id: string, name: string, targetDomain: string
 	}
 }
 
-// Check theme installed
 export async function isThemeInstalled(id: string, targetDomain: string): Promise<boolean> {
 	if (!validateDomain(targetDomain)) return false;
 
@@ -308,7 +299,6 @@ export async function isThemeInstalled(id: string, targetDomain: string): Promis
 	}
 }
 
-// Active theme data
 async function getActivethemeData(_targetDomain: string) {
 	const activeThemeId = await getRootValue("activeTheme");
 	if (!activeThemeId || activeThemeId === "Previous Settings") return null;
@@ -326,7 +316,6 @@ async function getActivethemeData(_targetDomain: string) {
 	};
 }
 
-// Update theme
 export async function checkAndUpdateTheme(manual: boolean = false, targetDomain: string): Promise<void> {
 	const autoUpdate = await getRootValue("AutoUpdateTheme");
 	if (!manual && !autoUpdate) return;

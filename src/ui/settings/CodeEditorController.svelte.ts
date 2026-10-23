@@ -3,7 +3,6 @@ import { splitDetail } from "@ui/docs/apiReferenceData";
 import { logger } from "@/shared/logger";
 import { buildReadonlyExtensions } from "./codeEditorExtensions";
 
-/** Splits text on commas that sit outside any brackets. */
 function splitTopLevel(text: string): string[] {
 	const parts: string[] = [];
 	let depth = 0;
@@ -99,8 +98,6 @@ export class CodeEditorController {
 		}
 	}
 
-	/* --- Public API --- */
-
 	setValue(newVal: string) {
 		if (this.#view) {
 			this.#view.dispatch({
@@ -179,8 +176,6 @@ export class CodeEditorController {
 		return extensions;
 	}
 
-	/* --- CodeMirror Extension Creators --- */
-
 	#createUpdateListener(cm: any) {
 		return cm.EditorView.updateListener.of((update: any) => {
 			if (update.docChanged) {
@@ -230,8 +225,6 @@ export class CodeEditorController {
 			};
 		};
 	}
-
-	/* --- DOM Rendering Helpers --- */
 
 	#renderTooltipDOM(metadata: any) {
 		const dom = this.#createDomElement("div", "cm-styleshift-tooltip");
@@ -295,8 +288,6 @@ export class CodeEditorController {
 		}
 		return fragment;
 	}
-
-	/* --- Metadata Parsing Helpers --- */
 
 	#getMetadataCompletionOptions() {
 		return globalMetadataCache.map((entry) => ({
