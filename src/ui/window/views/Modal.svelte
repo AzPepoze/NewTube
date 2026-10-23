@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { applyThemeToElement } from "@ui/themes/theme";
 	import { onMount } from "svelte";
-	import { quintOut } from "svelte/easing";
-	import { scale } from "svelte/transition";
-	import { blurIn, holdOpen } from "../modalTransition";
+	import { backdropFade, holdOpen, modalPop } from "../modalTransition";
 
 	let {
 		children,
@@ -19,6 +17,7 @@
 
 	let mounted = $state(false);
 	let overlayEl = $state<HTMLElement | null>(null);
+	let backdropBlur = $state(true);
 
 	// Rendering after mount lets Svelte play the intro transitions.
 	onMount(() => {
@@ -26,7 +25,23 @@
 	});
 
 	$effect(() => {
-		if (overlayEl) applyThemeToElement(overlayEl);
+		const el = overlayEl;
+		if (!el) return;
+
+		let cancelled = false;
+		(async () => {
+			await applyThemeToElement(el);
+			if (cancelled) return;
+
+			const amount = parseFloat(getComputedStyle(el).getPropertyValue("--modal-blur")) || 0;
+			// A fullscreen window already blurs the page behind it, so a second full-viewport
+			// blur would only cost frames without changing what you see.
+			backdropBlur = amount > 0 && !document.querySelector(".styleshift-window-container.fullscreen");
+		})();
+
+		return () => {
+			cancelled = true;
+		};
 	});
 
 	function handleKeyDown(e: KeyboardEvent) {
@@ -48,11 +63,11 @@
 		role="button"
 		tabindex="-1"
 	>
-		<div class="styleshift-modal-backdrop" transition:blurIn={{ duration: 340 }}></div>
+		<div class="styleshift-modal-backdrop" class:no-blur={!backdropBlur} transition:backdropFade></div>
 		<div
 			class="styleshift-modal-content"
 			style="width: {width};"
-			transition:scale={{ duration: 340, start: 0.92, easing: quintOut }}
+			transition:modalPop
 			onclick={(e) => e.stopPropagation()}
 			role="presentation"
 		>
@@ -79,7 +94,13 @@
 		inset: 0;
 		background: var(--bg-overlay-20);
 		backdrop-filter: blur(var(--modal-blur));
-		will-change: backdrop-filter;
+		-webkit-backdrop-filter: blur(var(--modal-blur));
+		will-change: opacity;
+
+		&.no-blur {
+			backdrop-filter: none;
+			-webkit-backdrop-filter: none;
+		}
 	}
 
 	.styleshift-modal-content {
