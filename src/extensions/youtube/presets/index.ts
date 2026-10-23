@@ -168,3 +168,16 @@ export function mergeBundledPresets(savedThemes: unknown): Theme[] {
 	const savedIds = new Set(themes.map((theme) => theme.themeId));
 	return [...themes, ...PRESET_THEMES.filter((preset) => !savedIds.has(preset.themeId))];
 }
+
+/** Bump when the bundled preset data changes, so existing installs refresh their saved copies. */
+export const BUNDLED_PRESETS_VERSION = 1;
+
+/**
+ * Replaces the saved copies of bundled presets with the current data.
+ * User themes and presets the user deleted stay untouched.
+ */
+export function refreshBundledPresetList(savedThemes: unknown): Theme[] {
+	const themes: Theme[] = Array.isArray(savedThemes) ? savedThemes : [];
+	const presets = new Map(PRESET_THEMES.map((preset) => [preset.themeId, preset]));
+	return themes.map((theme) => presets.get(theme.themeId) ?? theme);
+}

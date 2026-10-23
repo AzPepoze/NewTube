@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { expect, test } from "bun:test";
 import { currentLookSettings, defaultSetting } from "../../../src/extensions/youtube/defaultSettings";
-import { mergeBundledPresets, PRESET_THEMES } from "../../../src/extensions/youtube/presets";
+import { mergeBundledPresets, PRESET_THEMES, refreshBundledPresetList } from "../../../src/extensions/youtube/presets";
 
 test("preset ids and names are unique and filled", () => {
 	const ids = PRESET_THEMES.map((preset) => preset.themeId);
@@ -47,4 +47,28 @@ test("merge keeps the user's own themes first and adds missing presets once", ()
 	expect(merged[0].themeId).toBe("my-theme");
 	expect(merged.length).toBe(PRESET_THEMES.length + 1);
 	expect(mergeBundledPresets(merged).length).toBe(merged.length);
+});
+
+test("Normal YouTube resets hover and scrollbar to stock values", () => {
+	const normal = PRESET_THEMES.find((preset) => preset.themeId === "preset-normal-youtube");
+
+	expect(normal.currentSettings.GlobalHoverBackgroundColor).toBe("#ffffff1a");
+	expect(normal.currentSettings.PlaylistHoverBackgroundColor).toBe("#ffffff1a");
+	expect(normal.currentSettings.ScrollbarWidthStandard).toBe("auto");
+	expect(normal.currentSettings.EnableModernScrollbars).toBe(false);
+});
+
+test("refresh replaces bundled presets and keeps user themes", () => {
+	const userTheme = { themeId: "mine", themeName: "Mine", currentSettings: { MainThemeColor: "#123456ff" } };
+	const stalePreset = { themeId: "preset-normal-youtube", themeName: "Normal YouTube", currentSettings: {} };
+	const refreshed = refreshBundledPresetList([userTheme, stalePreset]);
+
+	expect(refreshed[0]).toBe(userTheme);
+	expect(refreshed[1]).toEqual(PRESET_THEMES.find((preset) => preset.themeId === "preset-normal-youtube"));
+});
+
+test("refresh does not bring back a deleted preset", () => {
+	const refreshed = refreshBundledPresetList([{ themeId: "mine", themeName: "Mine" }]);
+
+	expect(refreshed.map((theme) => theme.themeId)).toEqual(["mine"]);
 });

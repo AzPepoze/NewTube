@@ -23,6 +23,7 @@ import {
 	initializeDefaultAddOnItems,
 	performStorageGarbageCollection,
 	populateMissingDefaultSettings,
+	refreshBundledPresets,
 	seedBundledPresets,
 } from "./storage/maintenance";
 import { getRootValue, initializeStorageConnection, persistCachedDataToStorage } from "./storage/manager";
@@ -108,6 +109,7 @@ async function bootstrapExtension(): Promise<void> {
 	await updateStyleShiftItems();
 	await populateMissingDefaultSettings();
 	await seedBundledPresets();
+	await refreshBundledPresets();
 
 	// Theme listeners
 	registerSettingListener("EnableAppLightTheme", syncAllThemes, true);

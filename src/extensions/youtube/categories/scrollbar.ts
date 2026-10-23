@@ -28,11 +28,6 @@ export const scrollbarCategory: Category = {
                 body::-webkit-scrollbar-track {
                     background: var(--nt-scrollbar-track-color, #00000000) !important;
                 }
-                @supports (scrollbar-width: thin) {
-                    * {
-                        scrollbar-color: var(--nt-theme-color) var(--nt-scrollbar-track-color, transparent) !important;
-                    }
-                }
             `,
 		},
 	],
