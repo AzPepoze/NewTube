@@ -32,6 +32,119 @@ function clickThemesRowScript(): string {
 	})()`;
 }
 
+/** Script that types `text` into the settings search box. Returns false when the box is missing. */
+function searchSettingsScript(text: string): string {
+	return `(() => {
+		const input = document.querySelector('[class*="search-input"]');
+		if (!input) return false;
+		const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+		setValue.call(input, ${JSON.stringify(text)});
+		input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+		return true;
+	})()`;
+}
+
+/** Script that clicks the switch of the setting whose frame has `id`. */
+function clickSettingSwitchScript(id: string): string {
+	return `(() => {
+		const frame = document.getElementById(${JSON.stringify(id)});
+		if (!frame) return false;
+		const box = frame.querySelector('input[type="checkbox"]');
+		if (!box) return false;
+		box.click();
+		return true;
+	})()`;
+}
+
+/**
+ * Script that closes the open dialog and samples the outro. It reports the backdrop's classes,
+ * the fade steps of its opacity, whether the overlay left the DOM, and the slow frames.
+ */
+function closeDialogScript(): string {
+	return `(async () => {
+		const modal = document.querySelector('[class*="-modal-content"]');
+		if (!modal) return { error: 'no dialog' };
+		const cancel = [...modal.querySelectorAll('*')]
+			.filter((el) => el.textContent.trim() === 'Cancel' && el.getClientRects().length > 0)
+			.at(-1);
+		const backdrop = document.querySelector('[class*="-modal-backdrop"]');
+		if (!backdrop || !cancel) return { error: 'dialog is incomplete' };
+
+		const classes = backdrop.className;
+		const filter = getComputedStyle(backdrop).backdropFilter;
+
+		const frames = [];
+		let stop = false;
+		const onFrame = () => {
+			frames.push(performance.now());
+			if (!stop) requestAnimationFrame(onFrame);
+		};
+		requestAnimationFrame(onFrame);
+
+		const clickAt = performance.now();
+		cancel.click();
+
+		const samples = [];
+		const start = performance.now();
+		while (performance.now() - start < 900) {
+			const node = document.querySelector('[class*="-modal-backdrop"]');
+			samples.push(node ? Number(getComputedStyle(node).opacity) : -1);
+			await new Promise((resolve) => setTimeout(resolve, 15));
+		}
+		stop = true;
+
+		// Offset of every gap over two frames, so a stall shows up with the moment it happened.
+		const slow = frames
+			.slice(1)
+			.map((time, index) => ({ gap: time - frames[index], at: Math.round(time - clickAt) }))
+			.filter((frame) => frame.gap > 34)
+			.map((frame) => frame.at + 'ms:' + Math.round(frame.gap) + 'ms');
+		const gaps = frames.slice(1).map((time, index) => time - frames[index]).sort((a, b) => a - b);
+		return {
+			classes,
+			filter,
+			fadeSteps: samples.filter((opacity) => opacity > 0.02 && opacity < 0.98).length,
+			distinct: new Set(samples).size,
+			overlayGone: !document.querySelector('[class*="-modal-overlay"]'),
+			medianGap: gaps.at(Math.floor(gaps.length / 2)),
+			maxGap: gaps.at(-1),
+			slow,
+		};
+	})()`;
+}
+
+interface DialogCloseSample {
+	classes: string;
+	filter: string;
+	fadeSteps: number;
+	distinct: number;
+	overlayGone: boolean;
+	medianGap: number;
+	maxGap: number;
+	slow: string[];
+	error?: string;
+}
+
+/** Opens the Theme Manager's Save prompt, closes it and returns the outro sample. */
+async function closeSavePrompt(driver: Driver, shotName: string): Promise<DialogCloseSample> {
+	await clickText(driver, "Save");
+	await waitFor(() => driver.evaluate<boolean>("!!document.querySelector('[class*=\"-modal-content\"]')"), {
+		label: "Save prompt",
+	});
+	// Let the intro finish so the sample only sees the outro.
+	await sleep(600);
+	await shot(driver, shotName);
+	const sample = await driver.evaluate<DialogCloseSample>(closeDialogScript());
+	if (sample.error) throw new Error(`dialog check failed: ${sample.error}`);
+	console.log(
+		`dialog close: blur=${sample.filter} fadeSteps=${sample.fadeSteps} overlayGone=${sample.overlayGone} frame=${sample.medianGap?.toFixed(1)}ms (max ${sample.maxGap?.toFixed(1)}ms) slow=${sample.slow?.join(", ") || "none"}`,
+	);
+	expect(sample.distinct > 3, "the backdrop fades instead of popping");
+	expect(sample.fadeSteps >= 3, "backdrop opacity has intermediate values during the outro");
+	expect(sample.overlayGone, "the dialog leaves the DOM after closing");
+	return sample;
+}
+
 /** On a fresh profile the first-run prompts open on top of the page. Each is answered with its "no" button. */
 const FIRST_RUN_ANSWERS: [prompt: string, answer: string][] = [
 	["Do you have a moment?", "Nope"],
@@ -146,5 +259,33 @@ export async function themes(driver: Driver): Promise<string[]> {
 	return ["themes-installed.png"];
 }
 
-export const SCENARIOS = { home, welcome, themes } as const;
+/** Dialog close: the prompt fades out, and its backdrop blur follows the Glass UI setting. */
+export async function dialog(driver: Driver): Promise<string[]> {
+	await openYoutube(driver);
+	await dismissFirstRunPrompts(driver);
+	await driver.evaluate("document.getElementById('NEWTUBESET').click(), true");
+	await waitFor(() => driver.evaluate<boolean>("!!document.getElementById('OpenThemeManagerButton')"), {
+		label: "settings window",
+	});
+	await waitFor(() => driver.evaluate<boolean>(clickThemesRowScript()), { label: "Themes row in settings" });
+	await waitFor(() => driver.evaluate<boolean>(hasTextScript("Save")), { label: "Save button" });
+
+	// Opaque theme: the backdrop carries the dim only, and it has to fade out.
+	const opaque = await closeSavePrompt(driver, "dialog-opaque");
+	expect(opaque.classes.includes("no-blur"), "an opaque theme skips the dialog backdrop blur");
+
+	// Glass UI on: the same dialog blurs the page behind it.
+	await waitFor(() => driver.evaluate<boolean>(searchSettingsScript("Glass UI")), { label: "settings search" });
+	await waitFor(() => driver.evaluate<boolean>(clickSettingSwitchScript("EnableSettingsBackgroundBlur")), {
+		label: "Glass UI switch",
+	});
+	await sleep(600);
+	const glass = await closeSavePrompt(driver, "dialog-glass");
+	expect(!glass.classes.includes("no-blur"), "a glass theme blurs the dialog backdrop");
+	expect(glass.filter.includes("blur("), `the backdrop has a blur filter (${glass.filter})`);
+
+	return ["dialog-opaque.png", "dialog-glass.png"];
+}
+
+export const SCENARIOS = { home, welcome, themes, dialog } as const;
 export type ScenarioName = keyof typeof SCENARIOS;

@@ -105,7 +105,7 @@ async function main(argv: string[]): Promise<number> {
 			"Usage:",
 			"  bun .agents/browser/cli.ts shot [--browser chromium|firefox] [--url URL] [--out FILE]",
 			'  bun .agents/browser/cli.ts eval "<js>" [--browser ...] [--url URL]',
-			"  bun .agents/browser/cli.ts scenario home|welcome|themes [--browser ...]",
+			"  bun .agents/browser/cli.ts scenario home|welcome|themes|dialog [--browser ...]",
 			`Ports: chromium ${PORTS.chromium}, firefox ${PORTS.firefox}. Build first with bun run build.`,
 		].join("\n"),
 	);

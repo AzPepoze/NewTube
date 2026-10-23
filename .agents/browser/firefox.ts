@@ -45,9 +45,27 @@ export async function launchFirefox(): Promise<() => Promise<void>> {
 
 /** Unwraps a WebDriver BiDi remote value into a plain JS value. */
 function unwrap(result: any): any {
-	const value = result?.result;
+	return unwrapValue(result?.result);
+}
+
+/**
+ * BiDi serialises objects as lists of `[key, remoteValue]` pairs and arrays as remote values,
+ * so nested values have to be walked instead of returned as they come.
+ */
+function unwrapValue(value: any): any {
 	if (!value || value.type === "undefined") return undefined;
 	if (value.type === "null") return null;
+	if (value.type === "array") return (value.value ?? []).map(unwrapValue);
+	if (value.type === "object") {
+		const result: Record<string, any> = {};
+		for (const [key, entry] of value.value ?? []) result[key] = unwrapValue(entry);
+		return result;
+	}
+	if (value.type === "map") {
+		const result: Record<string, any> = {};
+		for (const [key, entry] of value.value ?? []) result[unwrapValue(key)] = unwrapValue(entry);
+		return result;
+	}
 	return value.value;
 }
 
