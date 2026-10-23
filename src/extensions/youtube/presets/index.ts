@@ -167,9 +167,6 @@ export function mergeBundledPresets(savedThemes: unknown): Theme[] {
 	return [...themes, ...PRESET_THEMES.filter((preset) => !savedIds.has(preset.themeId))];
 }
 
-/** Bump when the bundled preset data changes, so existing installs refresh their saved copies. */
-export const BUNDLED_PRESETS_VERSION = 1;
-
 /**
  * Replaces the saved copies of bundled presets with the current data.
  * User themes and presets the user deleted stay untouched.

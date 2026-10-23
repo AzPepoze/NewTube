@@ -16,7 +16,7 @@ const NO_STORED_VALUE = new Set([
 ]);
 
 // Settings that only act when their parent toggle is on, so Normal YouTube can leave them as they are.
-const GATED_PREFIXES = ["Animation", "RemoveBlackBars", "VideoAmbient", "YouTubeBackground"];
+const GATED_PREFIXES = ["RemoveBlackBars", "VideoAmbient", "YouTubeBackground"];
 
 function categorySettingIds(): string[] {
 	return readdirSync(CATEGORIES_DIR)

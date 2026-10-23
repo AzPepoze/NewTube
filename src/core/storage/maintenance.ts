@@ -9,12 +9,7 @@ import {
 } from "@core/storage/manager";
 import { getStyleShiftAddOnItems } from "@extensions/youtube/addOnItems";
 import { defaultSetting } from "@extensions/youtube/defaultSettings";
-import {
-	BUNDLED_PRESETS_VERSION,
-	mergeBundledPresets,
-	PRESET_THEMES,
-	refreshBundledPresetList,
-} from "@extensions/youtube/presets";
+import { mergeBundledPresets, PRESET_THEMES, refreshBundledPresetList } from "@extensions/youtube/presets";
 import { getSettingsList } from "@settings/registry/items";
 import { logger } from "@shared/logger";
 
@@ -130,12 +125,10 @@ async function applyPresetSettings(settings: Record<string, string | number | bo
 }
 
 /**
- * Refreshes the saved bundled presets when their data changes between versions.
+ * Refreshes the saved bundled presets after an extension update.
  * If the user still has a bundled preset applied, its new values are applied too.
  */
-export async function refreshBundledPresets(): Promise<boolean> {
-	if ((await getRootValue("presetsVersion")) === BUNDLED_PRESETS_VERSION) return false;
-
+export async function refreshBundledPresets(): Promise<void> {
 	const savedThemes = await getRootValue("themes");
 	if (Array.isArray(savedThemes)) {
 		await saveRootValue("themes", refreshBundledPresetList(savedThemes), true);
@@ -155,9 +148,6 @@ export async function refreshBundledPresets(): Promise<boolean> {
 		await applyPresetSettings(defaultSetting.currentSettings);
 		await saveRootValue("activeTheme", "", true);
 	}
-
-	await saveRootValue("presetsVersion", BUNDLED_PRESETS_VERSION, true);
-	return true;
 }
 
 /**
@@ -172,10 +162,6 @@ export async function initializeRequiredStorageStructures(): Promise<void> {
 	}
 
 	if (await seedBundledPresets()) {
-		structuralChangesMade = true;
-	}
-
-	if (await refreshBundledPresets()) {
 		structuralChangesMade = true;
 	}
 

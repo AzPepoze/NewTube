@@ -72,3 +72,33 @@ test("refresh does not bring back a deleted preset", () => {
 
 	expect(refreshed.map((theme) => theme.themeId)).toEqual(["mine"]);
 });
+
+test("Normal YouTube disables every added animation independently of the global switch", () => {
+	const normal = PRESET_THEMES.find((preset) => preset.themeId === "preset-normal-youtube");
+	const animationIds = Object.keys(currentLookSettings).filter(
+		(key) => /Animation/.test(key) && typeof currentLookSettings[key] === "boolean",
+	);
+
+	expect(animationIds.length).toBeGreaterThan(1);
+	for (const id of animationIds) {
+		expect(normal.currentSettings[id]).toBe(false);
+	}
+});
+
+test("Normal YouTube restores readable player controls and native visibility behavior", () => {
+	const normal = PRESET_THEMES.find((preset) => preset.themeId === "preset-normal-youtube");
+
+	expect(normal.currentSettings.ControlPanelTextColor).toBe("#ffffffff");
+	expect(normal.currentSettings.EnableControlPanelAutohide).toBe(true);
+	expect(normal.currentSettings.ControlPanelBackgroundColor).toBe("#00000000");
+	expect(normal.currentSettings.EnableControlPanelRemoveGradient).toBe(false);
+	for (const id of [
+		"ControlPanelButtonGroupColor",
+		"ControlPanelButtonHoverColor",
+		"ControlPanelPopupBackgroundColor",
+	]) {
+		const color = normal.currentSettings[id];
+		expect(color.slice(1, 3)).toBe(color.slice(3, 5));
+		expect(color.slice(3, 5)).toBe(color.slice(5, 7));
+	}
+});

@@ -19,11 +19,11 @@ import { synchronizeAvailableFunctions } from "./runtime/controller";
 import { getDocumentBody, getDocumentHead, rearrangeSelector } from "./shared/domHelpers";
 import { disableExtension, enableExtension, toggleDeveloperMode } from "./shared/extensionHelpers";
 import { sleep } from "./shared/utilities";
+import { checkAndShowUpdateNotification } from "./shared/versionUpdate";
 import {
 	initializeDefaultAddOnItems,
 	performStorageGarbageCollection,
 	populateMissingDefaultSettings,
-	refreshBundledPresets,
 	seedBundledPresets,
 } from "./storage/maintenance";
 import { getRootValue, initializeStorageConnection, persistCachedDataToStorage } from "./storage/manager";
@@ -97,7 +97,7 @@ async function bootstrapExtension(): Promise<void> {
 	await updateStyleShiftItems();
 	await populateMissingDefaultSettings();
 	await seedBundledPresets();
-	await refreshBundledPresets();
+	await checkAndShowUpdateNotification();
 
 	registerSettingListener("EnableAppLightTheme", syncAllThemes, true);
 	registerSettingListener("EnableSettingsBackgroundBlur", syncAllThemes, true);
