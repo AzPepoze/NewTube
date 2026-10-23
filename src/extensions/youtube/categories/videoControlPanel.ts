@@ -1,14 +1,6 @@
 import { type Category } from "@settings/types/styleshiftTypes";
-import {
-	ytPlayerWatchMode,
-	ytTheaterModeContainer,
-	ytVideoContainerWatchMode,
-	ytdPlayerWatchMode,
-} from "../modules/youtube";
-import { setupDetachControlsAspectGuard } from "../features/video/detachControlsAspectGuard";
+import { ytVideoContainerWatchMode, ytdPlayerWatchMode } from "../modules/youtube";
 import { PLAYER_SELECTOR } from "./selectors";
-
-const DETACH_CONTROLS_RATIO_SELECTOR = "html.nt-detach-controls-16x9";
 
 export const videoControlPanelCategory: Category = {
 	category: { icon: "settings_input_component", label: "Video Control Panel" },
@@ -22,44 +14,38 @@ export const videoControlPanelCategory: Category = {
 			description:
 				"Moves the entire video control bar (play, volume, settings) from an overlay on top of the video to a dedicated space directly underneath it.",
 			value: true,
-			setupFunction: setupDetachControlsAspectGuard,
 			enableCss: `
-				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytdPlayerWatchMode},
-				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytPlayerWatchMode}
-				{
-					padding-bottom: var(--nt-player-below-space, 70px) !important;
-				}
-
-				/* Single column does not push the details down with the player padding. */
-				${DETACH_CONTROLS_RATIO_SELECTOR} ytd-watch-flexy[is-single-column] #below {
+				/* Reserve space outside the player; padding can stretch portrait videos. */
+				ytd-watch-flexy:not([theater]):not([is-single-column]):has(${ytVideoContainerWatchMode}) #below {
 					margin-top: calc(var(--nt-player-below-space, 70px) + var(--nt-video-bottom-space, 0px)) !important;
 				}
 
-				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytTheaterModeContainer} {
+				ytd-watch-flexy #full-bleed-container:has(${ytVideoContainerWatchMode}) {
 					margin-bottom: var(--nt-player-below-space, 70px) !important;
 				}
 
-				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} {
+				${ytdPlayerWatchMode},
+				${ytVideoContainerWatchMode} {
 					overflow: visible !important;
 				}
 
-				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} .ytp-chrome-bottom,
-				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} .ytp-gradient-bottom,
-				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} .ytp-tooltip {
+				${ytVideoContainerWatchMode} .ytp-chrome-bottom,
+				${ytVideoContainerWatchMode} .ytp-gradient-bottom,
+				${ytVideoContainerWatchMode} .ytp-tooltip {
 					overflow: visible !important;
 					transform: translateY(var(--nt-player-below-space, 70px)) !important;
 				}
 
-				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} .ytp-chrome-bottom {
+				${ytVideoContainerWatchMode} .ytp-chrome-bottom {
 					padding-top: 0px !important;
 				}
 
-				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} #ytp-caption-window-container,
-				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} .ytp-overlays-container {
+				${ytVideoContainerWatchMode} #ytp-caption-window-container,
+				${ytVideoContainerWatchMode} .ytp-overlays-container {
 					height: 100% !important;
 				}
 
-				${DETACH_CONTROLS_RATIO_SELECTOR} ${ytVideoContainerWatchMode} .caption-window.ytp-caption-window-bottom {
+				${ytVideoContainerWatchMode} .caption-window.ytp-caption-window-bottom {
 					margin-bottom: 0px !important;
 				}
 			`,
