@@ -80,14 +80,7 @@ export function migrateSettingUiRegistry(oldId: string, newId: string) {
 	}
 }
 
-interface SettingsWindow {
-	windowElement: HTMLElement;
-	contentElement: HTMLElement;
-	closeButton: HTMLElement;
-	overlayFrame: HTMLElement;
-	dragHandle: HTMLElement;
-	closeWindowHandler: () => Promise<void>;
-}
+type SettingsWindow = Awaited<ReturnType<typeof createStyleShiftWindow>>;
 
 /**
  * Gathers all settings data for UI rendering.
@@ -110,12 +103,17 @@ export async function createMainSettingsUi({
 	let settingsWindow: SettingsWindow | null = null;
 	let svelteInstance: any = null;
 	let svelteProps: ReturnType<typeof createSettingsProps<Record<string, any>>> | null = null;
-	let cooldown = false;
+	let state: "closed" | "opening" | "open" | "closing" = "closed";
+	let opening: Promise<void> | null = null;
+	let generation = 0;
+	const isClosing = () => state === "closing";
 
 	async function mountSettingsComponent(skipAnimation = false) {
 		if (!settingsWindow) return;
 
+		const currentWindow = settingsWindow;
 		const settingsData = await fetchSettingsData(getCategory);
+		if (state === "closing" || settingsWindow !== currentWindow) return;
 		svelteProps = createSettingsProps({
 			...settingsData,
 			showCategoryList,
@@ -130,69 +128,86 @@ export async function createMainSettingsUi({
 	}
 
 	const returnObject = {
-		createUi: async function (skipAnimation = false) {
-			if (settingsWindow) {
-				returnObject.recreateUi();
-				return;
-			}
-
-			settingsWindow = await createStyleShiftWindow({
-				skipAnimation,
-				title: "StyleShift Settings",
-				fullscreen: IS_IN_EXTENSION_SETTINGS_PAGE,
-				onWindowClosed: () => {
-					settingsWindow = null;
-				},
-			});
-
-			settingsWindow.windowElement.style.minWidth = "500px";
-			await mountSettingsComponent(skipAnimation);
-
-			if (onCreate) onCreate(settingsWindow);
+		createUi: function (skipAnimation = false): Promise<void> {
+			if (state === "opening") return opening!;
+			if (state === "closing") return Promise.resolve();
+			if (state === "open") return returnObject.recreateUi();
+			state = "opening";
+			const currentGeneration = ++generation;
+			opening = (async () => {
+				try {
+					settingsWindow = await createStyleShiftWindow({
+						skipAnimation,
+						title: "StyleShift Settings",
+						fullscreen: IS_IN_EXTENSION_SETTINGS_PAGE,
+						onWindowClosing: () => {
+							state = "closing";
+							void returnObject.removeUi();
+						},
+						onWindowClosed: async () => {
+							// Initialization may still be fetching settings when the titlebar closes.
+							if (svelteInstance) {
+								const instance = svelteInstance;
+								svelteInstance = null;
+								svelteProps = null;
+								await unmount(instance);
+							}
+						},
+					});
+					const currentWindow = settingsWindow;
+					currentWindow.windowElement.style.minWidth = "500px";
+					await mountSettingsComponent(skipAnimation);
+					if (settingsWindow !== currentWindow || isClosing()) return;
+					onCreate?.(currentWindow);
+					await currentWindow.opened;
+					if (settingsWindow === currentWindow && !isClosing()) state = "open";
+				} catch (error) {
+					if (generation === currentGeneration) {
+						await returnObject.removeUi(true);
+						state = "closed";
+					}
+					throw error;
+				}
+			})();
+			return opening;
 		},
 
-		removeUi: function (skipAnimation = false) {
+		removeUi: async function (skipAnimation = false) {
 			if (!settingsWindow) return;
-
-			if (svelteInstance) {
-				unmount(svelteInstance);
-				svelteInstance = null;
-				svelteProps = null;
+			state = "closing";
+			const currentWindow = settingsWindow;
+			try {
+				await currentWindow.closeWindowHandler(skipAnimation);
+			} finally {
+				if (settingsWindow === currentWindow) {
+					settingsWindow = null;
+					state = "closed";
+				}
 			}
-
-			if (skipAnimation) {
-				const overlayFrame = settingsWindow.overlayFrame;
-				requestAnimationFrame(() => overlayFrame.remove());
-			} else {
-				settingsWindow.closeWindowHandler();
-			}
-			settingsWindow = null;
 		},
 
 		recreateUi: async function () {
-			if (!settingsWindow) return;
+			if (!settingsWindow || state !== "open") return;
 
+			const currentWindow = settingsWindow;
 			await updateStyleShiftItems();
+			if (settingsWindow !== currentWindow || isClosing()) return;
 
 			if (!svelteProps) {
 				await mountSettingsComponent();
 				return;
 			}
-			svelteProps.update(await fetchSettingsData(getCategory));
+			const currentProps = svelteProps;
+			const data = await fetchSettingsData(getCategory);
+			if (svelteProps !== currentProps || isClosing()) return;
+			currentProps.update(data);
 			await tick();
 		},
 
 		toggle: async function () {
-			if (cooldown) return;
-			cooldown = true;
-
-			if (settingsWindow) {
-				returnObject.removeUi();
-			} else {
-				await returnObject.createUi();
-			}
-
-			setTimeout(() => (cooldown = false), 200);
+			if (state === "opening" || state === "closing") return;
+			if (state === "open") await returnObject.removeUi();
+			else await returnObject.createUi();
 		},
 
 		setGetCategory: function (newFunction: () => Category[] | Promise<Category[]> | null) {

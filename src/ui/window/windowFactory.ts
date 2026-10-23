@@ -1,4 +1,3 @@
-import { sleep } from "@/core/shared/utilities";
 import { initializeDeveloperEnvironment, isDevModulesLoaded } from "@core/runtime/controller";
 import { getDocumentBody, getDocumentHead } from "@core/shared/domHelpers";
 import { waitOneFrame } from "@core/shared/eventHelpers";
@@ -22,7 +21,8 @@ export async function createStyleShiftWindow({
 	fullscreen = false,
 	center = false,
 	blurToggle = false,
-	onWindowClosed = null as (() => void) | null,
+	onWindowClosed = null as (() => void | Promise<void>) | null,
+	onWindowClosing = null as (() => void) | null,
 }) {
 	if (await getRootValue("developerMode")) {
 		await initializeDeveloperEnvironment();
@@ -41,16 +41,28 @@ export async function createStyleShiftWindow({
 
 	let windowInstance: any;
 
-	const closeWindowHandler = async () => {
-		if (windowInstance) {
-			await triggerWindowHideAnimation(windowContainer);
-			await sleep(300);
-			unmount(windowInstance);
-		}
-		overlayFrame.remove();
-		if (onWindowClosed) {
-			onWindowClosed();
-		}
+	let closing = false;
+	let closePromise: Promise<void> | null = null;
+	const closeWindowHandler = (skipCloseAnimation = false): Promise<void> => {
+		if (closePromise) return closePromise;
+		closing = true;
+		closePromise = Promise.resolve().then(async () => {
+			try {
+				if (!skipCloseAnimation && !fullscreen) await triggerWindowHideAnimation(windowContainer);
+			} finally {
+				try {
+					await onWindowClosed?.();
+				} finally {
+					try {
+						if (windowInstance) await unmount(windowInstance);
+					} finally {
+						overlayFrame.remove();
+					}
+				}
+			}
+		});
+		onWindowClosing?.();
+		return closePromise;
 	};
 
 	windowInstance = settingsUi.renderWindow(
@@ -61,7 +73,7 @@ export async function createStyleShiftWindow({
 			fullscreen,
 			center,
 			blurToggle,
-			onClose: closeWindowHandler,
+			onClose: () => closeWindowHandler(),
 			children: (_target: HTMLElement) => {
 				return "";
 			},
@@ -70,20 +82,28 @@ export async function createStyleShiftWindow({
 	);
 
 	const windowContainer = mountPoint.querySelector(".styleshift-window-container") as HTMLElement;
-	await applyThemeToElement(windowContainer);
+	try {
+		await applyThemeToElement(windowContainer);
+	} catch (error) {
+		await closeWindowHandler(true);
+		throw error;
+	}
 	const contentElement = windowContainer.querySelector(".styleshift-window-content") as HTMLElement;
 	const topbar = windowContainer.querySelector(".styleshift-window-topbar") as HTMLElement | null;
 	const closeButton = windowContainer.querySelector(".control-btn.close") as HTMLElement | null;
 
-	requestAnimationFrame(async () => {
-		(await getDocumentBody()).appendChild(overlayFrame);
+	const opened = (async () => {
+		await waitOneFrame();
+		const body = await getDocumentBody();
+		if (closing) return;
+		body.appendChild(overlayFrame);
 		if (!skipAnimation && !fullscreen) {
-			triggerWindowShowAnimation(windowContainer);
+			await triggerWindowShowAnimation(windowContainer);
 		} else {
 			windowContainer.style.opacity = "1";
 			windowContainer.style.transform = "scale(1)";
 		}
-	});
+	})();
 
 	return {
 		overlayFrame,
@@ -93,6 +113,7 @@ export async function createStyleShiftWindow({
 		dragHandle: topbar,
 		closeButton,
 		closeWindowHandler,
+		opened,
 	};
 }
 
@@ -123,18 +144,37 @@ export let globalNotificationContainer: HTMLElement;
 
 export const DEFAULT_ANIMATION_DURATION_MS = 250;
 
+const animationRuns = new WeakMap<HTMLElement, symbol>();
+
 export async function playUiAnimation(target: HTMLElement, animationName: string): Promise<void> {
-	if (animationName.includes("Show")) {
+	const run = Symbol();
+	animationRuns.set(target, run);
+	const isShow = animationName.includes("Show");
+	if (isShow) {
 		target.style.opacity = "0";
 		target.style.transform = "scale(0.95)";
 		await waitOneFrame();
+		if (animationRuns.get(target) !== run) return;
 	}
 
-	target.style.animation = `styleshift-${animationName.toLowerCase()} ${DEFAULT_ANIMATION_DURATION_MS / 1000}s forwards`;
+	const name = `styleshift-${animationName.toLowerCase()}`;
+	await new Promise<void>((resolve) => {
+		const finish = () => {
+			clearTimeout(timeout);
+			target.removeEventListener("animationend", onEnd);
+			target.removeEventListener("animationcancel", onEnd);
+			resolve();
+		};
+		const onEnd = (event: AnimationEvent) => {
+			if (event.target === target && event.animationName === name) finish();
+		};
+		const timeout = setTimeout(finish, DEFAULT_ANIMATION_DURATION_MS + 100);
+		target.addEventListener("animationend", onEnd);
+		target.addEventListener("animationcancel", onEnd);
+		target.style.animation = `${name} ${DEFAULT_ANIMATION_DURATION_MS / 1000}s forwards`;
+	});
 
-	await sleep(DEFAULT_ANIMATION_DURATION_MS);
-
-	if (animationName.includes("Show")) {
+	if (isShow && animationRuns.get(target) === run) {
 		target.style.opacity = "1";
 		target.style.transform = "scale(1)";
 		target.style.animation = "";
