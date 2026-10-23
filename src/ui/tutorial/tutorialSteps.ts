@@ -28,9 +28,7 @@ export interface KeyHint {
 
 /** Small diagram shown under the step text instead of a paragraph. */
 export type TutorialVisual =
-	| { kind: "keys"; items: KeyHint[] }
-	| { kind: "flow"; items: string[] }
-	| { kind: "layout" };
+	{ kind: "keys"; items: KeyHint[] } | { kind: "flow"; items: string[] } | { kind: "layout" };
 
 export interface TutorialStep {
 	id: string;

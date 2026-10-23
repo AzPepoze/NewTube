@@ -15,8 +15,7 @@
 	bind:value
 	{placeholder}
 	oninput={() => onInput?.(value)}
-	onblur={() => onBlur?.(value)}
-></textarea>
+	onblur={() => onBlur?.(value)}></textarea>
 
 <style lang="scss">
 	.styleshift-text-editor {

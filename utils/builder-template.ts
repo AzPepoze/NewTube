@@ -96,15 +96,13 @@ function functionInfo(fn: ExportedFunction, sourceFile: ts.SourceFile): string {
 }
 
 function metadataFor(sourceFile: ts.SourceFile, checker: ts.TypeChecker): MetadataEntry[] {
-	return exportedFunctions(sourceFile).map(
-		(fn): MetadataEntry => ({
-			label: fn.name.text,
-			type: "function",
-			file: path.basename(sourceFile.fileName),
-			detail: functionDetail(fn, sourceFile, checker),
-			info: functionInfo(fn, sourceFile),
-		}),
-	);
+	return exportedFunctions(sourceFile).map((fn): MetadataEntry => ({
+		label: fn.name.text,
+		type: "function",
+		file: path.basename(sourceFile.fileName),
+		detail: functionDetail(fn, sourceFile, checker),
+		info: functionInfo(fn, sourceFile),
+	}));
 }
 
 export function extractMetadata(filePaths: string[]): MetadataEntry[] {

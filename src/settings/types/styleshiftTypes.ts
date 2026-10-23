@@ -326,11 +326,7 @@ type PersistedExecutableSettingField =
 	| "uiFunction";
 
 type PersistedSettingReplacedField<T extends SettingKind> =
-	| PersistedExecutableSettingField
-	| "options"
-	| "require"
-	| "quickCustomize"
-	| (T extends "custom" ? "value" : never);
+	PersistedExecutableSettingField | "options" | "require" | "quickCustomize" | (T extends "custom" ? "value" : never);
 
 type PersistedSettingBase<T extends SettingKind> = Omit<SettingByType<T>, PersistedSettingReplacedField<T>>;
 

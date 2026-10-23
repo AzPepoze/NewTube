@@ -7,10 +7,13 @@
 	import { setPickingMode } from "../pickingMode";
 	import { generateSelectors } from "../selectorUtils";
 
-	let { onSelect, onClose } = $props<{
+	let {
+		onSelect,
+		onClose,
+	}: {
 		onSelect: (selector: string) => void;
 		onClose: () => void;
-	}>();
+	} = $props();
 
 	let picking = $state(true);
 	let hoveredElement = $state<HTMLElement | null>(null);
