@@ -7,7 +7,7 @@ export interface WindowRect {
 	height: number;
 }
 
-/** Where the shared split sits, as a fraction of the viewport (0.5 is the centre). */
+/** Split position as a viewport fraction; 0.5 is the center. */
 export interface SnapSplit {
 	x: number;
 	y: number;
@@ -15,7 +15,7 @@ export interface SnapSplit {
 
 export type SplitAxis = "x" | "y";
 
-/** A visible split line. `start` and `end` are the span along the line, in px. */
+/** Split line with endpoints in pixels. */
 export interface SplitDivider {
 	axis: SplitAxis;
 	position: number;

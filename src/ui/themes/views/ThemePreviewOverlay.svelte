@@ -148,7 +148,6 @@
 		}}
 	>
 		<div class="preview-modal-wrapper" transition:scale={{ duration: 250, start: 0.96 }}>
-			<!-- Top Header Bar with Theme Title and Capsule Slider -->
 			<div class="preview-header-bar">
 				<div class="header-left">
 					<h2 class="theme-title">{theme.themeName || "Untitled Theme"}</h2>
@@ -173,7 +172,6 @@
 				</div>
 			</div>
 
-			<!-- Content Container with border-radius and border -->
 			<div class="preview-content-card">
 				{#if isLoading}
 					<div class="stage-loading">
@@ -190,7 +188,6 @@
 				></iframe>
 			</div>
 
-			<!-- Floating Footer with shared Button components -->
 			<div class="floating-footer-bar">
 				<div class="footer-actions">
 					<Button

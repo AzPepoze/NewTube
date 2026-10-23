@@ -63,8 +63,7 @@
 				class="prompt-input multiline"
 				{placeholder}
 				bind:value={inputValue}
-				onkeydown={handleKeyDown}
-			></textarea>
+				onkeydown={handleKeyDown}></textarea>
 		{:else}
 			<input
 				bind:this={inputEl}

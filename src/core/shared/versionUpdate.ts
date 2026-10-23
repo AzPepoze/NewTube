@@ -1,5 +1,6 @@
 import { createNotification } from "./notifications";
 import { getRootValue, saveRootValue } from "@core/storage/manager";
+import { refreshBundledPresets } from "@core/storage/maintenance";
 import { STYLESHIFT_VERSION } from "@core/theme/config";
 
 /**
@@ -18,7 +19,7 @@ export async function showExtensionUpdateNotification(version?: string): Promise
 
 /**
  * Checks if the extension was updated since last launch.
- * Displays update notification if a version mismatch is detected.
+ * Refreshes bundled presets before settings initialize, then records the version and notifies.
  */
 export async function checkAndShowUpdateNotification(): Promise<void> {
 	const currentVersion = STYLESHIFT_VERSION || chrome.runtime.getManifest()?.version || "";
@@ -26,12 +27,12 @@ export async function checkAndShowUpdateNotification(): Promise<void> {
 
 	const lastSeenVersion = await getRootValue("lastSeenVersion");
 
+	if (lastSeenVersion === currentVersion) return;
+
+	await refreshBundledPresets();
+	await saveRootValue("lastSeenVersion", currentVersion);
+
 	if (lastSeenVersion) {
-		if (lastSeenVersion !== currentVersion) {
-			await showExtensionUpdateNotification(currentVersion);
-			await saveRootValue("lastSeenVersion", currentVersion);
-		}
-	} else {
-		await saveRootValue("lastSeenVersion", currentVersion);
+		await showExtensionUpdateNotification(currentVersion);
 	}
 }

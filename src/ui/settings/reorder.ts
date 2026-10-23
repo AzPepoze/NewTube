@@ -39,7 +39,7 @@ function isSettingDropZone(info: DropInfo) {
 	return info.dataType === "setting" || info.dataType === "categoryList";
 }
 
-/** The stored category for a drop target. Sidebar and list copies are not the stored objects, so they are looked up by label. */
+/** Resolve the stored category by label because sidebar and list entries are copies. */
 function targetCategoryOf(info: DropInfo): Category | null {
 	if (info.dataType === "setting") return getSettingCategory(info.data as Setting);
 	return findAddOnCategory(info.data as Category) ?? null;

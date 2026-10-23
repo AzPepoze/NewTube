@@ -31,7 +31,6 @@
 		}
 	});
 
-	// Derived values that fallback to defaults if setting properties are missing
 	const name = $derived(setting.name);
 	const description = $derived(setting.description);
 	const min = $derived(setting.min ?? 0);
@@ -39,7 +38,7 @@
 	const step = $derived(setting.step ?? 1);
 	const unit = $derived(setting.unit ?? "");
 
-	// 0 to 1 position of the value, used to place the fill and the bubble.
+	// Normalized position for the fill and value bubble.
 	function getRatio(current: number, low: number, high: number) {
 		if (high === low) return 0;
 		return Math.min(1, Math.max(0, ((Number(current) || 0) - low) / (high - low)));

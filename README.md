@@ -89,8 +89,12 @@
 
 ## Prerequisites
 
-- [bun](https://bun.sh/)
+- [Bun](https://bun.sh/) 1.4.4 (pinned in `.bun-version` and `package.json`)
 - [Firefox](https://www.firefox.com) (for web-ext testing)
+
+TypeScript stays pinned to 6.0.3 because template generation uses its compiler API, and
+Svelte Check and typescript-eslint do not support TypeScript 7 yet. TypeScript 7.0 does not provide
+the compiler API. Upgrade TypeScript when these tools support the new compiler together.
 
 ## Build from Source
 
@@ -104,7 +108,7 @@
 2. **Install Dependencies:**
 
    ```bash
-   bun install
+   bun install --frozen-lockfile
    ```
 
 3. **Build:**

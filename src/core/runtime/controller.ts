@@ -123,7 +123,6 @@ export async function executeScriptString({
 		}
 
 		logger.debug("runtime", "Script passed safety check, applying shorthand replacements");
-		// Shorthand replacements
 		for (const [scope, methods] of Object.entries(activeStyleShiftFunctions)) {
 			for (const methodName of methods) {
 				const pattern = new RegExp(`\\b${methodName}\\b`, "g");

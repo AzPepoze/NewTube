@@ -30,11 +30,12 @@ export function closeThemeManager(): void {
 }
 
 /**
- * Opens the modern Theme Collection window.
+ * Opens the modern Theme Collection window. `onClose` runs when it closes.
  */
-export async function showThemeManager(tab: "installed" | "store" = "installed") {
+export async function showThemeManager(tab: "installed" | "store" = "installed", onClose?: () => void) {
 	if (activeThemeWindowInstance) {
 		activeThemeWindowInstance.setTab?.(tab);
+		onClose?.();
 		return;
 	}
 
@@ -45,6 +46,7 @@ export async function showThemeManager(tab: "installed" | "store" = "installed")
 		center: true,
 		onWindowClosed: () => {
 			activeThemeWindowInstance = null;
+			onClose?.();
 		},
 	});
 
@@ -53,7 +55,6 @@ export async function showThemeManager(tab: "installed" | "store" = "installed")
 	};
 	activeThemeWindowInstance = activeState;
 
-	// Style adjustments for the container to work better with grid
 	themeWindow.contentElement.style.padding = "20px";
 	themeWindow.contentElement.style.overflowY = "auto";
 
@@ -79,7 +80,6 @@ export async function startLivePreviewMode(theme: Theme, isStoreItem = false, cl
 	const targetSettings = theme.currentSettings || (theme as any).settings || {};
 	const themeName = theme.themeName || "Preview Theme";
 
-	// Close existing window if active
 	if (closeCurrentWindow) {
 		closeCurrentWindow();
 	} else if (activeThemeWindowInstance?.windowInstance?.closeWindowHandler) {
@@ -89,7 +89,6 @@ export async function startLivePreviewMode(theme: Theme, isStoreItem = false, cl
 	// Apply settings live without persisting to storage
 	await importPresetToSettings(targetSettings, false, themeName);
 
-	// Mount top-level floating live preview bar directly to body
 	const mountPoint = document.createElement("div");
 	mountPoint.className = "styleshift-live-preview-bar-mount";
 	document.body.appendChild(mountPoint);
@@ -105,7 +104,6 @@ export async function startLivePreviewMode(theme: Theme, isStoreItem = false, cl
 		cleanup();
 		// Restore previous settings without saving
 		await importPresetToSettings(backupSettings, false, originalActiveTheme || "Previous Settings");
-		// Re-open theme manager window
 		await showThemeManager();
 	};
 

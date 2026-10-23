@@ -42,7 +42,6 @@ export function splitDetail(detail: string): SplitDetail {
 	return { params: detail.slice(0, paramsEnd + 1), returns: detail.slice(paramsEnd + ") => ".length) };
 }
 
-/** Index of the ")" that closes the "(" at position 0, or -1. */
 function findParamsEnd(detail: string): number {
 	if (!detail.startsWith("(")) return -1;
 	let depth = 0;
@@ -56,7 +55,6 @@ function findParamsEnd(detail: string): number {
 	return -1;
 }
 
-/** Formats an entry the way the generated .d.ts declares it. */
 export function signatureFor(entry: ApiFunctionDoc): string {
 	const { params, returns } = splitDetail(entry.detail);
 	return `function ${entry.label}${params}: ${returns};`;
@@ -67,7 +65,6 @@ export interface SplitSignature {
 	rest: string;
 }
 
-/** Splits a declaration into highlightable parts. */
 export function splitSignature(signature: string): SplitSignature {
 	const match = /^function\s+([A-Za-z_$][\w$]*)\s*([\s\S]*)$/.exec(signature);
 	if (!match) return { name: "", rest: signature };
@@ -87,7 +84,6 @@ export function splitTagBody(body: string): SplitTagBody {
 	return { type: trimmed.slice(0, end + 1), text: trimmed.slice(end + 1).trim() };
 }
 
-/** Index of the brace that closes the one at position 0, or -1. */
 function findClosingBrace(text: string): number {
 	let depth = 0;
 	for (let i = 0; i < text.length; i++) {
@@ -179,7 +175,6 @@ const FILE_LABELS: Record<string, string> = {
 	unknown: "Other",
 };
 
-/** Human topic name for a metadata source file. */
 export function fileLabelFor(file: string): string {
 	const known = FILE_LABELS[file];
 	if (known) return known;
@@ -189,7 +184,6 @@ export function fileLabelFor(file: string): string {
 		.replace(/^./, (first) => first.toUpperCase());
 }
 
-/** Groups entries by source file, keeping first-seen file order. */
 export function groupFunctionsByFile(entries: ApiFunctionDoc[]): ApiFileGroup[] {
 	const groups = new Map<string, ApiFunctionDoc[]>();
 	for (const entry of entries) {
@@ -237,7 +231,6 @@ const KIND_SUMMARIES: Record<string, string> = {
 	selectorInput: "A text box for a CSS selector that targets page elements.",
 };
 
-/** Plain-language summary for a setting kind, or an empty string when none is written. */
 export function kindSummaryFor(type: string): string {
 	return KIND_SUMMARIES[type] ?? "";
 }
@@ -259,7 +252,7 @@ export function groupKindsByCategory<T extends { type: string }>(kinds: readonly
 		.sort((a, b) => order.indexOf(a.category) - order.indexOf(b.category));
 }
 
-/** Case-insensitive match across label, signature, docs, and file. Blank query returns everything. */
+/** Search names, signatures, docs, and files without case sensitivity. An empty query matches all entries. */
 export function filterFunctions(entries: ApiFunctionDoc[], query: string): ApiFunctionDoc[] {
 	const q = query.trim().toLowerCase();
 	if (!q) return [...entries];
@@ -268,7 +261,6 @@ export function filterFunctions(entries: ApiFunctionDoc[], query: string): ApiFu
 	);
 }
 
-/** Splits JSDoc text into summary, @example blocks, and other @tags. */
 export function parseDocTags(info?: string): ParsedApiDoc {
 	const parsed: ParsedApiDoc = { summary: "", examples: [], tags: [] };
 	if (!info || !info.trim()) return parsed;

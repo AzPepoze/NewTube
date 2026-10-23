@@ -54,7 +54,7 @@ export function removeConfigUi(skipAnimation = false) {
 		const targetWindow = configWindow;
 		const targetInstance = svelteInstance;
 
-		// Clear state before acting to prevent recursion
+		// Clear state first to prevent recursive calls.
 		configWindow = null;
 		svelteInstance = null;
 		currentContentFunction = null;

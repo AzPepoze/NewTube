@@ -13,12 +13,9 @@
 		tryLabel = "Try this code",
 		children,
 	}: {
-		/** Raw text copied to the clipboard. */
 		code: string;
 		tone?: "default" | "accent";
-		/** Set to highlight the code with a read-only editor. */
 		language?: string;
-		/** Set to show the "Try" button in a header bar. */
 		onTry?: () => void;
 		tryLabel?: string;
 		children?: Snippet;

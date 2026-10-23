@@ -11,9 +11,6 @@ import type { Option, Setting, SettingByType, SettingRequirements } from "../typ
 type ScriptName = "setupFunction" | "updateFunction" | "enableFunction" | "disableFunction" | "uiFunction";
 type ScriptableSetting = (Setting | Option) & { id?: string };
 
-/**
- * Helper to execute a setting script if it exists.
- */
 function tryExecute(setting: ScriptableSetting | undefined, scriptName: ScriptName) {
 	if (setting && setting[scriptName]) {
 		logger.debug("settings", `Executing ${scriptName} for ${setting.id}`);
@@ -21,26 +18,18 @@ function tryExecute(setting: ScriptableSetting | undefined, scriptName: ScriptNa
 	}
 }
 
-/**
- * Helper to fetch the latest setting object from registry.
- */
 function getLatestSetting<T extends Setting>(setting: T): T {
 	if (!setting?.id) return setting;
 	return (getSettingById(setting.id) as T | undefined) || setting;
 }
 
-/**
- * Helper to initialize a setting's stylesheet and setup script.
- */
+/** Create the stylesheet and run setup before attaching update behavior. */
 function initBase(setting: Setting, needsStylesheet = true) {
 	const stylesheet = needsStylesheet ? createStylesheet(setting.id) : null;
 	tryExecute(setting, "setupFunction");
 	return stylesheet;
 }
 
-/**
- * Registry of initialization logic for different setting types.
- */
 export const SETTING_TYPE_BEHAVIORS = {
 	["checkbox"]: async function (setting: SettingByType<"checkbox">) {
 		const stylesheet = initBase(setting)!;
@@ -106,7 +95,6 @@ export const SETTING_TYPE_BEHAVIORS = {
 			const value = await getFromStorage(currentSetting.id);
 			if (activeSettingsState[currentSetting.id] === value) return;
 
-			// Disable the previous option
 			const previousValue = activeSettingsState[currentSetting.id];
 			const options = Array.isArray(currentSetting.options) ? currentSetting.options : [];
 			const previousOption = options.find((opt) => opt.value === previousValue);
@@ -115,7 +103,6 @@ export const SETTING_TYPE_BEHAVIORS = {
 			activeSettingsState[currentSetting.id] = value;
 			const selectedOption = options.find((opt) => opt.value === value);
 
-			// Enable the new option
 			tryExecute(selectedOption, "enableFunction");
 
 			stylesheet.textContent = (currentSetting.constantCss || "") + (selectedOption?.enableCss || "");

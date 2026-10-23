@@ -8,16 +8,27 @@
 		aspect-ratio: 1;
 		display: grid;
 		place-items: center;
-		border-radius: 50%;
-		background: radial-gradient(circle, var(--theme-0-30), transparent 68%);
+		position: relative;
+		isolation: isolate;
 		animation: logoFloat 4s ease-in-out infinite;
 	}
 
+	.logo-halo::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		border-radius: 50%;
+		background: radial-gradient(circle, rgba(255, 255, 255, 0.35), transparent 68%);
+		pointer-events: none;
+	}
+
 	img {
+		position: relative;
 		width: 95%;
 		height: 95%;
 		object-fit: contain;
-		filter: drop-shadow(0 18px 30px var(--theme-0-30));
+		filter: drop-shadow(0 12px 24px rgba(255, 255, 255, 0.35));
 	}
 
 	@keyframes logoFloat {

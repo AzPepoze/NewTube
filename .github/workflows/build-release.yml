@@ -12,28 +12,29 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
 
       - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@v2.2.0
         with:
-          bun-version: latest
+          bun-version-file: .bun-version
 
-      - name: Update Version in Manifest
+      - name: Validate Release Version
         run: |
-          RAW_VERSION=${GITHUB_REF_NAME#v}
-          VERSION=${RAW_VERSION%%-*}
-          echo "Updating manifest.json to version $VERSION"
-          jq ".version = \"$VERSION\"" src/entrypoints/manifest.json > temp.json && mv temp.json src/entrypoints/manifest.json
+          VERSION=$(jq -r '.version' extension.config.json)
+          if [ "$GITHUB_REF_NAME" != "v$VERSION" ]; then
+            echo "Release tag $GITHUB_REF_NAME must match v$VERSION from extension.config.json"
+            exit 1
+          fi
 
       - name: Install Dependencies
-        run: bun install
+        run: bun install --frozen-lockfile
 
       - name: Build and Pack Extension
         run: bun run release
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3.0.3
         with:
           files: |
             out/release/*.zip

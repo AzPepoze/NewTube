@@ -56,7 +56,6 @@ function isMainVideo(video: HTMLVideoElement): boolean {
 	// On watch pages, the main video must be in the primary section
 	if (window.location.pathname === "/watch" && !video.closest("#primary")) return false;
 
-	// Ensure the video is actually playable/loaded
 	if (isNaN(video.duration) && video.readyState < 1) return false;
 
 	return typeof video.requestPictureInPicture === "function";
@@ -187,7 +186,6 @@ export function getYoutubeVideoId() {
 	const videoId = url.searchParams.get("v");
 	if (videoId) return videoId;
 
-	// Check for shorts
 	if (url.pathname.startsWith("/shorts/")) {
 		const parts = url.pathname.split("/");
 		return parts[2] || null;
@@ -241,7 +239,6 @@ export function onYoutubeSmallMode(callback: (isSmallMode: boolean) => void) {
 	};
 }
 
-// Global listener for YouTube navigation
 window.addEventListener("yt-navigate-finish", () => {
 	const videoId = getYoutubeVideoId();
 	logger.info("youtube", `Navigation finished: ${videoId || "Not a video page"}`);
@@ -302,5 +299,4 @@ async function setupPlayerObserver() {
 	checkPlayerState();
 }
 
-// Initial setup
 setupPlayerObserver();

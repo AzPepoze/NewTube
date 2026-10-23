@@ -103,7 +103,6 @@ export async function updateStyleShiftItems() {
 	autoAddHightlight(getAllStyleShiftItems());
 	getSettingsList(true);
 
-	// Default
 	for (const item of styleshiftItems.Default) {
 		if ((item as any).category) {
 			const thisCategory = item as Category;
@@ -118,7 +117,6 @@ export async function updateStyleShiftItems() {
 		}
 	}
 
-	// AddOn
 	for (const thisCategory of styleshiftItems.AddOn) {
 		thisCategory.editable = true;
 		for (const thisSetting of thisCategory.settings) {
@@ -150,8 +148,6 @@ export function getSettingsList(rebuild = false): { [id: string]: Setting } {
 export function getSettingById(id: string): Setting | undefined {
 	return getSettingsList()[id];
 }
-
-//--------------------------------------------------
 
 export function findAddOnCategory(category: Category): Category | undefined {
 	const label = getCategoryLabel(category);
@@ -221,8 +217,6 @@ export async function removeSetting(thisSetting: Setting): Promise<boolean> {
 	return wasRemoved;
 }
 
-//--------------------------------------------------
-
 export async function addCategory(categoryName: string) {
 	let thisCategory: Category = {
 		category: categoryName,
@@ -251,7 +245,6 @@ export async function addCategory(categoryName: string) {
 
 	getSettingsList(true);
 
-	// Track the new category ID for UI highlighting
 	const categoryId = getCategoryLabel(thisCategory);
 	await saveToStorage("lastAddedCategory", categoryId);
 
@@ -274,5 +267,3 @@ export async function removeCategory(thisCategory: Category): Promise<boolean> {
 	await saveAddOnItemsAndRefreshExtensionState(addOnItems);
 	return true;
 }
-
-//-------------------------------------------------

@@ -51,7 +51,7 @@ export const render = async () => {
 		return;
 	}
 
-	// Schedule next frame (Priority: rVFC > 30fps Fallback)
+	// Prefer video frame callbacks; otherwise update at 30 fps.
 	if ("requestVideoFrameCallback" in video) {
 		state.renderMethod = "videoFrameCallback";
 		state.videoFrameCallbackId = video.requestVideoFrameCallback(() => {
@@ -66,7 +66,6 @@ export const render = async () => {
 		}, 33) as any;
 	}
 
-	// Exit if hidden or fullscreen or small mode
 	const shouldShow = shouldFeatureShow(settings.disableFullscreen, settings.stick);
 	if (!shouldShow) {
 		if (state.isFadedIn) fadeOut();
@@ -75,7 +74,6 @@ export const render = async () => {
 
 	if (!state.isFadedIn) fadeIn();
 
-	// Performance Tracking
 	const now = performance.now();
 	if (state.lastTime === 0) state.lastTime = now;
 	const frameTime = now - state.lastTime;
@@ -85,30 +83,27 @@ export const render = async () => {
 	if (settings.checkLag) handleLagMonitoring(frameTime, disableVideoAmbient);
 	updateDebugInfo(video, frameTime);
 
-	// Processing logic
 	if (video.readyState < 2 || video.videoWidth === 0) return;
 
 	if (state.frameCount % 120 === 0) {
 		checkStaticVDO().then((res) => (state.isStatic = res));
 	}
 
-	// Skip if capture is busy (rare)
 	if (state.isCapturing) {
 		state.droppedFrames++;
 		return;
 	}
 
-	// Skip processing if static or paused
 	const isPaused = video.paused || video.ended;
 	if ((state.isStatic || isPaused) && state.frameCount % 60 !== 0) return;
 
-	// FIRE AND FORGET: Move async work out of the rVFC callback path
+	// Keep async capture outside the video frame callback.
 	(async () => {
 		if (!state.enabled) return;
 		state.isCapturing = true;
 		const processStart = performance.now();
 		try {
-			// Fast capture without resizing (Browser can usually do this zero-copy)
+			// Capture at the source size to avoid resizing.
 			const bitmap = await createImageBitmap(video);
 			state.lastProcessTime = performance.now() - processStart;
 			state.isCapturing = false;

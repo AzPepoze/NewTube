@@ -91,7 +91,6 @@
 		if (onClose) onClose();
 	}
 
-	// Close on click outside
 	$effect(() => {
 		if (isOpen) {
 			const handleClickOutside = (event: MouseEvent) => {
@@ -111,7 +110,6 @@
 		}
 	});
 
-	// Handle menu positioning and clipping
 	const MAX_POPOVER_WIDTH = 240;
 	const MENU_GAP = 8;
 	let isMenuAbove = $state(false);
@@ -147,8 +145,7 @@
 		const triggerWidth = triggerEl.offsetWidth;
 		menuWidth = justMenu ? Math.min(triggerWidth, MAX_POPOVER_WIDTH) : triggerWidth;
 
-		// Since we're teleporting to document.body, coordinates are relative to the viewport
-		// plus current scroll position
+		// The menu is mounted on document.body, so include the page scroll offset.
 		const scrollX = window.scrollX;
 		const scrollY = window.scrollY;
 

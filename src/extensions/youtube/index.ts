@@ -3,7 +3,6 @@ import { validateOrigin } from "@core/theme/manager";
 import { enableSettingsButton } from "./features/newtubeSettingsButton";
 import { initControlPanelSync } from "./features/controlPanelSync";
 import { checkAndShowWelcome } from "./welcome";
-import { checkAndShowUpdateNotification } from "@core/shared/versionUpdate";
 
 /**
  * Checks if the extension logic should run on this URL.
@@ -11,9 +10,7 @@ import { checkAndShowUpdateNotification } from "@core/shared/versionUpdate";
  */
 export function shouldEnableExtension(): boolean {
 	const origin = window.location.origin;
-	// Don't run extension logic on the store site
 	if (validateOrigin(origin)) {
-		// Still init website integration so the store communicates properly
 		initWebsiteIntegration();
 		return false;
 	}
@@ -28,7 +25,6 @@ export async function appBootstrap() {
 	enableSettingsButton();
 	initControlPanelSync();
 	await checkAndShowWelcome();
-	await checkAndShowUpdateNotification();
 	await checkAndUpdateTheme();
 }
 
@@ -36,5 +32,5 @@ export async function appBootstrap() {
  * Provides optional external storage keys to the StyleShift storage manager.
  */
 export function getOptionalExternalStorageKeys(): string[] {
-	return ["themes", "welcomeShown", "activeTheme", "lastSeenVersion"];
+	return ["themes", "welcomeShown", "activeTheme", "lastSeenVersion", "presetsSeeded"];
 }

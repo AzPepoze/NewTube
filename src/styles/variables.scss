@@ -1,5 +1,5 @@
 .styleshift-main {
-	/* --- Theme Core --- */
+	/* Theme Core */
 	--theme-0: #7f5db7;
 	--theme-0-10: rgba(127, 93, 183, 0.1);
 	--theme-0-12: rgba(127, 93, 183, 0.12);
@@ -30,7 +30,7 @@
 	--theme-warning-15: rgba(255, 187, 51, 0.15);
 	--theme-error-30: rgba(255, 68, 68, 0.3);
 
-	/* --- Default Dark Theme --- */
+	/* Default Dark Theme */
 	--bg-main: rgba(43, 43, 43, 1);
 	--bg-welcome: #111111;
 	--bg-surface: rgba(255, 255, 255, 0.03);
@@ -42,7 +42,7 @@
 	--shadow-color: rgba(0, 0, 0, 0.5);
 	--icon-filter: brightness(0) invert(1);
 
-	/* --- Content / Foreground Opacity Scale --- */
+	/* Content / Foreground Opacity Scale */
 	--fg-opacity-02: rgba(255, 255, 255, 0.02);
 	--fg-opacity-03: rgba(255, 255, 255, 0.03);
 	--fg-opacity-05: rgba(255, 255, 255, 0.05);
@@ -66,7 +66,7 @@
 	--fg-opacity-95: rgba(255, 255, 255, 0.95);
 	--fg-opacity-100: rgba(255, 255, 255, 1);
 
-	/* --- Background Overlay / Shadow Scale --- */
+	/* Background Overlay / Shadow Scale */
 	--bg-overlay-10: rgba(0, 0, 0, 0.1);
 	--bg-overlay-20: rgba(0, 0, 0, 0.2);
 	--bg-overlay-30: rgba(0, 0, 0, 0.3);
@@ -76,7 +76,7 @@
 	--bg-overlay-80: rgba(0, 0, 0, 0.8);
 	--bg-overlay-90: rgba(0, 0, 0, 0.9);
 
-	/* --- Semantic Aliases (Explain themselves) --- */
+	/* Semantic Aliases */
 	--text-primary: var(--fg-opacity-100);
 	--text-secondary: var(--fg-opacity-80);
 	--text-muted: var(--fg-opacity-50);
@@ -117,13 +117,13 @@
 	--checkbox-bg: #979797;
 	--slider-track: #969696;
 
-	/* --- Component Defaults (overridden per-instance) --- */
+	/* Component Defaults (overridden per-instance) */
 	--btn-color: #ffffff;
 	--theme-color: var(--theme-0);
 	--direction: right;
 	--theme-card-min-width: 240px;
 
-	/* --- Notifications & Callouts --- */
+	/* Notifications & Callouts */
 	--noti-success: #4caf50;
 	--noti-warning: #ff9800;
 	--noti-error: #f44336;
@@ -135,12 +135,12 @@
 	--callout-error-bg: rgba(255, 158, 158, 0.1);
 	--callout-error-border: rgba(255, 158, 158, 0.45);
 
-	/* --- Dynamic --- */
+	/* Dynamic */
 	--window-bg: var(--bg-main);
 	--window-blur: none;
 	--window-saturate: saturate(100%);
 
-	/* --- Code syntax (dracula palette) --- */
+	/* Code syntax (dracula palette) */
 	--code-keyword: #ff79c6;
 	--code-type: #8be9fd;
 	--code-string: #f1fa8c;
@@ -219,7 +219,7 @@
 
 	--drag-top-bg: rgba(0, 0, 0, 0.05);
 
-	/* --- Refined Light Theme Accents --- */
+	/* Light theme accents */
 	--theme-1: #d81b60; /* Darker pink for better visibility on light background */
 
 	--category-title-bg: #ffffff;

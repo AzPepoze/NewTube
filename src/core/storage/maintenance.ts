@@ -5,9 +5,11 @@ import {
 	persistCachedDataToStorage,
 	saveRootValue,
 	saveToStorage,
+	saveUserSetting,
 } from "@core/storage/manager";
 import { getStyleShiftAddOnItems } from "@extensions/youtube/addOnItems";
 import { defaultSetting } from "@extensions/youtube/defaultSettings";
+import { mergeBundledPresets, PRESET_THEMES, refreshBundledPresetList } from "@extensions/youtube/presets";
 import { getSettingsList } from "@settings/registry/items";
 import { logger } from "@shared/logger";
 
@@ -82,7 +84,6 @@ export async function performStorageGarbageCollection(): Promise<void> {
 	const activeSettingIds = Object.keys(getSettingsList());
 	const userSettings = cachedStorageData["currentSettings"];
 
-	// Remove obsolete user settings
 	for (const key of Object.keys(userSettings)) {
 		if (!activeSettingIds.includes(key) || EXTERNAL_STORAGE_KEYS.includes(key)) {
 			logger.info(
@@ -94,7 +95,6 @@ export async function performStorageGarbageCollection(): Promise<void> {
 		}
 	}
 
-	// Remove obsolete root keys
 	for (const key of Object.keys(cachedStorageData)) {
 		if (key !== "currentSettings" && !EXTERNAL_STORAGE_KEYS.includes(key)) {
 			logger.info("maintenance", "Removing obsolete root key:", key);
@@ -104,6 +104,50 @@ export async function performStorageGarbageCollection(): Promise<void> {
 
 	await persistCachedDataToStorage();
 	logger.info("maintenance", "Storage garbage collection complete");
+}
+
+/**
+ * Adds the bundled presets once, so a preset the user deletes does not come back.
+ */
+export async function seedBundledPresets(): Promise<boolean> {
+	if (await getRootValue("presetsSeeded")) return false;
+
+	await saveRootValue("themes", mergeBundledPresets(await getRootValue("themes")), true);
+	await saveRootValue("presetsSeeded", true, true);
+	return true;
+}
+
+/** Writes a preset's settings into the live settings without touching the UI. */
+async function applyPresetSettings(settings: Record<string, string | number | boolean>): Promise<void> {
+	for (const [key, value] of Object.entries(settings)) {
+		await saveUserSetting(key, value, true);
+	}
+}
+
+/**
+ * Refreshes the saved bundled presets after an extension update.
+ * If the user still has a bundled preset applied, its new values are applied too.
+ */
+export async function refreshBundledPresets(): Promise<void> {
+	const savedThemes = await getRootValue("themes");
+	if (Array.isArray(savedThemes)) {
+		await saveRootValue("themes", refreshBundledPresetList(savedThemes), true);
+	}
+
+	const activeTheme = await getRootValue("activeTheme");
+	const activePreset = PRESET_THEMES.find(
+		(preset) => preset.themeId === activeTheme || preset.themeName === activeTheme,
+	);
+
+	if (activePreset?.currentSettings) {
+		// Still on a bundled preset, so the refreshed look replaces the saved one.
+		await applyPresetSettings(activePreset.currentSettings);
+		await saveRootValue("activeTheme", activePreset.themeName, true);
+	} else if (!activeTheme) {
+		// Never applied or tweaked a theme, so the live settings are the default look.
+		await applyPresetSettings(defaultSetting.currentSettings);
+		await saveRootValue("activeTheme", "", true);
+	}
 }
 
 /**
@@ -117,8 +161,7 @@ export async function initializeRequiredStorageStructures(): Promise<void> {
 		structuralChangesMade = true;
 	}
 
-	if ((await getRootValue("themes")) == null) {
-		await saveRootValue("themes", {}, true);
+	if (await seedBundledPresets()) {
 		structuralChangesMade = true;
 	}
 

@@ -93,12 +93,10 @@ export function exportThemeToClipboard(name: string, data: any) {
 export async function exportThemeAsZip(name: string, data: any) {
 	const files: Record<string, string | Blob> = {};
 
-	// 1. currentSettings.json
 	if (data.currentSettings) {
 		files["currentSettings.json"] = JSON.stringify(sortObjectKeys(data.currentSettings), null, 2);
 	}
 
-	// 2. addOnStyleShiftItems/ (Expanded)
 	if (data.addOnStyleShiftItems && Array.isArray(data.addOnStyleShiftItems)) {
 		await addItemsToZip(data.addOnStyleShiftItems, files, "addOnStyleShiftItems");
 	}

@@ -26,7 +26,6 @@
 	const groups = $derived(groupFunctionsByFile(filterFunctions(entries, query)));
 	const kindGroups = $derived(groupKindsByCategory(createAllSettingPresets()));
 
-	// The playground shows the editor for whichever tab is open.
 	$effect(() => {
 		playground.mode = tab;
 	});

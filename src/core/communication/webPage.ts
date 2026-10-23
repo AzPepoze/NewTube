@@ -1,11 +1,5 @@
 // @ts-nocheck
 const buildInFunctions = {
-	/*
-	-------------------------------------------------------
-	For normal user !!!
-	-------------------------------------------------------
-	*/
-
 	setValue: function (id: string, value: any) {
 		window["StyleShift"]["buildIn"]["_variables"][id] = value;
 	},
@@ -13,12 +7,6 @@ const buildInFunctions = {
 	getValue: function (id: string) {
 		return window["StyleShift"]["buildIn"]["_variables"][id];
 	},
-
-	/*
-	-------------------------------------------------------
-	For advanced user !!!
-	-------------------------------------------------------
-	*/
 
 	loadStyleShiftValue: async function (id) {
 		return JSON.parse(await StyleShift["buildIn"]["_call_function"]("_load_styleshift_value", id));
@@ -41,12 +29,6 @@ const buildInFunctions = {
 
 		return ui;
 	},
-
-	/*
-	-------------------------------------------------------
-	Danger zone !!!
-	-------------------------------------------------------
-	*/
 
 	_variables: {},
 	_call_function: async function (functionName, ...args) {

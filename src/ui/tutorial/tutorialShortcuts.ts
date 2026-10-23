@@ -6,7 +6,6 @@ export const SHORTCUT_COMMANDS = ["toggle_enable", "toggle_settings", "toggle_cu
 export type ShortcutCommand = (typeof SHORTCUT_COMMANDS)[number];
 export type ShortcutMap = Record<ShortcutCommand, string | undefined>;
 
-/** Reads the shortcuts the user actually has bound in the browser. */
 export async function loadShortcuts(): Promise<ShortcutMap> {
 	const shortcuts: ShortcutMap = {
 		toggle_enable: undefined,
@@ -32,7 +31,6 @@ function isShortcutCommand(name: string): name is ShortcutCommand {
 	return (SHORTCUT_COMMANDS as readonly string[]).includes(name);
 }
 
-/** Splits a bound shortcut such as "Alt+Shift+X" into keycap labels. */
 export function shortcutKeys(shortcuts: ShortcutMap, command: ShortcutCommand): string[] {
 	const shortcut = shortcuts[command];
 	return shortcut ? shortcut.split("+") : [];

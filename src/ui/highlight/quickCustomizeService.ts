@@ -76,7 +76,6 @@ async function openQuickCustomizeUI(selector: string, existingSetting?: Setting)
 						mode: data.mode,
 						metadata: data.metadata,
 					};
-					// Trigger update in storage/engine
 					await saveAndRefreshAll();
 				} else {
 					const categoryName = "Custom Elements";

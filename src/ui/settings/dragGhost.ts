@@ -27,7 +27,7 @@ function ancestorChain(frame: HTMLElement): HTMLElement[] {
 	return chain;
 }
 
-/** An empty element with the same class and data attributes, so ancestor selectors and theme variables still match. */
+/** Copy classes and data attributes so ancestor selectors and theme variables still apply. */
 function createShell(source: HTMLElement): HTMLElement {
 	const shell = document.createElement(source.tagName);
 	for (const attr of Array.from(source.attributes)) {
@@ -37,7 +37,7 @@ function createShell(source: HTMLElement): HTMLElement {
 	return shell;
 }
 
-/** A copy of `frame` on body, placed in viewport coordinates, styled as if it were still in its list. */
+/** Drag preview mounted on body with the original list styling. */
 export function createDragGhost(frame: HTMLElement, box: Box): DragGhost {
 	const shells = ancestorChain(frame).map(createShell);
 	const ghost = frame.cloneNode(true) as HTMLElement;

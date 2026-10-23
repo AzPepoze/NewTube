@@ -1,6 +1,6 @@
 import type { LayoutNode, LayoutOutline } from "./types";
 
-/** Curated NewTube-relevant regions to outline. Each maps to the first matching element. */
+/** Curated StyleShift-relevant regions to outline. Each maps to the first matching element. */
 export const DIAGNOSTIC_REGION_SELECTORS: Record<string, string> = {
 	masthead: "#masthead-container",
 	player: "ytd-player, #movie_player",
@@ -13,7 +13,6 @@ export const DIAGNOSTIC_REGION_SELECTORS: Record<string, string> = {
 export const LAYOUT_OUTLINE_DEPTH_LIMIT = 6;
 export const LAYOUT_OUTLINE_NODE_LIMIT = 500;
 
-/** Tag contents we never want to read; even their tag names are dropped from the outline. */
 const SKIPPED_TAGS = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "TEMPLATE", "LINK", "META"]);
 
 interface OutlineBudget {

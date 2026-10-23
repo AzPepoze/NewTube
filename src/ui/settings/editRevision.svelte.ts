@@ -1,4 +1,4 @@
-// Bumped after each saved edit, so views that read a raw setting object can re-derive.
+// Increment after saving so views recompute values from raw setting objects.
 let revision = $state(0);
 
 export function getEditRevision(): number {

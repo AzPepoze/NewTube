@@ -30,22 +30,18 @@ let resizeObserver: ResizeObserver | null = null;
 				const targetBoundingRect = currentTargetElement.getBoundingClientRect();
 				const viewportPadding = 20;
 
-				// Determine horizontal position: place to the right of target if it's in the left half of the screen
 				let calculatedPositionX =
 					targetElementCenterPosition.x < window.innerWidth / 2
 						? targetBoundingRect.right + 10
 						: targetBoundingRect.left - currentEditorWidth - 10;
 
-				// Center vertically relative to the target element
 				let calculatedPositionY = targetElementCenterPosition.y - currentEditorHeight / 2;
 
-				// Clamp horizontal position within viewport boundaries
 				calculatedPositionX = Math.max(
 					viewportPadding,
 					Math.min(calculatedPositionX, window.innerWidth - currentEditorWidth - viewportPadding),
 				);
 
-				// Clamp vertical position within viewport boundaries
 				calculatedPositionY = Math.max(
 					viewportPadding,
 					Math.min(calculatedPositionY, window.innerHeight - currentEditorHeight - viewportPadding),
@@ -53,7 +49,7 @@ let resizeObserver: ResizeObserver | null = null;
 
 				windowElement.style.translate = `${calculatedPositionX}px ${calculatedPositionY}px`;
 
-				// Continue animation loop to follow target if it moves
+				// Follow the target while it moves.
 				animationFrameId = requestAnimationFrame(updatePosition);
 			}
 

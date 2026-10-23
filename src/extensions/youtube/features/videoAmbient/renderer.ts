@@ -230,7 +230,6 @@ export class VideoBGRenderer {
 			const gl = this.gl;
 			const preGl = this.preGl;
 
-			// Pass 0: Smoothing
 			preGl.useProgram(this.preProgram);
 			preGl.bindTexture(preGl.TEXTURE_2D, this.videoTexture);
 			preGl.texImage2D(preGl.TEXTURE_2D, 0, preGl.RGB, preGl.RGB, preGl.UNSIGNED_BYTE, bitmap);
@@ -239,7 +238,6 @@ export class VideoBGRenderer {
 				preGl.uniform2f(this.uniformLocations.preBlurAmountLocation, 0, 0);
 			preGl.drawArrays(preGl.TRIANGLES, 0, 6);
 
-			// Pass 1: Horizontal Blur
 			gl.useProgram(this.program);
 			gl.bindTexture(gl.TEXTURE_2D, this.blurTexture);
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, this.preCanvas);
@@ -248,23 +246,21 @@ export class VideoBGRenderer {
 			gl.uniform1f(this.uniformLocations.mainAlphaLocation, 1.0);
 			gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-			// Pass 2: Vertical Blur
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, this.canvas);
 			gl.uniform2f(this.uniformLocations.mainBlurAmountLocation, 0, this.settings.blur);
 			gl.drawArrays(gl.TRIANGLES, 0, 6);
 		} else if (this.ctx2d && this.preCtx2d) {
 			if (this.settings.engine === "GPU") {
-				// We tried GPU but it failed or programs are null, fallback to CPU
+				// Fall back to CPU rendering when GPU setup or rendering fails.
 				this.settings.engine = "CPU";
 				logger.warn("video-bg-renderer", "Switching to CPU mode inside render because GPU resources are missing");
 			}
 			const ctx2d = this.ctx2d;
 			const preCtx2d = this.preCtx2d;
-			// Smoothing: Draw current frame with partial alpha over previous content
+			// Blend the new frame with the previous one to smooth color changes.
 			preCtx2d.globalAlpha = alpha;
 			preCtx2d.drawImage(bitmap, 0, 0, this.canvas.width, this.canvas.height);
 
-			// Final output: Draw preCanvas onto main canvas with blur
 			if (this.settings.blur > 0) {
 				ctx2d.filter = `blur(${this.settings.blur}px)`;
 			} else {

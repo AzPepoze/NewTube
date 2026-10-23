@@ -74,7 +74,6 @@
 				isPicking = false;
 			},
 			() => {
-				// On Cancel (Esc or manual stop)
 				isPicking = false;
 			},
 		);

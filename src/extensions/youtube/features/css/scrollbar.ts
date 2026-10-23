@@ -2,16 +2,11 @@ export const scrollbarCss = `
 @supports (scrollbar-width: auto) {
 	*{
 		scrollbar-width: thin;
-		scrollbar-color: var(--nt-theme-color) transparent;
+		scrollbar-color: var(--nt-theme-color) var(--nt-scrollbar-track-color, transparent);
 	}
 
 	ytd-app {
 		scrollbar-width: none;
-	}
-
-	body::-webkit-scrollbar-track
-	{
-		scrollbar-color: var(--nt-theme-color) var(--nt-scrollbar-track-color) !important;
 	}
 }
 
@@ -38,7 +33,7 @@ export const scrollbarCss = `
 
 	body::-webkit-scrollbar-track
 	{
-		background: var(--nt-scrollbar-track-color) !important;
+		background: var(--nt-scrollbar-track-color, transparent) !important;
 	}
 }
 `;

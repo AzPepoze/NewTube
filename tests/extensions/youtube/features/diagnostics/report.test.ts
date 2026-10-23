@@ -78,7 +78,6 @@ test("builds report v2 with complete settings and an anonymized page", () => {
 	expect(report.meta.extension).toEqual({ name: "NewTube", version: "1.2.3" });
 	expect(report.page.url).toBe("https://www.youtube.com/watch");
 	expect(report.page.queryParamNames).toEqual(["v", "list", "hl"]);
-	// Complete settings are captured, not just the ones that differ from the defaults.
 	expect(report.settings.currentSettings).toEqual({
 		CenterVideoTitleTheater: false,
 		CenterVideoTitleNormal: true,

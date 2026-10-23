@@ -2,7 +2,6 @@ import { type Setting } from "@settings/types/styleshiftTypes";
 import { settingsUi } from "@ui/settings/settingsApi";
 
 export async function search(onInput: (value: string) => void) {
-	// Search is a special utility, we'll keep its direct mount or update SettingRenderer to handle it
 	return settingsUi.renderSetting({ type: "search" } as unknown as Setting, onInput);
 }
 

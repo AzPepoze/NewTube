@@ -1,9 +1,5 @@
 import type { BarSample } from "./types";
 
-// ---------------------------------
-// Feature runtime state
-// ---------------------------------
-
 export const state = {
 	enabled: false,
 	verticalCanvas: null as HTMLCanvasElement | null,
@@ -22,9 +18,6 @@ export const state = {
 	droppedFrames: 0,
 	lastSampleColorVertical: "transparent",
 	lastSampleColorHorizontal: "transparent",
-	// ---------------------------------
-	// Legacy incremental scan state
-	// ---------------------------------
 	scanProgress: {
 		x: 0,
 		y: 5,
@@ -33,9 +26,6 @@ export const state = {
 		bottomResult: -1,
 		heightsFound: [] as BarSample[],
 	},
-	// ---------------------------------
-	// Diagnostics and cleanup
-	// ---------------------------------
 	processLatency: 0,
 	startTime: 0,
 	lastIntervalTime: 0,

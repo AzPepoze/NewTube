@@ -302,6 +302,7 @@ export const animationCategory: Category = {
 			id: "ThumbnailSlideOnHoverAnimationPadding",
 			name: "Thumbnail Slide On Hover Animation",
 			condition: {
+				ThumbnailSlideOnHoverAnimation: true,
 				EnhancementSwapLayout: false,
 			},
 			enableCss: `

@@ -15,7 +15,6 @@ export interface LogConfig {
 	};
 }
 
-// Default configuration
 const debugConfig: LogConfig = {
 	info: {
 		all: true,

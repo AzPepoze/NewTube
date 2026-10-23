@@ -184,7 +184,6 @@ export async function downloadZip(zipName: string, folderName: string, files: Re
 		}
 
 		for (const [path, content] of Object.entries(files)) {
-			// Handle nested folders if slashes are present in path
 			folder.file(path, content);
 		}
 
@@ -202,7 +201,6 @@ export async function downloadZip(zipName: string, folderName: string, files: Re
 	}
 }
 
-// Add items to ZIP
 export async function addItemsToZip(items: any[], files: Record<string, string | Blob>, baseFolder: string = "") {
 	const prefix = baseFolder ? (baseFolder.endsWith("/") ? baseFolder : `${baseFolder}/`) : "";
 	const categoryOrder: string[] = [];
@@ -216,7 +214,6 @@ export async function addItemsToZip(items: any[], files: Record<string, string |
 
 		const categoryPath = `${prefix}${categoryName}`;
 
-		// Category config
 		const categoryConfig: any = {};
 		for (const [key, value] of Object.entries(styleshiftCategoryList)) {
 			if (key !== "settings") {
@@ -235,21 +232,17 @@ export async function addItemsToZip(items: any[], files: Record<string, string |
 				const settingPath = `${categoryPath}/${settingName}`;
 				const thisSetting = deepClone(originalSetting);
 
-				// Extract JS/CSS files
 				await convertToExportSetting(thisSetting, async (fileName, fileData) => {
 					files[`${settingPath}/${fileName}`] = fileData;
 				});
 
-				// Setting config
 				files[`${settingPath}/config.json`] = JSON.stringify(thisSetting, null, 2);
 			}
 
-			// Setting manifest
 			files[`${categoryPath}/order.json`] = JSON.stringify(settingOrder, null, 2);
 		}
 	}
 
-	// Category manifest
 	files[`${prefix}order.json`] = JSON.stringify(categoryOrder, null, 2);
 }
 

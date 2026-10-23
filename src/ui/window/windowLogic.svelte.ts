@@ -107,7 +107,6 @@ export class WindowLogic {
 		windowManager.removeWindow(this.windowId);
 	};
 
-	/** Re-fits a snapped window after the viewport changes size. */
 	refreshSnap() {
 		const windowEl = this.getWindowElement();
 		if (!windowEl || !this.snapZone) return;

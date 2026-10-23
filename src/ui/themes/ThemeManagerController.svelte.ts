@@ -120,9 +120,7 @@ async function parseResponseError(res: Response): Promise<string> {
 			const msg = data.message || data.error || data.detail || data.msg;
 			if (typeof msg === "string" && msg.trim()) return msg;
 		}
-	} catch {
-		// Response was not JSON
-	}
+	} catch {}
 	if (res.statusText) {
 		return `Server error (${res.status}): ${res.statusText}`;
 	}
@@ -425,8 +423,10 @@ export class ThemeManagerController {
 
 	getThemePreview(theme: Theme) {
 		const settings = theme.currentSettings || {};
-		let bgColor = settings["MainThemeColor"] || settings["MainThemeColorC"] || "var(--theme-0)";
+		let bgColor = String(settings["MainThemeColor"] || settings["MainThemeColorC"] || "var(--theme-0)");
 		if (bgColor.startsWith("#") && bgColor.length > 7) bgColor = bgColor.slice(0, 7);
-		return { bgColor, bgImg: settings["BackgroundImageUrl"] || "", themeId: theme.themeId };
+		const usesImage = settings["EnableBackground"] === true && settings["BackgroundMode"] === "Image";
+		const bgImg = usesImage ? String(settings["BackgroundImageUrl"] || "") : "";
+		return { bgColor, bgImg, themeId: theme.themeId };
 	}
 }

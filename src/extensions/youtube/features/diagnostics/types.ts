@@ -1,4 +1,4 @@
-/** Locally collected, shareable snapshot of the current YouTube layout and NewTube state. */
+/** Locally collected, shareable snapshot of the current YouTube layout and StyleShift state. */
 export interface DiagnosticsReport {
 	meta: {
 		reportVersion: number;
@@ -57,11 +57,10 @@ export interface LayoutNode {
 }
 
 export interface LayoutOutline {
-	/** One outline per curated NewTube region (masthead, player, feed, …); null when absent. */
+	/** One outline per curated StyleShift region (masthead, player, feed, …); null when absent. */
 	regions: Record<string, LayoutNode | null>;
 	nodeCount: number;
 	depthLimit: number;
-	/** Nodes that were skipped because the depth or node budget was reached. */
 	droppedNodes: number;
 	truncated: boolean;
 }

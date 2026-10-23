@@ -15,6 +15,7 @@ export const colorThemeCategory: Category = {
 			value: true,
 			enableCss: `
                 html,
+                ytd-app,
                 [watch-color-update] {
                     --ytd-chip-cloud-background: rgba(0,0,0,.3) !important;
                     --yt-spec-brand-background-primary: var(--nt-topbar-bg) !important;
@@ -108,6 +109,15 @@ export const colorThemeCategory: Category = {
                 #video-title,
                 ytd-watch-metadata #title h1 yt-formatted-string,
                 .ytLockupMetadataViewModelTitle,
+                .shortsLockupViewModelHostOutsideMetadataTitle,
+                .shortsLockupViewModelHostOutsideMetadataEndpoint,
+                .ytAttributedStringLinkInheritColor,
+                .ytSpecButtonShapeNextMono.ytSpecButtonShapeNextTonal,
+                .ytSpecButtonShapeNextMono.ytSpecButtonShapeNextOutline,
+                .ytSpecButtonShapeNextMono.ytSpecButtonShapeNextText,
+                ytd-comments-header-renderer .count-text,
+                ytd-playlist-panel-renderer .title,
+                ytd-video-description-infocards-section-renderer #title,
                 .ytd-video-primary-info-renderer,
                 .ytd-video-secondary-info-renderer,
                 ytd-watch-metadata {
@@ -128,6 +138,7 @@ export const colorThemeCategory: Category = {
                 .ytd-video-meta-block,
                 yt-content-metadata-view-model,
                 .ytContentMetadataViewModelMetadataRow,
+                .ytp-menuitem-content,
                 #description-text,
                 .ytd-comment-renderer,
                 ytd-comment-view-model,
@@ -144,7 +155,8 @@ export const colorThemeCategory: Category = {
 			value: "#5797ffff",
 			varCss: "--nt-text-link",
 			constantCss: `
-                .yt-core-attributed-string__link {
+                .yt-core-attributed-string__link,
+                a.ytAttributedStringLinkInheritColor {
                     color: var(--nt-text-link) !important;
                 }
             `,
